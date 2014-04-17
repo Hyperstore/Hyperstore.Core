@@ -1,0 +1,18 @@
+﻿The default generated code for resources files doesn't work with this hybrid project targetting multi frameworks (45, PCL and Winrt)
+After all changes in a resource files, you must make some changes in the generated file:
+
+- Add this line add the beginning of the file (After usisng System;)
+#if NETFX_CORE
+    using System.Reflection;
+#endif
+
+- Change this line (in ResourceManager property)
+         global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Hyperstore.Modeling.ExceptionMessages", typeof(ExceptionMessages).Assembly);
+
+by this group of lines
+
+#if NETFX_CORE
+         global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Hyperstore.Modeling.ExceptionMessages", typeof(ExceptionMessages).GetTypeInfo().Assembly);
+#else
+         global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Hyperstore.Modeling.ExceptionMessages", typeof(ExceptionMessages).Assembly);
+#endif

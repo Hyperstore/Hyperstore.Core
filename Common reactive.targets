@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+
+
+  <!--
+       ***********************
+       * SUPPORTED PLATFORMS *
+       ***********************
+   -->
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugPCL|AnyCPU' ">
+    <BuildConfig>Debug</BuildConfig>
+    <BuildTarget>PCL</BuildTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleasePCL|AnyCPU' ">
+    <BuildConfig>Release</BuildConfig>
+    <BuildTarget>PCL</BuildTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug45|AnyCPU' ">
+    <BuildConfig>Debug</BuildConfig>
+    <BuildTarget>45</BuildTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release45|AnyCPU' ">
+    <BuildConfig>Release</BuildConfig>
+    <BuildTarget>45</BuildTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug8|AnyCPU' ">
+    <BuildConfig>Debug</BuildConfig>
+    <BuildTarget>8</BuildTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release8|AnyCPU' ">
+    <BuildConfig>Release</BuildConfig>
+    <BuildTarget>8</BuildTarget>
+  </PropertyGroup>
+
+  
+  <PropertyGroup Condition=" '$(BuildTarget)' == 'PCL' ">
+    <DefineConstants>$(DefineConstants);WP8;NETFX_CORE;PCL</DefineConstants>
+    <TargetFrameworkIdentifier>.NETPortable</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Profile78</TargetFrameworkProfile>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(BuildTarget)' == '45' ">
+    <DefineConstants>$(DefineConstants);MEF_NATIVE;TXSCOPE</DefineConstants>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <NoStdLib>true</NoStdLib>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TargetFrameworkProfile />
+    <BuildPlatform>DESKTOPCLR</BuildPlatform>
+    <BuildFlavor>DESKTOPCLR45</BuildFlavor>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(BuildTarget)' == '8' ">
+    <DefineConstants>$(DefineConstants);NETFX_CORE</DefineConstants>
+    <TargetFrameworkIdentifier>.NETCore</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <NoStdLib>true</NoStdLib>
+    <BuildPlatform>WINDOWS</BuildPlatform>
+    <BuildFlavor>WINDOWS8</BuildFlavor>
+    <DefaultLanguage>en-US</DefaultLanguage>
+  </PropertyGroup>
+ 
+  <!--
+       ********************
+       * GENERAL SETTINGS *
+       ********************
+   -->
+
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);$(BuildPlatform);$(BuildFlavor);TRACE</DefineConstants>
+    <OutputPath>..\..\lib\$(BuildConfig)$(BuildTarget)</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(BuildConfig)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(BuildConfig)' == 'Release' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(NoOpt)' == '1' ">
+    <DefineConstants>$(DefineConstants);NO_PERF</DefineConstants>
+  </PropertyGroup>
+  
+  <ItemGroup Condition=" '$(NoStdLib)' == 'true' ">
+    <Reference Include="mscorlib" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!--Condition=" '$(ProductSignAssembly)' == 'true' AND '$(Sign)' == 'Sign' ">-->
+    <DefineConstants>$(DefineConstants);SIGNED</DefineConstants>
+  </PropertyGroup>
+
+  <!-- Hack to support MSTest's Unit Test Framework on Silverlight and Windows Phone.
+       This overwrites one of the paths used by AssemblySearchPaths, which is the variable 
+       used by the ResolveAssemblyReferences task to figure out which directories to look in.
+       Previously, Rx was replacing the TargetFrameworkDirectory to allow this to work.  We can
+       instead use the official .NET reference assemblies while simply looking for the additional
+       unit testing framework assemblies (and a renamed Silverlight clone of the unit test framework).  -->
+  <PropertyGroup>
+    <ReferencePath>$(MSBuildProjectDirectory)\..\..\References\$(BuildFlavor)</ReferencePath>
+  </PropertyGroup>
+
+<!--
+       ************************************************
+       * GENERAL REFERENCES - Microsoft.Bcl and Async *
+       ************************************************
+   -->
+  <ItemGroup Condition=" '$(BuildTarget)' == '45' ">
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Reactive.Core">
+      <HintPath>..\packages\Rx-Core.2.2.2\lib\net45\System.Reactive.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces">
+      <HintPath>..\packages\Rx-Interfaces.2.2.2\lib\net45\System.Reactive.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Linq">
+      <HintPath>..\packages\Rx-Linq.2.2.2\lib\net45\System.Reactive.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices">
+      <HintPath>..\packages\Rx-PlatformServices.2.2.2\lib\Net45\System.Reactive.PlatformServices.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(BuildTarget)' == '8' ">
+    <Reference Include="System.Reactive.Core">
+      <HintPath>..\packages\Rx-Core.2.2.2\lib\windows8\System.Reactive.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces">
+      <HintPath>..\packages\Rx-Interfaces.2.2.2\lib\windows8\System.Reactive.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Linq">
+      <HintPath>..\packages\Rx-Linq.2.2.2\lib\windows8\System.Reactive.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices">
+      <HintPath>..\packages\Rx-PlatformServices.2.2.2\lib\windows8\System.Reactive.PlatformServices.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(BuildTarget)' == 'PCL' ">
+    <Reference Include="System.Reactive.Core">
+      <HintPath>..\packages\Rx-Core.2.2.2\lib\portable-windows8+net45+wp8\System.Reactive.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces">
+      <HintPath>..\packages\Rx-Interfaces.2.2.2\lib\portable-windows8+net45+wp8\System.Reactive.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Linq">
+      <HintPath>..\packages\Rx-Linq.2.2.2\lib\portable-windows8+net45+wp8\System.Reactive.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices">
+      <HintPath>..\packages\Rx-PlatformServices.2.2.2\lib\portable-windows8+net45+wp8\System.Reactive.PlatformServices.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  
+</Project>

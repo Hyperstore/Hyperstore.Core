@@ -1,0 +1,443 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--
+BuildTarget :
+45 : Net 4.5
+8  : Windows 8
+PCL: Net45, WP8, Android, IOS
+-->
+  <PropertyGroup>
+    <!--<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>-->
+    <!--<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>-->
+    <ProjectGuid>{3AB9FBAB-4E14-4661-90BC-DA6D4236066A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Hyperstore.Modeling</RootNamespace>
+    <AssemblyName>Hyperstore</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <UseMSBuildEngine>False</UseMSBuildEngine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release45|AnyCPU'">
+    <DocumentationFile>..\..\lib\Release45\Hyperstore.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <Import Project="..\Common.targets" />
+  <PropertyGroup>
+    <!--<DocumentationFile>$(OutputPath)\$(AssemblyName).XML</DocumentationFile>-->
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(BuildTarget)' == '45' ">
+    <Compile Include="DomainModel\Impl\Dynamic\DynamicTypeDescriptorProvider.cs" />
+    <Compile Include="DomainModel\Impl\Dynamic\DynamicPropertyDescriptor.cs" />
+    <Compile Include="DomainModel\Impl\Dynamic\DynamicTypeDescriptor.cs" />
+    <Compile Include="Messaging\P2P\WCFChannel.cs" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(BuildTarget)' == 'PCL' ">
+    <Compile Include="Utils\ConcurrentDictionary.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\AssemblyVersion.cs">
+      <Link>Properties\AssemblyVersion.cs</Link>
+    </Compile>
+    <Compile Include="Adapters\MemoryGraph\ConflictException.cs" />
+    <Compile Include="Attributes\ICommandHandlerMetadata.cs" />
+    <Compile Include="Commands\Constraints\Impls\MessageHelper.cs" />
+    <Compile Include="Commands\ErrorContinuationStatus.cs" />
+    <Compile Include="Commands\IExecutionResultInternal.cs" />
+    <Compile Include="Commands\Impls\AbstractCommandInterceptor.cs" />
+    <Compile Include="Commands\Impls\PrimitiveCommand.cs" />
+    <Compile Include="Commands\Impls\InterceptorWrapper.cs" />
+    <Compile Include="Commands\Impls\Session\HyperstoreSynchronizationContext.cs" />
+    <Compile Include="Commands\ISessionInternal.cs" />
+    <Compile Include="Commands\SessionRequiredException.cs" />
+    <Compile Include="Commands\UndoManager\RecursiveStack.cs" />
+    <Compile Include="Container\EmptyHyperstoreTrace.cs" />
+    <Compile Include="Container\ICompositionService.cs" />
+    <Compile Include="Container\IDependencyResolverInternal.cs" />
+    <Compile Include="Container\IHyperstoreTrace.cs" />
+    <Compile Include="Container\ISubjectFactory.cs" />
+    <Compile Include="Container\ISubjectWrapper.cs" />
+    <Compile Include="Container\MefContainer.cs" />
+    <Compile Include="Container\TraceCategory.cs" />
+    <Compile Include="DomainModel\IDomainConfiguration.cs" />
+    <Compile Include="DomainModel\IModelEntity.cs" />
+    <Compile Include="DomainModel\Impl\DomainConfiguration.cs" />
+    <Compile Include="DomainModel\Impl\Extension\Controler\DomainModelControler.cs" />
+    <Compile Include="DomainModel\Impl\Extension\Controler\IDomainModelControler.cs" />
+    <Compile Include="DomainModel\Impl\IExtension.cs" />
+    <Compile Include="DomainModel\Impl\ModelElementList.cs" />
+    <Compile Include="DomainModel\Impl\ModelEntity.cs" />
+    <Compile Include="DomainModel\Impl\ObservableModelElementList.cs" />
+    <Compile Include="DomainModel\Impl\RegistrationEventBusSetting.cs" />
+    <Compile Include="DomainModel\StoreOptions.cs" />
+    <Compile Include="Events\Impls\ObservableExtension.cs" />
+    <Compile Include="ExceptionMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExceptionMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\ChannelFilter.cs" />
+    <Compile Include="Metadata\Impl\Primitives\ByteArrayPrimitive.cs" />
+    <Compile Include="Metadata\Impl\Primitives\BytePrimitive.cs" />
+    <Compile Include="Metadata\Impl\Primitives\CharPrimitive.cs" />
+    <Compile Include="Metadata\Impl\Primitives\GuidPrimitive.cs" />
+    <Compile Include="Metadata\Impl\Primitives\InternalSchema.cs" />
+    <Compile Include="Metadata\Impl\SchemaExtensionMode.cs" />
+    <Compile Include="Metadata\Impl\SchemaInfo.cs" />
+    <Compile Include="Attributes\CommandHandlerAttribute.cs" />
+    <Compile Include="Attributes\EventHandlerAttribute.cs" />
+    <Compile Include="Attributes\CommandInterceptorAttribute.cs" />
+    <Compile Include="Attributes\ICommandInterceptorMetadata.cs" />
+    <Compile Include="Attributes\IEventHandlerMetadata.cs" />
+    <Compile Include="Commands\BeforeContinuationStatus.cs" />
+    <Compile Include="Commands\Constraints\IImplicitDomainModelConstraints.cs" />
+    <Compile Include="Commands\Constraints\Impls\ConstraintsCategory.cs" />
+    <Compile Include="Commands\Constraints\Impls\RelayBeforeRule.cs" />
+    <Compile Include="Commands\Constraints\Impls\RelayBeforeRuleOptions.cs" />
+    <Compile Include="Commands\ICommandHandler.cs" />
+    <Compile Include="Commands\ICommandHandlerOf.cs" />
+    <Compile Include="Commands\Impls\AddSchemaEntityCommand.cs" />
+    <Compile Include="Commands\Impls\AddSchemaRelationshipCommand.cs" />
+    <Compile Include="Commands\EventPropagationStrategy.cs" />
+    <Compile Include="Commands\Impls\AddSchemaPropertyCommand.cs" />
+    <Compile Include="Commands\Impls\TransactionScopeWrapper.cs" />
+    <Compile Include="Commands\Impls\ITransactionScope.cs" />
+    <Compile Include="Commands\Impls\ReadOnlyException.cs" />
+    <Compile Include="Commands\Impls\Session\TrackingElement.cs" />
+    <Compile Include="Commands\Impls\Session\TrackingState.cs" />
+    <Compile Include="Commands\Impls\Session\ISessionTrackingData.cs" />
+    <Compile Include="Commands\Impls\Session\TrackingRelationship.cs" />
+    <Compile Include="Commands\Impls\Session\SessionDataContext.cs" />
+    <Compile Include="Commands\Impls\Session\SessionInformation.cs" />
+    <Compile Include="Commands\Impls\Session\SessionLocalInfo.cs" />
+    <Compile Include="Commands\Impls\Session\SessionTrackingData.cs" />
+    <Compile Include="Commands\ISessionEnlistmentNotification.cs" />
+    <Compile Include="Commands\ISessionInformation.cs" />
+    <Compile Include="Commands\ISessionContext.cs" />
+    <Compile Include="Commands\MessageType.cs" />
+    <Compile Include="Commands\SessionCompletingEventArgs.cs" />
+    <Compile Include="Commands\SessionIsolationLevel.cs" />
+    <Compile Include="Commands\SessionMode.cs" />
+    <Compile Include="Commands\UndoManager\IUndoManager.cs" />
+    <Compile Include="Commands\UndoManager\UndoManager.cs" />
+    <Compile Include="Container\DefaultDependencyResolver.cs" />
+    <Compile Include="Commands\Constraints\Impls\ConstraintBuilder.cs" />
+    <Compile Include="Commands\Constraints\Impls\ConstraintsManager.cs" />
+    <Compile Include="Commands\Constraints\Impls\CustomConstraint.cs" />
+    <Compile Include="Commands\Constraints\Impls\ModelElementMetadataExtensions.cs" />
+    <Compile Include="Commands\Impls\RemovePropertyCommand.cs" />
+    <Compile Include="Container\Setting.cs" />
+    <Compile Include="DomainModel\DomainPersistenceBehavior.cs" />
+    <Compile Include="DomainModel\IUpdatableDomainModel.cs" />
+    <Compile Include="Adapters\IGraphAdapter.cs" />
+    <Compile Include="DomainModel\ISchemaDefinition.cs" />
+    <Compile Include="DomainModel\Impl\Dynamic\DynamicModelElementMetaObject.cs" />
+    <Compile Include="DomainModel\Impl\Extension\Controler\DomainInfos.cs" />
+    <Compile Include="DomainModel\Impl\Extension\Controler\DomainExtensionStatus.cs" />
+    <Compile Include="DomainModel\Impl\Extension\Controler\ExtensionModelControler.cs" />
+    <Compile Include="DomainModel\Impl\SchemaDefinition.cs" />
+    <Compile Include="DomainModel\Impl\Dynamic\DynamicModelEntity.cs" />
+    <Compile Include="DomainModel\Impl\Extension\Controler\ExtensionInfos.cs" />
+    <Compile Include="DomainModel\Impl\Extension\Controler\IDomainInfos.cs" />
+    <Compile Include="DomainModel\Impl\Extension\Controler\InfosBase.cs" />
+    <Compile Include="DomainModel\Impl\Extension\DomainExtensionConstraintsManager.cs" />
+    <Compile Include="DomainModel\Impl\Extension\DomainModelExtension.cs" />
+    <Compile Include="DomainModel\Impl\Extension\DomainExtensionDomainModelDefinition.cs" />
+    <Compile Include="DomainModel\Impl\Extension\DomainExtensionHyperGraph.cs" />
+    <Compile Include="DomainModel\Impl\Extension\DomainExtensionSchema.cs" />
+    <Compile Include="DomainModel\Impl\Extension\ExtensionMode.cs" />
+    <Compile Include="DomainModel\Impl\IdGenerators\LongIdGenerator.cs" />
+    <Compile Include="DomainModel\Impl\ObservableModelElementCollection.cs" />
+    <Compile Include="DomainModel\IPropertyChangedNotifier.cs" />
+    <Compile Include="DomainModel\Impl\Level1Cache.cs" />
+    <Compile Include="DomainModel\Impl\ModelElementCollection.cs" />
+    <Compile Include="DomainModel\Impl\ReferenceHandler.cs" />
+    <Compile Include="DomainModel\SessionConfiguration.cs" />
+    <Compile Include="DomainModel\SessionCreatedEventArgs.cs" />
+    <Compile Include="DomainModel\Impl\StoreExtensions.cs" />
+    <Compile Include="DomainModel\INamedElement.cs" />
+    <Compile Include="DomainModel\IUpdatableSchema.cs" />
+    <Compile Include="Container\DependencyFactory.cs" />
+    <Compile Include="Events\Impls\AddSchemaPropertyEvent.cs" />
+    <Compile Include="Events\Impls\DomainEvent.cs" />
+    <Compile Include="Events\Impls\EventHandler\AddMetadataEventHandler.cs" />
+    <Compile Include="Events\Impls\EventHandler\AddRelationshipMetadataEventHandler.cs" />
+    <Compile Include="Events\Impls\EventHandler\AddPropertyMetadataEventHandler.cs" />
+    <Compile Include="Events\Impls\PropagateEventDispatcher.cs" />
+    <Compile Include="Events\IUndoableEvent.cs" />
+    <Compile Include="Exceptions.cs" />
+    <Compile Include="HyperGraph\GraphElementType.cs" />
+    <Compile Include="HyperGraph\IEdgeList.cs" />
+    <Compile Include="Adapters\CacheAdapter.cs" />
+    <Compile Include="DomainModel\Impl\Extension\DomainExtensionAdapter.cs" />
+    <Compile Include="HyperGraph\IIndex.cs" />
+    <Compile Include="HyperGraph\DuplicateIndexException.cs" />
+    <Compile Include="HyperGraph\ICacheAdapter.cs" />
+    <Compile Include="Adapters\MemoryGraph\Index\IndexWrapper.cs" />
+    <Compile Include="HyperGraph\ITransactionalGraphAdapter.cs" />
+    <Compile Include="Adapters\MergeOption.cs" />
+    <Compile Include="Adapters\NodeQueryResult.cs" />
+    <Compile Include="HyperGraph\PropertyValue.cs" />
+    <Compile Include="HyperGraph\Query.cs" />
+    <Compile Include="HyperGraph\UniqueConstraintException.cs" />
+    <Compile Include="Adapters\MemoryGraph\MemoryGraphAdapter.cs" />
+    <Compile Include="Adapters\MemoryGraph\MemoryGraphNode.cs" />
+    <Compile Include="Adapters\IQueryGraphAdapter.cs" />
+    <Compile Include="Adapters\EntityUpdaters\IPersistenceGraphAdapter.cs" />
+    <Compile Include="HyperGraph\Traversal\GraphPath.cs" />
+    <Compile Include="HyperGraph\Traversal\GraphPosition.cs" />
+    <Compile Include="HyperGraph\Traversal\GraphTraversalEvaluatorResult.cs" />
+    <Compile Include="HyperGraph\Traversal\IGraphPathList.cs" />
+    <Compile Include="HyperGraph\Traversal\IGraphPathTraverser.cs">
+    </Compile>
+    <Compile Include="HyperGraph\Impls\HyperGraph.cs" />
+    <Compile Include="HyperGraph\IHyperGraph.cs" />
+    <Compile Include="HyperGraph\Impls\Traversal\GraphBreadthFirstTraverser.cs" />
+    <Compile Include="HyperGraph\Impls\Traversal\GraphDepthFirstTraverser.cs" />
+    <Compile Include="HyperGraph\Impls\Traversal\GlobalNodeUnicity.cs" />
+    <Compile Include="HyperGraph\Impls\Traversal\GraphPathTraverser.cs" />
+    <Compile Include="HyperGraph\Traversal\INodeIncidenceIterator.cs" />
+    <Compile Include="HyperGraph\Impls\Traversal\TraversalQuery.cs" />
+    <Compile Include="HyperGraph\Traversal\IGraphTraversalConfiguration.cs" />
+    <Compile Include="HyperGraph\Traversal\IGraphTraversalEvaluator.cs" />
+    <Compile Include="HyperGraph\Traversal\IGraphTraversalUnicityPolicy.cs" />
+    <Compile Include="MemoryStore\ElementEvictedEventArgs.cs" />
+    <Compile Include="MemoryStore\EvictionProcess.cs" />
+    <Compile Include="MemoryStore\ICloneable.cs" />
+    <Compile Include="MemoryStore\Impls\MaxElementsEvictionPolicy.cs" />
+    <Compile Include="MemoryStore\IEvictionPolicy.cs" />
+    <Compile Include="Adapters\MemoryGraph\Index\IndexDefinition.cs" />
+    <Compile Include="MemoryStore\Impls\ILockInfo.cs" />
+    <Compile Include="MemoryStore\Impls\ILockManager.cs" />
+    <Compile Include="MemoryStore\Impls\ISlot.cs" />
+    <Compile Include="MemoryStore\Impls\LockInfo.cs" />
+    <Compile Include="MemoryStore\Impls\LockManager.cs" />
+    <Compile Include="MemoryStore\ISlotList.cs" />
+    <Compile Include="MemoryStore\Impls\PreciseClock.cs" />
+    <Compile Include="Messaging\AbstractChannel.cs" />
+    <Compile Include="Messaging\ChannelProperty.cs" />
+    <Compile Include="Messaging\IEventBusChannel.cs" />
+    <Compile Include="Messaging\P2P\InProcChannel.cs" />
+    <Compile Include="Messaging\P2P\IWCFHyperstoreChannel.cs" />
+    <Compile Include="Metadata\ISchemaInfo.cs" />
+    <Compile Include="Metadata\ISchemaValueObject.cs" />
+    <Compile Include="Metadata\Impl\GeneratedSchemaEntity.cs" />
+    <Compile Include="Metadata\Impl\SchemaElement.cs" />
+    <Compile Include="Metadata\Impl\SchemaValueObject.cs" />
+    <Compile Include="Metadata\Impl\Primitives\PrimitiveMetaValue.cs" />
+    <Compile Include="Metadata\Impl\Primitives\SinglePrimitive.cs" />
+    <Compile Include="Metadata\Impl\Primitives\UInt16Primitive.cs" />
+    <Compile Include="Metadata\Impl\Primitives\UInt32Primitive.cs" />
+    <Compile Include="Metadata\Impl\Primitives\UInt64Primitive.cs" />
+    <Compile Include="Metadata\Impl\Primitives\DecimalPrimitive.cs" />
+    <Compile Include="Metadata\Impl\Primitives\Int16Primitive.cs" />
+    <Compile Include="Metadata\Impl\Primitives\TimeSpanPrimitive.cs" />
+    <Compile Include="Metadata\Cardinality.cs" />
+    <Compile Include="Metadata\Impl\SchemaRelationship.cs" />
+    <Compile Include="Metadata\Impl\Schema.cs" />
+    <Compile Include="DomainModel\Impl\Resolvers\ModelElementFactory.cs" />
+    <Compile Include="Commands\Constraints\IConstraint.cs" />
+    <Compile Include="Commands\Constraints\IConstraintBuilder.cs" />
+    <Compile Include="Commands\Constraints\IConstraintOf.cs" />
+    <Compile Include="Commands\Constraints\IConstraintsManager.cs" />
+    <Compile Include="Commands\ICommandManager.cs" />
+    <Compile Include="Commands\Impls\AddEntityCommand.cs" />
+    <Compile Include="Commands\Impls\ChangePropertyValueCommand.cs" />
+    <Compile Include="Commands\Impls\CommandProcessor.cs" />
+    <Compile Include="Commands\Impls\CommandManager.cs" />
+    <Compile Include="Commands\Impls\DomainCommand.cs" />
+    <Compile Include="Commands\Impls\RemoveRelationshipCommand.cs" />
+    <Compile Include="Metadata\Impl\SchemaProperty.cs" />
+    <Compile Include="Metadata\Impl\Primitives\BooleanPrimitive.cs" />
+    <Compile Include="DomainModel\Impl\ModelRelationship.cs" />
+    <Compile Include="Metadata\Impl\Primitives\CardinalityPrimitive.cs" />
+    <Compile Include="Metadata\Impl\Primitives\PrimitiveModelRelationshipMetaClass.cs" />
+    <Compile Include="Metadata\Impl\Primitives\IdentityPrimitive.cs" />
+    <Compile Include="Metadata\Impl\Primitives\EnumPrimitive.cs" />
+    <Compile Include="Metadata\Impl\Primitives\PrimitiveModelElementMetaClass.cs" />
+    <Compile Include="Metadata\Impl\Primitives\PrimitivesSchemaDefinition.cs" />
+    <Compile Include="Metadata\Impl\Primitives\TypePrimitive.cs" />
+    <Compile Include="Metadata\Impl\Primitives\DateTimePrimitive.cs" />
+    <Compile Include="Metadata\Impl\Primitives\Int64Primitive.cs" />
+    <Compile Include="Metadata\Impl\Primitives\Int32Primitive.cs" />
+    <Compile Include="Metadata\Impl\Primitives\DoublePrimitive.cs" />
+    <Compile Include="Metadata\Impl\Primitives\PrimitiveMetaRelationship.cs" />
+    <Compile Include="Metadata\Impl\Primitives\StringPrimitive.cs" />
+    <Compile Include="HyperGraph\InvalidElementException.cs" />
+    <Compile Include="Commands\Impls\AddRelationshipCommand.cs" />
+    <Compile Include="Commands\Impls\RemoveEntityCommand.cs" />
+    <Compile Include="Commands\ICommandInterceptorOf.cs" />
+    <Compile Include="Events\EventContext.cs" />
+    <Compile Include="Commands\ExecutionCommandContext.cs" />
+    <Compile Include="Commands\SessionException.cs" />
+    <Compile Include="Commands\ContinuationStatus.cs" />
+    <Compile Include="Commands\ICommandInterceptor.cs" />
+    <Compile Include="Commands\IDomainCommand.cs" />
+    <Compile Include="Events\IEventDispatcher.cs" />
+    <Compile Include="Events\IEventHandler.cs" />
+    <Compile Include="Events\IEventManager.cs" />
+    <Compile Include="Events\IEvent.cs" />
+    <Compile Include="Events\IEventNotifier.cs" />
+    <Compile Include="Commands\ICommandProcessor.cs" />
+    <Compile Include="Commands\Impls\Session\Session.cs" />
+    <Compile Include="Commands\Impls\ExecutionResult.cs" />
+    <Compile Include="Commands\ISession.cs" />
+    <Compile Include="Commands\IExecutionResult.cs" />
+    <Compile Include="Commands\DiagnosticMessage.cs" />
+    <Compile Include="Events\Impls\AddEntityEvent.cs" />
+    <Compile Include="Events\Impls\AddSchemaEntityEvent.cs" />
+    <Compile Include="Events\Impls\AddRelationshipEvent.cs" />
+    <Compile Include="Events\Impls\AddSchemaRelationshipEvent.cs" />
+    <Compile Include="Events\Impls\ChangePropertyValueEvent.cs" />
+    <Compile Include="Events\Impls\EventDispatcher.cs" />
+    <Compile Include="Events\Impls\EventHandler\AddEntityEventHandler.cs" />
+    <Compile Include="Events\Impls\EventHandler\AddRelationshipEventHandler.cs" />
+    <Compile Include="Events\Impls\EventHandler\ChangeAttributEventHandler.cs" />
+    <Compile Include="Events\Impls\EventHandler\RemoveEntityEventHandler.cs" />
+    <Compile Include="Events\Impls\EventHandler\RemoveRelationshipEventHandler.cs" />
+    <Compile Include="Events\Impls\EventManager.cs" />
+    <Compile Include="Events\Impls\Extensions\EventManagerExtensions.cs" />
+    <Compile Include="Events\Impls\RemovePropertyEvent.cs" />
+    <Compile Include="Events\Impls\RemoveEntityEvent.cs" />
+    <Compile Include="Events\Impls\RemoveRelationshipEvent.cs" />
+    <Compile Include="DomainModel\IDomainModel.cs" />
+    <Compile Include="DomainModel\IDomainService.cs" />
+    <Compile Include="DomainModel\IModelElement.cs" />
+    <Compile Include="DomainModel\IModelElementFactory.cs" />
+    <Compile Include="DomainModel\IModelRelationship.cs" />
+    <Compile Include="DomainModel\Impl\DomainModel.cs" />
+    <Compile Include="DomainModel\Impl\ModelElement.cs">
+    </Compile>
+    <Compile Include="DomainModel\Impl\NotInTransactionException.cs" />
+    <Compile Include="DomainModel\Impl\SerializationContext.cs" />
+    <Compile Include="DomainModel\Impl\Store.cs" />
+    <Compile Include="DomainModel\IHyperstore.cs" />
+    <Compile Include="Metadata\ISchemaEntity.cs" />
+    <Compile Include="Metadata\ISchema.cs" />
+    <Compile Include="Metadata\ISchemaProperty.cs" />
+    <Compile Include="Metadata\ISchemaRelationship.cs" />
+    <Compile Include="Metadata\Impl\JSonHelper.cs" />
+    <Compile Include="Metadata\Impl\SchemaEntity.cs" />
+    <Compile Include="DomainModel\ISerializableModelElement.cs" />
+    <Compile Include="Metadata\Impl\Primitives\PrimitiveMetaClass.cs" />
+    <Compile Include="Metadata\Impl\Primitives\PrimitivesMetaModel.cs" />
+    <Compile Include="Metadata\Impl\Primitives\PrimitiveMetaProperty.cs" />
+    <Compile Include="Metadata\Impl\PropertyDefinitionException.cs" />
+    <Compile Include="Metadata\ISchemaElement.cs" />
+    <Compile Include="Metadata\ISerializableElementInfo.cs" />
+    <Compile Include="Metadata\MetadataNotFoundException.cs" />
+    <Compile Include="DomainModel\ModelElementStatus.cs" />
+    <Compile Include="HyperGraph\Direction.cs" />
+    <Compile Include="HyperGraph\DuplicateVertexException.cs" />
+    <Compile Include="HyperGraph\Identity.cs" />
+    <Compile Include="HyperGraph\Impls\EdgeInfo.cs" />
+    <Compile Include="HyperGraph\Impls\EdgeList.cs" />
+    <Compile Include="HyperGraph\Impls\HypergraphTransaction.cs" />
+    <Compile Include="HyperGraph\IIdGenerator.cs" />
+    <Compile Include="DomainModel\Impl\IdGenerators\GuidIdGenerator.cs" />
+    <Compile Include="Adapters\MemoryGraph\Index\BTreeIndex.cs" />
+    <Compile Include="HyperGraph\IIndexManager.cs" />
+    <Compile Include="Adapters\MemoryGraph\Index\MemoryIndexManager.cs" />
+    <Compile Include="HyperGraph\IGraphNode.cs" />
+    <Compile Include="Container\IDependencyResolver.cs" />
+    <Compile Include="MemoryStore\DeadLockException.cs" />
+    <Compile Include="MemoryStore\IKeyValueStore.cs" />
+    <Compile Include="MemoryStore\Impls\CommandContext.cs" />
+    <Compile Include="MemoryStore\Impls\DuplicateElementException.cs" />
+    <Compile Include="MemoryStore\Impls\ITransactionManager.cs" />
+    <Compile Include="MemoryStore\Impls\Slot.cs" />
+    <Compile Include="MemoryStore\Impls\SlotList.cs" />
+    <Compile Include="MemoryStore\Impls\MemoryTransaction.cs" />
+    <Compile Include="MemoryStore\Impls\TransactionalMemoryStore.cs" />
+    <Compile Include="MemoryStore\Impls\TransactionManager.cs" />
+    <Compile Include="MemoryStore\Impls\TransactionCompletedEventArgs.cs" />
+    <Compile Include="MemoryStore\ITransaction.cs" />
+    <Compile Include="MemoryStore\LockType.cs" />
+    <Compile Include="MemoryStore\SerializableTransactionException.cs" />
+    <Compile Include="MemoryStore\TransactionStatus.cs" />
+    <Compile Include="Messaging\P2P\Enveloppe.cs" />
+    <Compile Include="Messaging\P2P\ICustomEventSerializer.cs" />
+    <Compile Include="Messaging\P2P\Message.cs" />
+    <Compile Include="Messaging\EventBus.cs" />
+    <Compile Include="Messaging\IEventBus.cs" />
+    <Compile Include="Messaging\IEventProcessor.cs" />
+    <Compile Include="Messaging\EventProcessor.cs" />
+    <Compile Include="Messaging\P2P\P2PChannel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Adapters\EntityUpdaters\AbstractPersistenceProvider.cs" />
+    <Compile Include="Serialization\XmlDomainModelSerializer.cs" />
+    <Compile Include="Serialization\SerializationOption.cs" />
+    <Compile Include="Utils\CompletedTask.cs" />
+    <Compile Include="Utils\DebugHyperstoreTrace.cs" />
+    <Compile Include="Utils\Dispatcher.cs" />
+    <Compile Include="Container\ISynchronizationContext.cs" />
+    <Compile Include="Utils\Disposables.cs" />
+    <Compile Include="Utils\PublicAPI.cs" />
+    <Compile Include="Utils\RelayObserver.cs" />
+    <Compile Include="Utils\SessionIndexProvider.cs" />
+    <Compile Include="Utils\CodeMarker\CodeMarker.cs" />
+    <Compile Include="Utils\CodeMarker\DefaultCodeMarkerListener.cs" />
+    <Compile Include="Utils\CodeMarker\ICodeMarkerListener.cs" />
+    <Compile Include="Utils\CodeMarker\MarkerEntry.cs" />
+    <Compile Include="Utils\Contract.cs" />
+    <Compile Include="Utils\Conventions.cs" />
+    <Compile Include="Utils\DebugContract.cs" />
+    <Compile Include="Utils\InvalidNameException.cs" />
+    <Compile Include="Utils\JobScheduler.cs" />
+    <Compile Include="Utils\Statistics\DomainStatistics.cs" />
+    <Compile Include="Utils\Statistics\IStatisticCounter.cs" />
+    <Compile Include="Utils\Statistics\IStatistics.cs" />
+    <Compile Include="Utils\ReflectionHelper.cs" />
+    <Compile Include="Utils\Statistics\StatisticCategory.cs" />
+    <Compile Include="Utils\Statistics\StatisticCounter.cs" />
+    <Compile Include="Utils\Statistics\StatisticCounterType.cs" />
+    <Compile Include="Utils\Statistics\Statistics.cs" />
+    <Compile Include="Utils\Subject.cs" />
+    <Compile Include="Utils\ThreadHelper.cs" />
+    <Compile Include="Utils\BaseHyperstoreTrace.cs" />
+    <Compile Include="Utils\Timer.cs" />
+    <Compile Include="Utils\Types.cs" />
+    <Compile Include="Events\Impls\Extensions\WeakSubscription.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Metadata\ClassDiagram1.cd" />
+    <None Include="Hyperstore.licenseheader" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="license.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ExceptionMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Generate Resources.txt" />
+  </ItemGroup>
+  <Import Project="..\Import.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

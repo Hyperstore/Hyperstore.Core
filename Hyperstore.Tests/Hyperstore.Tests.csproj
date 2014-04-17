@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{65A22C6F-D70B-427A-962A-40007921EF02}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Hyperstore.Tests</RootNamespace>
+    <AssemblyName>Hyperstore.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <NuGetPackageImportStamp>cee04a3d</NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug45|AnyCPU' ">
+    <OutputPath>..\..\lib\Debug\net45\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release45|AnyCPU' ">
+    <OutputPath>..\..\lib\Release\net45\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <Import Project="..\Common.targets" />
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" Condition=" '$(BuildTarget)' == '45' " />
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\PublicAssemblies\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable, Version=1.0.30.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(BuildTarget)' == '45' ">
+    <Compile Include="BenchTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssertHelper.cs" />
+    <Compile Include="Commands\CommandsTest.cs" />
+    <Compile Include="Commands\CommandEventTest.cs" />
+    <Compile Include="Commands\InterceptorsTest.cs" />
+    <Compile Include="DomainModel\RelationshipTest.cs" />
+    <Compile Include="DomainModel\DynamicDomainTest.cs" />
+    <Compile Include="Events\EventBusTest.cs" />
+    <Compile Include="Events\EventTest.cs" />
+    <Compile Include="Commands\UndoTest.cs" />
+    <Compile Include="Container\DependencyTest.cs" />
+    <Compile Include="DomainExtension\ExtensionTest.cs" />
+    <Compile Include="DomainModel\DomainTest.cs" />
+    <Compile Include="Hypergraph\HyperGraphIndexTest.cs" />
+    <Compile Include="Hypergraph\HyperGraphTest.cs" />
+    <Compile Include="MemoryStore\MemoryCommandContextTest.cs" />
+    <Compile Include="MemoryStore\MemoryIndexManagerTest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MemoryStore\MemoryIndexTest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MemoryStore\MemoryStoreTest.cs" />
+    <Compile Include="MemoryStore\MockMemoryGraphAdapter.cs" />
+    <Compile Include="MemoryStore\MockTransactionManager.cs" />
+    <Compile Include="MemoryStore\SlotListTest.cs" />
+    <Compile Include="Metadata\MetaModelTest.cs" />
+    <Compile Include="Model\MyCommand.cs" />
+    <Compile Include="Model\TestBase.cs" />
+    <Compile Include="Model\TestDomainModel.cs" />
+    <Compile Include="Metadata\PrimitivesTest.cs" />
+    <Compile Include="Persistence\PersistenceTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Store\UtilTest.cs" />
+    <Compile Include="Store\StoreTest.cs" />
+    <Compile Include="Utils\SessionIndexProviderTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Hyperstore.Tests.licenseheader" />
+    <None Include="Key.snk" />
+    <None Include="Model\Definition.domain">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Include="Model\Definition.genmodel" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Hyperstore\Hyperstore.csproj">
+      <Project>{3ab9fbab-4e14-4661-90bc-da6d4236066a}</Project>
+      <Name>Hyperstore</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="..\Import.targets" />
+  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Import Project="..\packages\Hyperstore.DomainLanguage.0.9.6\build\Hyperstore.DomainLanguage.targets" Condition="Exists('..\packages\Hyperstore.DomainLanguage.0.9.6\build\Hyperstore.DomainLanguage.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Hyperstore.DomainLanguage.0.9.6\build\Hyperstore.DomainLanguage.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Hyperstore.DomainLanguage.0.9.6\build\Hyperstore.DomainLanguage.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

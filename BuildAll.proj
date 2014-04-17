@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Rebuild" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--<PropertyGroup>
+    <LayoutOutputFolder>$(MSBuildProjectDirectory)\..\Lib\</LayoutOutputFolder>
+  </PropertyGroup>-->
+
+  <!-- Current platforms -->
+
+  <ItemGroup>
+    <Flavor Include="Hyperstore_only.sln">
+      <Configuration>Debug45</Configuration>
+    </Flavor>
+    <Flavor Include="Hyperstore_only.sln">
+      <Configuration>Release45</Configuration>
+    </Flavor>    
+    <Flavor Include="Hyperstore_only.sln">
+      <Configuration>Debug8</Configuration>
+    </Flavor>
+    <Flavor Include="Hyperstore_only.sln">
+      <Configuration>Release8</Configuration>
+    </Flavor>
+    <Flavor Include="Hyperstore_only.sln">
+      <Configuration>DebugPCL</Configuration>
+    </Flavor>
+    <Flavor Include="Hyperstore_only.sln">
+      <Configuration>ReleasePCL</Configuration>
+    </Flavor>
+ </ItemGroup>
+
+  <Target Name="ExpandFlavors">
+    <CreateItem Include="@(Flavor)" AdditionalMetadata="Properties=Configuration=%(Flavor.Configuration)%3BPlatform=Any CPU">
+      <Output TaskParameter="Include" ItemName="ProjectToBuild" />
+    </CreateItem>
+  </Target>
+  <Target Name="Build" DependsOnTargets="ExpandFlavors">
+    <MSBuild Projects="@(ProjectToBuild)" Targets="Build" ContinueOnError="false"  />
+  </Target>
+  <Target Name="Clean" DependsOnTargets="ExpandFlavors">
+    <MSBuild Projects="@(ProjectToBuild)" Targets="Clean" />
+  </Target>
+  <Target Name="Rebuild" DependsOnTargets="ExpandFlavors">
+    <MSBuild Projects="@(ProjectToBuild)" Targets="Rebuild"  ContinueOnError="false"/>
+  </Target>
+</Project>

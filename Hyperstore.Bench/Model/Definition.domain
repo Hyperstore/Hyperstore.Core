@@ -1,0 +1,36 @@
+﻿// Sample Domain model definition
+
+domain Hyperstore.Tests.Model.TestDomain
+{
+    extern System.Globalization.CultureInfo as CultureInfo;
+    extern enum Hyperstore.Tests.Model.Direction as Direction;
+ 
+    [modifier("public abstract")]
+    def entity AbstractClass {
+        Name : string;
+    }
+
+    def entity XExtendsBaseClass extends AbstractClass
+    {
+        Value : int;
+        [modifier("public virtual")]
+        YRelation => YClass : XReferencesY;
+        OthersX => XExtendsBaseClass* : XReferencesX;
+    }
+
+    def entity YClass {
+        Value : int;
+        Name : string;
+        Direction : Direction;
+        Culture : CultureInfo;
+        X <- XExtendsBaseClass : XReferencesY;
+    }
+
+    def relationship XReferencesY (XExtendsBaseClass => YClass) {
+        YRelation => YClass;
+        Weight:int;
+    }
+
+    def relationship XReferencesX (XExtendsBaseClass => XExtendsBaseClass*) {
+    }
+}
