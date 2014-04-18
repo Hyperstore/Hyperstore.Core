@@ -145,16 +145,16 @@ namespace Hyperstore.Modeling.Metadata
         /// <summary>
         ///  Initializes the specified metadata.
         /// </summary>
-        /// <param name="metadata">
+        /// <param name="schemaElement">
         ///  The metadata.
         /// </param>
         /// <param name="domainModel">
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        protected override void Initialize(ISchemaElement metadata, IDomainModel domainModel)
+        protected override void Initialize(ISchemaElement schemaElement, IDomainModel domainModel)
         {
-            base.Initialize(metadata, domainModel);
+            base.Initialize(schemaElement, domainModel);
             _propertyMetadataReference = new ReferenceHandler(this, PrimitivesSchema.SchemaPropertyReferencesSchemaEntitySchema);
             _defaultValueProperty = ((IModelElement) this).SchemaInfo.GetProperty("DefaultValue");
         }

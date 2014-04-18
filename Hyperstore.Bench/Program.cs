@@ -25,7 +25,12 @@ namespace Hyperstore.Bench
             long nb = 0;
             store = new Store();
             await store.LoadSchemaAsync(new TestDomainDefinition("Hyperstore.Tests.Model"));
-            var domain = await store.CreateDomainModelAsync("Test");
+
+            var config = new DomainConfiguration()
+                                .UsesIdGenerator(resolver => new Hyperstore.Modeling.Domain.LongIdGenerator());
+            var domain = await store.CreateDomainModelAsync("Test", config);
+
+                domain.Events.p
             var sw = new Stopwatch();
 
             // Ajout de 100 contraintes

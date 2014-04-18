@@ -599,16 +599,16 @@ namespace Hyperstore.Modeling.Metadata
         ///  Méthode appelée dans le processus de création que celle ci soit faite par new ou par
         ///  sérialisation.
         /// </summary>
-        /// <param name="metadata">
+        /// <param name="schemaElement">
         ///  The metadata.
         /// </param>
         /// <param name="domainModel">
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        protected override void Initialize(ISchemaElement metadata, IDomainModel domainModel)
+        protected override void Initialize(ISchemaElement schemaElement, IDomainModel domainModel)
         {
-            base.Initialize(metadata, domainModel);
+            base.Initialize(schemaElement, domainModel);
 
             _superClassHandler = new ReferenceHandler(this, PrimitivesSchema.SchemaElementReferencesSuperElementSchema);
             _properties = new ModelElementCollection<ISchemaProperty>(this, PrimitivesSchema.SchemaElementHasPropertiesSchema);

@@ -28,12 +28,6 @@ namespace Hyperstore.Tests.Model
 {
     public class CultureInfoSchema : SchemaValueObject<CultureInfo>
     {
-#if NETFX_CORE
-        protected CultureInfoSchema()
-        {
-        }
-#endif
-
         public CultureInfoSchema(ISchema metaModel)
             : base(metaModel)
         {
@@ -53,6 +47,12 @@ namespace Hyperstore.Tests.Model
                 return (CultureInfo)ctx.Value;
 
             return new CultureInfo((string)ctx.Value);
+        }
+
+        protected override object DefaultValue
+        {
+            get { return CultureInfo.CurrentCulture; }
+            set { }
         }
     }
 
