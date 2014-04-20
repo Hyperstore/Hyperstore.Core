@@ -46,7 +46,7 @@ namespace Hyperstore.Modeling.Metadata
             get { return String.Format("Schema Property {0} Id={1}", Name, ((IModelElement)this).Id); }
         }
 
-        private readonly string[] InvalidPropertyNames = {"Id", "Status", "Start", "End", "DomainModel", "Metadata"};
+        //private readonly string[] InvalidPropertyNames = {"Id", "Status", "Start", "End", "DomainModel", "Metadata"};
 
         #region Enums of MetaProperty (3)
 
@@ -124,8 +124,8 @@ namespace Hyperstore.Modeling.Metadata
             Contract.Requires(owner, "owner");
             Contract.RequiresNotEmpty(propertyName, "propertyName");
 
-            if (InvalidPropertyNames.Any(p => String.Compare(p, propertyName, StringComparison.OrdinalIgnoreCase) == 0))
-                throw new Exception(ExceptionMessages.InvalidPropertyNameCantBeAPropertyOfIModelElement);
+            //if (InvalidPropertyNames.Any(p => String.Compare(p, propertyName, StringComparison.OrdinalIgnoreCase) == 0))
+            //    throw new Exception(ExceptionMessages.InvalidPropertyNameCantBeAPropertyOfIModelElement);
 
             ConstructInternal(owner.Schema, implementedType ?? typeof (SchemaProperty), owner.Id.CreateMetaPropertyIdentity(propertyName), propertyName, null, PrimitivesSchema.SchemaPropertySchema,
                     (dm, melId, m) => new AddSchemaPropertyCommand(dm as ISchema, melId, (ISchemaEntity) m));
