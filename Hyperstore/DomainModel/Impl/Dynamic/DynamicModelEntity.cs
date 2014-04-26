@@ -170,8 +170,7 @@ namespace Hyperstore.Modeling
             if (String.Compare(name, propertyName, StringComparison.Ordinal) == 0)
                 return true;
 
-            var sourceName = Types.SplitFullName(relationship.Start.Id.Key)
-                    .Item2;
+            var sourceName = Types.SplitFullName(relationship.Start.Id.Key).Item2;
             if (name.StartsWith(sourceName, StringComparison.Ordinal))
             {
                 name = name.Substring(sourceName.Length);
@@ -199,20 +198,6 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public object TryGetProperty(string propertyName)
         {
-            switch (propertyName)
-            {
-                case "Id":
-                    return ((IModelElement) this).Id;
-                case "DomainModel":
-                    return DomainModel;
-                case "Schema":
-                    return ((IModelElement) this).SchemaInfo;
-                case "Status":
-                    return ((IModelElement) this).Status;
-                case "Store":
-                    return Store;
-            }
-
             var property = ((IModelElement) this).SchemaInfo.GetProperty(propertyName);
             if (property == null)
             {

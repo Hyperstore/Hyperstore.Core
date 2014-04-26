@@ -50,10 +50,13 @@ namespace Hyperstore.Tests.Commands
                 var ser = new XmlDomainModelSerializer();
                 await ser.Serialize(domain, writer, SerializationOption.All);
             }
+
+
             Assert.AreEqual(7, domain.GetEntities().Count());
             Assert.AreEqual(8, domain.GetRelationships().Count());
 
             store = new Store();
+
             using (var reader = new FileStream("test.xml", FileMode.Open))
             {
                 var ser = new XmlDomainModelSerializer();
