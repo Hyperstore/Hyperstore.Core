@@ -30,7 +30,6 @@ namespace Hyperstore.Bench
                                 .UsesIdGenerator(resolver => new Hyperstore.Modeling.Domain.LongIdGenerator());
             var domain = await store.CreateDomainModelAsync("Test", config);
 
-                domain.Events.p
             var sw = new Stopwatch();
 
             // Ajout de 100 contraintes

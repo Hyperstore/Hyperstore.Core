@@ -24,6 +24,28 @@
     <OutputPath>..\..\lib\Release\net45\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseWP8|AnyCPU'">
+    <OutputPath>bin\ReleaseWP8\</OutputPath>
+    <DefineConstants>;WIN8;NETFX_CORE;WINDOWS;WINDOWS8;TRACE;SIGNED</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugWP|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\DebugWP\</OutputPath>
+    <DefineConstants>;WIN8;NETFX_CORE;WINDOWS;WINDOWS8;TRACE;DEBUG;SIGNED</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <Import Project="..\Common.targets" />
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" Condition=" '$(BuildTarget)' == '45' " />

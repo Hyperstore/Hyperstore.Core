@@ -36,6 +36,7 @@
     <file src="..\..\Codeplex\lib\Release8\Hyperstore.reactiveextension.dll" target="lib\netcore45\Hyperstore.reactiveextension.dll" />
     <file src="..\..\Codeplex\lib\Release8\Hyperstore.reactiveextension.pdb" target="lib\netcore45\Hyperstore.reactiveextension.pdb" />
     <file src="..\..\Codeplex\lib\Release8\Hyperstore.reactiveextension.pri" target="lib\netcore45\Hyperstore.reactiveextension.pri" />
+    <file src="..\..\Codeplex\lib\ReleaseWP8\Hyperstore.reactiveextension.pdb" target="lib\wp8\Hyperstore.reactiveextension.pdb" />
     <file src="..\..\Codeplex\lib\ReleasePCL\Hyperstore.reactiveextension.dll" target="lib\portable-net45+wp8+win8\Hyperstore.reactiveextension.dll" />
     <file src="..\..\Codeplex\lib\ReleasePCL\Hyperstore.reactiveextension.pdb" target="lib\portable-net45+wp8+win8\Hyperstore.reactiveextension.pdb" />
   </files>

@@ -34,6 +34,28 @@ PCL: Net45, WP8, Android, IOS
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseWP8|AnyCPU'">
+    <OutputPath>bin\ReleaseWP8\</OutputPath>
+    <DefineConstants>;WIN8;NETFX_CORE;WINDOWS;WINDOWS8;TRACE;SIGNED</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWP8|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\DebugWP\</OutputPath>
+    <DefineConstants>;WIN8;NETFX_CORE;WINDOWS;WINDOWS8;TRACE;DEBUG;SIGNED</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <Import Project="..\Common.targets" />
   <PropertyGroup>
     <!--<DocumentationFile>$(OutputPath)\$(AssemblyName).XML</DocumentationFile>-->
@@ -44,10 +66,8 @@ PCL: Net45, WP8, Android, IOS
     <Compile Include="DomainModel\Impl\Dynamic\DynamicTypeDescriptor.cs" />
     <Compile Include="Messaging\P2P\WCFChannel.cs" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(BuildTarget)' == 'PCL' ">
-    <Compile Include="Utils\ConcurrentDictionary.cs" />
-  </ItemGroup>
   <ItemGroup>
+    <Compile Include="Utils\ConcurrentDictionary.cs" />
     <Compile Include="..\AssemblyVersion.cs">
       <Link>Properties\AssemblyVersion.cs</Link>
     </Compile>
