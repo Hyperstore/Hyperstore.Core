@@ -30,6 +30,8 @@
     <file src="..\..\Codeplex\lib\Release45\Hyperstore.pdb" target="lib\net45\Hyperstore.pdb" />
     <file src="..\..\Codeplex\lib\Release45\Hyperstore.dll" target="lib\net451" />
     <file src="..\..\Codeplex\lib\Release45\Hyperstore.pdb" target="lib\net451" />
+    <file src="..\..\Codeplex\lib\ReleaseWP8\Hyperstore.dll" target="lib\wp8\Hyperstore.dll" />
+    <file src="..\..\Codeplex\lib\ReleaseWP8\Hyperstore.pdb" target="lib\wp8\Hyperstore.pdb" />
     <file src="..\..\Codeplex\lib\Release8\Hyperstore.dll" target="lib\netcore45\Hyperstore.dll" />
     <file src="..\..\Codeplex\lib\Release8\Hyperstore.pri" target="lib\netcore45\Hyperstore.pri" />
     <file src="..\..\Codeplex\lib\Release8\Hyperstore.pdb" target="lib\netcore45\Hyperstore.pdb" />

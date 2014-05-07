@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
  
-#if WP8
+#if WP8 || PCL
 
 #region Imports
 

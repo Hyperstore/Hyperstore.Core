@@ -8,27 +8,25 @@
 
   <ItemGroup>
     <Flavor Include="Hyperstore_only.sln">
-      <Configuration>Debug45</Configuration>
-    </Flavor>
-    <Flavor Include="Hyperstore_only.sln">
       <Configuration>Release45</Configuration>
+      <Platform>Any CPU</Platform>
     </Flavor>    
     <Flavor Include="Hyperstore_only.sln">
-      <Configuration>Debug8</Configuration>
-    </Flavor>
-    <Flavor Include="Hyperstore_only.sln">
       <Configuration>Release8</Configuration>
-    </Flavor>
-    <Flavor Include="Hyperstore_only.sln">
-      <Configuration>DebugPCL</Configuration>
+      <Platform>Any CPU</Platform>
     </Flavor>
     <Flavor Include="Hyperstore_only.sln">
       <Configuration>ReleasePCL</Configuration>
+      <Platform>Any CPU</Platform>
     </Flavor>
- </ItemGroup>
+    <Flavor Include="Hyperstore_only.sln">
+      <Configuration>ReleaseWP8</Configuration>
+      <Platform>Any CPU</Platform>
+    </Flavor>
+  </ItemGroup>
 
   <Target Name="ExpandFlavors">
-    <CreateItem Include="@(Flavor)" AdditionalMetadata="Properties=Configuration=%(Flavor.Configuration)%3BPlatform=Any CPU">
+    <CreateItem Include="@(Flavor)" AdditionalMetadata="Properties=Configuration=%(Flavor.Configuration)%3BPlatform=%(Flavor.Platform)">
       <Output TaskParameter="Include" ItemName="ProjectToBuild" />
     </CreateItem>
   </Target>

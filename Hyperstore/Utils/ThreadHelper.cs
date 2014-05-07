@@ -22,7 +22,7 @@ using System.Threading;
 
 #endregion
 
-#if WP8
+#if WP8 || PCL
 namespace System.Threading.Tasks
 {
     internal static class Parallel

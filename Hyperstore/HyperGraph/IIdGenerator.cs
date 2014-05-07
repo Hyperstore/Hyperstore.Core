@@ -37,23 +37,23 @@ namespace Hyperstore.Modeling.HyperGraph
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Nexts the value.
+        ///  Calculate a new value.
         /// </summary>
         /// <param name="schemaElement">
-        ///  The schema container.
+        ///  The schema element 
         /// </param>
         /// <returns>
-        ///  An Identity.
+        ///  A new identity.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
         Identity NextValue(ISchemaElement schemaElement);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Sets the specified identifier.
+        ///  This method is called whenever a new element is added to the domain. 
         /// </summary>
         /// <param name="id">
-        ///  The identifier.
+        ///  An identifier
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         void Set(Identity id);
