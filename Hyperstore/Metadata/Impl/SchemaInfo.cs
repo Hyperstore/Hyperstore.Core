@@ -319,7 +319,7 @@ namespace Hyperstore.Modeling.Metadata
             if (upd == null)
                 throw new Exception(string.Format(ExceptionMessages.DomainModelIsReadOnlyCantCreateElementFormat,ctx.Id));
 
-            var mel = upd.ModelElementFactory.InstanciateModelElement(ctx.Schema, ImplementedType ?? typeof (ModelElement));
+            var mel = upd.ModelElementFactory.InstanciateModelElement(ctx.Schema, ImplementedType ?? typeof (DynamicModelEntity));
             var element = mel as ISerializableModelElement;
             if (element != null)
             {

@@ -731,15 +731,12 @@ namespace Hyperstore.Modeling.Events
                 {
                     _attributedChangedObserversSync.ExitReadLock();
                 }
-                //     var sctx = _domainModel.Resolve<SynchronizationContext>(false);                
+
                 foreach (var mel in list)
                 {
                     var notifier = mel as IPropertyChangedNotifier;
                     if (notifier != null)
                     {
-                        //if( sctx!=null)
-                        //    sctx.Post( s => notifier.NotifyPropertyChanged(cmd.PropertyName), null);
-                        //else
                         notifier.NotifyPropertyChanged(cmd.PropertyName);
                     }
                 }

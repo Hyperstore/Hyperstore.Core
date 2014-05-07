@@ -427,6 +427,7 @@ PCL: Net45, WP8, Android, IOS
   <ItemGroup>
     <None Include="Generate Resources.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="..\Import.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <PropertyGroup>
