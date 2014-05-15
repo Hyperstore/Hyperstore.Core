@@ -14,54 +14,36 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
-using System.ServiceModel;
 
 #endregion
 
-//http://www.codeproject.com/Articles/614028/Peer-to-Peer-File-Sharing-Through-WCF
-
-namespace Hyperstore.Modeling.Messaging
+namespace Hyperstore.Modeling.Platform
 {
-#if !NETFX_CORE
-    using System.ServiceModel.Channels;
-
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  A 2 p channel.
+    ///  Interface for code marker listener.
     /// </summary>
-    /// <seealso cref="T:Hyperstore.Modeling.Messaging.WCFChannel"/>
     ///-------------------------------------------------------------------------------------------------
-    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
-    public class PeerToPeerPChannel : WCFChannel
+    public interface ICodeMarkerListener
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Constructor.
+        ///  Logs.
         /// </summary>
-        /// <param name="address">
-        ///  The address.
+        /// <param name="text">
+        ///  The text.
         /// </param>
-        /// <param name="binding">
-        ///  (Optional) the binding.
+        /// <param name="timeStamp">
+        ///  The time stamp Date/Time.
+        /// </param>
+        /// <param name="threadId">
+        ///  Identifier for the thread.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-#pragma warning disable 0618        
-        public PeerToPeerPChannel(Uri address, Binding binding = null)
-            : base(address, binding ?? new NetPeerTcpBinding
-                                            {
-                                                Security =
-                                                {
-                                                    Mode = SecurityMode.None
-                                                }
-                                            })
-        {
-        }
-#pragma warning restore 0618
+        void Log(string text, DateTime timeStamp, int threadId);
     }
-
-#endif
 }

@@ -14,15 +14,12 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System.Collections;
 using System.Collections.Generic;
-#if !NO_IMMUTABLE_COLL
 using System.Collections.Immutable;
-
-#endif
 
 #endregion
 
@@ -37,7 +34,6 @@ namespace Hyperstore.Modeling.HyperGraph
     ///-------------------------------------------------------------------------------------------------
     public class EdgeList : IEdgeList, IEnumerable<EdgeInfo>
     {
-#if !NO_IMMUTABLE_COLL
         private readonly ImmutableDictionary<Identity, EdgeInfo> _edges;
 
         ///-------------------------------------------------------------------------------------------------
@@ -98,43 +94,6 @@ namespace Hyperstore.Modeling.HyperGraph
             Contract.Requires(id, "id");
             return new EdgeList(_edges.Remove(id));
         }
-#else
-        private readonly Dictionary<Identity, EdgeInfo> _edges;
-
-        public EdgeList()
-        {
-            _edges = new Dictionary<Identity, EdgeInfo>();
-        }
-
-        /// <summary>
-        ///     Constructeur de copie
-        /// </summary>
-        /// <param name="list"></param>
-        public EdgeList(Dictionary<Identity, EdgeInfo> list)
-        {
-            DebugContract.Requires(list, "list");
-            _edges = list;// new ImmutableDictionary<Identity, EdgeInfo>(infos._edges);
-        }
-
-        public EdgeList Add(EdgeInfo info)
-        {
-            var edges = new Dictionary<Identity, EdgeInfo>(_edges);
-            if (!edges.ContainsKey(info.Id))
-            {
-                edges.Add(info.Id, info);
-            }
-            return new EdgeList(edges);
-        }
-
-        public EdgeList RemoveByKey(Identity id)
-        {
-            Contract.Requires(id, "id");
-            var edges = new Dictionary<Identity, EdgeInfo>(_edges);
-            edges.Remove(id);
-            return new EdgeList(edges);
-        }
-
-#endif
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

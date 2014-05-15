@@ -24,6 +24,10 @@ using System.ComponentModel;
 
 namespace Hyperstore.Modeling.Dynamic
 {
+    // TODO 
+    // ajouter 
+    //    [TypeDescriptionProvider(typeof (DynamicTypeDescriptorProvider))]
+    // sur DynamicModelEntity
     internal class DynamicPropertyDescriptor : PropertyDescriptor
     {
         private readonly DynamicModelEntity _element;

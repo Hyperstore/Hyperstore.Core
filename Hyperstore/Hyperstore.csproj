@@ -1,15 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!--
-BuildTarget :
-45 : Net 4.5
-8  : Windows 8
-PCL: Net45, WP8, Android, IOS
--->
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <!--<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>-->
-    <!--<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>-->
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <TargetFrameworkProfile />
     <ProjectGuid>{3AB9FBAB-4E14-4661-90BC-DA6D4236066A}</ProjectGuid>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Hyperstore.Modeling</RootNamespace>
@@ -25,8 +24,13 @@ PCL: Net45, WP8, Android, IOS
     <SchemaVersion>2.0</SchemaVersion>
     <UseMSBuildEngine>False</UseMSBuildEngine>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release45|AnyCPU'">
-    <DocumentationFile>..\..\lib\Release45\Hyperstore.XML</DocumentationFile>
+  <PropertyGroup>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <!--<TargetFrameworkProfile>Profile259</TargetFrameworkProfile>-->
+    <TargetFrameworkProfile>Profile78</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DocumentationFile>..\..\lib\Release\Hyperstore.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <DelaySign>false</DelaySign>
@@ -34,40 +38,37 @@ PCL: Net45, WP8, Android, IOS
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseWP8|AnyCPU'">
-    <OutputPath>bin\ReleaseWP8\</OutputPath>
-    <DefineConstants>;WIN8;NETFX_CORE;WINDOWS;WINDOWS8;TRACE;SIGNED</DefineConstants>
-    <Optimize>true</Optimize>
-    <NoStdLib>true</NoStdLib>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWP8|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\DebugWP\</OutputPath>
-    <DefineConstants>;WIN8;NETFX_CORE;WINDOWS;WINDOWS8;TRACE;DEBUG;SIGNED</DefineConstants>
-    <NoStdLib>true</NoStdLib>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <Import Project="..\Common.targets" />
   <PropertyGroup>
-    <!--<DocumentationFile>$(OutputPath)\$(AssemblyName).XML</DocumentationFile>-->
+    <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
+    <OutputPath>..\..\lib\$(Configuration)</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(BuildTarget)' == '45' ">
-    <Compile Include="DomainModel\Impl\Dynamic\DynamicTypeDescriptorProvider.cs" />
-    <Compile Include="DomainModel\Impl\Dynamic\DynamicPropertyDescriptor.cs" />
-    <Compile Include="DomainModel\Impl\Dynamic\DynamicTypeDescriptor.cs" />
-    <Compile Include="Messaging\P2P\WCFChannel.cs" />
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\packages\Microsoft.Bcl.Immutable.1.0.30\lib\portable-net45+win8+wp8\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Utils\ConcurrentDictionary.cs" />
+    <Compile Include="Platform\IConcurrentDictionary.cs" />
+    <Compile Include="Platform\IConcurrentQueue.cs" />
+    <Compile Include="Platform\IObjectSerializer.cs" />
+    <Compile Include="Platform\DefaultCodeMarkerListener.cs" />
+    <Compile Include="Platform\IReflectionHelper.cs" />
+    <Compile Include="Platform\PlatformServices.cs" />
+    <Compile Include="Platform\ReflectionHelper.cs" />
+    <Compile Include="Platform\ConcurrentDictionary.cs" />
     <Compile Include="..\AssemblyVersion.cs">
       <Link>Properties\AssemblyVersion.cs</Link>
     </Compile>
@@ -249,8 +250,6 @@ PCL: Net45, WP8, Android, IOS
     <Compile Include="Messaging\AbstractChannel.cs" />
     <Compile Include="Messaging\ChannelProperty.cs" />
     <Compile Include="Messaging\IEventBusChannel.cs" />
-    <Compile Include="Messaging\P2P\InProcChannel.cs" />
-    <Compile Include="Messaging\P2P\IWCFHyperstoreChannel.cs" />
     <Compile Include="Metadata\ISchemaInfo.cs" />
     <Compile Include="Metadata\ISchemaValueObject.cs" />
     <Compile Include="Metadata\Impl\GeneratedSchemaEntity.cs" />
@@ -348,7 +347,7 @@ PCL: Net45, WP8, Android, IOS
     <Compile Include="Metadata\ISchema.cs" />
     <Compile Include="Metadata\ISchemaProperty.cs" />
     <Compile Include="Metadata\ISchemaRelationship.cs" />
-    <Compile Include="Metadata\Impl\JSonHelper.cs" />
+    <Compile Include="Platform\JSonSerializer.cs" />
     <Compile Include="Metadata\Impl\SchemaEntity.cs" />
     <Compile Include="DomainModel\ISerializableModelElement.cs" />
     <Compile Include="Metadata\Impl\Primitives\PrimitiveMetaClass.cs" />
@@ -394,22 +393,20 @@ PCL: Net45, WP8, Android, IOS
     <Compile Include="Messaging\IEventBus.cs" />
     <Compile Include="Messaging\IEventProcessor.cs" />
     <Compile Include="Messaging\EventProcessor.cs" />
-    <Compile Include="Messaging\P2P\P2PChannel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Adapters\EntityUpdaters\AbstractPersistenceProvider.cs" />
     <Compile Include="Serialization\XmlDomainModelSerializer.cs" />
     <Compile Include="Serialization\SerializationOption.cs" />
     <Compile Include="Utils\CompletedTask.cs" />
     <Compile Include="Utils\DebugHyperstoreTrace.cs" />
-    <Compile Include="Utils\Dispatcher.cs" />
+    <Compile Include="Platform\Dispatcher.cs" />
     <Compile Include="Container\ISynchronizationContext.cs" />
     <Compile Include="Utils\Disposables.cs" />
     <Compile Include="Utils\PublicAPI.cs" />
     <Compile Include="Utils\RelayObserver.cs" />
     <Compile Include="Utils\SessionIndexProvider.cs" />
     <Compile Include="Utils\CodeMarker\CodeMarker.cs" />
-    <Compile Include="Utils\CodeMarker\DefaultCodeMarkerListener.cs" />
-    <Compile Include="Utils\CodeMarker\ICodeMarkerListener.cs" />
+    <Compile Include="Platform\ICodeMarkerListener.cs" />
     <Compile Include="Utils\CodeMarker\MarkerEntry.cs" />
     <Compile Include="Utils\Contract.cs" />
     <Compile Include="Utils\Conventions.cs" />
@@ -419,7 +416,6 @@ PCL: Net45, WP8, Android, IOS
     <Compile Include="Utils\Statistics\DomainStatistics.cs" />
     <Compile Include="Utils\Statistics\IStatisticCounter.cs" />
     <Compile Include="Utils\Statistics\IStatistics.cs" />
-    <Compile Include="Utils\ReflectionHelper.cs" />
     <Compile Include="Utils\Statistics\StatisticCategory.cs" />
     <Compile Include="Utils\Statistics\StatisticCounter.cs" />
     <Compile Include="Utils\Statistics\StatisticCounterType.cs" />
@@ -444,11 +440,8 @@ PCL: Net45, WP8, Android, IOS
       <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Generate Resources.txt" />
-  </ItemGroup>
   <ItemGroup />
-  <Import Project="..\Import.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <PropertyGroup>
     <PostBuildEvent>

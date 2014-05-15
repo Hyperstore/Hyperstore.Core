@@ -14,9 +14,11 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
+using Hyperstore.Modeling.Platform;
+using Hyperstore.Modeling.Utils;
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -24,13 +26,10 @@ using System.IO;
 
 #endregion
 
-namespace Hyperstore.Modeling.Utils
+namespace Hyperstore.Platform.Net
 {
     internal class DefaultCodeMarkerListener : ICodeMarkerListener
     {
-#if NETFX_CORE
-        public void Log( string text, DateTime timeStamp, int threadId ) {}
-#else
         private FileStream _logFileStream;
 
         private StreamWriter _logWriter;
@@ -79,6 +78,5 @@ namespace Hyperstore.Modeling.Utils
             if (_logFileStream != null)
                 _logFileStream.Flush();
         }
-#endif
     }
 }

@@ -14,11 +14,15 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 namespace Hyperstore.Modeling.Metadata.Primitives
 {
     internal class StringPrimitive : PrimitiveMetaValue
     {
+        protected StringPrimitive()
+        {
+        }
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Constructor.
@@ -27,7 +31,8 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public StringPrimitive(ISchema domainModel) : base(domainModel, typeof (string))
+        public StringPrimitive(ISchema domainModel)
+            : base(domainModel, typeof(string))
         {
             DebugContract.Requires(domainModel, "domainModel");
         }
@@ -63,7 +68,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///-------------------------------------------------------------------------------------------------
         public override string Serialize(object data)
         {
-            return (string) data;
+            return (string)data;
         }
     }
 }

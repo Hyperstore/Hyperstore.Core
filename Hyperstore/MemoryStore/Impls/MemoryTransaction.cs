@@ -20,22 +20,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-#if TXSCOPE
-using System.Transactions;
-
-#endif
 
 #endregion
 
 namespace Hyperstore.Modeling.MemoryStore
 {
-    internal sealed class MemoryTransaction : ITransaction
-#if !TXSCOPE
-        , ISessionEnlistmentNotification
-#else
-            ,
-            IEnlistmentNotification
-#endif
+    internal sealed class MemoryTransaction : ITransaction, ISessionEnlistmentNotification
     {
         private readonly Stack<TransactionStatus> _nestedStatus;
         private readonly SessionIsolationLevel _isolationLevel;
@@ -134,7 +124,6 @@ namespace Hyperstore.Modeling.MemoryStore
             get { return _nestedStatus.Count > 1; }
         }
 
-#if !TXSCOPE
         bool ISessionEnlistmentNotification.NotifyPrepare()
         {
             return !_aborted ;
@@ -142,7 +131,7 @@ namespace Hyperstore.Modeling.MemoryStore
 
         void ISessionEnlistmentNotification.NotifyCommit()
         {
-            lock (this)
+          //  lock (this)
             {
                 this._currentStatus = TransactionStatus.Committed;
                 _transactionManager.OnTransactionTerminated(this);
@@ -152,50 +141,12 @@ namespace Hyperstore.Modeling.MemoryStore
         void ISessionEnlistmentNotification.NotifyRollback()
         {
             this._currentStatus = TransactionStatus.Aborted;
-            lock (this)
+          //  lock (this)
             {
                 _transactionManager.OnTransactionTerminated(this);
                 _trace.WriteTrace(TraceCategory.MemoryStore, "Rollback " + Id);
             }
         }
-#else
-        void IEnlistmentNotification.Commit(Enlistment enlistment)
-        {
-            // lock (this)
-            {
-                _currentStatus = TransactionStatus.Committed;
-                _transactionManager.OnTransactionTerminated(this);
-            }
-        }
-
-        void IEnlistmentNotification.InDoubt(Enlistment enlistment)
-        {
-            _currentStatus = TransactionStatus.Aborted;
-            //lock (this)
-            {
-                _transactionManager.OnTransactionTerminated(this);
-                _trace.WriteTrace(TraceCategory.MemoryStore, "Rollback " + Id);
-            }
-        }
-
-        void IEnlistmentNotification.Prepare(PreparingEnlistment preparingEnlistment)
-        {
-            if (_aborted)
-                preparingEnlistment.ForceRollback();
-            else
-                preparingEnlistment.Prepared();
-        }
-
-        void IEnlistmentNotification.Rollback(Enlistment enlistment)
-        {
-            _currentStatus = TransactionStatus.Aborted;
-            //lock (this)
-            {
-                _transactionManager.OnTransactionTerminated(this);
-                _trace.WriteTrace(TraceCategory.MemoryStore, "Rollback " + Id);
-            }
-        }
-#endif
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

@@ -54,6 +54,8 @@ namespace Hyperstore.Tests.Relationships
     public class Customer : ModelEntity
     {
         private ICollection<Product> _products;
+        private IEnumerable<Product> _products2;
+
         public Customer(IDomainModel domain=null):base(domain)
         {
            
@@ -64,12 +66,20 @@ namespace Hyperstore.Tests.Relationships
             base.Initialize(metadata, domainModel);
             var observable = Session.Current.GetContextInfo<bool>("observable");
             _products = observable ? new ObservableModelElementCollection<Product>(this, "CustomerReferencesProducts") : new ModelElementCollection<Product>(this, "CustomerReferencesProducts");
+            _products2 = observable ? new ObservableModelElementList<Product>(this, "CustomerReferencesProducts") : new ModelElementList<Product>(this, "CustomerReferencesProducts");
+            ((ModelElementList<Product>)_products2).WhereClause = item => item.Name.EndsWith("0");
         }
 
         public ICollection<Product> Products
         {
             get { return _products; }
         }
+
+        public IEnumerable<Product> Products2
+        {
+            get { return _products2; }
+        }
+
         public string Name
         {
             get { return GetPropertyValue<string>("Name"); }
@@ -204,17 +214,19 @@ namespace Hyperstore.Tests.Relationships
                     var p = new Product();
                     p.Name = "Product " + i.ToString();
                     products[i] = p;
+                    customers[0].Products.Add(p);
                 }
+
                 s.AcceptChanges();
             }
 
-            customers[0].Products.Add(products[0]);
-            customers[0].Products.Add(products[1]);
-            customers[0].Products.Add(products[2]);
-            customers[0].Products.Add(products[3]);
-            customers[0].Products.Add(products[4]);
+            //customers[0].Products.Add(products[0]);
+            //customers[0].Products.Add(products[1]);
+            //customers[0].Products.Add(products[2]);
+            //customers[0].Products.Add(products[3]);
+            //customers[0].Products.Add(products[4]);
 
-            Assert.AreEqual(5, customers[0].Products.Count);
+            Assert.AreEqual(size, customers[0].Products.Count);
             Assert.AreEqual(1, products[0].Customers.Count);
 
             customers[1].Products.Add(products[0]);
@@ -233,13 +245,25 @@ namespace Hyperstore.Tests.Relationships
             products[0].Customers.ToList();
             customers[0].Products.ToList();
 
+            Assert.AreEqual(1, customers[0].Products2.Count());
+
+            // Change property from the whereclause
+            using (var session = store.BeginSession())
+            {
+                products[0].Name = "Test";                
+                session.AcceptChanges();
+            }
+
+            Assert.AreEqual(0, customers[0].Products2.Count());
+
             customers[0].Products.Remove(products[0]);
-            Assert.AreEqual(4, customers[0].Products.Count);
+            Assert.AreEqual(size-1, customers[0].Products.Count);
             Assert.AreEqual(2, products[0].Customers.Count);
 
             products[0].Customers.Remove(customers[2]);
             Assert.AreEqual(0, customers[2].Products.Count);
             Assert.AreEqual(1, products[0].Customers.Count);
+
         }    
     }
 }

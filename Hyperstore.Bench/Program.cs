@@ -34,8 +34,8 @@ namespace Hyperstore.Bench
 
             // Ajout de 100 contraintes
             var nbc = 100;
-            //for (int i = 0; i < nbc; i++)
-            //    TestDomainDefinition.XExtendsBaseClass.AddImplicitConstraint(self => System.Threading.Interlocked.Increment(ref nb) > 0, "OK");
+            for (int i = 0; i < nbc; i++)
+                TestDomainDefinition.XExtendsBaseClass.AddImplicitConstraint(self => System.Threading.Interlocked.Increment(ref nb) > 0, "OK");
 
             Console.WriteLine("Running...");
             sw.Start();

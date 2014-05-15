@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using Hyperstore.Modeling.Utils;
+using Hyperstore.Modeling.Platform;
 
 #endregion
 
@@ -216,8 +217,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             if (mel == null)
                 throw new Exception(ExceptionMessages.InvalidClassSerialization);
 
-            // TODO mettre le serializer en dynamique pour pouvoir le changer
-            return JSonHelper.Instance.Serialize(mel.Id);
+            return PlatformServices.Current.ObjectSerializer.Serialize(mel.Id);
         }
 
         ///-------------------------------------------------------------------------------------------------

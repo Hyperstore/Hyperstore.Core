@@ -14,11 +14,10 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -27,12 +26,10 @@ using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.Events;
 using Hyperstore.Modeling.Utils;
 using Hyperstore.Modeling.Validations;
+using Hyperstore.Modeling.Platform;
 
 #endregion
 
-#if NETFX_CORE
-
-#endif
 
 namespace Hyperstore.Modeling
 {
@@ -62,6 +59,11 @@ namespace Hyperstore.Modeling
         private static ushort? _sessionIndex;
         private readonly IHyperstoreTrace _trace;
         private ITransactionScope _scope; // scope est lui aussi lié au thread
+
+        static Session()
+        {
+            SessionContexts = PlatformServices.Current.CreateConcurrentDictionary<UInt16, SessionDataContext>();
+        }
 
         /// <summary>
         ///     Constructeur interne. Il est appelé par le store quand il crée la session
@@ -98,16 +100,12 @@ namespace Hyperstore.Modeling
                           CancellationToken = cfg.CancellationToken,
                           Enlistment = new List<ISessionEnlistmentNotification>(),
                           SessionInfos = new Stack<SessionLocalInfo>(),
-                          TopLevelSession=this
+                          TopLevelSession = this
                       };
 
                 SessionDataContext = ctx;
 
-#if !TXSCOPE
-                _scope = new HyperstoreTransactionScope(this, cfg.IsolationLevel, cfg.SessionTimeout);
-#else
-                _scope = new TransactionScopeWrapper(cfg.IsolationLevel, cfg.SessionTimeout);
-#endif
+                _scope = Hyperstore.Modeling.Platform.PlatformServices.Current.CreateTransactionScope(this, cfg);
             }
             else if (ctx.SessionInfos.Count == 0)
                 throw new Exception(ExceptionMessages.CannotCreateNestedSessionInDisposingSession);
@@ -1025,7 +1023,7 @@ namespace Hyperstore.Modeling
             {
                 throw new Exception(ExceptionMessages.CriticalErrorMaybeAwaitInSession, ex);
             }
-         
+
             // Suppression de la session courante. Il n'est plus possible de faire référence à la session
             ctx.Current = null;
             SessionDataContext = null;
@@ -1059,7 +1057,7 @@ namespace Hyperstore.Modeling
                 var idx = SessionIndex;
                 var threadId = ThreadHelper.CurrentThreadId;
 
-                Parallel.ForEach(involvedElements, elem =>
+                PlatformServices.Current.Parallel_ForEach(involvedElements, elem =>
                 {
                     using (new MultiThreadedSession(idx.Value, threadId)) // Partage de session
                     {
@@ -1080,7 +1078,7 @@ namespace Hyperstore.Modeling
         /// </summary>
         private void OnSessionCompleted(SessionLocalInfo info, IEnumerable<IEventNotifier> notifiers)
         {
-            DebugContract.Requires(notifiers!=null, "notifiers");
+            DebugContract.Requires(notifiers != null, "notifiers");
 
             try
             {
@@ -1143,7 +1141,7 @@ namespace Hyperstore.Modeling
         // Les données sont partagées en utilisant la méthode GetContextInfo<> de la session courante.
         //
         // Données de session partagées
-        private static readonly ConcurrentDictionary<UInt16, SessionDataContext> SessionContexts = new ConcurrentDictionary<UInt16, SessionDataContext>();
+        private static readonly IConcurrentDictionary<UInt16, SessionDataContext> SessionContexts;
 
         #endregion
     }

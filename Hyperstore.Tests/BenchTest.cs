@@ -24,6 +24,7 @@ using Hyperstore.Modeling;
 using System.Threading.Tasks;
 using Hyperstore.Tests.Model;
 using System.Diagnostics;
+using Hyperstore.Modeling.Platform;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 #endif

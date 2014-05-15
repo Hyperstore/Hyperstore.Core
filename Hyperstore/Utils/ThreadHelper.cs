@@ -22,19 +22,6 @@ using System.Threading;
 
 #endregion
 
-#if WP8 || PCL
-namespace System.Threading.Tasks
-{
-    internal static class Parallel
-    {
-        public static void ForEach<TSource>(System.Collections.Generic.IEnumerable<TSource> source, Action<TSource> body)
-        {
-            foreach (var s in source)
-                body(s);
-        }
-    }
-}
-#endif
 
 namespace Hyperstore.Modeling.Utils
 {
@@ -52,24 +39,16 @@ namespace Hyperstore.Modeling.Utils
         {
             get
             {
-#if NETFX_CORE
                 return Environment.CurrentManagedThreadId;
-#else
-                return Thread.CurrentThread.ManagedThreadId;
-#endif
             }
         }
 
         internal static void Sleep(int ms)
         {
-#if NETFX_CORE
             using (ManualResetEvent e = new ManualResetEvent(false))
             {
                 e.WaitOne(ms);
             }                
-#else
-            Thread.Sleep(ms);
-#endif
         }
     }
 }

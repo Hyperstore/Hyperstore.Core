@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -31,6 +31,7 @@ using Hyperstore.Modeling.Messaging;
 using Hyperstore.Modeling.Statistics;
 using Hyperstore.Modeling.Validations;
 using System.Reflection;
+using Hyperstore.Modeling.Platform;
 
 #endregion
 
@@ -148,6 +149,13 @@ namespace Hyperstore.Modeling.Ioc
             // IPersistenceAdapter<Vertex> ?
             // IModelElementResolver 
 
+            const string platformTypeName = "Hyperstore.Platform.PlatformServices, Hyperstore.Platform";
+            var platformfactoryType = Type.GetType(platformTypeName, false);
+            if (platformfactoryType != null)
+            {
+                Activator.CreateInstance(platformfactoryType);
+            }
+
             // Store instance
             Register<IDependencyResolver>(this);
 
@@ -158,7 +166,7 @@ namespace Hyperstore.Modeling.Ioc
             // Par domain et par metamodel => Nouvelle instance à chaque fois
             Register<IHyperGraph>(r => new HyperGraph.HyperGraph(r));
             Register<IEventManager>(r => new EventManager(r));
-            Register<IModelElementFactory>(r => new ModelElementFactory());
+            Register<IModelElementFactory>(r => PlatformServices.Current.CreateModelElementFactory());
             Register<ICommandManager>(r => new CommandManager());
             Register<IEventBus>(r => new EventBus(r));
             Register<IConstraintsManager>(r => new ConstraintsManager(r));
@@ -167,7 +175,7 @@ namespace Hyperstore.Modeling.Ioc
             if (ctx != null)
                 Register(ctx);
 
-            Register<ISynchronizationContext>(new Hyperstore.Modeling.Utils.EmptyDispatcher());
+            Register<ISynchronizationContext>(PlatformServices.Current.CreateDispatcher());
 
             // découverte automatique (sans mef) de l'extension rx
             const string typeName = "Hyperstore.ReactiveExtension.SubjectFactory, Hyperstore.ReactiveExtension";

@@ -14,31 +14,19 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
-#region Imports
 
+using Hyperstore.Modeling.Utils;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-#endregion
-
-namespace Hyperstore.Modeling.Utils
+namespace Hyperstore.Modeling.Platform
 {
-    internal interface ICodeMarkerListener
+    class DefaultCodeMarkerListener : ICodeMarkerListener
     {
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Logs.
-        /// </summary>
-        /// <param name="text">
-        ///  The text.
-        /// </param>
-        /// <param name="timeStamp">
-        ///  The time stamp Date/Time.
-        /// </param>
-        /// <param name="threadId">
-        ///  Identifier for the thread.
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
-        void Log(string text, DateTime timeStamp, int threadId);
+        void ICodeMarkerListener.Log(string text, DateTime timeStamp, int threadId)
+        {
+        }
     }
 }

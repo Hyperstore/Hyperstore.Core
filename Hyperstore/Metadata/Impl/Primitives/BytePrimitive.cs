@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -25,6 +25,10 @@ namespace Hyperstore.Modeling.Metadata.Primitives
 {
     internal class BytePrimitive : PrimitiveMetaValue
     {
+        protected BytePrimitive()
+        {
+        }
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Constructor.
@@ -59,7 +63,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             if (ctx.Value is Byte)
                 return ctx.Value;
 
-            return Convert.FromBase64String((string) ctx.Value)[0];
+            return Convert.FromBase64String((string)ctx.Value)[0];
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -78,7 +82,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             if (data == null)
                 return null;
 
-            var bytes = new[] {(Byte) data};
+            var bytes = new[] { (Byte)data };
             return Convert.ToBase64String(bytes);
         }
     }

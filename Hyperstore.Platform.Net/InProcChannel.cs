@@ -14,8 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
-#if !NETFX_CORE
+
 #region Imports
 using System;
 using System.Collections.Concurrent;
@@ -56,16 +55,16 @@ namespace Hyperstore.Modeling.Messaging
             }, TokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
-          ///-------------------------------------------------------------------------------------------------
-          /// <summary>
-          ///  Starts the asynchronous.
-          /// </summary>
-          /// <returns>
-          ///  A Task.
-          /// </returns>
-          ///-------------------------------------------------------------------------------------------------
-          protected override Task StartAsync()
-        { 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Starts the asynchronous.
+        /// </summary>
+        /// <returns>
+        ///  A Task.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        protected override Task StartAsync()
+        {
             var tcs = new TaskCompletionSource<object>();
             _messages = new Subject<InprocMessage>(EventBus.Store.DependencyResolver);
             try
@@ -75,7 +74,7 @@ namespace Hyperstore.Modeling.Messaging
                     if (HasInputProperty())
                     {
                         // Reception des messages
-                        _messages.Subscribe(msg => 
+                        _messages.Subscribe(msg =>
                             EventsProcessor.ProcessEvents(msg.OriginStoreId, msg.Mode, msg.Events)
                             );
                     }
@@ -89,31 +88,31 @@ namespace Hyperstore.Modeling.Messaging
             return tcs.Task;
         }
 
-          ///-------------------------------------------------------------------------------------------------
-          /// <summary>
-          ///  Sends a message.
-          /// </summary>
-          /// <param name="originStoreId">
-          ///  Identifier for the origin store.
-          /// </param>
-          /// <param name="mode">
-          ///  The mode.
-          /// </param>
-          /// <param name="sessionId">
-          ///  Identifier for the session.
-          /// </param>
-          /// <param name="events">
-          ///  The events.
-          /// </param>
-          /// <returns>
-          ///  A Message.
-          /// </returns>
-          ///-------------------------------------------------------------------------------------------------
-          protected override Message SendMessage(Guid originStoreId, SessionMode mode, Guid sessionId, IEnumerable<IEvent> events)
-          {
-              EventQueue.Add(new InprocMessage { Mode = mode, OriginStoreId = originStoreId, Events = events.ToList() });
-              return null;
-          }
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Sends a message.
+        /// </summary>
+        /// <param name="originStoreId">
+        ///  Identifier for the origin store.
+        /// </param>
+        /// <param name="mode">
+        ///  The mode.
+        /// </param>
+        /// <param name="sessionId">
+        ///  Identifier for the session.
+        /// </param>
+        /// <param name="events">
+        ///  The events.
+        /// </param>
+        /// <returns>
+        ///  A Message.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        protected override Message SendMessage(Guid originStoreId, SessionMode mode, Guid sessionId, IEnumerable<IEvent> events)
+        {
+            EventQueue.Add(new InprocMessage { Mode = mode, OriginStoreId = originStoreId, Events = events.ToList() });
+            return null;
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -146,5 +145,3 @@ namespace Hyperstore.Modeling.Messaging
         }
     }
 }
-
-#endif

@@ -18,13 +18,13 @@
 #region Imports
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.Metadata.Primitives;
 using Hyperstore.Modeling.Utils;
+using Hyperstore.Modeling.Platform;
 
 #endregion
 
@@ -45,7 +45,7 @@ namespace Hyperstore.Modeling.Metadata
         private Type _implementedType;
         private string _name;
         private ModelElementCollection<ISchemaProperty> _properties;
-        private ConcurrentDictionary<string, ISchemaProperty> _propertiesByName;
+        private IConcurrentDictionary<string, ISchemaProperty> _propertiesByName;
         private bool _propertiesLoaded;
         private ISchemaElement _superClass;
         private ReferenceHandler _superClassHandler;
@@ -612,7 +612,7 @@ namespace Hyperstore.Modeling.Metadata
 
             _superClassHandler = new ReferenceHandler(this, PrimitivesSchema.SchemaElementReferencesSuperElementSchema);
             _properties = new ModelElementCollection<ISchemaProperty>(this, PrimitivesSchema.SchemaElementHasPropertiesSchema);
-            _propertiesByName = new ConcurrentDictionary<string, ISchemaProperty>();
+            _propertiesByName = PlatformServices.Current.CreateConcurrentDictionary<string, ISchemaProperty>();
         }
 
         #endregion Methods of MetaClass (12)

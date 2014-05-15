@@ -21,6 +21,7 @@ using System;
 using System.Runtime.Serialization;
 using Hyperstore.Modeling.Events;
 using Hyperstore.Modeling.Metadata;
+using Hyperstore.Modeling.Platform;
 
 #endregion
 
@@ -52,7 +53,7 @@ namespace Hyperstore.Modeling.Messaging
             }
             else
             {
-                Body = JSonHelper.Instance.Serialize(@event);
+                Body = PlatformServices.Current.ObjectSerializer.Serialize(@event);
             }
             EventType = Hyperstore.Modeling.Utils.ReflectionHelper.GetNameWithSimpleAssemblyName(@event.GetType());
         }
@@ -145,7 +146,7 @@ namespace Hyperstore.Modeling.Messaging
                 }
             }
 
-            return (IEvent) JSonHelper.Instance.Deserialize(eventType, Body, null);
+            return (IEvent) PlatformServices.Current.ObjectSerializer.Deserialize(eventType, Body, null);
         }
     }
 }

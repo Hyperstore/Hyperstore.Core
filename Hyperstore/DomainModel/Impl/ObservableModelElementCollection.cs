@@ -27,10 +27,6 @@ using Hyperstore.Modeling.Events;
 
 #endregion
 
-//#if !NETFX_CORE
-//using System.Windows.Threading;
-//using System.Reactive.Linq;
-//#endif
 
 namespace Hyperstore.Modeling
 {

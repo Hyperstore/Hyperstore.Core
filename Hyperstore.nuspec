@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>Hyperstore</id>
-    <version>1.0.0.0</version>
+    <version>1.0.0.2</version>
     <title>Hyperstore</title>
     <authors>Zenasoft</authors>
     <licenseUrl>http://opensource.org/licenses/gpl-3.0</licenseUrl>
@@ -14,29 +14,26 @@
     <tags>Hyperstore,DSL,CQRS,DDD</tags>
     <projectUrl>http://www.zenasoft.com</projectUrl>
     <dependencies>
-      <group targetFramework=".NETFramework4.5">
-        <dependency id="Microsoft.Bcl.Immutable" version="1.0.30" />
-      </group>
-      <group targetFramework=".NETCore4.5">
-        <dependency id="Microsoft.Bcl.Immutable" version="1.0.30" />
-      </group>
       <group targetFramework=".NETPortable0.0-net45+wp8+win8">
         <dependency id="Microsoft.Bcl.Immutable" version="1.0.30" />
       </group>
     </dependencies>
   </metadata>
   <files>
-    <file src="..\..\Codeplex\lib\Release45\Hyperstore.dll" target="lib\net45\Hyperstore.dll" />
-    <file src="..\..\Codeplex\lib\Release45\Hyperstore.pdb" target="lib\net45\Hyperstore.pdb" />
-    <file src="..\..\Codeplex\lib\Release45\Hyperstore.dll" target="lib\net451" />
-    <file src="..\..\Codeplex\lib\Release45\Hyperstore.pdb" target="lib\net451" />
-    <file src="..\..\Codeplex\lib\ReleaseWP8\Hyperstore.dll" target="lib\wp8\Hyperstore.dll" />
-    <file src="..\..\Codeplex\lib\ReleaseWP8\Hyperstore.pdb" target="lib\wp8\Hyperstore.pdb" />
-    <file src="..\..\Codeplex\lib\Release8\Hyperstore.dll" target="lib\netcore45\Hyperstore.dll" />
-    <file src="..\..\Codeplex\lib\Release8\Hyperstore.pri" target="lib\netcore45\Hyperstore.pri" />
-    <file src="..\..\Codeplex\lib\Release8\Hyperstore.pdb" target="lib\netcore45\Hyperstore.pdb" />
-    <file src="..\..\Codeplex\lib\ReleasePCL\Hyperstore.dll" target="lib\portable-net45+wp8+win8\Hyperstore.dll" />
-    <file src="..\..\Codeplex\lib\ReleasePCL\Hyperstore.pdb" target="lib\portable-net45+wp8+win8\Hyperstore.pdb" />
+    <file src="..\..\Codeplex\lib\Release\WinRT\Hyperstore.Platform.*" target="lib\netcore45\" />
+    <file src="..\..\Codeplex\lib\Release\Hyperstore.dll" target="lib\netcore45\Hyperstore.dll" />
+    <file src="..\..\Codeplex\lib\Release\Hyperstore.pdb" target="lib\netcore45\Hyperstore.pdb" />
+    
+    <file src="..\..\Codeplex\lib\Release\Net45\Hyperstore.Platform.*" target="lib\net45\" />
+    <file src="..\..\Codeplex\lib\Release\Hyperstore.dll" target="lib\net45\Hyperstore.dll" />
+    <file src="..\..\Codeplex\lib\Release\Hyperstore.pdb" target="lib\net45\Hyperstore.pdb" />
+    
+    <file src="..\..\Codeplex\lib\Release\WP8\Hyperstore.Platform.*" target="lib\wp8\" />
+    <file src="..\..\Codeplex\lib\Release\Hyperstore.dll" target="lib\wp8\Hyperstore.dll" />
+    <file src="..\..\Codeplex\lib\Release\Hyperstore.pdb" target="lib\wp8\Hyperstore.pdb" />
+    
+    <file src="..\..\Codeplex\lib\Release\Hyperstore.dll" target="lib\portable-net45+wp8+win8\Hyperstore.dll" />
+    <file src="..\..\Codeplex\lib\Release\Hyperstore.pdb" target="lib\portable-net45+wp8+win8\Hyperstore.pdb" />
     <!--<file src="Hyperstore\**\*.cs" target="src"/>-->
   </files>
 </package>

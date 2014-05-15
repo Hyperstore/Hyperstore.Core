@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -33,24 +33,21 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  The schema.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public EnumPrimitive(ISchema schema) : base(schema, typeof (TEnum))
+        public EnumPrimitive(ISchema schema)
+            : base(schema, typeof(TEnum))
         {
         }
 
-#if NETFX_CORE
         protected EnumPrimitive()
         {
         }
-#endif
     }
 
     internal class EnumPrimitive : SchemaValueObject
     {
-#if NETFX_CORE
         protected EnumPrimitive()
         {
         }
-#endif
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -63,7 +60,8 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  The tenum.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public EnumPrimitive(ISchema schema, Type tenum) : base(schema, tenum)
+        public EnumPrimitive(ISchema schema, Type tenum)
+            : base(schema, tenum)
         {
         }
 
@@ -80,7 +78,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///-------------------------------------------------------------------------------------------------
         protected override string Serialize(object mel)
         {
-            return mel != null ? ((Enum) mel).ToString("F") : null;
+            return mel != null ? ((Enum)mel).ToString("F") : null;
         }
 
         ///-------------------------------------------------------------------------------------------------

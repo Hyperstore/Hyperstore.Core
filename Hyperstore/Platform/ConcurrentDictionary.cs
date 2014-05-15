@@ -14,12 +14,11 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
-#if WP8 || PCL
 
 #region Imports
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
@@ -30,9 +29,10 @@ using System.Threading;
 #endregion
 
 
-namespace System.Collections.Concurrent
+namespace Hyperstore.Modeling.Platform
 {
-    internal class ConcurrentDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>
+    // From rx.codeplex.com
+    internal class InternalConcurrentDictionary<TKey, TValue> : IConcurrentDictionary<TKey, TValue>, IEnumerable<KeyValuePair<TKey, TValue>>
     {
         /* >>> Code copied from the Array class */
 
@@ -113,13 +113,13 @@ namespace System.Collections.Concurrent
             return isAtomic;
         }
 
-        public ConcurrentDictionary() : this(EqualityComparer<TKey>.Default) { }
+        public InternalConcurrentDictionary() : this(EqualityComparer<TKey>.Default) { }
 
-        public ConcurrentDictionary(IEqualityComparer<TKey> comparer) : this(DefaultConcurrencyLevel, DEFAULT_CAPACITY, true, comparer) { }
+        public InternalConcurrentDictionary(IEqualityComparer<TKey> comparer) : this(DefaultConcurrencyLevel, DEFAULT_CAPACITY, true, comparer) { }
 
-        public ConcurrentDictionary(int capacity, IEqualityComparer<TKey> comparer) : this(DefaultConcurrencyLevel, capacity, true, comparer) { }
+        public InternalConcurrentDictionary(int capacity, IEqualityComparer<TKey> comparer) : this(DefaultConcurrencyLevel, capacity, true, comparer) { }
 
-        internal ConcurrentDictionary(int concurrencyLevel, int capacity, bool growLockArray, IEqualityComparer<TKey> comparer)
+        internal InternalConcurrentDictionary(int concurrencyLevel, int capacity, bool growLockArray, IEqualityComparer<TKey> comparer)
         {
             if (concurrencyLevel < 1)
             {
@@ -390,7 +390,7 @@ namespace System.Collections.Concurrent
             }
         }
 
-        public System.Collections.Generic.ICollection<TValue> Values
+        public System.Collections.Generic.IEnumerable<TValue> Values
         {
             get { return GetValues(); }
         }
@@ -625,10 +625,10 @@ namespace System.Collections.Concurrent
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            ConcurrentDictionary<TKey, TValue>.Node[] buckets = this.m_tables.m_buckets;
+            InternalConcurrentDictionary<TKey, TValue>.Node[] buckets = this.m_tables.m_buckets;
             for (int i = 0; i < buckets.Length; i++)
             {
-                for (ConcurrentDictionary<TKey, TValue>.Node node = Volatile.Read<ConcurrentDictionary<TKey, TValue>.Node>(ref buckets[i]); node != null; node = node.m_next)
+                for (InternalConcurrentDictionary<TKey, TValue>.Node node = Volatile.Read<InternalConcurrentDictionary<TKey, TValue>.Node>(ref buckets[i]); node != null; node = node.m_next)
                 {
                     yield return new KeyValuePair<TKey, TValue>(node.m_key, node.m_value);
                 }
@@ -641,14 +641,14 @@ namespace System.Collections.Concurrent
         }
     }
 
-    internal class ConcurrentQueue<T>
+    internal class InternalConcurrentQueue<T> : IConcurrentQueue<T>
     {
         private volatile Segment m_head;
         private volatile Segment m_tail;
 
         private const int SEGMENT_SIZE = 32;
 
-        public ConcurrentQueue()
+        public InternalConcurrentQueue()
         {
             m_head = m_tail = new Segment(0, this);
         }
@@ -748,14 +748,14 @@ namespace System.Collections.Concurrent
             private volatile int m_low;
             private volatile int m_high;
 
-            private volatile ConcurrentQueue<T> m_source;
+            private volatile InternalConcurrentQueue<T> m_source;
 
-            internal Segment(long index, ConcurrentQueue<T> source)
+            internal Segment(long index, InternalConcurrentQueue<T> source)
             {
                 m_array = new T[SEGMENT_SIZE];
                 m_state = new VolatileBool[SEGMENT_SIZE]; //all initialized to false
                 m_high = -1;
-                Contract.Assert(index >= 0);
+                System.Diagnostics.Contracts.Contract.Assert(index >= 0);
                 m_index = index;
                 m_source = source;
             }
@@ -772,7 +772,7 @@ namespace System.Collections.Concurrent
 
             internal void UnsafeAdd(T value)
             {
-                Contract.Assert(m_high < SEGMENT_SIZE - 1);
+                System.Diagnostics.Contracts.Contract.Assert(m_high < SEGMENT_SIZE - 1);
                 m_high++;
                 m_array[m_high] = value;
                 m_state[m_high].m_value = true;
@@ -780,7 +780,7 @@ namespace System.Collections.Concurrent
 
             internal Segment UnsafeGrow()
             {
-                Contract.Assert(m_high >= SEGMENT_SIZE - 1);
+                System.Diagnostics.Contracts.Contract.Assert(m_high >= SEGMENT_SIZE - 1);
                 Segment newSegment = new Segment(m_index + 1, m_source); //m_index is Int64, we don't need to worry about overflow
                 m_next = newSegment;
                 return newSegment;
@@ -791,7 +791,7 @@ namespace System.Collections.Concurrent
                 //no CAS is needed, since there is no contention (other threads are blocked, busy waiting)
                 Segment newSegment = new Segment(m_index + 1, m_source);  //m_index is Int64, we don't need to worry about overflow
                 m_next = newSegment;
-                Contract.Assert(m_source.m_tail == this);
+                System.Diagnostics.Contracts.Contract.Assert(m_source.m_tail == this);
                 m_source.m_tail = m_next;
             }
 
@@ -875,7 +875,7 @@ namespace System.Collections.Concurrent
                             {
                                 spinLocal.SpinOnce();
                             }
-                            Contract.Assert(m_source.m_head == this);
+                            System.Diagnostics.Contracts.Contract.Assert(m_source.m_head == this);
                             m_source.m_head = m_next;
                         }
                         return true;
@@ -938,4 +938,3 @@ namespace System.Collections.Concurrent
 
 
 }
-#endif

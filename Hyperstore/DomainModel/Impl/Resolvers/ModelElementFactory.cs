@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -96,13 +96,13 @@ namespace Hyperstore.Modeling.Domain
             Contract.Requires(start, "start");
             Contract.Requires(end, "end");
 
-            var ctor = ReflectionHelper.GetPublicConstructor(implementedType, new[] {typeof (IModelElement), typeof (IModelElement), typeof (ISchemaRelationship)});
+            var ctor = ReflectionHelper.GetPublicConstructor(implementedType, new[] { typeof(IModelElement), typeof(IModelElement), typeof(ISchemaRelationship) });
             if (ctor != null)
-                return (IModelRelationship) ctor.Invoke(new object[] {start, end, schemaElement});
+                return (IModelRelationship)ctor.Invoke(new object[] { start, end, schemaElement });
 
-            ctor = ReflectionHelper.GetPublicConstructor(implementedType, new[] {typeof (IModelElement), typeof (IModelElement)});
+            ctor = ReflectionHelper.GetPublicConstructor(implementedType, new[] { typeof(IModelElement), typeof(IModelElement) });
             if (ctor != null)
-                return (IModelRelationship) ctor.Invoke(new object[] {start, end});
+                return (IModelRelationship)ctor.Invoke(new object[] { start, end });
 
             throw new Exception(String.Format(ExceptionMessages.UnableToCreateRelationshipOfTypeRequiredCtorWithStartEndParametersFormat, implementedType));
         }
@@ -145,13 +145,13 @@ namespace Hyperstore.Modeling.Domain
         protected virtual IModelEntity InvokeModelElementConstructorForType(ISchemaEntity schemaElement, Type implementedType)
         {
             Contract.Requires(schemaElement, "schemaElement");
-            var ctor = ReflectionHelper.GetPublicConstructor(implementedType, new[] {typeof (IDomainModel), typeof (ISchemaEntity)});
+            var ctor = ReflectionHelper.GetPublicConstructor(implementedType, new[] { typeof(IDomainModel), typeof(ISchemaEntity) });
             if (ctor != null)
-                return (IModelEntity) ctor.Invoke(new object[] {DomainModel, schemaElement});
+                return (IModelEntity)ctor.Invoke(new object[] { DomainModel, schemaElement });
 
-            ctor = ReflectionHelper.GetPublicConstructor(implementedType, new[] {typeof (IDomainModel)});
+            ctor = ReflectionHelper.GetPublicConstructor(implementedType, new[] { typeof(IDomainModel) });
             if (ctor != null)
-                return (IModelEntity) ctor.Invoke(new object[] {DomainModel});
+                return (IModelEntity)ctor.Invoke(new object[] { DomainModel });
 
             throw new Exception(String.Format(ExceptionMessages.UnableToCreateEntityOfTypeCtorWithIDomainModelRequiredFormat, implementedType));
         }
@@ -173,7 +173,7 @@ namespace Hyperstore.Modeling.Domain
         ///  An IModelElement.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual IModelElement InstanciateModelElement(ISchemaInfo schemaElement, Type implementationType)
+        public IModelElement InstanciateModelElement(ISchemaInfo schemaElement, Type implementationType)
         {
             Contract.Requires(implementationType, "implementationType");
             Contract.Requires(schemaElement, "schemaElement");
@@ -181,7 +181,7 @@ namespace Hyperstore.Modeling.Domain
             IModelElement mel;
             try
             {
-                mel = ReflectionHelper.GetUninitializedObject(implementationType);
+                mel = InstanciateModelElementCore(implementationType);
             }
             catch (Exception ex)
             {
@@ -191,53 +191,21 @@ namespace Hyperstore.Modeling.Domain
             return mel;
         }
 
-#if NETFX_CORE
+        protected virtual IModelElement InstanciateModelElementCore(Type implementationType)
+        {
+            var ctor = ReflectionHelper.GetConstructor(implementationType).FirstOrDefault(c => c.GetParameters().Length == 0);
+            if (ctor == null)
+                throw new Exception(ExceptionMessages.ElementMustHaveAProtectedParameterlessConstructor);
+            return (IModelElement)ctor.Invoke(null);
+        }
+
+
         protected virtual Type ResolveType(string assemblyQualifiedTypeName)
         {
             DebugContract.RequiresNotEmpty(assemblyQualifiedTypeName);
 
             return Type.GetType(assemblyQualifiedTypeName);
         }
-#else
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Resolve type.
-        /// </summary>
-        /// <param name="assemblyQualifiedTypeName">
-        ///  Name of the assembly qualified type.
-        /// </param>
-        /// <returns>
-        ///  A Type.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        protected virtual Type ResolveType(string assemblyQualifiedTypeName)
-        {
-            DebugContract.RequiresNotEmpty(assemblyQualifiedTypeName);
-
-            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-            try
-            {
-                return Type.GetType(assemblyQualifiedTypeName);
-            }
-            finally
-            {
-                AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
-            }
-        }
-
-        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
-        {
-            var pos = args.Name.IndexOf(',');
-            var name = pos > 0
-                    ? args.Name.Substring(0, pos)
-                            .Trim()
-                    : args.Name;
-            var asm = AppDomain.CurrentDomain.GetAssemblies()
-                    .FirstOrDefault(a => a.GetName()
-                            .Name.Equals(name, StringComparison.CurrentCultureIgnoreCase));
-            return asm;
-        }
-#endif
     }
 }

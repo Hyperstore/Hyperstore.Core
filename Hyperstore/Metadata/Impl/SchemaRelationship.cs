@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -59,7 +59,7 @@ namespace Hyperstore.Modeling.Metadata
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         public SchemaRelationship(ISchemaElement start, ISchemaElement end, Cardinality cardinality = Cardinality.OneToOne, bool isEmbedded = false, string name = null, ISchemaRelationship superMetaClass = null)
-                : base(start, end, typeof (T), cardinality, isEmbedded, name ?? typeof (T).FullName, superMetaClass)
+            : base(start, end, typeof(T), cardinality, isEmbedded, name ?? typeof(T).FullName, superMetaClass)
         {
         }
     }
@@ -80,11 +80,14 @@ namespace Hyperstore.Modeling.Metadata
         private Cardinality? _cardinality;
         private bool? _isEmbedded;
 
-#if NETFX_CORE
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Specialised default constructor for use only by derived classes.
+        /// </summary>
+        ///-------------------------------------------------------------------------------------------------
         protected SchemaRelationship()
         {
         }
-#endif
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -124,7 +127,7 @@ namespace Hyperstore.Modeling.Metadata
 
             name = Conventions.NormalizeMetaElementName(start.DomainModel.Name, name);
             ConstructInternal(start.DomainModel, implementedType, new Identity(start.Schema.Name, name), name, superMetaClass, PrimitivesSchema.SchemaRelationshipSchema,
-                    (dm, melId, mid) => new AddSchemaRelationshipCommand(dm as ISchema, melId, (ISchemaRelationship) mid, start, end));
+                    (dm, melId, mid) => new AddSchemaRelationshipCommand(dm as ISchema, melId, (ISchemaRelationship)mid, start, end));
 
             if (!Hyperstore.Modeling.Utils.ReflectionHelper.IsAssignableFrom(typeof(IModelRelationship), ImplementedType))
                 throw new Exception("SchemaRelationship must describes a type implementing IModelRelationship");
@@ -160,7 +163,7 @@ namespace Hyperstore.Modeling.Metadata
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         public SchemaRelationship(string name, ISchemaElement source, ISchemaElement end, Cardinality cardinality = Cardinality.OneToOne, bool isembedded = false, ISchemaRelationship superMetaClass = null)
-                : this(source, end, typeof (ModelRelationship), cardinality, isembedded, name, superMetaClass)
+            : this(source, end, typeof(ModelRelationship), cardinality, isembedded, name, superMetaClass)
         {
         }
 
@@ -216,7 +219,7 @@ namespace Hyperstore.Modeling.Metadata
             get { return IsEmbedded; }
         }
 
-        private bool IsEmbedded 
+        private bool IsEmbedded
         {
             get
             {

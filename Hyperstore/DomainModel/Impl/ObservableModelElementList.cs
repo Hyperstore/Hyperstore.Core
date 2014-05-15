@@ -180,6 +180,14 @@ namespace Hyperstore.Modeling
             return -1;
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the enumerator.
+        /// </summary>
+        /// <returns>
+        ///  The enumerator.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public override IEnumerator<T> GetEnumerator()
         {
             foreach (var item in _items)

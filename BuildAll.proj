@@ -8,21 +8,9 @@
 
   <ItemGroup>
     <Flavor Include="Hyperstore_only.sln">
-      <Configuration>Release45</Configuration>
+      <Configuration>Release</Configuration>
       <Platform>Any CPU</Platform>
     </Flavor>    
-    <Flavor Include="Hyperstore_only.sln">
-      <Configuration>Release8</Configuration>
-      <Platform>Any CPU</Platform>
-    </Flavor>
-    <Flavor Include="Hyperstore_only.sln">
-      <Configuration>ReleasePCL</Configuration>
-      <Platform>Any CPU</Platform>
-    </Flavor>
-    <Flavor Include="Hyperstore_only.sln">
-      <Configuration>ReleaseWP8</Configuration>
-      <Platform>Any CPU</Platform>
-    </Flavor>
   </ItemGroup>
 
   <Target Name="ExpandFlavors">

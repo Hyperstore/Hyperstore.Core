@@ -14,19 +14,15 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
-using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
-#if !NETFX_CORE
-using Hyperstore.Modeling.Dynamic;
-
-#endif
+using Hyperstore.Modeling.Platform;
 
 #endregion
 
@@ -36,12 +32,9 @@ namespace Hyperstore.Modeling
     /// <summary>
     ///     Dynamic element.
     /// </summary>
-#if !NETFX_CORE
-    [TypeDescriptionProvider(typeof (DynamicTypeDescriptorProvider))]
-#endif
     public class DynamicModelEntity : ModelEntity, IDynamicMetaObjectProvider, INotifyPropertyChanged
     {
-        private ConcurrentDictionary<string, object> _references;
+        private IConcurrentDictionary<string, object> _references;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -57,7 +50,8 @@ namespace Hyperstore.Modeling
         ///  Name of the schema.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public DynamicModelEntity(IDomainModel domainModel, string schemaName) : this(domainModel, domainModel.Store.GetSchemaEntity(schemaName))
+        public DynamicModelEntity(IDomainModel domainModel, string schemaName)
+            : this(domainModel, domainModel.Store.GetSchemaEntity(schemaName))
         {
         }
 
@@ -72,7 +66,8 @@ namespace Hyperstore.Modeling
         ///  The schema entity.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public DynamicModelEntity(IDomainModel domainModel, ISchemaEntity schemaEntity) : base(domainModel, schemaEntity)
+        public DynamicModelEntity(IDomainModel domainModel, ISchemaEntity schemaEntity)
+            : base(domainModel, schemaEntity)
         {
             Contract.Requires(domainModel, "domainModel");
             Contract.Requires(schemaEntity != null && !schemaEntity.Id.IsEmpty, "schemaEntity");
@@ -93,7 +88,7 @@ namespace Hyperstore.Modeling
         protected override void Initialize(ISchemaElement schemaElement, IDomainModel domainModel)
         {
             base.Initialize(schemaElement, domainModel);
-            _references = new ConcurrentDictionary<string, object>();
+            _references = PlatformServices.Current.CreateConcurrentDictionary<string, object>();
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -132,19 +127,19 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public object TrySetProperty(string propertyName, object value)
         {
-            var property = ((IModelElement) this).SchemaInfo.GetProperty(propertyName);
+            var property = ((IModelElement)this).SchemaInfo.GetProperty(propertyName);
             if (property == null)
             {
                 object refer;
                 if (!_references.TryGetValue(propertyName, out refer))
                 {
                     // Find a relationship whith this name
-                    var relationship = ((IModelElement) this).SchemaInfo.GetRelationships()
+                    var relationship = ((IModelElement)this).SchemaInfo.GetRelationships()
                             .FirstOrDefault(r => IsMatchPropertyName(r, propertyName)) as ISchemaRelationship;
                     if (relationship == null)
-                        throw new Exception(string.Format(ExceptionMessages.UnknownPropertyFormat,propertyName));
+                        throw new Exception(string.Format(ExceptionMessages.UnknownPropertyFormat, propertyName));
 
-                    if (relationship.Cardinality == Cardinality.OneToOne || relationship.End.Id == ((IModelElement) this).SchemaInfo.Id) // Noeud terminal
+                    if (relationship.Cardinality == Cardinality.OneToOne || relationship.End.Id == ((IModelElement)this).SchemaInfo.Id) // Noeud terminal
                     {
                         if (value != null && !(value is IModelElement))
                             throw new Exception(ExceptionMessages.InvalidValue);
@@ -156,7 +151,7 @@ namespace Hyperstore.Modeling
                         throw new Exception(ExceptionMessages.InvalidValue);
                 }
 
-                ((ReferenceHandler) refer).SetReference(value as IModelElement);
+                ((ReferenceHandler)refer).SetReference(value as IModelElement);
                 return value;
             }
 
@@ -175,7 +170,7 @@ namespace Hyperstore.Modeling
             if (name.StartsWith(sourceName, StringComparison.Ordinal))
             {
                 name = name.Substring(sourceName.Length);
-                var cases = new[] {"Has" + propertyName, "References" + propertyName, propertyName};
+                var cases = new[] { "Has" + propertyName, "References" + propertyName, propertyName };
 
                 if (cases.Any(c => String.Compare(name, c, StringComparison.Ordinal) == 0))
                     return true;
@@ -202,30 +197,30 @@ namespace Hyperstore.Modeling
             switch (propertyName)
             {
                 case "Id":
-                    return ((IModelElement) this).Id;
+                    return ((IModelElement)this).Id;
                 case "DomainModel":
                     return DomainModel;
                 case "Schema":
-                    return ((IModelElement) this).SchemaInfo;
+                    return ((IModelElement)this).SchemaInfo;
                 case "Status":
-                    return ((IModelElement) this).Status;
+                    return ((IModelElement)this).Status;
                 case "Store":
                     return Store;
             }
 
-            var property = ((IModelElement) this).SchemaInfo.GetProperty(propertyName);
+            var property = ((IModelElement)this).SchemaInfo.GetProperty(propertyName);
             if (property == null)
             {
                 object refer;
                 if (!_references.TryGetValue(propertyName, out refer))
                 {
                     // Find a relationship whith this name
-                    var relationship = ((IModelElement) this).SchemaInfo.GetRelationships()
+                    var relationship = ((IModelElement)this).SchemaInfo.GetRelationships()
                             .FirstOrDefault(r => IsMatchPropertyName(r, propertyName)) as ISchemaRelationship;
                     if (relationship == null)
                         throw new Exception(string.Format(ExceptionMessages.UnknownPropertyFormat, propertyName));
 
-                    if (relationship.Cardinality == Cardinality.OneToOne || relationship.End.Id == ((IModelElement) this).SchemaInfo.Id) // Noeud terminal
+                    if (relationship.Cardinality == Cardinality.OneToOne || relationship.End.Id == ((IModelElement)this).SchemaInfo.Id) // Noeud terminal
                     {
                         refer = new ReferenceHandler(this, relationship, relationship.Cardinality != Cardinality.OneToOne);
                         _references.TryAdd(propertyName, refer);

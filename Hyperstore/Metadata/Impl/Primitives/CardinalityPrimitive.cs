@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -26,6 +26,11 @@ namespace Hyperstore.Modeling.Metadata.Primitives
 {
     internal class CardinalityPrimitive : PrimitiveMetaValue
     {
+        protected CardinalityPrimitive()
+        {
+
+        }
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Constructor.
@@ -63,7 +68,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             if (ctx.Value is Cardinality)
                 return ctx.Value;
 
-            return Enum.Parse(typeof (Cardinality), (string) ctx.Value);
+            return Enum.Parse(typeof(Cardinality), (string)ctx.Value);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -81,7 +86,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         {
             if (data == null)
                 return null;
-            return ((Cardinality) data).ToString();
+            return ((Cardinality)data).ToString();
         }
     }
 }

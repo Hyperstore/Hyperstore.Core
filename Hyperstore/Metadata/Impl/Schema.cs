@@ -17,7 +17,6 @@
 
 #region Imports
 
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -25,6 +24,7 @@ using System;
 using Hyperstore.Modeling.Domain;
 using Hyperstore.Modeling.HyperGraph;
 using Hyperstore.Modeling.Validations;
+using Hyperstore.Modeling.Platform;
 
 #endregion
 
@@ -35,8 +35,8 @@ namespace Hyperstore.Modeling.Metadata
     {
         private readonly IConstraintsManager _constraints;
 
-        private readonly ConcurrentDictionary<Identity, IModelElement> _elements = new ConcurrentDictionary<Identity, IModelElement>();
-        private readonly ConcurrentDictionary<Identity, IModelRelationship> _relationships = new ConcurrentDictionary<Identity, IModelRelationship>();
+        private readonly IConcurrentDictionary<Identity, IModelElement> _elements;
+        private readonly IConcurrentDictionary<Identity, IModelRelationship> _relationships;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -57,6 +57,9 @@ namespace Hyperstore.Modeling.Metadata
             : base(dependencyResolver, name)
         {
             Contract.Requires(dependencyResolver, "dependencyResolver");
+
+            _elements = PlatformServices.Current.CreateConcurrentDictionary<Identity, IModelElement>();
+            _relationships = PlatformServices.Current.CreateConcurrentDictionary<Identity, IModelRelationship>();
 
             _constraints = constraints ?? dependencyResolver.Resolve<IConstraintsManager>();
             if (_constraints is IDomainService)

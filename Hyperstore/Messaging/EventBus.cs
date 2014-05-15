@@ -18,6 +18,7 @@
 #region Imports
 
 using Hyperstore.Modeling.Events;
+using Hyperstore.Modeling.Platform;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -189,7 +190,7 @@ namespace Hyperstore.Modeling.Messaging
             if (_channels == null || e.Session.IsAborted)
                 return;
 
-            Parallel.ForEach(_channels, channel => channel.SendEvents(e.Session));
+            PlatformServices.Current.Parallel_ForEach(_channels, channel => channel.SendEvents(e.Session));
         }
 
         private void Dispose(bool releaseManagedResources)

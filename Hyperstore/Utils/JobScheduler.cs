@@ -28,35 +28,6 @@ namespace Hyperstore.Modeling.Utils
 {
     internal class JobScheduler : IDisposable
     {
-        //        private readonly Subject<Action> _actions = new Subject<Action>();
-        //        private readonly IDisposable _subscription;
-
-        //        public JobScheduler(Action action, TimeSpan interval)
-        //        {
-        //            DebugContract.Requires(action);
-        //            DebugContract.Requires(interval);
-
-        //            var job = action;
-        //            _subscription = _actions.Sample(interval)
-        //#if PCL
-        //                .ObserveOn(System.Reactive.Concurrency.Scheduler.NewThread)
-        //#else
-        //                .ObserveOn(NewThreadScheduler.Default)
-        //#endif
-        //                .Subscribe(o => job());
-
-        //        }
-
-        //        public void RequestJob()
-        //        {
-        //            _actions.Next();
-        //        }
-
-        //        public void Dispose()
-        //        {
-        //            _actions.Dispose();
-        //            _subscription.Dispose();
-        //        }
         private readonly Action _action;
         private readonly int _interval;
         private CancellationTokenSource _cancellationToken;

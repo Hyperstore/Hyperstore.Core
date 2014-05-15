@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -26,6 +26,10 @@ namespace Hyperstore.Modeling.Metadata.Primitives
 {
     internal class UInt64Primitive : PrimitiveMetaValue
     {
+        protected UInt64Primitive()
+        {
+        }
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Constructor.

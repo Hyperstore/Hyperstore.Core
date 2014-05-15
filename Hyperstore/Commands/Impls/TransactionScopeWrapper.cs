@@ -14,23 +14,18 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
-#if TXSCOPE
-using System.Transactions;
-
-#else
 using System.Collections.Generic;
 using System.Linq;
-#endif
 
 #endregion
 
 namespace Hyperstore.Modeling.Commands
 {
-#if !TXSCOPE
+
     internal class HyperstoreTransactionScope : ITransactionScope
     {
         private SessionIsolationLevel _sessionIsolationLevel;
@@ -42,7 +37,7 @@ namespace Hyperstore.Modeling.Commands
         private List<ISessionEnlistmentNotification> Transactions
         {
             get
-            {                
+            {
                 return _session.Enlistment;
             }
         }
@@ -64,7 +59,8 @@ namespace Hyperstore.Modeling.Commands
             throw new TimeoutException();
         }
 
-        public void Complete() {
+        public void Complete()
+        {
             _completed = true;
         }
 
@@ -79,7 +75,7 @@ namespace Hyperstore.Modeling.Commands
                 _timer = null;
             }
 
-            if( Transactions != null) 
+            if (Transactions != null)
             {
                 if (_completed)
                 {
@@ -102,70 +98,8 @@ namespace Hyperstore.Modeling.Commands
 
         public void Enlist(ITransaction transaction)
         {
-            Transactions.Add((ISessionEnlistmentNotification) transaction);
+            Transactions.Add((ISessionEnlistmentNotification)transaction);
         }
     }
-#else
-    internal class TransactionScopeWrapper : ITransactionScope
-    {
-        private readonly TransactionScope _scope;
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Constructor.
-        /// </summary>
-        /// <param name="isolationLevel">
-        ///  The isolation level.
-        /// </param>
-        /// <param name="timeout">
-        ///  The timeout.
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
-        public TransactionScopeWrapper(SessionIsolationLevel isolationLevel, TimeSpan timeout)
-        {
-            var level = isolationLevel == SessionIsolationLevel.ReadCommitted ? IsolationLevel.ReadCommitted : IsolationLevel.Serializable;
-            var options = new TransactionOptions
-                          {
-                                  IsolationLevel = Transaction.Current == null ? level : Transaction.Current.IsolationLevel,
-                                  Timeout = timeout
-                          };
-            _scope = new TransactionScope(TransactionScopeOption.Required, options); //, TransactionScopeAsyncFlowOption.Enabled);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Completes this instance.
-        /// </summary>
-        ///-------------------------------------------------------------------------------------------------
-        public void Complete()
-        {
-            _scope.Complete();
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged
-        ///  resources.
-        /// </summary>
-        ///-------------------------------------------------------------------------------------------------
-        public void Dispose()
-        {
-            _scope.Dispose();
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Enlists the specified transaction.
-        /// </summary>
-        /// <param name="transaction">
-        ///  The transaction.
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
-        public void Enlist(ITransaction transaction)
-        {
-            if (Transaction.Current != null)
-                Transaction.Current.EnlistVolatile((IEnlistmentNotification) transaction, EnlistmentOptions.None);
-        }
-    }
-#endif
 }

@@ -14,11 +14,10 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -27,6 +26,7 @@ using Hyperstore.Modeling.Ioc;
 using Hyperstore.Modeling.Statistics;
 using Hyperstore.Modeling.Utils;
 using Hyperstore.Modeling.HyperGraph;
+using Hyperstore.Modeling.Platform;
 
 #endregion
 
@@ -38,7 +38,7 @@ namespace Hyperstore.Modeling.MemoryStore
     /// <summary>
     ///     Gestionnaire transactionnel (MVCC) de données en mémoire
     /// </summary>
-    internal sealed class TransactionalMemoryStore : IKeyValueStore, IDisposable 
+    internal sealed class TransactionalMemoryStore : IKeyValueStore, IDisposable
     {
         #region fields
 
@@ -75,7 +75,7 @@ namespace Hyperstore.Modeling.MemoryStore
         ///     Gestionnaire des demandes de vaccum
         /// </summary>
         private JobScheduler _jobScheduler;
-        private readonly ConcurrentQueue<ISlot> _involvedSlots;
+        private readonly IConcurrentQueue<ISlot> _involvedSlots;
 
         #endregion
 
@@ -120,7 +120,7 @@ namespace Hyperstore.Modeling.MemoryStore
                 n = defaultInterval;
 
             _jobScheduler = new JobScheduler(Vacuum, TimeSpan.FromSeconds(n));
-            _involvedSlots = new ConcurrentQueue<ISlot>();
+            _involvedSlots = PlatformServices.Current.CreateConcurrentQueue<ISlot>();
         }
 
         /// <summary>

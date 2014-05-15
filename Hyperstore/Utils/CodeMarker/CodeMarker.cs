@@ -14,12 +14,13 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
 using System.Collections.Generic;
 using Hyperstore.Modeling.Utils;
+using Hyperstore.Modeling.Platform;
 
 #endregion
 
@@ -55,7 +56,7 @@ namespace Hyperstore.Modeling
 
         internal static void InitializeDefault()
         {
-            RegisterListener(new DefaultCodeMarkerListener());
+            RegisterListener(Platform.PlatformServices.Current.CodeMarkerListener);
             EnableMarkers();
         }
 

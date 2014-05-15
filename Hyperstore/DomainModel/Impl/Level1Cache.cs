@@ -14,16 +14,16 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.Utils;
 using Hyperstore.Modeling.HyperGraph;
+using Hyperstore.Modeling.Platform;
 
 #endregion
 
@@ -31,7 +31,7 @@ namespace Hyperstore.Modeling.Domain
 {
     internal sealed class Level1Cache : IDisposable
     {
-        private readonly ConcurrentDictionary<Identity, WeakReference> _cache = new ConcurrentDictionary<Identity, WeakReference>();
+        private readonly IConcurrentDictionary<Identity, WeakReference> _cache;
         /// <summary>
         ///     Gestionnaire des demandes de vaccum
         /// </summary>
@@ -50,6 +50,7 @@ namespace Hyperstore.Modeling.Domain
         {
             DebugContract.Requires(innerGraph);
 
+            _cache = PlatformServices.Current.CreateConcurrentDictionary<Identity, WeakReference>();
             _innerGraph = innerGraph;
 
             _jobScheduler = new JobScheduler(Vacuum, TimeSpan.FromSeconds(60));

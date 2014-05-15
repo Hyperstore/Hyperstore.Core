@@ -14,103 +14,29 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
-#if NETFX_CORE
-using System;
-using System.IO;
-using System.Runtime.Serialization.Json;
-using System.Text;
-namespace Hyperstore.Modeling.Metadata
-{
-    public class JSonHelper
-    {
-        private static readonly JSonHelper instance = new JSonHelper();
 
-        public static JSonHelper Instance
-        {
-            get { return instance; }
-        }
-
-        public string Serialize(object data)
-        {
-            if (data == null)
-                return null;
-
-            if (data is string)
-                return (string)data;
-
-            using (MemoryStream _Stream = new MemoryStream())
-            {
-                var _Serializer = new DataContractJsonSerializer(instance.GetType());
-                _Serializer.WriteObject(_Stream, instance);
-                _Stream.Position = 0;
-                using (StreamReader _Reader = new StreamReader(_Stream))
-                { return _Reader.ReadToEnd(); }
-            }
-        }
-
-        public T Deserialize<T>(string data)
-        {
-            if (typeof(T) == typeof(string))
-                return (T)(object)data;
-
-            return (T)Deserialize(typeof(T), data, default(T));
-        }
-
-        public object Deserialize(Type implementationType, string data, object defaultValue)
-        {
-            Contract.Requires(implementationType, "implementationType");
-
-            if (data == null)
-                return defaultValue;
-
-            if (implementationType == typeof(string))
-                return data;
-
-            var _bytes = Encoding.Unicode.GetBytes(data);
-            using (MemoryStream _Stream = new MemoryStream(_bytes))
-            {
-                var _Serializer = new DataContractJsonSerializer(implementationType);
-                return _Serializer.ReadObject(_Stream);
-            }
-        }
-    }
-}
-#else
+using Hyperstore.Modeling;
+using Hyperstore.Modeling.Platform;
 using System;
 using System.Collections.Generic;
 using System.Web.Script.Serialization;
 
 
-namespace Hyperstore.Modeling.Metadata
+namespace Hyperstore.Platform.Net
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
     ///  A son helper.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
-    public class JSonHelper
+    public class JSonSerializer : IObjectSerializer
     {
-        private static readonly JSonHelper instance = new JSonHelper();
         private readonly JavaScriptSerializer _serializer;
 
-        private JSonHelper()
+        internal JSonSerializer()
         {
             _serializer = new JavaScriptSerializer();
-            _serializer.RegisterConverters(new JavaScriptConverter[] {new IdentityConverter()});
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the instance.
-        /// </summary>
-        /// <value>
-        ///  The instance.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public static JSonHelper Instance
-        {
-            get { return instance; }
+            _serializer.RegisterConverters(new JavaScriptConverter[] { new IdentityConverter() });
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -130,7 +56,7 @@ namespace Hyperstore.Modeling.Metadata
                 return null;
 
             if (data is string)
-                return (string) data;
+                return (string)data;
 
             return _serializer.Serialize(data);
         }
@@ -151,9 +77,9 @@ namespace Hyperstore.Modeling.Metadata
         ///-------------------------------------------------------------------------------------------------
         public T Deserialize<T>(string data)
         {
-            if (typeof (T) == typeof (string))
-                return (T) (object) data;
-            return (T) _serializer.Deserialize(data, typeof (T));
+            if (typeof(T) == typeof(string))
+                return (T)(object)data;
+            return (T)_serializer.Deserialize(data, typeof(T));
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -180,7 +106,7 @@ namespace Hyperstore.Modeling.Metadata
             if (data == null)
                 return defaultValue;
 
-            if (implementationType == typeof (string))
+            if (implementationType == typeof(string))
                 return data;
 
             return _serializer.Deserialize(data, implementationType);
@@ -199,7 +125,7 @@ namespace Hyperstore.Modeling.Metadata
             ///-------------------------------------------------------------------------------------------------
             public override IEnumerable<Type> SupportedTypes
             {
-                get { yield return typeof (Identity); }
+                get { yield return typeof(Identity); }
             }
 
             ///-------------------------------------------------------------------------------------------------
@@ -227,7 +153,7 @@ namespace Hyperstore.Modeling.Metadata
                 DebugContract.Requires(type);
                 DebugContract.Requires(serializer);
 
-                return new Identity(dictionary["DmId"].ToString(), (string) dictionary["Key"]);
+                return new Identity(dictionary["DmId"].ToString(), (string)dictionary["Key"]);
             }
 
             ///-------------------------------------------------------------------------------------------------
@@ -249,7 +175,7 @@ namespace Hyperstore.Modeling.Metadata
                 DebugContract.Requires(serializer);
 
                 var pairs = new Dictionary<string, object>();
-                var id = (Identity) obj;
+                var id = (Identity)obj;
                 pairs["DmId"] = id.DomainModelName;
                 pairs["Key"] = id.Key;
                 return pairs;
@@ -258,4 +184,3 @@ namespace Hyperstore.Modeling.Metadata
     }
 }
 
-#endif

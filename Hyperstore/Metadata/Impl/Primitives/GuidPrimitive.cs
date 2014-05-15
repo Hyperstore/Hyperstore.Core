@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -25,6 +25,10 @@ namespace Hyperstore.Modeling.Metadata.Primitives
 {
     internal class GuidPrimitive : PrimitiveMetaValue
     {
+        protected GuidPrimitive()
+        {
+        }
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Constructor.
@@ -59,7 +63,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             if (ctx.Value is Guid)
                 return ctx.Value;
 
-            return Guid.Parse((string) ctx.Value);
+            return Guid.Parse((string)ctx.Value);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -77,8 +81,8 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         {
             if (data == null)
                 return null;
-            return ((Guid) data).ToString();
+            return ((Guid)data).ToString();
         }
-       
+
     }
 }

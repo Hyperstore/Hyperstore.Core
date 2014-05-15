@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -36,15 +36,18 @@ namespace Hyperstore.Modeling.Metadata
     /// <seealso cref="T:Hyperstore.Modeling.Metadata.SchemaEntity"/>
     ///-------------------------------------------------------------------------------------------------
     [DebuggerDisplay("SchemaEntity {Name, nq}")]
-    public class SchemaEntity<T> : SchemaEntity where T:IModelEntity
+    public class SchemaEntity<T> : SchemaEntity where T : IModelEntity
     {
         #region Constructors of MetaClass (1)
 
-#if NETFX_CORE
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Specialised default constructor for use only by derived classes.
+        /// </summary>
+        ///-------------------------------------------------------------------------------------------------
         protected SchemaEntity()
         {
         }
-#endif
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -60,7 +63,8 @@ namespace Hyperstore.Modeling.Metadata
         ///  (Optional) The name.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public SchemaEntity(ISchema schema, ISchemaEntity superEntity = null, string name = null) : base(schema, name, superEntity, implementedType: typeof (T))
+        public SchemaEntity(ISchema schema, ISchemaEntity superEntity = null, string name = null)
+            : base(schema, name, superEntity, implementedType: typeof(T))
         {
             Contract.Requires(schema, "schema");
         }
@@ -141,13 +145,13 @@ namespace Hyperstore.Modeling.Metadata
         ///  (Optional) Type of the implemented. Default value is DynamicModelElement.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public SchemaEntity(ISchema schema, string name, ISchemaEntity superEntity = null, ISchemaEntity metaclass = null, Type implementedType = null) 
+        public SchemaEntity(ISchema schema, string name, ISchemaEntity superEntity = null, ISchemaEntity metaclass = null, Type implementedType = null)
             : this(schema, implementedType, name, null, superEntity, metaclass)
         {
             Contract.Requires(schema, "schema");
             Contract.Requires(implementedType != null || name != null, "name");
 
-            if (!ReflectionHelper.IsAssignableFrom( typeof(IModelElement), ImplementedType))
+            if (!ReflectionHelper.IsAssignableFrom(typeof(IModelElement), ImplementedType))
                 throw new Exception("SchemaEntity must describes a type implementing IModelEntity");
         }
 
@@ -174,7 +178,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  (Optional) The metaclass.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        protected SchemaEntity(ISchema schema, Type implementedType, string name, Identity id = null, ISchemaEntity superEntity = null, ISchemaEntity metaclass = null) 
+        protected SchemaEntity(ISchema schema, Type implementedType, string name, Identity id = null, ISchemaEntity superEntity = null, ISchemaEntity metaclass = null)
             : base(schema, implementedType, name, id, superEntity, metaclass)
         {
         }

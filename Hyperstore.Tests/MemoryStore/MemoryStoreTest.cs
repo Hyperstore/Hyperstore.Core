@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading.Tasks;
@@ -132,7 +132,7 @@ namespace Hyperstore.Tests.MemoryStore
         {
             var store = new Store();
             await store.LoadSchemaAsync(new TestDomainDefinition(resolver => resolver.RegisterSetting(Setting.MaxTimeBeforeDeadlockInMs, 300)));
-            var domain = await store.CreateDomainModelAsync("Test"); 
+            var domain = await store.CreateDomainModelAsync("Test");
 
             var gate = new System.Threading.ManualResetEvent(false);
 
@@ -174,7 +174,7 @@ namespace Hyperstore.Tests.MemoryStore
         {
             var store = new Store();
             await store.LoadSchemaAsync(new TestDomainDefinition(resolver => resolver.RegisterSetting(Setting.MaxTimeBeforeDeadlockInMs, 300)));
-            var domain = await store.CreateDomainModelAsync("Test"); 
+            var domain = await store.CreateDomainModelAsync("Test");
 
             var gate = new System.Threading.ManualResetEvent(false);
 
@@ -212,7 +212,7 @@ namespace Hyperstore.Tests.MemoryStore
             // Accéder à une même donnée ds une session Serializable génere une SerializeTransactionException
             var store = new Store();
             await store.LoadSchemaAsync(new TestDomainDefinition(resolver => resolver.RegisterSetting(Setting.MaxTimeBeforeDeadlockInMs, 100)));
-            var domain = await store.CreateDomainModelAsync("Test"); 
+            var domain = await store.CreateDomainModelAsync("Test");
 
             var gate = new System.Threading.ManualResetEvent(false);
 
@@ -258,7 +258,7 @@ namespace Hyperstore.Tests.MemoryStore
         {
             var store = new Store();
             await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test"); 
+            var domain = await store.CreateDomainModelAsync("Test");
 
             var factory = new TaskFactory();
 
@@ -337,14 +337,14 @@ namespace Hyperstore.Tests.MemoryStore
             var store = new Store();
             store.DependencyResolver.Register<ITransactionManager>(new MockTransactionManager());
             await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test"); 
+            var domain = await store.CreateDomainModelAsync("Test");
 
             var provider = new TransactionalMemoryStore(domain);
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
             {
                 using (var s2 = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
                 {
-                    provider.AddNode( new Data("1", 10), PrimitivesSchema.Int32Schema);
+                    provider.AddNode(new Data("1", 10), PrimitivesSchema.Int32Schema);
                     provider.UpdateNode(new Data("1", 20), PrimitivesSchema.Int32Schema);
                     s2.AcceptChanges();
                 }
@@ -359,7 +359,7 @@ namespace Hyperstore.Tests.MemoryStore
         {
             var store = new Store();
             await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test"); 
+            var domain = await store.CreateDomainModelAsync("Test");
 
             var provider = new TransactionalMemoryStore(domain);
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
@@ -407,7 +407,7 @@ namespace Hyperstore.Tests.MemoryStore
         {
             var store = new Store();
             await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test"); 
+            var domain = await store.CreateDomainModelAsync("Test");
 
             var provider = new TransactionalMemoryStore(domain);
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
@@ -427,7 +427,7 @@ namespace Hyperstore.Tests.MemoryStore
         {
             var store = new Store();
             await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test"); 
+            var domain = await store.CreateDomainModelAsync("Test");
 
             var provider = new TransactionalMemoryStore(domain);
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
@@ -558,7 +558,7 @@ namespace Hyperstore.Tests.MemoryStore
         {
             var store = new Store();
             await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test"); 
+            var domain = await store.CreateDomainModelAsync("Test");
 
             Identity aid;
             dynamic a;

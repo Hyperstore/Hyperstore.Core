@@ -18,8 +18,8 @@
 #region Imports
 
 using Hyperstore.Modeling.HyperGraph.Adapters;
+using Hyperstore.Modeling.Platform;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -30,7 +30,7 @@ namespace Hyperstore.Modeling.HyperGraph.Index
     internal class MemoryIndexManager : IIndexManager
     {
         private readonly Dictionary<Identity, List<IndexDefinition>> _indexByMetaClass = new Dictionary<Identity, List<IndexDefinition>>();
-        private readonly ConcurrentDictionary<string, IndexDefinition> _indexByNames = new ConcurrentDictionary<string, IndexDefinition>();
+        private readonly IConcurrentDictionary<string, IndexDefinition> _indexByNames;
         private readonly ReaderWriterLockSlim _sync = new ReaderWriterLockSlim();
         private MemoryGraphAdapter _graph;
 
@@ -46,6 +46,7 @@ namespace Hyperstore.Modeling.HyperGraph.Index
         {
             Contract.Requires(adapter, "adapter");
 
+            _indexByNames = PlatformServices.Current.CreateConcurrentDictionary<string, IndexDefinition>();
             _graph = adapter;
         }
 

@@ -86,13 +86,13 @@ namespace Hyperstore.Tests.Model
     //        XExtendsBaseClass.DefineProperty("OthersX", XReferencesX);
     //    }
 
-        protected override IDependencyResolver PrepareDependencyResolver(IDependencyResolver parentResolver)
-        {
-            var resolver = base.PrepareDependencyResolver(parentResolver);
-            if (_prepareDependency != null)
-                _prepareDependency(resolver);
-            resolver.Register<global::Hyperstore.Modeling.ISynchronizationContext>(new global::Hyperstore.Modeling.Utils.UIDispatcher());
-            return resolver;
-        }
+        //protected override IDependencyResolver PrepareDependencyResolver(IDependencyResolver parentResolver)
+        //{
+        //    var resolver = base.PrepareDependencyResolver(parentResolver);
+        //    if (_prepareDependency != null)
+        //        _prepareDependency(resolver);
+        //    resolver.Register<global::Hyperstore.Modeling.ISynchronizationContext>(new global::Hyperstore.Modeling.Utils.UIDispatcher());
+        //    return resolver;
+        //}
     }
 }

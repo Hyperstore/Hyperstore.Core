@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -25,6 +25,10 @@ namespace Hyperstore.Modeling.Metadata.Primitives
 {
     internal class BooleanPrimitive : PrimitiveMetaValue
     {
+        protected BooleanPrimitive()
+        {
+        }
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Constructor.
@@ -33,7 +37,8 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public BooleanPrimitive(ISchema domainModel) : base(domainModel, typeof (bool))
+        public BooleanPrimitive(ISchema domainModel)
+            : base(domainModel, typeof(bool))
         {
         }
 
@@ -58,7 +63,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             if (ctx.Value is Boolean)
                 return ctx.Value;
 
-            return bool.Parse((string) ctx.Value);
+            return bool.Parse((string)ctx.Value);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -76,7 +81,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         {
             if (data == null)
                 return null;
-            return ((bool) data).ToString();
+            return ((bool)data).ToString();
         }
     }
 }

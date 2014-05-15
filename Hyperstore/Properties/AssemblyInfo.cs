@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System.Reflection;
@@ -32,13 +32,6 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 #if !BUILD
-#if NETFX_CORE
-        //[assembly: InternalsVisibleTo("Hyperstore.WinRT.Tests")]
-#else
-
-[assembly:
-        InternalsVisibleTo(
-                "Hyperstore.Tests"
-                )]
-#endif
+[assembly: InternalsVisibleTo("Hyperstore.Tests")]
+[assembly: InternalsVisibleTo("Hyperstore.Platform")]
 #endif

@@ -81,6 +81,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Hyperstore.Platform.Net\Hyperstore.Platform.Net.csproj">
+      <Project>{199dc246-f734-4019-8163-09d0a19229b3}</Project>
+      <Name>Hyperstore.Platform.Net</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Hyperstore\Hyperstore.csproj">
       <Project>{3ab9fbab-4e14-4661-90bc-da6d4236066a}</Project>
       <Name>Hyperstore</Name>

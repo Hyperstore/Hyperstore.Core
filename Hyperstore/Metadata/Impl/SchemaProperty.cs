@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 #region Imports (3)
@@ -90,11 +90,14 @@ namespace Hyperstore.Modeling.Metadata
 
         #region Constructors of MetaProperty (1)
 
-#if NETFX_CORE
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Specialised default constructor for use only by derived classes.
+        /// </summary>
+        ///-------------------------------------------------------------------------------------------------
         protected SchemaProperty()
         {
         }
-#endif
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -127,8 +130,8 @@ namespace Hyperstore.Modeling.Metadata
             //if (InvalidPropertyNames.Any(p => String.Compare(p, propertyName, StringComparison.OrdinalIgnoreCase) == 0))
             //    throw new Exception(ExceptionMessages.InvalidPropertyNameCantBeAPropertyOfIModelElement);
 
-            ConstructInternal(owner.Schema, implementedType ?? typeof (SchemaProperty), owner.Id.CreateMetaPropertyIdentity(propertyName), propertyName, null, PrimitivesSchema.SchemaPropertySchema,
-                    (dm, melId, m) => new AddSchemaPropertyCommand(dm as ISchema, melId, (ISchemaEntity) m));
+            ConstructInternal(owner.Schema, implementedType ?? typeof(SchemaProperty), owner.Id.CreateMetaPropertyIdentity(propertyName), propertyName, null, PrimitivesSchema.SchemaPropertySchema,
+                    (dm, melId, m) => new AddSchemaPropertyCommand(dm as ISchema, melId, (ISchemaEntity)m));
 
             // Attention ici toutes les propriétés doivent avoir été déclarées sous peine de rentrer dans une bouble infini
             // au niveau GetOrCreateProperty de ModelElement
@@ -156,7 +159,7 @@ namespace Hyperstore.Modeling.Metadata
         {
             base.Initialize(schemaElement, domainModel);
             _propertyMetadataReference = new ReferenceHandler(this, PrimitivesSchema.SchemaPropertyReferencesSchemaEntitySchema);
-            _defaultValueProperty = ((IModelElement) this).SchemaInfo.GetProperty("DefaultValue");
+            _defaultValueProperty = ((IModelElement)this).SchemaInfo.GetProperty("DefaultValue");
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -176,7 +179,7 @@ namespace Hyperstore.Modeling.Metadata
 
                 var pv = GetPropertyValue(_defaultValueProperty);
                 if (pv != null && pv.HasValue)
-                    return _defaultValue = Deserialize(new SerializationContext(DomainModel, ((IModelElement) this).Id, this, pv.Value));
+                    return _defaultValue = Deserialize(new SerializationContext(DomainModel, ((IModelElement)this).Id, this, pv.Value));
 
                 return PropertySchema.DefaultValue;
             }

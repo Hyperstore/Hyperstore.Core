@@ -14,14 +14,14 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
 using System.Collections.Generic;
 using Hyperstore.Modeling.Events;
-using System.Collections.Concurrent;
 using System.Threading;
+using Hyperstore.Modeling.Platform;
 
 #endregion
 
@@ -53,7 +53,7 @@ namespace Hyperstore.Modeling.Messaging
             public IEnumerable<IEvent> Events;
         }
 
-        private readonly ConcurrentQueue<ProcessInfo> _processes = new ConcurrentQueue<ProcessInfo>();
+        private readonly IConcurrentQueue<ProcessInfo> _processes;
         private readonly object _gate = new object();
         private readonly IHyperstore _store;
         private IEventDispatcher _defaultDispatcher;
@@ -61,7 +61,7 @@ namespace Hyperstore.Modeling.Messaging
         internal EventsProcessor(IHyperstore store)
         {
             DebugContract.Requires(store);
-         
+            _processes = PlatformServices.Current.CreateConcurrentQueue<ProcessInfo>();
             _store = store;
         }
 
@@ -111,12 +111,12 @@ namespace Hyperstore.Modeling.Messaging
             {
                 foreach (var @event in info.Events)
                 {
-                    if (@event == null )
+                    if (@event == null)
                         continue;
 
                     _store.Trace.WriteTrace(TraceCategory.EventBus, "Process event : " + @event);
                     var dispatcher = GetEventDispatcher(@event);
-                    if( dispatcher != null)
+                    if (dispatcher != null)
                         dispatcher.HandleEvent(@event);
                 }
 

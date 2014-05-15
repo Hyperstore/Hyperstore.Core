@@ -25,9 +25,7 @@ using System.Threading.Tasks;
 using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.Statistics;
 using Hyperstore.Modeling.HyperGraph.Adapters;
-#if TXSCOPE
-using System.Transactions;
-#endif
+using Hyperstore.Modeling.Platform;
 
 #endregion
 
@@ -39,13 +37,7 @@ namespace Hyperstore.Modeling.HyperGraph
     ///     Il est possible de créer plusieurs transactions imbriquées mais elles ne se comportent que comme une seule
     ///     transaction. Si une se termine mal, toutes les autres seront aussi dans ce cas.
     /// </summary>
-    internal sealed class HypergraphTransaction : ITransaction
-#if !TXSCOPE
-        , ISessionEnlistmentNotification
-#else
-            ,
-            IEnlistmentNotification
-#endif
+    internal sealed class HypergraphTransaction : ITransaction, ISessionEnlistmentNotification
     {
         /// <summary>
         ///     Action devant s'executer si la transaction se termine correctement.
@@ -261,9 +253,7 @@ namespace Hyperstore.Modeling.HyperGraph
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
         public bool Aborted;
-#pragma warning disable 0414 // Warning 'value never used' normal : _currentStatus est utilisé pour !TX_SCOPE
         private TransactionStatus _currentStatus;
-#pragma warning restore 0414
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -336,7 +326,6 @@ namespace Hyperstore.Modeling.HyperGraph
                 Aborted = true;
         }
 
-#if !TXSCOPE
         bool ISessionEnlistmentNotification.NotifyPrepare()
         {
             return !Aborted;
@@ -357,36 +346,6 @@ namespace Hyperstore.Modeling.HyperGraph
             Aborted = true;
             _graph.OnTransactionTerminated(this);
         }
-#else
-        void IEnlistmentNotification.Commit(Enlistment enlistment)
-        {
-            Debug.Assert(_nestedStatus.Count == 0);
-
-            UpdateProfiler(s => s.NumberOfTransactions.Incr());
-            ExecutePendinActions();
-            _graph.OnTransactionTerminated(this);
-        }
-
-        void IEnlistmentNotification.InDoubt(Enlistment enlistment)
-        {
-            Aborted = true;
-            _graph.OnTransactionTerminated(this);
-        }
-
-        void IEnlistmentNotification.Prepare(PreparingEnlistment preparingEnlistment)
-        {
-            if (Aborted)
-                preparingEnlistment.ForceRollback();
-            else
-                preparingEnlistment.Prepared();
-        }
-
-        void IEnlistmentNotification.Rollback(Enlistment enlistment)
-        {
-            Aborted = true;
-            _graph.OnTransactionTerminated(this);
-        }
-#endif
 
         /// <summary>
         ///     Execution des actions en attente lorsque la transaction s'est correctement terminée
@@ -399,7 +358,7 @@ namespace Hyperstore.Modeling.HyperGraph
             if (_indexActions != null)
                 actions = actions.Concat(_indexActions); // La mise à jour des index 
 
-            Parallel.ForEach(actions, i => i.Execute(_graph));
+            PlatformServices.Current.Parallel_ForEach(actions, i => i.Execute(_graph));
             _indexActions = null;
             _pendingActions = null;
         }
