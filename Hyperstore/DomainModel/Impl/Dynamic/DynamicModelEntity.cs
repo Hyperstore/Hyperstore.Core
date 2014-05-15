@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
-
+ 
 #region Imports
 
 using System;
@@ -165,8 +165,7 @@ namespace Hyperstore.Modeling
             if (String.Compare(name, propertyName, StringComparison.Ordinal) == 0)
                 return true;
 
-            var sourceName = Types.SplitFullName(relationship.Start.Id.Key)
-                    .Item2;
+            var sourceName = Types.SplitFullName(relationship.Start.Id.Key).Item2;
             if (name.StartsWith(sourceName, StringComparison.Ordinal))
             {
                 name = name.Substring(sourceName.Length);
@@ -194,21 +193,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public object TryGetProperty(string propertyName)
         {
-            switch (propertyName)
-            {
-                case "Id":
-                    return ((IModelElement)this).Id;
-                case "DomainModel":
-                    return DomainModel;
-                case "Schema":
-                    return ((IModelElement)this).SchemaInfo;
-                case "Status":
-                    return ((IModelElement)this).Status;
-                case "Store":
-                    return Store;
-            }
-
-            var property = ((IModelElement)this).SchemaInfo.GetProperty(propertyName);
+            var property = ((IModelElement) this).SchemaInfo.GetProperty(propertyName);
             if (property == null)
             {
                 object refer;

@@ -119,6 +119,23 @@ namespace Hyperstore.Tests
         }
 
         [TestMethod]
+        public async Task CreateDynamicElementTest2()
+        {
+            var domain = await LoadDynamicDomain();
+
+            dynamic x = null;
+            using (var session = domain.Store.BeginSession())
+            {
+                x = domain.Store.CreateEntity(domain.Store.GetSchemaEntity("Library"), domain);
+                x.Name = "LIB";
+                session.AcceptChanges();
+            }
+
+            Assert.IsNotNull(x);
+            Assert.AreEqual("LIB", x.Name);
+        }
+
+        [TestMethod]
         public async Task DynamicPropertyTest()
         {
             var domain = await LoadDynamicDomain();
