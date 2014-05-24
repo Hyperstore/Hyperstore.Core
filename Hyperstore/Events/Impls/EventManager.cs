@@ -550,9 +550,9 @@ namespace Hyperstore.Modeling.Events
             {
                 NotifyEventError(log, ex);
             }
-
+            
             // Si la session s'est terminée anormalement, aucun autre événement n'est envoyé
-            if (!session.IsAborted)
+            if (!session.IsAborted && (session.Mode & SessionMode.SkipNotifications) != SessionMode.SkipNotifications)
             {
 
                 foreach (var ev in session.Events.Where(e => e.DomainModel == _domainModel.Name))

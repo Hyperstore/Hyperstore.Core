@@ -183,6 +183,8 @@ namespace Hyperstore.Modeling
             r.SetStore(this);
 
             DefaultSessionConfiguration = new SessionConfiguration();
+            DefaultSessionConfiguration.IsolationLevel = SessionIsolationLevel.ReadCommitted;
+            DefaultSessionConfiguration.SessionTimeout = TimeSpan.FromMinutes(1);
 
             _domainControler = ((options & StoreOptions.EnableExtensions) == StoreOptions.EnableExtensions) ? (IDomainModelControler<IDomainModel>)new ExtensionModelControler<IDomainModel>() : new DomainModelControler<IDomainModel>();
             _schemaControler = ((options & StoreOptions.EnableExtensions) == StoreOptions.EnableExtensions) ? (IDomainModelControler<ISchema>)new ExtensionModelControler<ISchema>() : new DomainModelControler<ISchema>();

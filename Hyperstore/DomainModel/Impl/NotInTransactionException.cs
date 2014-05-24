@@ -31,5 +31,8 @@ namespace Hyperstore.Modeling
     ///-------------------------------------------------------------------------------------------------
     public class NotInTransactionException : Exception
     {
+        public NotInTransactionException(string message=null) : base(message ?? "Transaction required")
+        {
+        }
     }
 }

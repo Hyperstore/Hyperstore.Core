@@ -529,7 +529,7 @@ namespace Hyperstore.Modeling.HyperGraph
             try
             {
                 var q = _graphAdapter.LoadNodes(query);
-                using (var session = this.Store.BeginSession(new SessionConfiguration { Mode = SessionMode.Loading }))
+                using (var session = this.Store.BeginSession(new SessionConfiguration { Mode = SessionMode.Loading | SessionMode.SkipConstraints }))
                 {
                     foreach (var result in q)
                     {

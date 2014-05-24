@@ -53,10 +53,10 @@ namespace Hyperstore.Modeling
         ///  The node id.
         /// </param>
         /// <param name="schemaElement">
-        ///  The schema container.
+        ///  The schema of the element.
         /// </param>
         /// <returns>
-        ///  Le noeud et ses noeuds associés ou null.
+        ///  A QueryNodeResult containing the node with this properties
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
         QueryNodeResult GetNode(Identity id, ISchemaElement schemaElement);
@@ -66,7 +66,7 @@ namespace Hyperstore.Modeling
         ///  Load.
         /// </summary>
         /// <param name="query">
-        ///  The query.
+        ///  A query in native query language.
         /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process load nodes in this collection.
@@ -85,7 +85,7 @@ namespace Hyperstore.Modeling
         ///  The direction.
         /// </param>
         /// <param name="schemaRelationship">
-        ///  The schema relationship.
+        ///  The schema relationship of the element and all its derivated
         /// </param>
         /// <param name="includeProperties">
         ///  if set to <c>true</c> [include properties].

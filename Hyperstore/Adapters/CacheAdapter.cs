@@ -83,7 +83,6 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
         public IGraphNode GetGraphNode(Identity id, ISchemaElement metaclass, bool localOnly)
         {
             DebugContract.Requires(id);
-            DebugContract.Requires(metaclass);
 
             var node = _memory.GetGraphNode(id, metaclass);
             if (node == null 
@@ -194,7 +193,7 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
             DebugContract.Requires(owner);
             DebugContract.Requires(property);
 
-            long v = 0;
+            long? v = version;
             if (version == null)
             {
                 var old = GetPropertyValue(owner.Id, owner.SchemaInfo, property); // TODO revoir signature (mel ?)

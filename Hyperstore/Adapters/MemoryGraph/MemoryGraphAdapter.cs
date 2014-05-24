@@ -187,7 +187,9 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
         {
             DebugContract.Requires(id);
             DebugContract.Requires(metaClass);
-            DebugContract.Requires(Session.Current);
+
+            if (Session.Current == null)
+                throw new NotInTransactionException();
 
             using (var tx = BeginTransaction())
             {
@@ -349,7 +351,9 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
             DebugContract.Requires(startMetaclass);
             DebugContract.Requires(endId);
             DebugContract.Requires(endMetaclass);
-            DebugContract.Requires(Session.Current);
+
+            if (Session.Current == null)
+                throw new NotInTransactionException();
 
             using (var tx = BeginTransaction())
             {
@@ -615,10 +619,10 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
 
             using (var tx = BeginTransaction())
             {
-                var node = GetGraphNode(ownerId, ownerMetadata);
-                // Vérification si le owner existe
-                if (node == null)
-                    throw new InvalidElementException(ownerId);
+                //var node = GetGraphNode(ownerId, ownerMetadata);
+                //// Vérification si le owner existe
+                //if (node == null)
+                //    throw new InvalidElementException(ownerId);
 
                 var pid = ownerId.CreateAttributeIdentity(property.Name);
 
