@@ -72,7 +72,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         public PrimitiveMetaRelationship(ISchema domainModel, string name, Cardinality cardinality, bool isEmbedded = false, Identity id = null, ISchemaElement start = null, ISchemaElement end = null)
-            : base(domainModel, typeof(ModelRelationship), superClass: PrimitivesSchema.SchemaElementSchema, name: name, id: id)
+            : base(domainModel, typeof(ModelRelationship), null, name, id: id)
         {
             DebugContract.Requires(domainModel, "domainModel");
             Contract.RequiresNotEmpty(name, "name");

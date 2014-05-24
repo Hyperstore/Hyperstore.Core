@@ -17,7 +17,9 @@ namespace Hyperstore.Platform.WinPhone
         ///-------------------------------------------------------------------------------------------------
         public UIDispatcher()
         {
-            _dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
+            var t = Windows.UI.Core.CoreWindow.GetForCurrentThread();
+            if( t != null)
+                _dispatcher = t.Dispatcher;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -31,9 +33,12 @@ namespace Hyperstore.Platform.WinPhone
         public async Task Send(Action action)
         {
             if (_dispatcher == null)
-                throw new Exception("Incorrect UI dispatcher for the context of the current application. Redefines the correct dispatcher in the store.");
-
-            await _dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, new Windows.UI.Core.DispatchedHandler(action));
+            {
+                action();
+                await Hyperstore.Modeling.Utils.CompletedTask.Default;
+            }
+            else
+                await _dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, new Windows.UI.Core.DispatchedHandler(action));
         }
     }
 }
