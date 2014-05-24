@@ -201,7 +201,7 @@ namespace Hyperstore.Modeling
         {
             get
             {
-                return DomainModel.GetRelationships(SchemaRelationship, start: Source, end: End, localOnly: false).Count();
+                return DomainModel.GetRelationships(SchemaRelationship, start: Source, end: End, localOnly: true).Count();
             }
         }
 
@@ -215,7 +215,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public virtual IEnumerator<T> GetEnumerator()
         {
-            foreach (var link in DomainModel.GetRelationships(SchemaRelationship, start: Source, end: End, localOnly: false))
+            foreach (var link in DomainModel.GetRelationships(SchemaRelationship, start: Source, end: End, localOnly: true))
             {
                 var mel = (T)(Source != null ? link.End : link.Start);
                 if (WhereClause == null || WhereClause(mel))

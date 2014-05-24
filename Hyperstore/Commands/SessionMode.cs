@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -68,8 +68,12 @@ namespace Hyperstore.Modeling
         /// </summary>
         Serializing = 32,
         /// <summary>
-        /// Silent mode - No execption will be raised by the session
+        /// Silent mode - No exception will be raised by the session
         /// </summary>
-        SilentMode = 64
+        SilentMode = 64,
+        /// <summary>
+        /// No events will be raised
+        /// </summary>
+        SkipNotifications = 128
     }
 }

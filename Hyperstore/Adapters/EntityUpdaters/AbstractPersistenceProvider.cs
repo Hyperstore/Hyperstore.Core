@@ -237,17 +237,17 @@ namespace Hyperstore.Modeling.Adapters
             if (DependencyResolver != null)
                 stat = DependencyResolver.Resolve<IStatistics>();
 
-            StatGetNodes = stat.RegisterCounter(_statisticCounterName, String.Format("#GetNodes {0}-{1}", domainModel.Name ), "GetNodes", StatisticCounterType.Value);
-            StatGetNodesAvgTime = stat.RegisterCounter(_statisticCounterName, String.Format("GetNodesAvgTime {0}-{1}", domainModel.Name ), "GetNodesAvgTime", StatisticCounterType.Average);
-            StatGetNode = stat.RegisterCounter(_statisticCounterName, String.Format("#GetNode {0}-{1}", domainModel.Name ), "GetNode", StatisticCounterType.Value);
-            StatGetNodeAvgTime = stat.RegisterCounter(_statisticCounterName, String.Format("GetNodeAvgTime {0}-{1}", domainModel.Name ), "GetNodeAvgTime", StatisticCounterType.Average);
-            StatGetProperty = stat.RegisterCounter(_statisticCounterName, String.Format("#GetProperty {0}-{1}", domainModel.Name ), "GetProperty", StatisticCounterType.Value);
-            StatGetPropertyAvgTime = stat.RegisterCounter(_statisticCounterName, String.Format("GetPropertyAvgTime {0}-{1}", domainModel.Name ), "GetPropertyAvgTime", StatisticCounterType.Average);
-            StatGetEdges = stat.RegisterCounter(_statisticCounterName, String.Format("#GetEdges {0}-{1}", domainModel.Name ), "GetEdges", StatisticCounterType.Value);
-            StatGetEdgesAvgTime = stat.RegisterCounter(_statisticCounterName, String.Format("GetEdgesAvgTime {0}-{1}", domainModel.Name ), "GetEdgesAvgTime", StatisticCounterType.Average);
+            StatGetNodes = stat.RegisterCounter(_statisticCounterName, String.Format("#GetNodes {0}", domainModel.Name ), "GetNodes", StatisticCounterType.Value);
+            StatGetNodesAvgTime = stat.RegisterCounter(_statisticCounterName, String.Format("GetNodesAvgTime {0}", domainModel.Name ), "GetNodesAvgTime", StatisticCounterType.Average);
+            StatGetNode = stat.RegisterCounter(_statisticCounterName, String.Format("#GetNode {0}", domainModel.Name ), "GetNode", StatisticCounterType.Value);
+            StatGetNodeAvgTime = stat.RegisterCounter(_statisticCounterName, String.Format("GetNodeAvgTime {0}", domainModel.Name ), "GetNodeAvgTime", StatisticCounterType.Average);
+            StatGetProperty = stat.RegisterCounter(_statisticCounterName, String.Format("#GetProperty {0}", domainModel.Name ), "GetProperty", StatisticCounterType.Value);
+            StatGetPropertyAvgTime = stat.RegisterCounter(_statisticCounterName, String.Format("GetPropertyAvgTime {0}", domainModel.Name ), "GetPropertyAvgTime", StatisticCounterType.Average);
+            StatGetEdges = stat.RegisterCounter(_statisticCounterName, String.Format("#GetEdges {0}", domainModel.Name ), "GetEdges", StatisticCounterType.Value);
+            StatGetEdgesAvgTime = stat.RegisterCounter(_statisticCounterName, String.Format("GetEdgesAvgTime {0}", domainModel.Name ), "GetEdgesAvgTime", StatisticCounterType.Average);
 
-            StatSessionCount = stat.RegisterCounter(_statisticCounterName, String.Format("#Session {0}-{1}", DomainModel.Name ), "Session", StatisticCounterType.Value);
-            StatSessionAvgTime = stat.RegisterCounter(_statisticCounterName, String.Format("SessionAvgTime {0}-{1}", DomainModel.Name ), "SessionAvgTime", StatisticCounterType.Average);
+            StatSessionCount = stat.RegisterCounter(_statisticCounterName, String.Format("#Session {0}", DomainModel.Name ), "Session", StatisticCounterType.Value);
+            StatSessionAvgTime = stat.RegisterCounter(_statisticCounterName, String.Format("SessionAvgTime {0}", DomainModel.Name ), "SessionAvgTime", StatisticCounterType.Average);
 
         }
 

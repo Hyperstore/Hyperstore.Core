@@ -49,12 +49,7 @@ namespace Hyperstore.Modeling
         public SessionConfiguration()
         {
             CancellationToken = CancellationToken.None;
-            IsolationLevel = SessionIsolationLevel.ReadCommitted;
-#if !TEST
-            SessionTimeout = TimeSpan.FromMinutes(1);
-#else
-            Timeout = TimeSpan.Zero;
-#endif
+
             Readonly = false;
             Mode = SessionMode.Normal;
             SessionId = null;

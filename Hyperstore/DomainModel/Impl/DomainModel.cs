@@ -680,6 +680,7 @@ namespace Hyperstore.Modeling.Domain
             Contract.Requires(id, "id");
             Contract.Requires(metadata, "metadata");
             CheckInitialized();
+
             using (var session = EnsuresRunInSession())
             {
                 var r = InnerGraph.RemoveEntity(id, metadata, throwExceptionIfNotExists, localOnly);
@@ -708,7 +709,13 @@ namespace Hyperstore.Modeling.Domain
         ///-------------------------------------------------------------------------------------------------
         public virtual IModelElement GetElement(Identity id, ISchemaElement metaclass, bool localOnly = true)
         {
+            if( !localOnly && Session.Current == null)
+            {
+                throw new NotInTransactionException("You must be in a transaction when localOnly is false.");
+            }
+
             CheckInitialized();
+
             if (id == null)
                 return null;
 
@@ -865,6 +872,11 @@ namespace Hyperstore.Modeling.Domain
         ///-------------------------------------------------------------------------------------------------
         public virtual IEnumerable<IModelElement> GetElements(ISchemaElement metaClass = null, int skip = 0, bool localOnly = true)
         {
+            if (!localOnly && Session.Current == null)
+            {
+                throw new NotInTransactionException("You must be in a transaction when localOnly is false.");
+            }
+
             CheckInitialized();
 
             foreach (var e in InnerGraph.GetElements(metaClass, skip, localOnly))
@@ -897,6 +909,11 @@ namespace Hyperstore.Modeling.Domain
         ///-------------------------------------------------------------------------------------------------
         public virtual IEnumerable<IModelEntity> GetEntities(ISchemaEntity metaClass = null, int skip = 0, bool localOnly = true)
         {
+            if (!localOnly && Session.Current == null)
+            {
+                throw new NotInTransactionException("You must be in a transaction when localOnly is false.");
+            }
+
             CheckInitialized();
             foreach (var e in InnerGraph.GetEntities(metaClass, skip, localOnly))
             {
@@ -1023,6 +1040,11 @@ namespace Hyperstore.Modeling.Domain
             Contract.Requires(id, "id");
             Contract.Requires(metadata, "metadata");
 
+            if (!localOnly && Session.Current == null)
+            {
+                throw new NotInTransactionException("You must be in a transaction when localOnly is false.");
+            }
+
             CheckInitialized();
 
             return InnerGraph.GetRelationship(id, metadata, localOnly);
@@ -1104,6 +1126,11 @@ namespace Hyperstore.Modeling.Domain
         ///-------------------------------------------------------------------------------------------------
         public IEnumerable<IModelRelationship> GetRelationships(ISchemaRelationship metadata = null, IModelElement start = null, IModelElement end = null, int skip = 0, bool localOnly = true)
         {
+            if (!localOnly && Session.Current == null)
+            {
+                throw new NotInTransactionException("You must be in a transaction when localOnly is false.");
+            }
+
             CheckInitialized();
 
             foreach (var e in InnerGraph.GetRelationships(metadata, start, end, skip, localOnly))
