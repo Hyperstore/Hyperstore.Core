@@ -64,8 +64,9 @@ namespace Hyperstore.Bench
                 sw.Stop();
                 //Console.WriteLine("Expected {0} Value {1}", mx * nbc * 2, nb);
                 //Console.WriteLine(sw.ElapsedMilliseconds);
-                Console.ReadKey();
-                Console.WriteLine();
+                //Console.ReadKey();
+                //Console.WriteLine();
+                break;
                 cx++;
             }
 
@@ -106,11 +107,11 @@ namespace Hyperstore.Bench
             //Parallel.For(0, max, i =>
             for (int i = 0; i < max; i++)
             {
-                using (var tx = store.BeginSession(new SessionConfiguration { Mode = SessionMode.SkipConstraints | SessionMode.SkipNotifications }))
+                using (var tx = store.BeginSession(new SessionConfiguration { Mode = SessionMode.SkipConstraints | SessionMode.SkipNotifications, Readonly=true }))
                 {
                     var a = store.GetElement<XExtendsBaseClass>(ids[i]);
-                    var x = a.Name;
-                    tx.AcceptChanges();
+                  //  var x = a.Name;
+                  //  tx.AcceptChanges();
                 }
             }
             //);

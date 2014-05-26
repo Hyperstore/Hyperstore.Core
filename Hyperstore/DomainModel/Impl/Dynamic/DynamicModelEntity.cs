@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -193,7 +193,21 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public object TryGetProperty(string propertyName)
         {
-            var property = ((IModelElement) this).SchemaInfo.GetProperty(propertyName);
+            switch (propertyName)
+            {
+                case "Id":
+                    return ((IModelElement)this).Id;
+                case "DomainModel":
+                    return DomainModel;
+                case "Schema":
+                    return ((IModelElement)this).SchemaInfo;
+                case "Status":
+                    return ((IModelElement)this).Status;
+                case "Store":
+                    return Store;
+            }
+
+            var property = ((IModelElement)this).SchemaInfo.GetProperty(propertyName);
             if (property == null)
             {
                 object refer;

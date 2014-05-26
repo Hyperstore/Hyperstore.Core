@@ -152,8 +152,8 @@ namespace Hyperstore.Modeling.Domain
             {
                 if (!_cache.TryAdd(id, new WeakReference(elem)))
                 {
-                    _cache.TryGetValue(id, out weak);
-                    elem = weak.Target as IModelElement;
+                    if(_cache.TryGetValue(id, out weak))
+                        elem = weak.Target as IModelElement;
                 }
             }
 
@@ -182,7 +182,7 @@ namespace Hyperstore.Modeling.Domain
                 return mel;
 
             val.Target = instance;
-            // To ensure the data was not removed after the last GetOrAdd
+            // To ensure data was not removed after the last GetOrAdd
             val = _cache.GetOrAdd(instance.Id, val);
             return val.Target as IModelElement;
         }

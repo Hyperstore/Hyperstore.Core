@@ -172,6 +172,8 @@ namespace Hyperstore.Modeling
         {
             Contract.Requires(resolver, "resolver");
 
+            DefaultSessionConfiguration = new SessionConfiguration();
+
             _options = options;
             Id = id ?? Guid.NewGuid();
             _statistics = new Statistics.Statistics();
@@ -182,7 +184,6 @@ namespace Hyperstore.Modeling
                 throw new Exception(ExceptionMessages.DependencyResolverMustInheritFromDefaultDependencyResolver);
             r.SetStore(this);
 
-            DefaultSessionConfiguration = new SessionConfiguration();
             DefaultSessionConfiguration.IsolationLevel = SessionIsolationLevel.ReadCommitted;
             DefaultSessionConfiguration.SessionTimeout = TimeSpan.FromMinutes(1);
 
