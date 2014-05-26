@@ -287,7 +287,7 @@ namespace Hyperstore.Modeling.Commands
         /// <value>
         ///     The involved elements.
         /// </value>
-        internal bool PrepareModelElements(bool ignore)
+        internal bool PrepareModelElements(bool isAborted, bool schemaLoading)
         {
             if (_modelElementsPrepared)
                 return _elements.Count > 0;
@@ -295,7 +295,7 @@ namespace Hyperstore.Modeling.Commands
             _modelElementsPrepared = true;
 
             // On est dans le cas d'une session annulée ou lors d'un chargement de metadonnées
-            if (ignore)
+            if (schemaLoading)
                 return false;
 
             var set = new HashSet<Identity>();
@@ -317,7 +317,13 @@ namespace Hyperstore.Modeling.Commands
                             var metadata = _session.Store.GetSchemaRelationship(relationship.SchemaId);
                             var rel = _session.Store.GetRelationship(relationship.Id, metadata);
                             if (rel != null)
+                            {
+                                if (isAborted)
+                                {
+                                    ((IDisposable)rel).Dispose();
+                                }
                                 element.ModelElement = rel;
+                            }
                             continue;
                         }
 
@@ -347,17 +353,31 @@ namespace Hyperstore.Modeling.Commands
                     }
                     else
                     {
-                        if (set.Add(element.Id) && element.State != TrackingState.Removed)
+                        if (set.Add(element.Id))
                         {
                             var metadata = _session.Store.GetSchemaElement(element.SchemaId);
                             var mel = _session.Store.GetElement(element.Id, metadata);
                             if (mel != null)
-                                element.ModelElement = mel;
+                            {
+                                if (element.State != TrackingState.Removed)
+                                {
+                                    element.ModelElement = mel;
+                                    if (isAborted)
+                                    {
+                                        ((IDisposable)mel).Dispose();
+                                    }
+                                }
+                                else if( element.State == TrackingState.Removed)
+                                {
+                                    ((IDisposable)mel).Dispose();
+                                }
+                            }
                         }
                     }
                 }
             }
-            return _elements.Count > 0;
+
+            return _elements.Count > 0 && !isAborted;
         }
     }
 }

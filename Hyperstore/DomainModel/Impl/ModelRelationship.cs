@@ -136,7 +136,7 @@ namespace Hyperstore.Modeling
 
         IModelElement IModelRelationship.Start
         {
-            get { return this._start ?? (this._start = DomainModel.GetElement(this._startId, ((ISchemaRelationship) ((IModelElement) this).SchemaInfo).Start, false)); }
+            get { return this._start ?? (this._start = DomainModel.GetElement(this._startId, ((ISchemaRelationship) ((IModelElement) this).SchemaInfo).Start)); }
         }
 
         Identity IModelRelationship.EndId
@@ -151,7 +151,7 @@ namespace Hyperstore.Modeling
 
         IModelElement IModelRelationship.End
         {
-            get { return this._end ?? (this._end = Store.GetElement(this._endId, ((ISchemaRelationship) ((IModelElement) this).SchemaInfo).End, false)); }
+            get { return this._end ?? (this._end = Store.GetElement(this._endId, ((ISchemaRelationship) ((IModelElement) this).SchemaInfo).End)); }
         }
 
         ///-------------------------------------------------------------------------------------------------

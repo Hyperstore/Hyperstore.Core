@@ -210,7 +210,7 @@ namespace Hyperstore.Modeling
             if (Session.Current == null)
                 throw new NotInTransactionException();
 
-            _status = ModelElementStatus.Creating;
+            _status = ModelElementStatus.Created;
 
             if (schemaElement == null)
             {
@@ -226,18 +226,18 @@ namespace Hyperstore.Modeling
 
             PersistElement(commandFactory);
 
-            // Comme l'objet peut-être crée au sein d'une transaction, il faut s'assurer de sa validité une fois la transaction terminée.
-            // Un objet valide doit avoir un Status diffèrent de 'Disposed'. Ce status est mis à jour en s'abonnant à l'événement de fin 
-            // de transaction. Si la transaction s'est terminée par un Rollback, on positionne le status à 'Disposed' pour indiquer que
-            // l'objet n'est plus valide. 
-            // Le status est vérifié à chaque accés à l'objet et génére une exception si l'objet n'est plus valide.
-            if (_store != null && Session.Current != null && _status == ModelElementStatus.Creating)
-            {
-                // Si on est dans une transaction qui peut être annulée, on s'abonne sur l'évenement de fin
-                // de la transaction afin de s'assurer que celle ci se termine correctement sinon on positionne
-                // son status à Disposed
-                Session.Current.Completing += OnCreationSessionCompleted;
-            }
+            //// Comme l'objet peut-être crée au sein d'une transaction, il faut s'assurer de sa validité une fois la transaction terminée.
+            //// Un objet valide doit avoir un Status diffèrent de 'Disposed'. Ce status est mis à jour en s'abonnant à l'événement de fin 
+            //// de transaction. Si la transaction s'est terminée par un Rollback, on positionne le status à 'Disposed' pour indiquer que
+            //// l'objet n'est plus valide. 
+            //// Le status est vérifié à chaque accés à l'objet et génére une exception si l'objet n'est plus valide.
+            //if (_store != null && Session.Current != null && _status == ModelElementStatus.Creating)
+            //{
+            //    // Si on est dans une transaction qui peut être annulée, on s'abonne sur l'évenement de fin
+            //    // de la transaction afin de s'assurer que celle ci se termine correctement sinon on positionne
+            //    // son status à Disposed
+            //    Session.Current.Completing += OnCreationSessionCompleted;
+            //}
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -335,7 +335,7 @@ namespace Hyperstore.Modeling
         {
             // Abonnement aux événements de modification d'une propriété afin de générer l'événement OnPropertyChanged
             // Cet événement ne sera généré que si la classe implémente INotifyPropertyChanged
-            if (_store != null && (_status == ModelElementStatus.Creating || _status == ModelElementStatus.Deserializing) && this is INotifyPropertyChanged)
+            if (_store != null && (_status == ModelElementStatus.Created || _status == ModelElementStatus.Deserializing) && this is INotifyPropertyChanged)
             {
                 DomainModel.Events.RegisterForAttributeChangedEvent(this);
 
@@ -375,19 +375,19 @@ namespace Hyperstore.Modeling
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnCreationSessionCompleted(object sender, EventArgs e)
-        {
-            DebugContract.Requires(sender);
-            DebugContract.Requires(e);
-            DebugContract.Requires(Session.Current);
+        //private void OnCreationSessionCompleted(object sender, EventArgs e)
+        //{
+        //    DebugContract.Requires(sender);
+        //    DebugContract.Requires(e);
+        //    DebugContract.Requires(Session.Current);
 
-            Session.Current.Completing -= OnCreationSessionCompleted;
+        //    Session.Current.Completing -= OnCreationSessionCompleted;
 
-            // Mise à jour du status et suppression de l'abonnement à l'événement                        
-            var session = sender as ISession;
-            Debug.Assert(session != null, "session != null");
-            SetStatus(!session.IsAborted ? ModelElementStatus.Created : ModelElementStatus.Disposed);
-        }
+        //    // Mise à jour du status et suppression de l'abonnement à l'événement                        
+        //    var session = sender as ISession;
+        //    Debug.Assert(session != null, "session != null");
+        //    SetStatus(!session.IsAborted ? ModelElementStatus.Created : ModelElementStatus.Disposed);
+        //}
 
         #endregion
 
@@ -441,10 +441,9 @@ namespace Hyperstore.Modeling
         {
             DebugContract.Requires(relationshipSchema, "relationshipMetadata");
 
-            ThrowIfDisposed();
-
             using (var session = EnsuresRunInSession())
             {
+                ThrowIfDisposed();
                 var commands = new List<IDomainCommand>();
                 IModelRelationship relationship = null;
 
@@ -576,14 +575,6 @@ namespace Hyperstore.Modeling
             return _store.BeginSession();
         }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Executes the creation committed action.
-        /// </summary>
-        ///-------------------------------------------------------------------------------------------------
-        protected virtual void OnCreationCommitted()
-        {
-        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -612,9 +603,6 @@ namespace Hyperstore.Modeling
                 return;
 
             this._status = status;
-
-            if (status == ModelElementStatus.Created)
-                OnCreationCommitted();
 
             if (status == ModelElementStatus.Disposed)
                 OnDisposing();
@@ -949,10 +937,11 @@ namespace Hyperstore.Modeling
         protected void SetPropertyValue(ISchemaProperty property, object value)
         {
             Contract.Requires(property, "property");
-            ThrowIfDisposed();
 
             using (var session = EnsuresRunInSession())
             {
+                ThrowIfDisposed();
+
                 var cmd = new ChangePropertyValueCommand(this, property, value);
                 Session.Current.Execute(cmd);
                 if (session != null)
