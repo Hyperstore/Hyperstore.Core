@@ -29,10 +29,6 @@ namespace Hyperstore.Modeling
         /// </summary>
         Deserializing = 0,
         /// <summary>
-        ///  Specifies the creating option.
-        /// </summary>
-        Creating,
-        /// <summary>
         ///  Specifies the disposed option.
         /// </summary>
         Disposed,

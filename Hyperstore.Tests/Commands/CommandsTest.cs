@@ -153,17 +153,16 @@ namespace Hyperstore.Tests.Commands
                 session.AcceptChanges();
             }
 
-            
-
-
-
             var max = 200;
             var nbElem = 1000;
             int cx = max * nbElem;
             for (int i = 0; i < max; i++)
             {
                 var x = i;
-                TestDomainDefinition.XExtendsBaseClass.AddImplicitConstraint(self => { System.Threading.Interlocked.Decrement(ref cx); return self.Value > x; }, "error");
+                TestDomainDefinition.XExtendsBaseClass.AddImplicitConstraint(self => {
+                    System.Threading.Interlocked.Decrement(ref cx); 
+                    return self.Value > x;
+                }, "error");
             }
 
             using (var s = domain.Store.BeginSession())
@@ -172,8 +171,8 @@ namespace Hyperstore.Tests.Commands
                 {
                     var a = new XExtendsBaseClass(domain);
                     a.Value = max + 1;
-                    s.AcceptChanges();
                 }
+                s.AcceptChanges();
             }
 
             Assert.AreEqual(0, cx);

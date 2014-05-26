@@ -37,8 +37,8 @@ namespace Hyperstore.Platform.WinPhone
                 action();
                 await Hyperstore.Modeling.Utils.CompletedTask.Default;
             }
-            else 
-                await _dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, new Windows.UI.Core.DispatchedHandler(action));
+            else
+            await _dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, new Windows.UI.Core.DispatchedHandler(action));
         }
     }
 }

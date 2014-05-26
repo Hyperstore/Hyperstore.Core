@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
-
+ 
 #region Imports
 
 using System;
@@ -136,7 +136,7 @@ namespace Hyperstore.Modeling
 
         IModelElement IModelRelationship.Start
         {
-            get { return this._start ?? (this._start = DomainModel.GetElement(this._startId, ((ISchemaRelationship)((IModelElement)this).SchemaInfo).Start, true)); }
+            get { return this._start ?? (this._start = DomainModel.GetElement(this._startId, ((ISchemaRelationship) ((IModelElement) this).SchemaInfo).Start)); }
         }
 
         Identity IModelRelationship.EndId
@@ -151,7 +151,7 @@ namespace Hyperstore.Modeling
 
         IModelElement IModelRelationship.End
         {
-            get { return this._end ?? (this._end = Store.GetElement(this._endId, ((ISchemaRelationship)((IModelElement)this).SchemaInfo).End, true)); }
+            get { return this._end ?? (this._end = Store.GetElement(this._endId, ((ISchemaRelationship) ((IModelElement) this).SchemaInfo).End)); }
         }
 
         ///-------------------------------------------------------------------------------------------------

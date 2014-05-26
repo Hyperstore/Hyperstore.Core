@@ -962,7 +962,7 @@ namespace Hyperstore.Modeling
                 // Ne pas le faire lors des chargements des metadonnées  car :
                 //  1 - Il n'y a pas de contraintes sur les metadonnées
                 //  2 - En cas de chargement d'une extension, les métadonnées ne sont pas encore accessibles et cela fait planter le code.
-                hasInvolvedElements = SessionDataContext.TrackingData.PrepareModelElements(IsAborted);
+                hasInvolvedElements = SessionDataContext.TrackingData.PrepareModelElements(IsAborted, (currentInfo.Mode & SessionMode.LoadingSchema) == SessionMode.LoadingSchema);
             }
 
             // Validation implicite sur les éléments modifiés au cours de la session
