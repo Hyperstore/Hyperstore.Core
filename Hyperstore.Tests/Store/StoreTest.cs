@@ -61,7 +61,6 @@ namespace Hyperstore.Tests
             }
 
             Assert.IsNotNull(rel);
-            Assert.AreNotEqual(ModelElementStatus.Disposed, ((IModelElement)rel).Status);
         }
 
     }

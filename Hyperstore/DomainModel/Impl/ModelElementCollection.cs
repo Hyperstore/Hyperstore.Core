@@ -143,10 +143,6 @@ namespace Hyperstore.Modeling
             if (item == null)
                 return;
 
-            if (((IModelElement)item).Status == ModelElementStatus.Disposed)
-                return; // TODO qu'est ce qui est le mieux
-            //throw new Exception("Can't add a disposed element.");
-
             var itemMetadata = Source != null ? SchemaRelationship.End : SchemaRelationship.Start; ;
             if (!((IModelElement)item).SchemaInfo.IsA(itemMetadata))
                 throw new Exception(ExceptionMessages.InvalidItemType);
@@ -194,9 +190,6 @@ namespace Hyperstore.Modeling
 
             if (null == item)
                 return false;
-
-            if (item.Status == ModelElementStatus.Disposed)
-                return false; // TODO qu'est ce qui est le mieux
 
             var start = Source ?? item;
             var end = End ?? item;

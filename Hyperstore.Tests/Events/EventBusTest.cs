@@ -77,7 +77,7 @@ namespace Hyperstore.Tests.Commands
                 s.AcceptChanges();
             }
 
-            if (!set.WaitOne(10000))
+            if (!set.WaitOne(1000))
             {
                 Assert.Inconclusive();
             }

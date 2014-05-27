@@ -114,10 +114,18 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             get { return _domainModel; }
         }
 
-        //ISchemaEntity IModelEntity.SchemaEntity
-        //{
-        //    get { return ((IModelElement)this).SchemaInfo as ISchemaEntity; }
-        //}
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the status.
+        /// </summary>
+        /// <value>
+        ///  The status.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public ModelElementStatus Status
+        {
+            get { return ModelElementStatus.Created; }
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -386,18 +394,6 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             get { return _domainModel as ISchema; }
         }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the status.
-        /// </summary>
-        /// <value>
-        ///  The status.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public ModelElementStatus Status
-        {
-            get { return ModelElementStatus.Created; }
-        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

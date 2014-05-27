@@ -47,6 +47,14 @@ namespace Hyperstore.Modeling
             _outputCategory = outputCategory;
         }
 
+        public bool IsEnabled(string category)
+        {
+            if (_outputCategory == null)
+                return false;
+
+            return (_outputCategory == "*" || _outputCategory == category);
+        }
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Writes the trace.
@@ -62,11 +70,8 @@ namespace Hyperstore.Modeling
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         public void WriteTrace(string category, string format, params object[] args)
-        {
-            if (_outputCategory == null)
-                return;
-
-            if (_outputCategory == "*" || _outputCategory == category)
+        {            
+            if (IsEnabled( category))
             {
                 string message = args.Length == 0 ? format : String.Format("{3} [{0}] {1:H:mm:ss.fff} - {2} ", ThreadHelper.CurrentThreadId, DateTime.Now, String.Format(format, args), category);
                 WriteMessage(message);

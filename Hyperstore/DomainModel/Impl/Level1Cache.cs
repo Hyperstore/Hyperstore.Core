@@ -31,11 +31,11 @@ namespace Hyperstore.Modeling.Domain
 {
     internal sealed class Level1Cache : IDisposable
     {
-        private readonly IConcurrentDictionary<Identity, WeakReference> _cache;
+        private readonly IConcurrentDictionary<Identity, IModelElement> _cache;
         /// <summary>
         ///     Gestionnaire des demandes de vaccum
         /// </summary>
-        private readonly JobScheduler _jobScheduler;
+      //  private readonly JobScheduler _jobScheduler;
         private IHyperGraph _innerGraph;
 
         ///-------------------------------------------------------------------------------------------------
@@ -50,10 +50,10 @@ namespace Hyperstore.Modeling.Domain
         {
             DebugContract.Requires(innerGraph);
 
-            _cache = PlatformServices.Current.CreateConcurrentDictionary<Identity, WeakReference>();
+            _cache = PlatformServices.Current.CreateConcurrentDictionary<Identity, IModelElement>();
             _innerGraph = innerGraph;
 
-            _jobScheduler = new JobScheduler(Vacuum, TimeSpan.FromSeconds(60));
+       //     _jobScheduler = new JobScheduler(Vacuum, TimeSpan.FromSeconds(60));
 
             innerGraph.DomainModel.Store.SessionCreated += OnSessionCreated;
         }
@@ -66,7 +66,7 @@ namespace Hyperstore.Modeling.Domain
         ///-------------------------------------------------------------------------------------------------
         public void Dispose()
         {
-            _jobScheduler.Dispose();
+          //  _jobScheduler.Dispose();
             _innerGraph = null;
         }
 
@@ -82,7 +82,7 @@ namespace Hyperstore.Modeling.Domain
 
             foreach (var elem in e.Session.TrackingData.GetTrackingElementsByState(TrackingState.Removed))
             {
-                WeakReference weak;
+                IModelElement weak;
                 _cache.TryRemove(elem.Id, out weak);
             }
         }
@@ -93,19 +93,19 @@ namespace Hyperstore.Modeling.Domain
         private void NotifyVacuum()
         {
 #if !DEBUG
-            _jobScheduler.RequestJob();
+       //     _jobScheduler.RequestJob();
 #endif
         }
 
         private void Vacuum()
         {
-            var queue = new Queue<Identity>(_cache.Where(c => c.Value.Target == null)
-                    .Select(c => c.Key));
-            while (queue.Count > 0)
-            {
-                WeakReference weak;
-                _cache.TryRemove(queue.Dequeue(), out weak);
-            }
+            //var queue = new Queue<Identity>(_cache.Where(c => c.Value.Target == null)
+            //        .Select(c => c.Key));
+            //while (queue.Count > 0)
+            //{
+            //    WeakReference weak;
+            //    _cache.TryRemove(queue.Dequeue(), out weak);
+            //}
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -128,14 +128,14 @@ namespace Hyperstore.Modeling.Domain
         public IModelElement GetElement(Identity id, ISchemaElement metaclass, bool localOnly)
         {
             DebugContract.Requires(id);
-            WeakReference weak;
+            IModelElement weak;
             IModelElement elem;
 
             NotifyVacuum();
             if (_cache.TryGetValue(id, out weak))
             {
-                elem = weak.Target as IModelElement;
-                if (elem == null || elem.Status == ModelElementStatus.Disposed)
+                elem = weak as IModelElement;
+                if (elem == null)
                 {
                     _cache.TryRemove(id, out weak);
                     if (elem != null) // Implique elem.Status == ModelElementStatus.Disposed
@@ -150,10 +150,10 @@ namespace Hyperstore.Modeling.Domain
             elem = _innerGraph.GetElement(id, metaclass, localOnly);
             if (elem != null)
             {
-                if (!_cache.TryAdd(id, new WeakReference(elem)))
+                if (!_cache.TryAdd(id, elem))
                 {
-                    if(_cache.TryGetValue(id, out weak))
-                        elem = weak.Target as IModelElement;
+                    if (_cache.TryGetValue(id, out weak))
+                        elem = weak as IModelElement;
                 }
             }
 
@@ -176,15 +176,15 @@ namespace Hyperstore.Modeling.Domain
             DebugContract.Requires(instance);
             NotifyVacuum();
 
-            var val = _cache.GetOrAdd(instance.Id, new WeakReference(instance));
-            var mel = val.Target as IModelElement;
+            var val = _cache.GetOrAdd(instance.Id, instance);
+            var mel = val as IModelElement;
             if (mel != null)
                 return mel;
 
-            val.Target = instance;
+            val = instance;
             // To ensure data was not removed after the last GetOrAdd
             val = _cache.GetOrAdd(instance.Id, val);
-            return val.Target as IModelElement;
+            return val as IModelElement;
         }
     }
 }

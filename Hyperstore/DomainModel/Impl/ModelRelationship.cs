@@ -196,7 +196,6 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         protected override void Remove()
         {
-            ThrowIfDisposed();
             using (var session = EnsuresRunInSession())
             {
                 var cmd = new RemoveRelationshipCommand(this);

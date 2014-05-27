@@ -55,7 +55,6 @@ namespace Hyperstore.Tests
 
             Assert.IsNotNull( rel );
             Assert.IsNotNull( rel.YRelation );
-            Assert.AreNotEqual(ModelElementStatus.Disposed, ((IModelElement)rel).Status);
         }
 
 

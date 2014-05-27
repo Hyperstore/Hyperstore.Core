@@ -358,7 +358,10 @@ namespace Hyperstore.Modeling.HyperGraph
             if (_indexActions != null)
                 actions = actions.Concat(_indexActions); // La mise à jour des index 
 
-            PlatformServices.Current.Parallel_ForEach(actions, i => i.Execute(_graph));
+            if (actions.Any())
+            {
+                PlatformServices.Current.Parallel_ForEach(actions, i => i.Execute(_graph));
+            }
             _indexActions = null;
             _pendingActions = null;
         }

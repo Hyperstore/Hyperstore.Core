@@ -43,5 +43,21 @@ namespace Hyperstore.Modeling.Ioc
         public void WriteTrace(string category, string format, params object[] args)
         {
         }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Query if 'category' is enabled.
+        /// </summary>
+        /// <param name="category">
+        ///  The category.
+        /// </param>
+        /// <returns>
+        ///  true if enabled, false if not.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        public bool IsEnabled(string category)
+        {
+            return false;
+        }
     }
 }

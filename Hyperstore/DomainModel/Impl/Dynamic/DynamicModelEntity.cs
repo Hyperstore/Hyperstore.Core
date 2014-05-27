@@ -201,8 +201,6 @@ namespace Hyperstore.Modeling
                     return DomainModel;
                 case "Schema":
                     return ((IModelElement)this).SchemaInfo;
-                case "Status":
-                    return ((IModelElement)this).Status;
                 case "Store":
                     return Store;
             }
@@ -210,17 +208,6 @@ namespace Hyperstore.Modeling
             var property = ((IModelElement)this).SchemaInfo.GetProperty(propertyName);
             if (property == null)
             {
-                switch (propertyName)
-                {
-                    case "Id":
-                        return ((IModelElement)this).Id;
-                    case "Status":
-                        return ((IModelElement)this).Status;
-                    case "SchemaInfo":
-                        return ((IModelElement)this).SchemaInfo;
-                    case "DomainModel":
-                        return ((IModelElement)this).DomainModel;
-                }
                 object refer;
                 if (!_references.TryGetValue(propertyName, out refer))
                 {
