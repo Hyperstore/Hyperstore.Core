@@ -281,8 +281,7 @@ namespace Hyperstore.Modeling.Commands
 
         /// <summary>
         ///     Liste des éléments impactés par les commandes lors de la session. Si plusieurs commandes opérent sur un même
-        ///     élément, il
-        ///     ne sera répertorié qu'une fois.
+        ///     élément, il ne sera répertorié qu'une fois.
         /// </summary>
         /// <value>
         ///     The involved elements.

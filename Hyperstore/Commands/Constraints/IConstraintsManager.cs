@@ -25,6 +25,16 @@ namespace Hyperstore.Modeling.Validations
     public interface IConstraintsManager
     {
         ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets a value indicating whether this instance has constraints.
+        /// </summary>
+        /// <value>
+        ///  true if this instance has constraints, false if not.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        bool HasConstraints { get; }
+
+        ///-------------------------------------------------------------------------------------------------
         /// <summary>   Gets the schema. </summary>
         /// <value> The schema. </value>
         ///-------------------------------------------------------------------------------------------------

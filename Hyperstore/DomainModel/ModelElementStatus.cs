@@ -19,22 +19,18 @@ namespace Hyperstore.Modeling
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  Values that represent ModelElementStatus.
+    ///  Status of a model element
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     public enum ModelElementStatus
     {
         /// <summary>
-        ///  Specifies the deserializing option.
+        ///  The model element is valid
         /// </summary>
-        Deserializing = 0,
+        Created = 0,
         /// <summary>
-        ///  Specifies the disposed option.
+        ///  The model element is invalid and has been disposed
         /// </summary>
-        Disposed,
-        /// <summary>
-        ///  Specifies the created option.
-        /// </summary>
-        Created
+        Disposed
     }
 }

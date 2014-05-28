@@ -181,7 +181,7 @@ namespace Hyperstore.Modeling
             OriginStoreId = session.OriginStoreId;
             SessionId = session.SessionId;
             DefaultDomainModel = info.DefaultDomainModel;
-            _contextInfos = new Dictionary<string, object>(session.GetInfos());
+            _contextInfos = session.GetInfos();
             Events = session.Events.ToList();
         }
 

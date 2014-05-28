@@ -619,10 +619,10 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
 
             using (var tx = BeginTransaction())
             {
-                //var node = GetGraphNode(ownerId, ownerMetadata);
-                //// Vérification si le owner existe
-                //if (node == null)
-                //    throw new InvalidElementException(ownerId);
+                var node = GetGraphNode(ownerId, ownerMetadata);
+                // Vérification si le owner existe
+                if (node == null)
+                    throw new InvalidElementException(ownerId);
 
                 var pid = ownerId.CreateAttributeIdentity(property.Name);
 

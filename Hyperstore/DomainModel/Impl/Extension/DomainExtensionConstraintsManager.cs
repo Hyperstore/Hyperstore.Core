@@ -72,18 +72,24 @@ namespace Hyperstore.Modeling.DomainExtension
                 service.SetDomain(domainModel);
         }
 
-        /////-------------------------------------------------------------------------------------------------
-        ///// <summary>
-        /////  Gets the domain model.
-        ///// </summary>
-        ///// <value>
-        /////  The domain model.
-        ///// </value>
-        /////-------------------------------------------------------------------------------------------------
-        //public IDomainModel DomainModel
-        //{
-        //    get { return _schema; }
-        //}
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets a value indicating whether this instance has constraints.
+        /// </summary>
+        /// <value>
+        ///  true if this instance has constraints, false if not.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public bool HasConstraints
+        {
+            get {
+                var constraints = _domainConstraints as IImplicitDomainModelConstraints;
+                if (constraints != null && constraints.HasConstraints)
+                    return true;
+                constraints = _extendedDomainConstraints as IImplicitDomainModelConstraints;
+                return constraints != null && constraints.HasConstraints;
+            }
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

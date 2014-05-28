@@ -140,12 +140,6 @@ namespace Hyperstore.Modeling.Commands
             Contract.Requires(end, "end");
             Contract.Requires(relationshipSchema, "relationshipSchema");
 
-            if (start.Status == ModelElementStatus.Disposed)
-                throw new Exception(ExceptionMessages.StartElementIsNotAValidElement);
-
-            if (end.Status == ModelElementStatus.Disposed)
-                throw new Exception(ExceptionMessages.EndElementIsNotAValidElement);
-
             _start = start;
         }
 

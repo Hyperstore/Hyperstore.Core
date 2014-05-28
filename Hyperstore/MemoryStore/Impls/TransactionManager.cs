@@ -146,10 +146,13 @@ namespace Hyperstore.Modeling.MemoryStore
             {
                 var list = GetActiveTransactions();
                 tx.ActiveTransactionsWhenStarted = list;
-                _trace.WriteTrace(TraceCategory.MemoryStore, "Active transaction when tx {0} starts : {1}", tx.Id, list != null
-                        ? String.Join(",", list.Select(t => t.Id)
-                                .ToArray())
-                        : "");
+                if (_trace.IsEnabled(TraceCategory.MemoryStore))
+                {
+                    _trace.WriteTrace(TraceCategory.MemoryStore, "Active transaction when tx {0} starts : {1}", tx.Id, list != null
+                            ? String.Join(",", list.Select(t => t.Id)
+                                    .ToArray())
+                            : "");
+                }
             }
 
             return tx;
@@ -172,7 +175,10 @@ namespace Hyperstore.Modeling.MemoryStore
                 _activeTransactions.Remove(transaction);
 
             OnTransactionEnded(transaction, transaction.Status == TransactionStatus.Committed);
-            _trace.WriteTrace(TraceCategory.MemoryStore, "Memory transaction ended " + transaction.Id);
+            if (_trace.IsEnabled(TraceCategory.MemoryStore))
+            {
+                _trace.WriteTrace(TraceCategory.MemoryStore, "Memory transaction ended " + transaction.Id);
+            }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -259,7 +265,11 @@ namespace Hyperstore.Modeling.MemoryStore
             if (current == null)
             {
                 var xid = Interlocked.Increment(ref _transactionNumber);
-                _trace.WriteTrace(TraceCategory.MemoryStore, "Create memory transaction {0} - Thread {1}", xid, ThreadHelper.CurrentThreadId);
+                if (_trace.IsEnabled(TraceCategory.MemoryStore))
+                {
+                    _trace.WriteTrace(TraceCategory.MemoryStore, "Create memory transaction {0} - Thread {1}", xid, ThreadHelper.CurrentThreadId);
+                }
+
                 current = new MemoryTransaction(_trace, this, xid, isolationLevel);
                 if (Session.Current != null)
                     CurrentTransaction = current;

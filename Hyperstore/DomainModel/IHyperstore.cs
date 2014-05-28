@@ -656,25 +656,7 @@ namespace Hyperstore.Modeling
     ///-------------------------------------------------------------------------------------------------
     public interface IExtensionManager
     {
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets all domain model and extensions in this collection.
-        /// </summary>
-        /// <returns>
-        ///  An enumerator that allows foreach to be used to process all domain model and extensions in
-        ///  this collection.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        IEnumerable<IDomainModel> GetAllDomainModelIncludingExtensions();
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>   Gets all schema and extensions in this collection. </summary>
-        /// <returns>
-        ///     An enumerator that allows foreach to be used to process all schema and extensions in this
-        ///     collection.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        IEnumerable<ISchema> GetAllSchemaIncludingExtensions();
+        List<IEventNotifier> GetEventsNotifiers();
 
     }
 }

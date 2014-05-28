@@ -143,7 +143,9 @@ namespace Hyperstore.Modeling.Utils
                     if (_synchronizationContext == null)
                         o.OnNext(value);
                     else
-                        _synchronizationContext.Send(() => o.OnNext(value));
+                        _synchronizationContext.Send(() =>
+                            o.OnNext(value)
+                            );
                 }
             }
         }

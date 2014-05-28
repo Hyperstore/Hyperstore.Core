@@ -48,9 +48,9 @@ namespace Hyperstore.Modeling
         private Identity _id;
         private ISchemaElement _schema;
         private int _sequence;
-        private ModelElementStatus _status = ModelElementStatus.Deserializing;
         private IHyperstore _store;
         private IDisposable _onErrorsSubscription;
+        private ModelElementStatus _status;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -100,11 +100,6 @@ namespace Hyperstore.Modeling
             get { return _schema; }
         }
 
-        ModelElementStatus IModelElement.Status
-        {
-            get { return _status; }
-        }
-
         Identity IModelElement.Id
         {
             [DebuggerStepThrough]
@@ -117,6 +112,10 @@ namespace Hyperstore.Modeling
             get { return DomainModel; }
         }
 
+        ModelElementStatus IModelElement.Status
+        {
+            get { return _status; }
+        }
         #endregion
 
         #region Instanciation
@@ -173,10 +172,6 @@ namespace Hyperstore.Modeling
             domainModel.IdGenerator.Set(_id);
 
             Initialize(schemaElement, domainModel);
-
-            // Dans le cas d'une création à partir d'une déserialization (avec un modelelementmetadata), on force le status car
-            // si on déserialize l'objet c'est qu'il existe.
-            SetStatus(ModelElementStatus.Created);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -210,8 +205,6 @@ namespace Hyperstore.Modeling
             if (Session.Current == null)
                 throw new NotInTransactionException();
 
-            _status = ModelElementStatus.Created;
-
             if (schemaElement == null)
             {
                 schemaElement = EnsuresSchemaExists(domainModel, GetType().FullName);
@@ -225,19 +218,6 @@ namespace Hyperstore.Modeling
             Initialize(schemaElement, domainModel);
 
             PersistElement(commandFactory);
-
-            //// Comme l'objet peut-être crée au sein d'une transaction, il faut s'assurer de sa validité une fois la transaction terminée.
-            //// Un objet valide doit avoir un Status diffèrent de 'Disposed'. Ce status est mis à jour en s'abonnant à l'événement de fin 
-            //// de transaction. Si la transaction s'est terminée par un Rollback, on positionne le status à 'Disposed' pour indiquer que
-            //// l'objet n'est plus valide. 
-            //// Le status est vérifié à chaque accés à l'objet et génére une exception si l'objet n'est plus valide.
-            //if (_store != null && Session.Current != null && _status == ModelElementStatus.Creating)
-            //{
-            //    // Si on est dans une transaction qui peut être annulée, on s'abonne sur l'évenement de fin
-            //    // de la transaction afin de s'assurer que celle ci se termine correctement sinon on positionne
-            //    // son status à Disposed
-            //    Session.Current.Completing += OnCreationSessionCompleted;
-            //}
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -335,7 +315,7 @@ namespace Hyperstore.Modeling
         {
             // Abonnement aux événements de modification d'une propriété afin de générer l'événement OnPropertyChanged
             // Cet événement ne sera généré que si la classe implémente INotifyPropertyChanged
-            if (_store != null && (_status == ModelElementStatus.Created || _status == ModelElementStatus.Deserializing) && this is INotifyPropertyChanged)
+            if (_store != null && this is INotifyPropertyChanged)
             {
                 DomainModel.Events.RegisterForAttributeChangedEvent(this);
 
@@ -397,8 +377,6 @@ namespace Hyperstore.Modeling
         {
             DebugContract.Requires(relationshipSchema, "relationshipSchema");
 
-            ThrowIfDisposed();
-
             IModelRelationship relationship = null;
             if (relationshipId != null)
                 relationship = DomainModel.GetRelationship(relationshipId, relationshipSchema);
@@ -443,7 +421,6 @@ namespace Hyperstore.Modeling
 
             using (var session = EnsuresRunInSession())
             {
-                ThrowIfDisposed();
                 var commands = new List<IDomainCommand>();
                 IModelRelationship relationship = null;
 
@@ -538,12 +515,9 @@ namespace Hyperstore.Modeling
         void IPropertyChangedNotifier.NotifyPropertyChanged(string propertyName)
         {
             DebugContract.RequiresNotEmpty(propertyName);
-            if (_status != ModelElementStatus.Disposed)
-            {
-                var tmp = PropertyChanged;
-                if (tmp != null)
-                    PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            var tmp = PropertyChanged;
+            if (tmp != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -578,57 +552,11 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Mise à jour du status de l'objet et suppression des abonnements aux événements si l'objet est
-        ///  en 'Disposed'.
-        /// </summary>
-        /// <param name="status">
-        ///  .
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
-        protected void SetStatus(ModelElementStatus status)
-        {
-            if (status == ModelElementStatus.Disposed && this is INotifyPropertyChanged)
-            {
-                _domainModel.Events.UnregisterForAttributeChangedEvent(this);
-                DisableDataErrorsNotification();
-
-                // Le finalizer existe pour être certain qu'une instance d'un élément sera bien déréférencée du gestionnaire d'événements,
-                // comme cela a été fait, ce n'est plus la peine de l'appeler.
-                GC.SuppressFinalize(this);
-            }
-
-            // Si il il y a changement de status, on envoi des notifications.
-            // Bien tester sur le champ _status sinon boucle infini car Status peut appeler SetStatus
-            if (this._status == status)
-                return;
-
-            this._status = status;
-
-            if (status == ModelElementStatus.Disposed)
-                OnDisposing();
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
         ///  Executes the disposing action.
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
         protected virtual void OnDisposing()
         {
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Vérification du status de l'objet et génération d'une exception si il n'est plus valide.
-        /// </summary>
-        /// <exception cref="InvalidElementException">
-        ///  Thrown when an Invalid Element error condition occurs.
-        /// </exception>
-        ///-------------------------------------------------------------------------------------------------
-        protected void ThrowIfDisposed()
-        {
-            if (_status == ModelElementStatus.Disposed)
-                throw new InvalidElementException(_id, "Invalid state object. You can not used a disposed model element.");
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -653,7 +581,18 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         protected virtual void Dispose(bool disposing)
         {
-            SetStatus(ModelElementStatus.Disposed);
+            if ( this is INotifyPropertyChanged)
+            {
+                _domainModel.Events.UnregisterForAttributeChangedEvent(this);
+                DisableDataErrorsNotification();
+
+                // Le finalizer existe pour être certain qu'une instance d'un élément sera bien déréférencée du gestionnaire d'événements,
+                // comme cela a été fait, ce n'est plus la peine de l'appeler.
+                GC.SuppressFinalize(this);
+            }
+
+            OnDisposing();
+            _status = ModelElementStatus.Disposed;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -691,8 +630,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public override string ToString()
         {
-            return String.Format("{0} : {1}", GetType()
-                    .Name, _id);
+            return String.Format("{0} : {1}", GetType().Name, _id);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -826,7 +764,6 @@ namespace Hyperstore.Modeling
         {
             Contract.Requires(property, "property");
 
-            ThrowIfDisposed();
             var pv = DomainModel.GetPropertyValue(_id, ((IModelElement)this).SchemaInfo, property);
             return pv;
         }
@@ -848,7 +785,6 @@ namespace Hyperstore.Modeling
         public T GetPropertyValue<T>(string propertyName)
         {
             Contract.RequiresNotEmpty(propertyName, "propertyName");
-            ThrowIfDisposed();
             var propertyMetadata = GetOrTryToCreateProperty(propertyName, typeof(T));
             var r = (T)GetPropertyValue(propertyMetadata).Value;
             return r;
@@ -940,8 +876,6 @@ namespace Hyperstore.Modeling
 
             using (var session = EnsuresRunInSession())
             {
-                ThrowIfDisposed();
-
                 var cmd = new ChangePropertyValueCommand(this, property, value);
                 Session.Current.Execute(cmd);
                 if (session != null)

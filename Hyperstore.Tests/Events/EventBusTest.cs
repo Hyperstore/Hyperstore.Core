@@ -45,6 +45,7 @@ namespace Hyperstore.Tests.Commands
 
             // Load source doman
             var store = new Store();
+            
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
             // Configure an output channel

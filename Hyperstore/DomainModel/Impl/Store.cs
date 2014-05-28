@@ -69,7 +69,7 @@ namespace Hyperstore.Modeling
         #endregion
 
         #region Fields
-
+        private List<IEventNotifier> _notifiersCache;
         private readonly IDependencyResolver _dependencyResolver;
         private readonly IDomainModelControler<IDomainModel> _domainControler;
         private readonly IDomainModelControler<ISchema> _schemaControler;
@@ -78,6 +78,7 @@ namespace Hyperstore.Modeling
         private bool _disposed;
         private bool _initialized;
         private readonly StoreOptions _options;
+        private Dictionary<string, ISchemaInfo> _schemaInfosCache;
         #endregion
 
         #region Properties
@@ -172,6 +173,9 @@ namespace Hyperstore.Modeling
         {
             Contract.Requires(resolver, "resolver");
 
+            DefaultSessionConfiguration = new SessionConfiguration();
+            InitializeSchemaInfoCache();
+
             _options = options;
             Id = id ?? Guid.NewGuid();
             _statistics = new Statistics.Statistics();
@@ -182,7 +186,6 @@ namespace Hyperstore.Modeling
                 throw new Exception(ExceptionMessages.DependencyResolverMustInheritFromDefaultDependencyResolver);
             r.SetStore(this);
 
-            DefaultSessionConfiguration = new SessionConfiguration();
             DefaultSessionConfiguration.IsolationLevel = SessionIsolationLevel.ReadCommitted;
             DefaultSessionConfiguration.SessionTimeout = TimeSpan.FromMinutes(1);
 
@@ -551,7 +554,8 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public ISchemaElement GetSchemaElement<T>(bool throwErrorIfNotExists = true) where T : IModelElement
         {
-            return GetSchemaElement(typeof(T).FullName, throwErrorIfNotExists);
+            string fullName = typeof(T).FullName;
+            return GetSchemaElement(fullName, throwErrorIfNotExists);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -709,37 +713,6 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the metadata.
-        /// </summary>
-        /// <exception cref="MetadataNotFoundException">
-        ///  Thrown when a Metadata Not Found error condition occurs.
-        /// </exception>
-        /// <param name="id">
-        ///  The identifier.
-        /// </param>
-        /// <param name="throwErrorIfNotExists">
-        ///  (Optional) true to throw error if not exists.
-        /// </param>
-        /// <returns>
-        ///  The schema information.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public ISchemaInfo GetSchemaInfo(Identity id, bool throwErrorIfNotExists = true)
-        {
-            Contract.Requires(id, "id");
-
-            var dm = GetSchema(id.DomainModelName);
-            if (dm != null)
-                return dm.GetSchemaInfo(id, throwErrorIfNotExists);
-
-            if (throwErrorIfNotExists)
-                throw new MetadataNotFoundException(id.ToString()); // Invalid domain model
-
-            return null;
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
         ///  Gets the schema entity.
         /// </summary>
         /// <exception cref="Exception">
@@ -792,12 +765,21 @@ namespace Hyperstore.Modeling
         {
             Contract.RequiresNotEmpty(name, "name");
 
+            ISchemaInfo si;
+            if (_schemaInfosCache.TryGetValue(name, out si))
+            {
+                return si;
+            }
+
             // Parcours les domainModels pour rechercher sur la clé
             foreach (ISchema metaModel in Schemas)
             {
-                var metadata = metaModel.GetSchemaInfo(name, false);
-                if (metadata != null)
-                    return metadata;
+                si = metaModel.GetSchemaInfo(name, false);
+                if (si != null)
+                {
+                    _schemaInfosCache[name] = si;
+                    return si;
+                }
             }
 
             if (throwErrorIfNotExists)
@@ -806,6 +788,50 @@ namespace Hyperstore.Modeling
             return null;
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the metadata.
+        /// </summary>
+        /// <exception cref="MetadataNotFoundException">
+        ///  Thrown when a Metadata Not Found error condition occurs.
+        /// </exception>
+        /// <param name="id">
+        ///  The identifier.
+        /// </param>
+        /// <param name="throwErrorIfNotExists">
+        ///  (Optional) true to throw error if not exists.
+        /// </param>
+        /// <returns>
+        ///  The schema information.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        public ISchemaInfo GetSchemaInfo(Identity id, bool throwErrorIfNotExists = true)
+        {
+            Contract.Requires(id, "id");
+
+            ISchemaInfo si;
+            if( _schemaInfosCache.TryGetValue(id.ToString(), out si))
+            {
+                return si;
+            }
+
+            var dm = GetSchema(id.DomainModelName);
+            if (dm != null)
+            {
+                si = dm.GetSchemaInfo(id, throwErrorIfNotExists);
+                if( si != null)
+                {
+                    _schemaInfosCache[si.ToString()] = si;
+                }
+                return si;
+            }
+
+            if (throwErrorIfNotExists)
+                throw new MetadataNotFoundException(id.ToString()); // Invalid domain model
+
+            return null;
+        }
+        
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Gets the meta relationship.
@@ -837,6 +863,12 @@ namespace Hyperstore.Modeling
         {
             Contract.Requires(domainOrExtension, "domainOrExtension");
             _domainControler.UnloadDomainExtension(domainOrExtension);
+            _notifiersCache = null;
+        }
+
+        private void InitializeSchemaInfoCache()
+        {
+            _schemaInfosCache = new Dictionary<string, ISchemaInfo>(StringComparer.OrdinalIgnoreCase);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -857,6 +889,8 @@ namespace Hyperstore.Modeling
                 throw new Exception("Primitives schema canot be unloaded");
 
             _schemaControler.UnloadDomainExtension(schemaOrExtension);
+            _notifiersCache = null;
+            InitializeSchemaInfoCache();
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -891,14 +925,20 @@ namespace Hyperstore.Modeling
             }
         }
 
-        IEnumerable<IDomainModel> IExtensionManager.GetAllDomainModelIncludingExtensions()
+        List<IEventNotifier> IExtensionManager.GetEventsNotifiers()
         {
-            return _domainControler.GetAllDomainModelIncludingExtensions();
-        }
+            if (_notifiersCache != null)
+                return _notifiersCache;
 
-        IEnumerable<ISchema> IExtensionManager.GetAllSchemaIncludingExtensions()
-        {
-            return _schemaControler.GetAllDomainModelIncludingExtensions();
+            var domainNotifiers = _domainControler.GetAllDomainModelIncludingExtensions()
+                    .Where(domainModel => domainModel.Events is IEventNotifier)
+                    .Select(domainmodel => domainmodel.Events as IEventNotifier);
+
+            var schemaNotifiers = _schemaControler.GetAllDomainModelIncludingExtensions()
+                    .Where(domainModel => domainModel.Events is IEventNotifier)
+                    .Select(domainmodel => domainmodel.Events as IEventNotifier);
+
+            return _notifiersCache = domainNotifiers.Union(schemaNotifiers).ToList();
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -948,7 +988,7 @@ namespace Hyperstore.Modeling
         /// <exception cref="MetadataNotFoundException">
         ///  Thrown when a Metadata Not Found error condition occurs.
         /// </exception>
-        /// <param name="metaClass">
+        /// <param name="id">
         ///  The meta class.
         /// </param>
         /// <param name="throwErrorIfNotExists">
@@ -958,20 +998,29 @@ namespace Hyperstore.Modeling
         ///  The schema relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public ISchemaRelationship GetSchemaRelationship(Identity metaClass, bool throwErrorIfNotExists = true)
+        public ISchemaRelationship GetSchemaRelationship(Identity id, bool throwErrorIfNotExists = true)
         {
-            Contract.Requires(metaClass, "metaClass");
+            Contract.Requires(id, "id");
+
+            ISchemaInfo si;
+            if (_schemaInfosCache.TryGetValue(id.ToString(), out si))
+            {
+                return (ISchemaRelationship)si;
+            }
 
             // Parcours les domainModels pour rechercher sur la clé
             foreach (ISchema metaModel in Schemas)
             {
-                var metadata = metaModel.GetSchemaRelationship(metaClass, false);
+                var metadata = metaModel.GetSchemaRelationship(id, false);
                 if (metadata != null)
+                {
+                    _schemaInfosCache[id.ToString()] = metadata;
                     return metadata;
+                }
             }
 
             if (throwErrorIfNotExists)
-                throw new MetadataNotFoundException(metaClass.ToString());
+                throw new MetadataNotFoundException(id.ToString());
 
             return null;
         }
@@ -997,12 +1046,21 @@ namespace Hyperstore.Modeling
         {
             Contract.RequiresNotEmpty(name, "name");
 
+            ISchemaInfo si;
+            if (_schemaInfosCache.TryGetValue(name, out si))
+            {
+                return (ISchemaRelationship)si;
+            }
+
             // Parcours les domainModels pour rechercher sur la clé
             foreach (ISchema metaModel in Schemas)
             {
                 var metadata = metaModel.GetSchemaRelationship(name, false);
                 if (metadata != null)
+                {
+                    _schemaInfosCache[name] = metadata;
                     return metadata;
+                }
             }
 
             if (throwErrorIfNotExists)
@@ -1178,6 +1236,8 @@ namespace Hyperstore.Modeling
             }
 
             _domainControler.ActivateDomain(domainModel);
+            _notifiersCache = null;
+
             return domainModel;
         }
 
@@ -1234,6 +1294,7 @@ namespace Hyperstore.Modeling
                 }
 
                 _schemaControler.ActivateDomain(schema);
+                _notifiersCache = null;
                 session.AcceptChanges();
                 
                 return schema;

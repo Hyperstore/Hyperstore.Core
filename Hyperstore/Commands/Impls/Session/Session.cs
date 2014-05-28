@@ -1035,35 +1035,33 @@ namespace Hyperstore.Modeling
             var extensions = Store as IExtensionManager;
             if (extensions == null)
                 throw new Exception("Store must implement IExtensionManager");
-
-            var domainNotifiers = extensions.GetAllDomainModelIncludingExtensions()
-                    .Where(domainModel => domainModel.Events is IEventNotifier)
-                    .Select(domainmodel => domainmodel.Events as IEventNotifier);
-
-            var schemaNotifiers = extensions.GetAllSchemaIncludingExtensions()
-                    .Where(domainModel => domainModel.Events is IEventNotifier)
-                    .Select(domainmodel => domainmodel.Events as IEventNotifier);
-
-            return domainNotifiers.Union(schemaNotifiers).ToList();
+            return extensions.GetEventsNotifiers();
         }
 
         // Vérification des contraintes implicites.
         // Ces contraintes ne portent que sur les éléments impactés lors de l'exécution de la session.
         private void CheckConstraints(IEnumerable<IModelElement> involvedElements)
         {
+            var query =
+                involvedElements
+                .Where(e => e.SchemaInfo.Schema.Constraints is IImplicitDomainModelConstraints && (e.SchemaInfo.Schema.Constraints as IImplicitDomainModelConstraints).HasConstraints)
+                .Select(e => new { Element = e, Constraints = e.SchemaInfo.Schema.Constraints as IImplicitDomainModelConstraints });
+
+            var constraints = query.ToList();
+            if (constraints.Count == 0)
+                return;
+
             try
             {
                 SessionDataContext.InValidationProcess = true;
                 var idx = SessionIndex;
                 var threadId = ThreadHelper.CurrentThreadId;
 
-                PlatformServices.Current.Parallel_ForEach(involvedElements, elem =>
+                PlatformServices.Current.Parallel_ForEach(constraints, tuple =>
                 {
                     using (new MultiThreadedSession(idx.Value, threadId)) // Partage de session
                     {
-                        var constraints = elem.SchemaInfo.Schema.Constraints as IImplicitDomainModelConstraints;
-                        if (constraints != null)
-                            constraints.ImplicitValidation(this, elem);
+                        tuple.Constraints.ImplicitValidation(this, tuple.Element);
                     }
                 });
             }

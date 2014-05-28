@@ -33,6 +33,19 @@ namespace Hyperstore.Modeling
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
+        ///  Query if 'category' is enabled.
+        /// </summary>
+        /// <param name="category">
+        ///  The category.
+        /// </param>
+        /// <returns>
+        ///  true if enabled, false if not.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        bool IsEnabled(string category);
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
         ///  Writes the trace.
         /// </summary>
         /// <param name="category">

@@ -32,15 +32,19 @@ namespace Hyperstore.Modeling
         private static readonly object Sync = new object();
         private static Queue<MarkerEntry> _entries;
         private static readonly List<ICodeMarkerListener> Listeners = new List<ICodeMarkerListener>();
+        private static bool _activate;
         private static bool _enabled;
 
         internal static void Mark(string marker)
         {
+            if (_enabled == false)
+                return;
+
             EnsureInitialized();
 
             lock (Sync)
             {
-                if (_enabled)
+                if (_activate)
                 {
                     _entries.Enqueue(new MarkerEntry(marker, DateTime.Now, ThreadHelper.CurrentThreadId));
                     _actions.RequestJob();
@@ -50,21 +54,30 @@ namespace Hyperstore.Modeling
 
         internal static IDisposable MarkBlock(string marker)
         {
-            Mark(marker + " Begin");
-            return new BlockMarker(marker);
+            if (_enabled)
+            {
+                Mark(marker + " Begin");
+                return new BlockMarker(marker);
+            }
+
+            return Disposables.Empty;
         }
 
         internal static void InitializeDefault()
         {
+            _enabled = true;
             RegisterListener(Platform.PlatformServices.Current.CodeMarkerListener);
             EnableMarkers();
         }
 
         internal static void EnableMarkers()
         {
+            if (_enabled == false)
+                return;
+
             lock (Sync)
             {
-                _enabled = true;
+                _activate = true;
             }
         }
 
@@ -85,7 +98,7 @@ namespace Hyperstore.Modeling
 
         private static void Emit()
         {
-            if (!_enabled)
+            if (!_activate)
                 return;
 
             MarkerEntry[] entries;
@@ -106,6 +119,7 @@ namespace Hyperstore.Modeling
 
         internal static void RegisterListener(ICodeMarkerListener listener)
         {
+            _enabled = true;
             EnsureInitialized();
             lock (Sync)
             {

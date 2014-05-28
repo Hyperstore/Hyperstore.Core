@@ -217,6 +217,7 @@ namespace Hyperstore.Modeling.Validations
             }
         }
 
+
         /// <summary>
         ///     Implicit call lorsque la session se termine
         /// </summary>

@@ -131,7 +131,7 @@ namespace Hyperstore.Modeling
 
         ISchemaRelationship IModelRelationship.SchemaRelationship
         {
-            get { return ((IModelElement) this).SchemaInfo as ISchemaRelationship; }
+            get { return ((IModelElement)this).SchemaInfo as ISchemaRelationship; }
         }
 
         IModelElement IModelRelationship.Start
@@ -196,7 +196,6 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         protected override void Remove()
         {
-            ThrowIfDisposed();
             using (var session = EnsuresRunInSession())
             {
                 var cmd = new RemoveRelationshipCommand(this);

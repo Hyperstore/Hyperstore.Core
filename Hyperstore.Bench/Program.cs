@@ -34,7 +34,8 @@ namespace Hyperstore.Bench
 
                 var sw = new Stopwatch();
 
-                Console.WriteLine("Benchmark manipulating 10 000 elements...");
+                var mx = 10000;
+                Console.WriteLine("Benchmark manipulating {0} elements...", mx);
 
                 // Adding 100 constraints on each element
                 var nbc = 100;
@@ -43,12 +44,13 @@ namespace Hyperstore.Bench
                     Console.WriteLine("Adding 100 implicit constraints on each element.");
 
                     for (int i = 0; i < nbc; i++)
-                        TestDomainDefinition.XExtendsBaseClass.AddImplicitConstraint(self => System.Threading.Interlocked.Increment(ref nb) > 0, "OK");
+                        TestDomainDefinition.XExtendsBaseClass.AddImplicitConstraint(self => 
+                            System.Threading.Interlocked.Increment(ref nb) > 0,
+                            "OK");
                 }
 
                 Console.WriteLine("Running...");
                 sw.Start();
-                var mx = 10000;
                 AddElement(domain, mx);
                 Console.WriteLine("Added in {0}ms ",  sw.ElapsedMilliseconds);
                 sw.Restart();
@@ -62,10 +64,10 @@ namespace Hyperstore.Bench
                 Console.WriteLine("Removed in {0}ms ", sw.ElapsedMilliseconds);
                 sw.Restart();
                 sw.Stop();
-                //Console.WriteLine("Expected {0} Value {1}", mx * nbc * 2, nb);
-                //Console.WriteLine(sw.ElapsedMilliseconds);
+                break;
+                Console.WriteLine("Expected {0} Value {1}", mx * nbc * 2, nb);
                 Console.ReadKey();
-                Console.WriteLine();
+                //Console.WriteLine();
                 cx++;
             }
 
@@ -79,7 +81,7 @@ namespace Hyperstore.Bench
 
             Parallel.For(0, max, i =>
             {
-                using (var tx = store.BeginSession(new SessionConfiguration { Mode = SessionMode.SkipConstraints | SessionMode.SkipNotifications }))
+                using (var tx = store.BeginSession(new SessionConfiguration { Mode = SessionMode.SkipNotifications }))
                 {
                     var a = new XExtendsBaseClass(domain);
                     if (ids.TryAdd(i, ((IModelElement)a).Id))
@@ -103,14 +105,16 @@ namespace Hyperstore.Bench
 
         private void ReadElement(int max)
         {
+            var schema = store.GetSchemaElement<XExtendsBaseClass>();
+
             //Parallel.For(0, max, i =>
             for (int i = 0; i < max; i++)
             {
-                using (var tx = store.BeginSession(new SessionConfiguration { Mode = SessionMode.SkipConstraints | SessionMode.SkipNotifications }))
+                using (var tx = store.BeginSession(new SessionConfiguration { Mode = SessionMode.SkipConstraints | SessionMode.SkipNotifications, Readonly=true }))
                 {
-                    var a = store.GetElement<XExtendsBaseClass>(ids[i]);
-                    var x = a.Name;
-                    tx.AcceptChanges();
+                    var a = store.GetElement(ids[i], schema) as XExtendsBaseClass;
+                   // var x = a.Name;
+                  //  tx.AcceptChanges();
                 }
             }
             //);

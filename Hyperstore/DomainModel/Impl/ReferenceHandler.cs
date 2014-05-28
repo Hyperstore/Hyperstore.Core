@@ -168,9 +168,6 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public IModelElement GetReference()
         {
-            if (((IModelElement)_owner).Status == ModelElementStatus.Disposed)
-                return null;
-
             var mel = _owner.GetReference(ref _id, SchemaRelationship, _opposite);
             return mel;
         }
