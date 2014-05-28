@@ -52,7 +52,7 @@ namespace Hyperstore.Modeling.Events
 
             var propertyMetadata = domainModel.Store.GetSchemaInfo(@event.SchemaPropertyId) as ISchemaProperty;
 
-            yield return new ChangePropertyValueCommand(mel, propertyMetadata, propertyMetadata.Deserialize(new SerializationContext(domainModel, mel.Id, propertyMetadata, @event.Value)), @event.Version);
+            yield return new ChangePropertyValueCommand(mel, propertyMetadata, propertyMetadata.Deserialize(new SerializationContext(propertyMetadata, @event.Value)), @event.Version);
         }
     }
 }

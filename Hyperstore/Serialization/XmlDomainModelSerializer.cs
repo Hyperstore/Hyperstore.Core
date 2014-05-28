@@ -571,7 +571,7 @@ namespace Hyperstore.Modeling.Serialization
                             throw new Exception(string.Format(ExceptionMessages.UnknownPropertyForElementFormat,propertyName,current.Id));
 
                         var propMetadata = property.PropertySchema;
-                        var cmd = new ChangePropertyValueCommand(current, property, propMetadata.Deserialize(new SerializationContext(Model, current.Id, propMetadata, val)));
+                        var cmd = new ChangePropertyValueCommand(current, property, propMetadata.Deserialize(new SerializationContext(property, val)));
                         Session.Current.Execute(cmd);
                     }
                 }

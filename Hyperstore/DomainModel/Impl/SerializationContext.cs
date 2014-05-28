@@ -44,12 +44,9 @@ namespace Hyperstore.Modeling
         /// <param name="schemaElement">
         ///  The schema element.
         /// </param>
-        /// <param name="value">
-        ///  The value.
-        /// </param>
         ///-------------------------------------------------------------------------------------------------
         [DebuggerStepThrough]
-        public SerializationContext(IDomainModel domainModel, Identity id, ISchemaInfo schemaElement, object value)
+        public SerializationContext(IDomainModel domainModel, Identity id, ISchemaInfo schemaElement)
         {
             Contract.Requires(domainModel, "domainModel");
             Contract.Requires(id, "id");
@@ -57,8 +54,21 @@ namespace Hyperstore.Modeling
 
             Id = id;
             DomainModel = domainModel;
-            Value = value;
             Schema = schemaElement;
+        }
+
+        public SerializationContext(ISchemaProperty schemaProperty, object value)
+        {
+            Contract.Requires(schemaProperty, "schemaProperty");
+            Schema = schemaProperty.PropertySchema;
+            Value = value;
+        }
+
+        public SerializationContext(ISchemaValueObject schemaValueObject, object value)
+        {
+            Contract.Requires(schemaValueObject, "schemaValueObject");
+            Schema = schemaValueObject;
+            Value = value;
         }
 
         [DebuggerStepThrough]
