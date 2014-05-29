@@ -37,9 +37,9 @@ namespace Hyperstore.Tests.Metadata
         {
             var store = new Store();
             IDomainModel dm = await store.CreateDomainModelAsync("Test");
-            Assert.IsTrue((bool)PrimitivesSchema.BooleanSchema.Deserialize(new SerializationContext(dm, Identity.Empty, PrimitivesSchema.SchemaEntitySchema, PrimitivesSchema.BooleanSchema.Serialize(true))));
-            Assert.IsFalse((bool)PrimitivesSchema.BooleanSchema.Deserialize(new SerializationContext(dm, Identity.Empty, PrimitivesSchema.SchemaEntitySchema, PrimitivesSchema.BooleanSchema.Serialize(false))));
-            Assert.IsFalse((bool)PrimitivesSchema.BooleanSchema.Deserialize(new SerializationContext(dm, Identity.Empty, PrimitivesSchema.SchemaEntitySchema, null)));
+            Assert.IsTrue((bool)PrimitivesSchema.BooleanSchema.Deserialize(new SerializationContext(PrimitivesSchema.BooleanSchema, PrimitivesSchema.BooleanSchema.Serialize(true))));
+            Assert.IsFalse((bool)PrimitivesSchema.BooleanSchema.Deserialize(new SerializationContext(PrimitivesSchema.BooleanSchema, PrimitivesSchema.BooleanSchema.Serialize(false))));
+            Assert.IsFalse((bool)PrimitivesSchema.BooleanSchema.Deserialize(new SerializationContext(PrimitivesSchema.BooleanSchema, null)));
             Assert.IsNull(PrimitivesSchema.BooleanSchema.Serialize(null));
         }
 
@@ -49,7 +49,7 @@ namespace Hyperstore.Tests.Metadata
             var store = new Store();
             var dt = DateTime.Today;
             IDomainModel dm = await store.CreateDomainModelAsync("Test");
-            Assert.AreEqual(dt, (DateTime)PrimitivesSchema.DateTimeSchema.Deserialize(new SerializationContext(dm, Identity.Empty, PrimitivesSchema.SchemaEntitySchema, PrimitivesSchema.DateTimeSchema.Serialize(dt))));
+            Assert.AreEqual(dt, (DateTime)PrimitivesSchema.DateTimeSchema.Deserialize(new SerializationContext(PrimitivesSchema.DateTimeSchema, PrimitivesSchema.DateTimeSchema.Serialize(dt))));
             Assert.IsNull(PrimitivesSchema.DateTimeSchema.Serialize(null));
         }
 
@@ -59,7 +59,7 @@ namespace Hyperstore.Tests.Metadata
             var store = new Store();
             var dt = 10.2;
             IDomainModel dm = await store.CreateDomainModelAsync("Test");
-            Assert.AreEqual(dt, (Double)PrimitivesSchema.DoubleSchema.Deserialize(new SerializationContext(dm, Identity.Empty, PrimitivesSchema.SchemaEntitySchema, PrimitivesSchema.DoubleSchema.Serialize(dt))));
+            Assert.AreEqual(dt, (Double)PrimitivesSchema.DoubleSchema.Deserialize(new SerializationContext( PrimitivesSchema.DoubleSchema, PrimitivesSchema.DoubleSchema.Serialize(dt))));
             Assert.IsNull(PrimitivesSchema.DoubleSchema.Serialize(null));
         }
 
@@ -69,7 +69,7 @@ namespace Hyperstore.Tests.Metadata
             var store = new Store();
             var dt = DateTime.Now.TimeOfDay;
             IDomainModel dm = await store.CreateDomainModelAsync("Test");
-            Assert.AreEqual((TimeSpan)PrimitivesSchema.TimeSpanSchema.Deserialize(new SerializationContext(dm, Identity.Empty, PrimitivesSchema.SchemaEntitySchema, PrimitivesSchema.TimeSpanSchema.Serialize(dt))), dt);
+            Assert.AreEqual((TimeSpan)PrimitivesSchema.TimeSpanSchema.Deserialize(new SerializationContext( PrimitivesSchema.TimeSpanSchema, PrimitivesSchema.TimeSpanSchema.Serialize(dt))), dt);
             Assert.IsNull(PrimitivesSchema.TimeSpanSchema.Serialize(null));
         }
 
@@ -79,7 +79,7 @@ namespace Hyperstore.Tests.Metadata
             var store = new Store();
             var dt = 10.2;
             IDomainModel dm = await store.CreateDomainModelAsync("Test");
-            Assert.IsTrue((float)PrimitivesSchema.SingleSchema.Deserialize(new SerializationContext(dm, Identity.Empty, PrimitivesSchema.SchemaEntitySchema, PrimitivesSchema.SingleSchema.Serialize(dt))) - dt < 0.01);
+            Assert.IsTrue((float)PrimitivesSchema.SingleSchema.Deserialize(new SerializationContext(PrimitivesSchema.SingleSchema, PrimitivesSchema.SingleSchema.Serialize(dt))) - dt < 0.01);
             Assert.IsNull(PrimitivesSchema.SingleSchema.Serialize(null));
         }
 

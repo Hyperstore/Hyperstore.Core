@@ -180,8 +180,8 @@ namespace Hyperstore.Modeling.Metadata
 
                 _defaultValueInitialized = true;
                 var pv = GetPropertyValue(_defaultValueProperty);
-                if (pv != null && pv.HasValue) 
-                    return _defaultValue = Deserialize(new SerializationContext(DomainModel, ((IModelElement)this).Id, this, pv.Value));
+                if (pv != null && pv.HasValue)
+                    return _defaultValue = Deserialize(new SerializationContext(this, pv.Value));
 
                 return _defaultValue = PropertySchema.DefaultValue;
             }
