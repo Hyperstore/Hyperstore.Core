@@ -53,6 +53,7 @@ namespace Hyperstore.Modeling.Metadata
         private ISchemaValueObject _propertyMetadata;
         private ReferenceHandler _propertyMetadataReference;
         private object _defaultValue;
+        private bool _defaultValueInitialized;
         private ISchemaProperty _defaultValueProperty;
 
         #endregion Enums of MetaProperty (3)
@@ -174,18 +175,20 @@ namespace Hyperstore.Modeling.Metadata
         {
             get
             {
-                if (_defaultValue != null)
+                if (_defaultValueInitialized)
                     return _defaultValue;
 
+                _defaultValueInitialized = true;
                 var pv = GetPropertyValue(_defaultValueProperty);
-                if (pv != null && pv.HasValue)
+                if (pv != null && pv.HasValue) 
                     return _defaultValue = Deserialize(new SerializationContext(DomainModel, ((IModelElement)this).Id, this, pv.Value));
 
-                return PropertySchema.DefaultValue;
+                return _defaultValue = PropertySchema.DefaultValue;
             }
             set
             {
                 _defaultValue = value;
+                _defaultValueInitialized = true;
                 SetPropertyValue("DefaultValue", Serialize(value));
             }
         }

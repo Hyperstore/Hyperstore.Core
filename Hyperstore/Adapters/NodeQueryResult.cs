@@ -30,7 +30,7 @@ namespace Hyperstore.Modeling.Adapters
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     [PublicAPI]
-    public class QueryNodeResult
+    public class QueryNodeResult : IGraphNode 
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -46,14 +46,29 @@ namespace Hyperstore.Modeling.Adapters
         ///  The properties.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public QueryNodeResult(IGraphNode node, ISchemaElement schema, Dictionary<ISchemaProperty, PropertyValue> props)
+        public QueryNodeResult(NodeType nodeType, Identity id, Identity startId, Identity startSchemaId, Identity endId, Identity endSchemaId, ISchemaElement schema, Dictionary<ISchemaProperty, PropertyValue> props)
         {
-            Contract.Requires(node != null, "node");
+            Contract.Requires(id != null, "id");
             Contract.Requires(schema != null, "schema");
-            Node = node;
+            NodeType = nodeType;
+            Id = id;
+            StartId = startId;
+            StartSchemaId = startSchemaId;
+            EndId = endId;
+            EndSchemaId = endSchemaId;
             SchemaInfo = schema;
             Properties = props;
         }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the type of the node.
+        /// </summary>
+        /// <value>
+        ///  The type of the node.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public NodeType NodeType { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -67,13 +82,63 @@ namespace Hyperstore.Modeling.Adapters
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the node.
+        ///  Gets the id.
         /// </summary>
         /// <value>
-        ///  The node.
+        ///  The identifier.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IGraphNode Node { get; private set; }
+        public Identity Id { get; private set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the meta class id.
+        /// </summary>
+        /// <value>
+        ///  The identifier of the schema.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public Identity SchemaId { get { return SchemaInfo.Id; } }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the start meta class id.
+        /// </summary>
+        /// <value>
+        ///  The identifier of the start schema.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public Identity StartSchemaId { get; private set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the end meta class id.
+        /// </summary>
+        /// <value>
+        ///  The identifier of the end schema.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public Identity EndSchemaId { get; private set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the start.
+        /// </summary>
+        /// <value>
+        ///  The identifier of the start.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public Identity StartId { get; private set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the end.
+        /// </summary>
+        /// <value>
+        ///  The identifier of the end.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public Identity EndId { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

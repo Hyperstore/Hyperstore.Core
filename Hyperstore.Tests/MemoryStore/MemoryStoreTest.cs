@@ -25,6 +25,7 @@ using System.Linq;
 using Hyperstore.Tests.Model;
 using Hyperstore.Modeling.HyperGraph;
 using Hyperstore.Modeling.Metadata;
+using Hyperstore.Modeling.HyperGraph.Adapters;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 #endif
@@ -351,7 +352,7 @@ namespace Hyperstore.Tests.MemoryStore
                 s.AcceptChanges();
             }
 
-            Assert.AreEqual(provider.GetNode(new Identity("test", "1"), PrimitivesSchema.Int32Schema).Value, 20);
+            Assert.AreEqual(((Data)provider.GetNode(new Identity("test", "1"), PrimitivesSchema.Int32Schema)).Value, 20);
         }
 
         [TestMethod]
@@ -417,7 +418,7 @@ namespace Hyperstore.Tests.MemoryStore
             }
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
             {
-                Assert.AreEqual(provider.GetNode(new Identity("test", "1"), PrimitivesSchema.Int32Schema).Value, 10);
+                Assert.AreEqual(((Data)provider.GetNode(new Identity("test", "1"), PrimitivesSchema.Int32Schema)).Value, 10);
                 s.AcceptChanges();
             }
         }
@@ -461,7 +462,7 @@ namespace Hyperstore.Tests.MemoryStore
             }
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
             {
-                Assert.AreEqual(provider.GetNode(new Identity("test", "1"), PrimitivesSchema.Int32Schema).Value, 10);
+                Assert.AreEqual(((Data)provider.GetNode(new Identity("test", "1"), PrimitivesSchema.Int32Schema)).Value, 10);
                 s.AcceptChanges();
             }
         }
@@ -486,7 +487,7 @@ namespace Hyperstore.Tests.MemoryStore
 
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
             {
-                Assert.AreEqual(provider.GetNode(new Identity("test", "1"), PrimitivesSchema.Int32Schema).Value, 10);
+                Assert.AreEqual(((Data)provider.GetNode(new Identity("test", "1"), PrimitivesSchema.Int32Schema)).Value, 10);
             }
 
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))

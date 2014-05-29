@@ -500,7 +500,7 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
             DebugContract.Requires(node);
             //DebugContract.Requires(Session.Current);
 
-            var source = node;
+            var source = node as MemoryGraphNode;
             Debug.Assert(source != null, "source != null");
 
             if ((direction & Direction.Outgoing) == Direction.Outgoing)

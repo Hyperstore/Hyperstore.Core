@@ -241,16 +241,15 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
 
             if (!localOnly && _adapter != null)
             {
-                foreach (var result in _adapter.GetNodes(elementType, metadata))
+                foreach (var edge in _adapter.GetNodes(elementType, metadata))
                 {
-                    var edge = result.Node;
                     if ((Session.Current == null || Session.Current.TrackingData.GetTrackingElementState(edge.Id) != TrackingState.Removed) && nodes.Add(edge.Id))
                     {
-                        var m = result.SchemaInfo;
+                        var m = edge.SchemaInfo;
 
                         var mem = _memory.GetGraphNode(edge.Id, m);
                         if (mem == null)
-                            yield return CreateMemoryNode(m, result);
+                            yield return CreateMemoryNode(m, edge);
                         else
                             yield return mem;
                     }
@@ -407,18 +406,17 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
 
             if (!localOnly && _adapter != null && (Session.Current == null || Session.Current.TrackingData.GetTrackingElementState(node.Id) == TrackingState.Unknown))
             {
-                foreach (var result in _adapter.GetEdges(node.Id, direction, metadata, true))
+                foreach (var edge in _adapter.GetEdges(node.Id, direction, metadata, true))
                 {
-                    var edge = result.Node;
                     if ((Session.Current == null || Session.Current.TrackingData.GetTrackingElementState(edge.Id) != TrackingState.Removed) && edges.Add(edge.Id))
                     {
-                        var m = metadata ?? result.SchemaInfo;
+                        var m = metadata ?? edge.SchemaInfo;
                         if (m == null)
-                            throw new InvalidElementException(result.Node.Id, "Inconsistant type");
+                            throw new InvalidElementException(edge.Id, "Inconsistant type");
 
                         var mem = _memory.GetGraphNode(edge.Id, m);
                         if (mem == null)
-                            yield return CreateMemoryNode(m, result);
+                            yield return CreateMemoryNode(m, edge);
                         else
                             yield return mem;
                     }
@@ -529,13 +527,12 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
             _memory.Dispose();
         }
 
-        private IGraphNode CreateMemoryNode(ISchemaInfo metaclass, QueryNodeResult result)
+        private IGraphNode CreateMemoryNode(ISchemaInfo metaclass, QueryNodeResult node)
         {
             DebugContract.Requires(metaclass);
-            DebugContract.Requires(result);
+            DebugContract.Requires(node);
 
             MemoryGraphNode mem;
-            var node = result.Node;
             if (node.NodeType == NodeType.Edge)
             {
                 var sm = _memory.DomainModel.Store.GetSchemaEntity(node.StartSchemaId);
@@ -545,7 +542,6 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
             else
                 mem = _memory.CreateEntity(node.Id, (ISchemaEntity) metaclass) as MemoryGraphNode;
 
-            mem.SetGraphId(node.GraphId);
 
             //if (this._adapter.SupportsLazyLoading == false)
             //{
@@ -559,7 +555,7 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
             //    }
             //}
 
-            foreach (var prop in result.Properties)
+            foreach (var prop in node.Properties)
             {
                 _memory.SetProperty(mem.Id, metaclass as ISchemaElement, prop.Key, prop.Value.Value, prop.Value.CurrentVersion);
             }

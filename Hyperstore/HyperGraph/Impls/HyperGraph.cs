@@ -533,24 +533,24 @@ namespace Hyperstore.Modeling.HyperGraph
                 {
                     foreach (var result in q)
                     {
-                        if (Session.Current != null && Session.Current.TrackingData.GetTrackingElementState(result.Node.Id) == TrackingState.Removed)
+                        if (Session.Current != null && Session.Current.TrackingData.GetTrackingElementState(result.Id) == TrackingState.Removed)
                             continue;
                         cx++;
                         var newInCache = false;
                         var nodeMetaclass = result.SchemaInfo;
 
                         // Si ce noeud n'existe pas dans le cache, on le met
-                        var node = _cache.GetGraphNode(result.Node.Id, nodeMetaclass, true) as MemoryGraphNode;
+                        var node = _cache.GetGraphNode(result.Id, nodeMetaclass, true) as MemoryGraphNode;
                         if (node == null)
                         {
-                            if (result.Node.NodeType == NodeType.Edge)
+                            if (result.NodeType == NodeType.Edge)
                             {
                                 node =
-                                        _cache.CreateRelationship(result.Node.Id, nodeMetaclass as ISchemaRelationship, result.Node.StartId, _cache.DomainModel.Store.GetSchemaElement(result.Node.StartSchemaId), result.Node.EndId,
-                                                _cache.DomainModel.Store.GetSchemaElement(result.Node.EndSchemaId)) as MemoryGraphNode;
+                                        _cache.CreateRelationship(result.Id, nodeMetaclass as ISchemaRelationship, result.StartId, _cache.DomainModel.Store.GetSchemaElement(result.StartSchemaId), result.EndId,
+                                                _cache.DomainModel.Store.GetSchemaElement(result.EndSchemaId)) as MemoryGraphNode;
                             }
                             else
-                                node = _cache.CreateEntity(result.Node.Id, nodeMetaclass as ISchemaEntity) as MemoryGraphNode;
+                                node = _cache.CreateEntity(result.Id, nodeMetaclass as ISchemaEntity) as MemoryGraphNode;
                             newInCache = true;
                         }
 
@@ -568,7 +568,7 @@ namespace Hyperstore.Modeling.HyperGraph
                         //    }
                         //}
 
-                        var ctx = new SerializationContext(_domainModel, result.SchemaInfo, result.Node);
+                        var ctx = new SerializationContext(_domainModel, result.SchemaInfo, result);
                         var mel = (IModelElement)result.SchemaInfo.Deserialize(ctx);
                         if (mel != null)
                         {

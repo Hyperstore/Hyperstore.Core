@@ -84,8 +84,7 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
         ///  (Optional) The version.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public MemoryGraphNode(IHyperstore store, Identity id, Identity metaClassId, NodeType nodetype, Identity start = null, Identity startMetaclass = null, Identity end = null, Identity endMetaclass = null, object value = null, string graphId = null,
-                long version = 1)
+        public MemoryGraphNode(IHyperstore store, Identity id, Identity metaClassId, NodeType nodetype, Identity start = null, Identity startMetaclass = null, Identity end = null, Identity endMetaclass = null, object value = null, long version = 1)
         {
             DebugContract.Requires(store, "store");
             DebugContract.Requires(id, "id");
@@ -94,7 +93,6 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
             DebugContract.Requires(end == null || endMetaclass != null, "end");
             DebugContract.Requires(start == null || end != null, "start/end");
 
-            GraphId = graphId;
             _store = store;
             StartId = start;
             EndId = end;
@@ -184,15 +182,6 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
         ///-------------------------------------------------------------------------------------------------
         public Identity Id { get; private set; }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the identifier of the graph.
-        /// </summary>
-        /// <value>
-        ///  The identifier of the graph.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public string GraphId { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -341,11 +330,6 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
                 });
             }
             return list;
-        }
-
-        internal void SetGraphId(string graphId)
-        {
-            GraphId = graphId;
         }
 
         ///-------------------------------------------------------------------------------------------------

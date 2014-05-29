@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -43,13 +43,13 @@ namespace Hyperstore.Modeling.MemoryStore
         ///  Constructor.
         /// </summary>
         /// <param name="resolver">
-        ///  .
+        ///  Dependency resolver
         /// </param>
         /// <param name="max">
-        ///  .
+        ///  Number of element indicating when the eviction process begins
         /// </param>
         /// <param name="minLifeTimeInMs">
-        ///  (Optional)
+        ///  (Optional)Do not evict element which has been created in this last delay (Default = 10 000ms)
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         public MaxElementsEvictionPolicy(IDependencyResolver resolver, int max, int minLifeTimeInMs = 10000)
@@ -84,7 +84,7 @@ namespace Hyperstore.Modeling.MemoryStore
         ///  true if it succeeds, false if it fails.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public bool ShouldEvictSlot(object key, ISlotList slots)
+        bool IEvictionPolicy.ShouldEvictSlot(object key, ISlotList slots)
         {
             // On a atteint le nbre max d'éviction
             if (_countDown == 0)
@@ -129,7 +129,7 @@ namespace Hyperstore.Modeling.MemoryStore
         ///  Number of actual elements.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void StartProcess(int actualElementsCount)
+        void IEvictionPolicy.StartProcess(int actualElementsCount)
         {
             // Calcul du nbre de valeurs devant être supprimées
             _countDown = actualElementsCount - _max;
@@ -147,7 +147,7 @@ namespace Hyperstore.Modeling.MemoryStore
         ///  Process the terminated.
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
-        public void ProcessTerminated()
+        void IEvictionPolicy.ProcessTerminated()
         {
             if (_removedNodes != null)
             {

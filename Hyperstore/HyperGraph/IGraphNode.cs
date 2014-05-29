@@ -33,16 +33,6 @@ namespace Hyperstore.Modeling.HyperGraph
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the identifier of the graph.
-        /// </summary>
-        /// <value>
-        ///  The identifier of the graph.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        string GraphId { get; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
         ///  Gets the id.
         /// </summary>
         /// <value>
@@ -103,16 +93,6 @@ namespace Hyperstore.Modeling.HyperGraph
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets or sets the value.
-        /// </summary>
-        /// <value>
-        ///  The value.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        object Value { get; set; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
         ///  Gets the type of the node.
         /// </summary>
         /// <value>
@@ -120,50 +100,5 @@ namespace Hyperstore.Modeling.HyperGraph
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         NodeType NodeType { get; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the edges.
-        /// </summary>
-        /// <param name="direction">
-        ///  The direction.
-        /// </param>
-        /// <param name="schemaRelationship">
-        ///  The schema relationship.
-        /// </param>
-        /// <returns>
-        ///  The edges.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        System.Collections.Generic.IEnumerable<EdgeInfo> GetEdges(Direction direction, ISchemaRelationship schemaRelationship);
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Adds an edge.
-        /// </summary>
-        /// <param name="id">
-        ///  The identifier.
-        /// </param>
-        /// <param name="metadataId">
-        ///  Identifier for the metadata.
-        /// </param>
-        /// <param name="direction">
-        ///  The direction.
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
-        void AddEdge(Identity id, Identity metadataId, Direction direction);
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Removes the edge.
-        /// </summary>
-        /// <param name="edgeId">
-        ///  Identifier for the edge.
-        /// </param>
-        /// <param name="direction">
-        ///  The direction.
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
-        void RemoveEdge(Identity edgeId, Direction direction);
     } 
 }
