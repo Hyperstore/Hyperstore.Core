@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Hyperstore.Platform.WinPhone
 {
     public class UIDispatcher : Hyperstore.Modeling.ISynchronizationContext
     {
-        private Windows.UI.Core.CoreDispatcher _dispatcher;
+        private readonly System.Windows.Threading.Dispatcher _dispatcher;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -17,7 +18,7 @@ namespace Hyperstore.Platform.WinPhone
         ///-------------------------------------------------------------------------------------------------
         public UIDispatcher()
         {
-            _dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
+            _dispatcher = Deployment.Current.Dispatcher;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -28,12 +29,21 @@ namespace Hyperstore.Platform.WinPhone
         ///  The action.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public async Task Send(Action action)
+        public Task Send(Action action)
         {
             if (_dispatcher == null)
                 throw new Exception("Incorrect UI dispatcher for the context of the current application. Redefines the correct dispatcher in the store.");
 
-            await _dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, new Windows.UI.Core.DispatchedHandler(action));
+            if (_dispatcher.CheckAccess())
+            {
+                action();
+            }
+            else
+            {
+                _dispatcher.BeginInvoke(action);    
+            }
+            
+            return Hyperstore.Modeling.Utils.CompletedTask.Default;
         }
     }
 }
