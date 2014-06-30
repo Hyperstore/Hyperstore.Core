@@ -148,9 +148,7 @@ namespace Hyperstore.Modeling.Events
             if (!_handlersByEventType.TryGetValue(eventType, out handlers))
                 return false;
 
-            IDomainModel targetDomainModel;
-
-            targetDomainModel = _store.GetDomainModel(@event.DomainModel);
+            IDomainModel targetDomainModel = _store.GetDomainModel(@event.DomainModel);
             if (targetDomainModel == null)
                 return false;
 

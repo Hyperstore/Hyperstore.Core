@@ -12,7 +12,7 @@ namespace Hyperstore.Modeling.DomainExtension
         // TODO gestion du dechargement d'un domaine
         class Info
         {
-            public T DomainModel;
+            public readonly T DomainModel;
             public bool Enabled;
 
             public Info(T domain, bool enabled)

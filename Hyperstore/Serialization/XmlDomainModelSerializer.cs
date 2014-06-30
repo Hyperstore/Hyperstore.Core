@@ -215,8 +215,6 @@ namespace Hyperstore.Modeling.Serialization
             foreach (var e in model.GetSchemaRelationships()
                     .OrderBy(r => r.Sequence))
             {
-                if (!(e is ISchemaRelationship))
-                    continue;
 
                 yield return
                         new XElement("metaRelationship", new XAttribute("id", e.Id), new XAttribute("metadata", e.SchemaInfo.SchemaInfo.Id),

@@ -83,7 +83,7 @@ namespace Hyperstore.Modeling
         private readonly List<IModelElement> _items;
         private readonly object _sync = new object();
         private IDisposable _propertyChangedSubscription;
-        private ISynchronizationContext _synchronizationContext;
+        private readonly ISynchronizationContext _synchronizationContext;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

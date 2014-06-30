@@ -14,7 +14,7 @@ namespace Hyperstore.Modeling
 
     public class ObservableModelElementList<T> : ModelElementList<T>, INotifyCollectionChanged where T : IModelElement
     {
-        private ISynchronizationContext _synchronizationContext;
+        private readonly ISynchronizationContext _synchronizationContext;
         private readonly List<T> _items;
 
         ///-------------------------------------------------------------------------------------------------

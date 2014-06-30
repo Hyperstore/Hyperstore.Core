@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -810,7 +810,7 @@ namespace Hyperstore.Modeling
             Contract.Requires(id, "id");
 
             ISchemaInfo si;
-            if( _schemaInfosCache.TryGetValue(id.ToString(), out si))
+            if (_schemaInfosCache.TryGetValue(id.ToString(), out si))
             {
                 return si;
             }
@@ -819,7 +819,7 @@ namespace Hyperstore.Modeling
             if (dm != null)
             {
                 si = dm.GetSchemaInfo(id, throwErrorIfNotExists);
-                if( si != null)
+                if (si != null)
                 {
                     _schemaInfosCache[si.ToString()] = si;
                 }
@@ -831,7 +831,7 @@ namespace Hyperstore.Modeling
 
             return null;
         }
-        
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Gets the meta relationship.
@@ -1195,6 +1195,9 @@ namespace Hyperstore.Modeling
         {
             Conventions.CheckValidDomainName(name);
 
+            if (GetDomainModel(name) != null)
+                throw new Exception("A domain or a schema with the same name already exists in the store.");
+
             var resolver = DependencyResolver as IDependencyResolverInternal;
             if (resolver == null)
                 throw new Exception(ExceptionMessages.DependencyResolverMustInheritFromDefaultDependencyResolver);
@@ -1263,6 +1266,9 @@ namespace Hyperstore.Modeling
             if (desc.SchemaName == "$" && !(desc is PrimitivesSchemaDefinition))
                 throw new Exception("Invalid schema name");
 
+            if (GetDomainModel(desc.SchemaName) != null)
+                throw new Exception("A domain with the same name already exists in the store.");
+
             // On s'assure que le domaine primitif est bien chargé
             await Initialize();
 
@@ -1296,10 +1302,10 @@ namespace Hyperstore.Modeling
                 _schemaControler.ActivateDomain(schema);
                 _notifiersCache = null;
                 session.AcceptChanges();
-                
+
                 return schema;
             }
-        }    
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

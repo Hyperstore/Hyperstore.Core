@@ -350,24 +350,6 @@ namespace Hyperstore.Modeling
         }
 
 
-        /// <summary>
-        ///     Quand la session contenant le processus de création est terminée (commit ou rollback), on positionne le status
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        //private void OnCreationSessionCompleted(object sender, EventArgs e)
-        //{
-        //    DebugContract.Requires(sender);
-        //    DebugContract.Requires(e);
-        //    DebugContract.Requires(Session.Current);
-
-        //    Session.Current.Completing -= OnCreationSessionCompleted;
-
-        //    // Mise à jour du status et suppression de l'abonnement à l'événement                        
-        //    var session = sender as ISession;
-        //    Debug.Assert(session != null, "session != null");
-        //    SetStatus(!session.IsAborted ? ModelElementStatus.Created : ModelElementStatus.Disposed);
-        //}
 
         #endregion
 

@@ -19,7 +19,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Hyperstore.Modeling.HyperGraph;
 using System.Linq;
 using Hyperstore.Modeling.Statistics;

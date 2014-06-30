@@ -609,10 +609,10 @@ namespace Hyperstore.Modeling.Platform
 
         private class Node
         {
-            internal TKey m_key;
+            internal readonly TKey m_key;
             internal TValue m_value;
             internal volatile Node m_next;
-            internal int m_hashcode;
+            internal readonly int m_hashcode;
 
             internal Node(TKey key, TValue value, int hashcode, Node next)
             {
@@ -719,14 +719,14 @@ namespace Hyperstore.Modeling.Platform
             // - Two stores:  these are at risk, but CLRv2 memory model guarantees store-release hence we are safe.
             // - Two loads: because one item from two volatile arrays are accessed, the loads of the array references
             //          are sufficient to prevent reordering of the loads of the elements.
-            internal volatile T[] m_array;
+            private volatile T[] _array;
 
             // For each entry in m_array, the corresponding entry in m_state indicates whether this position contains 
             // a valid value. m_state is initially all false. 
-            internal volatile VolatileBool[] m_state;
+            private volatile VolatileBool[] _state;
 
             //pointer to the next segment. null if the current segment is the last segment
-            private volatile Segment m_next;
+            private volatile Segment _next;
 
             //We use this zero based index to track how many segments have been created for the queue, and
             //to compute how many active segments are there currently. 
@@ -734,7 +734,7 @@ namespace Hyperstore.Modeling.Platform
             // * m_index is incremented with every Segment.Grow operation. We use Int64 type, and we can safely 
             //   assume that it never overflows. To overflow, we need to do 2^63 increments, even at a rate of 4 
             //   billion (2^32) increments per second, it takes 2^31 seconds, which is about 64 years.
-            internal readonly long m_index;
+            private readonly long _index;
 
             //indices of where the first and last valid values
             // - m_low points to the position of the next element to pop from this segment, range [0, infinity)
@@ -752,17 +752,17 @@ namespace Hyperstore.Modeling.Platform
 
             internal Segment(long index, InternalConcurrentQueue<T> source)
             {
-                m_array = new T[SEGMENT_SIZE];
-                m_state = new VolatileBool[SEGMENT_SIZE]; //all initialized to false
+                _array = new T[SEGMENT_SIZE];
+                _state = new VolatileBool[SEGMENT_SIZE]; //all initialized to false
                 m_high = -1;
                 System.Diagnostics.Contracts.Contract.Assert(index >= 0);
-                m_index = index;
+                _index = index;
                 m_source = source;
             }
 
             internal Segment Next
             {
-                get { return m_next; }
+                get { return _next; }
             }
 
             internal bool IsEmpty
@@ -774,25 +774,25 @@ namespace Hyperstore.Modeling.Platform
             {
                 System.Diagnostics.Contracts.Contract.Assert(m_high < SEGMENT_SIZE - 1);
                 m_high++;
-                m_array[m_high] = value;
-                m_state[m_high].m_value = true;
+                _array[m_high] = value;
+                _state[m_high].m_value = true;
             }
 
             internal Segment UnsafeGrow()
             {
                 System.Diagnostics.Contracts.Contract.Assert(m_high >= SEGMENT_SIZE - 1);
-                Segment newSegment = new Segment(m_index + 1, m_source); //m_index is Int64, we don't need to worry about overflow
-                m_next = newSegment;
+                Segment newSegment = new Segment(_index + 1, m_source); //m_index is Int64, we don't need to worry about overflow
+                _next = newSegment;
                 return newSegment;
             }
 
             internal void Grow()
             {
                 //no CAS is needed, since there is no contention (other threads are blocked, busy waiting)
-                Segment newSegment = new Segment(m_index + 1, m_source);  //m_index is Int64, we don't need to worry about overflow
-                m_next = newSegment;
+                Segment newSegment = new Segment(_index + 1, m_source);  //m_index is Int64, we don't need to worry about overflow
+                _next = newSegment;
                 System.Diagnostics.Contracts.Contract.Assert(m_source.m_tail == this);
-                m_source.m_tail = m_next;
+                m_source.m_tail = _next;
             }
 
             internal bool TryAppend(T value)
@@ -823,8 +823,8 @@ namespace Hyperstore.Modeling.Platform
                     newhigh = Interlocked.Increment(ref m_high);
                     if (newhigh <= SEGMENT_SIZE - 1)
                     {
-                        m_array[newhigh] = value;
-                        m_state[newhigh].m_value = true;
+                        _array[newhigh] = value;
+                        _state[newhigh].m_value = true;
                     }
 
                     //if this thread takes up the last slot in the segment, then this thread is responsible
@@ -852,12 +852,12 @@ namespace Hyperstore.Modeling.Platform
                         //if the specified value is not available (this spot is taken by a push operation,
                         // but the value is not written into yet), then spin
                         SpinWait spinLocal = new SpinWait();
-                        while (!m_state[lowLocal].m_value)
+                        while (!_state[lowLocal].m_value)
                         {
                             spinLocal.SpinOnce();
                         }
-                        result = m_array[lowLocal];
-                        m_array[lowLocal] = default(T); //release the reference to the object. 
+                        result = _array[lowLocal];
+                        _array[lowLocal] = default(T); //release the reference to the object. 
 
                         //if the current thread sets m_low to SEGMENT_SIZE, which means the current segment becomes
                         //disposable, then this thread is responsible to dispose this segment, and reset m_head 
@@ -871,12 +871,12 @@ namespace Hyperstore.Modeling.Platform
                             //dispose the current (and ONLY) segment. Then we need to wait till thread A finishes its 
                             //Grow operation, this is the reason of having the following while loop
                             spinLocal = new SpinWait();
-                            while (m_next == null)
+                            while (_next == null)
                             {
                                 spinLocal.SpinOnce();
                             }
                             System.Diagnostics.Contracts.Contract.Assert(m_source.m_head == this);
-                            m_source.m_head = m_next;
+                            m_source.m_head = _next;
                         }
                         return true;
                     }
@@ -898,15 +898,15 @@ namespace Hyperstore.Modeling.Platform
                 if (lowLocal > High)
                     return false;
                 SpinWait spin = new SpinWait();
-                while (!m_state[lowLocal].m_value)
+                while (!_state[lowLocal].m_value)
                 {
                     spin.SpinOnce();
                 }
-                result = m_array[lowLocal];
+                result = _array[lowLocal];
                 return true;
             }
 
-            internal int Low
+            private int Low
             {
                 get
                 {
@@ -914,7 +914,7 @@ namespace Hyperstore.Modeling.Platform
                 }
             }
 
-            internal int High
+            private int High
             {
                 get
                 {

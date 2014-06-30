@@ -29,7 +29,7 @@ namespace Hyperstore.Modeling.Utils
     ///-------------------------------------------------------------------------------------------------
     public static class Disposables
     {
-        private static IDisposable _empty;
+        private static readonly IDisposable _empty;
 
         static Disposables()
         {

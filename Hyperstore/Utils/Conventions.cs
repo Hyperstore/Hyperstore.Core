@@ -42,7 +42,7 @@ namespace Hyperstore.Modeling
             if (name[0] == '.' || Char.IsDigit(name[0]) || name.EndsWith("."))
                 throw new InvalidNameException(name);
 
-            foreach (var ch in name)
+            foreach (char ch in name)
             {
                 if (!Char.IsLetterOrDigit(ch) && ch != '_' && ch != '$' && !(composed && ch == '.'))
                     throw new InvalidNameException(name);

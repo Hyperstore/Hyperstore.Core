@@ -36,8 +36,23 @@ namespace Hyperstore.Modeling.Adapters
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <param name="node">
-        ///  The node.
+        /// <param name="nodeType">
+        ///  The type of the node.
+        /// </param>
+        /// <param name="id">
+        ///  The identifier.
+        /// </param>
+        /// <param name="startId">
+        ///  The identifier of the start.
+        /// </param>
+        /// <param name="startSchemaId">
+        ///  The identifier of the start schema.
+        /// </param>
+        /// <param name="endId">
+        ///  The identifier of the end.
+        /// </param>
+        /// <param name="endSchemaId">
+        ///  The identifier of the end schema.
         /// </param>
         /// <param name="schema">
         ///  The schema.

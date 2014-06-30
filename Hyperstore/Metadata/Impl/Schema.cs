@@ -121,7 +121,7 @@ namespace Hyperstore.Modeling.Metadata
             if ((Store.Options & StoreOptions.EnableExtensions) != StoreOptions.EnableExtensions)
                 throw new Exception("Extensions are not enabled. Use StoreOptions.EnableExtensions when instancing the store.");
 
-            if (String.Compare(definition.SchemaName, this.Name) == 0)
+            if (String.CompareOrdinal(definition.SchemaName, this.Name) == 0)
                 throw new Exception("Extension schema must have the same name that the extended schema.");
 
             var desc = new ExtensionSchemaDefinition(definition, this, mode);

@@ -314,7 +314,7 @@ namespace Hyperstore.Modeling.Metadata
 
         IModelElement IModelRelationship.End
         {
-            get { return End; ; }
+            get { return End;  }
         }
 
         Identity IModelRelationship.EndId

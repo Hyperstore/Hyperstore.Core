@@ -193,7 +193,7 @@ namespace Hyperstore.Modeling.Domain
 
         protected virtual IModelElement InstanciateModelElementCore(Type implementationType)
         {
-            var ctor = ReflectionHelper.GetConstructor(implementationType).FirstOrDefault(c => c.GetParameters().Length == 0);
+            var ctor = ReflectionHelper.GetConstructor(implementationType).FirstOrDefault();
             if (ctor == null)
                 throw new Exception(ExceptionMessages.ElementMustHaveAProtectedParameterlessConstructor);
             return (IModelElement)ctor.Invoke(null);

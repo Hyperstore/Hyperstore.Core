@@ -34,7 +34,7 @@ namespace Hyperstore.Modeling.Messaging
     {
         private readonly object _sync = new object();
         private List<IEventBusChannel> _channels;
-        private Dictionary<IDomainModel, PoliciesInfo> _policies = new Dictionary<IDomainModel, PoliciesInfo>();
+        private readonly Dictionary<IDomainModel, PoliciesInfo> _policies = new Dictionary<IDomainModel, PoliciesInfo>();
 
         private class PoliciesInfo
         {
@@ -60,7 +60,7 @@ namespace Hyperstore.Modeling.Messaging
         public IEnumerable<IEventBusChannel> Channels { get { return _channels; } }
 
         private bool _disposed;
-        private IHyperstore _store;
+        private readonly IHyperstore _store;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -166,7 +166,7 @@ namespace Hyperstore.Modeling.Messaging
                     channel.RegisterFilter(new ChannelFilter(info.Value.Output, info.Value.Input, info.Key));
                 }
 
-                tasks[i] = channel.StartAsync(this);
+                tasks[i++] = channel.StartAsync(this);
             }
 
             await Task.WhenAll(tasks);

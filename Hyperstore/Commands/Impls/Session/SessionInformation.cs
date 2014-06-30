@@ -40,7 +40,7 @@ namespace Hyperstore.Modeling
         #region Fields
 
         private readonly Dictionary<string, object> _contextInfos;
-        private ISessionContext _context;
+        private readonly ISessionContext _context;
         #endregion
 
         #region Properties

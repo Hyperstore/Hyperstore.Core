@@ -143,7 +143,7 @@ namespace Hyperstore.Modeling
             if (item == null)
                 return;
 
-            var itemMetadata = Source != null ? SchemaRelationship.End : SchemaRelationship.Start; ;
+            var itemMetadata = Source != null ? SchemaRelationship.End : SchemaRelationship.Start; 
             if (!((IModelElement)item).SchemaInfo.IsA(itemMetadata))
                 throw new Exception(ExceptionMessages.InvalidItemType);
 

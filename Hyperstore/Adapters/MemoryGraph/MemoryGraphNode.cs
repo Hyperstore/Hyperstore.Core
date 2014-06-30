@@ -44,46 +44,43 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
         }
 
         private IHyperstore _store;
-        private object _sync = new object();
+        private readonly object _sync = new object();
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Constructor.
-        /// </summary>
-        /// <param name="store">
-        ///  The store.
-        /// </param>
-        /// <param name="id">
-        ///  The identifier.
-        /// </param>
-        /// <param name="metaClassId">
-        ///  Identifier for the meta class.
-        /// </param>
-        /// <param name="nodetype">
-        ///  The type of the node.
-        /// </param>
-        /// <param name="start">
-        ///  (Optional) the start.
-        /// </param>
-        /// <param name="startMetaclass">
-        ///  (Optional) the start metaclass.
-        /// </param>
-        /// <param name="end">
-        ///  (Optional) the end.
-        /// </param>
-        /// <param name="endMetaclass">
-        ///  (Optional) the end metaclass.
-        /// </param>
-        /// <param name="value">
-        ///  (Optional) The value.
-        /// </param>
-        /// <param name="graphId">
-        ///  (Optional) The identifier of the graph.
-        /// </param>
+        /// -------------------------------------------------------------------------------------------------
+        ///  <summary>
+        ///   Constructor.
+        ///  </summary>
+        ///  <param name="store">
+        ///   The store.
+        ///  </param>
+        ///  <param name="id">
+        ///   The identifier.
+        ///  </param>
+        ///  <param name="metaClassId">
+        ///   Identifier for the meta class.
+        ///  </param>
+        ///  <param name="nodetype">
+        ///   The type of the node.
+        ///  </param>
+        ///  <param name="start">
+        ///   (Optional) the start.
+        ///  </param>
+        ///  <param name="startMetaclass">
+        ///   (Optional) the start metaclass.
+        ///  </param>
+        ///  <param name="end">
+        ///   (Optional) the end.
+        ///  </param>
+        ///  <param name="endMetaclass">
+        ///   (Optional) the end metaclass.
+        ///  </param>
+        ///  <param name="value">
+        ///   (Optional) The value.
+        ///  </param>
         /// <param name="version">
-        ///  (Optional) The version.
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
+        ///   (Optional) The version.
+        ///  </param>
+        /// -------------------------------------------------------------------------------------------------
         public MemoryGraphNode(IHyperstore store, Identity id, Identity metaClassId, NodeType nodetype, Identity start = null, Identity startMetaclass = null, Identity end = null, Identity endMetaclass = null, object value = null, long version = 1)
         {
             DebugContract.Requires(store, "store");

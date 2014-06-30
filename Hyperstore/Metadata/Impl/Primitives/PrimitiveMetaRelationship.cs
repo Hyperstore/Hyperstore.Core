@@ -164,7 +164,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
 
         IModelElement IModelRelationship.End
         {
-            get { return ((ISchemaRelationship)this).End; ; }
+            get { return ((ISchemaRelationship)this).End;  }
         }
 
         Identity IModelRelationship.EndId
