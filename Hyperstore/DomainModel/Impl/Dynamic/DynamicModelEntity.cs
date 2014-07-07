@@ -151,7 +151,7 @@ namespace Hyperstore.Modeling
                         throw new Exception(ExceptionMessages.InvalidValue);
                 }
 
-                ((ReferenceHandler)refer).SetReference(value as IModelElement);
+                ((ReferenceHandler)refer).SetReference(value as IModelElement, propertyName);
                 return value;
             }
 

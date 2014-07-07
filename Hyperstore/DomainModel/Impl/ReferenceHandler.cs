@@ -65,7 +65,7 @@ namespace Hyperstore.Modeling
         private readonly ModelElement _owner;
         private Identity _id;
         private ISchemaRelationship _relationshipMetadata;
-
+        
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Initializes a new instance of the <see cref="ReferenceHandler" /> class.
@@ -152,10 +152,13 @@ namespace Hyperstore.Modeling
         /// <param name="value">
         ///  The value.
         /// </param>
+        /// <param name="propertyName">
+        ///  (Optional) name of the property.
+        /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void SetReference(IModelElement value)
+        public void SetReference(IModelElement value, string propertyName=null)
         {
-            _owner.SetReference(ref _id, SchemaRelationship, value, _opposite);
+            _owner.SetReference(propertyName, ref _id, SchemaRelationship, value, _opposite);
         }
 
         ///-------------------------------------------------------------------------------------------------

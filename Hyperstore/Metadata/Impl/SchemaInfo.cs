@@ -169,7 +169,7 @@ namespace Hyperstore.Modeling.Metadata
         protected ISchemaElement SuperClass
         {
             get { return _superClass ?? (_superClass = (_superClassHandler.GetReference<ISchemaElement>() ?? DefaultSuperClass)); }
-            set { _superClassHandler.SetReference(_superClass = value); }
+            set { _superClassHandler.SetReference(_superClass = value, null); }
         }
 
         #endregion Properties of MetaClass (6)
@@ -649,6 +649,11 @@ namespace Hyperstore.Modeling.Metadata
         protected override void Remove()
         {
             throw new Exception(ExceptionMessages.CantRemoveSchemaElementSchemaIsImmutable);
+        }
+
+        protected IObjectSerializer JsonSerializer
+        {
+            get { return PlatformServices.Current.ObjectSerializer; }
         }
     }
 }

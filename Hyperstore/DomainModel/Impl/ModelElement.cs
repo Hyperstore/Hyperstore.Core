@@ -397,7 +397,7 @@ namespace Hyperstore.Modeling
         }
 
         // Création d'une référence 0..1 à partir de l'élément courant ou vers l'élement courant si opposite vaut true
-        internal void SetReference(ref Identity relationshipId, ISchemaRelationship relationshipSchema, IModelElement target, bool opposite)
+        internal void SetReference(string propertyName, ref Identity relationshipId, ISchemaRelationship relationshipSchema, IModelElement target, bool opposite)
         {
             DebugContract.Requires(relationshipSchema, "relationshipMetadata");
 
