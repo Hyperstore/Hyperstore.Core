@@ -17,7 +17,6 @@
 
 #region Imports
 
-using Hyperstore.Modeling.Platform;
 using Hyperstore.Modeling.Utils;
 using System;
 using System.Diagnostics;
@@ -26,7 +25,7 @@ using System.IO;
 
 #endregion
 
-namespace Hyperstore.Platform.Net
+namespace Hyperstore.Modeling.Platform.Net
 {
     internal class DefaultCodeMarkerListener : ICodeMarkerListener
     {

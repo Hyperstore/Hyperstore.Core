@@ -149,7 +149,7 @@ namespace Hyperstore.Modeling.Ioc
             // IPersistenceAdapter<Vertex> ?
             // IModelElementResolver 
 
-            const string platformTypeName = "Hyperstore.Platform.PlatformServices, Hyperstore.Platform";
+            const string platformTypeName = "Hyperstore.Platform.PlatformServicesInstance, Hyperstore.Platform";
             var platformfactoryType = Type.GetType(platformTypeName, false);
             if (platformfactoryType != null)
             {

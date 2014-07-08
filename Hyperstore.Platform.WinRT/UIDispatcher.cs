@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hyperstore.Platform.WinPhone
+namespace Hyperstore.Modeling.Platform.WinRT
 {
-    public class UIDispatcher : Hyperstore.Modeling.ISynchronizationContext
+    internal class UIDispatcher : Hyperstore.Modeling.ISynchronizationContext
     {
         private Windows.UI.Core.CoreDispatcher _dispatcher;
 

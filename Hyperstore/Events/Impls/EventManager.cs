@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -93,7 +93,7 @@ namespace Hyperstore.Modeling.Events
         private readonly ISubjectWrapper<EventContext<RemoveRelationshipEvent>> _relationshipRemoving;
 
 
-        private readonly ISubjectWrapper<ISessionInformation> _sessionCompleted; 
+        private readonly ISubjectWrapper<ISessionInformation> _sessionCompleted;
         private readonly ISubjectWrapper<ISessionInformation> _sessionCompleting;
         private IDomainModel _domainModel;
 
@@ -460,7 +460,7 @@ namespace Hyperstore.Modeling.Events
                         _attributedChangedObservers[element.Id]++;
                     else
                         _attributedChangedObservers.Add(element.Id, 1);
-                    return Disposables.ExecuteOnDispose(() => { _attributedChangedObservers[element.Id]--; if (_attributedChangedObservers[element.Id] == 0) _attributedChangedObservers.Remove(element.Id);});
+                    return Disposables.ExecuteOnDispose(() => { _attributedChangedObservers[element.Id]--; if (_attributedChangedObservers[element.Id] == 0) _attributedChangedObservers.Remove(element.Id); });
                 }
                 finally
                 {
@@ -550,7 +550,7 @@ namespace Hyperstore.Modeling.Events
             {
                 NotifyEventError(log, ex);
             }
-            
+
             // Si la session s'est terminée anormalement, aucun autre événement n'est envoyé
             if (!session.IsAborted && (session.Mode & SessionMode.SkipNotifications) != SessionMode.SkipNotifications)
             {
@@ -717,28 +717,34 @@ namespace Hyperstore.Modeling.Events
                     NotifyEventError(log, ex);
                 }
 
-                var list = new List<IModelElement>();
-                _attributedChangedObserversSync.EnterReadLock();
-                try
-                {
-                    foreach (var mel in session.TrackingData.InvolvedModelElements)
-                    {
-                        if (_attributedChangedObservers.ContainsKey(mel.Id))
-                            list.Add(mel);
-                    }
-                }
-                finally
-                {
-                    _attributedChangedObserversSync.ExitReadLock();
-                }
+                var propertyName = cmd.PropertyName;
+                NotifyPropertyChanged(session, propertyName);
+            }
+        }
 
-                foreach (var mel in list)
+        private void NotifyPropertyChanged(ISessionInformation session, string propertyName)
+        {
+            var list = new List<IModelElement>();
+            _attributedChangedObserversSync.EnterReadLock();
+            try
+            {
+                foreach (var mel in session.TrackingData.InvolvedModelElements)
                 {
-                    var notifier = mel as IPropertyChangedNotifier;
-                    if (notifier != null)
-                    {
-                        notifier.NotifyPropertyChanged(cmd.PropertyName);
-                    }
+                    if (_attributedChangedObservers.ContainsKey(mel.Id))
+                        list.Add(mel);
+                }
+            }
+            finally
+            {
+                _attributedChangedObserversSync.ExitReadLock();
+            }
+
+            foreach (var mel in list)
+            {
+                var notifier = mel as IPropertyChangedNotifier;
+                if (notifier != null)
+                {
+                    notifier.NotifyPropertyChanged(propertyName);
                 }
             }
         }

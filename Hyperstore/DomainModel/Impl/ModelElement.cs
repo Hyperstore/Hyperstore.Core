@@ -563,9 +563,10 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         protected virtual void Dispose(bool disposing)
         {
-            if ( this is INotifyPropertyChanged)
+            if (this is INotifyPropertyChanged)
             {
-                _domainModel.Events.UnregisterForAttributeChangedEvent(this);
+                if (_domainModel != null)
+                    _domainModel.Events.UnregisterForAttributeChangedEvent(this);
                 DisableDataErrorsNotification();
 
                 // Le finalizer existe pour être certain qu'une instance d'un élément sera bien déréférencée du gestionnaire d'événements,
@@ -908,7 +909,7 @@ namespace Hyperstore.Modeling
         System.Collections.IEnumerable INotifyDataErrorInfo.GetErrors(string propertyName)
         {
             List<String> messages = null;
-            if( ValidationMessages != null && propertyName != null)
+            if (ValidationMessages != null && propertyName != null)
                 ValidationMessages.TryGetValue(propertyName, out messages);
             return messages;
         }

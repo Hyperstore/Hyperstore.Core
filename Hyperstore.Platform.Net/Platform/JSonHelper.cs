@@ -22,7 +22,7 @@ using System.Collections.Generic;
 using System.Web.Script.Serialization;
 
 
-namespace Hyperstore.Platform.Net
+namespace Hyperstore.Modeling.Platform.Net
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>

@@ -26,7 +26,7 @@ using System.Runtime.Serialization;
 
 #endregion
 
-namespace Hyperstore.Platform.Net
+namespace Hyperstore.Modeling.Platform.Net
 {
     internal class ModelElementFactory : Hyperstore.Modeling.Domain.ModelElementFactory
     {

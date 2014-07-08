@@ -1,15 +1,15 @@
-﻿using Hyperstore.Platform.Net;
+﻿using Hyperstore.Modeling.Platform.Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hyperstore.Platform
+namespace Hyperstore.Modeling.Platform
 {
-    public class PlatformServices : Hyperstore.Modeling.Platform.PlatformServices
+    public class PlatformServicesInstance : Hyperstore.Modeling.Platform.PlatformServices
     {
-        public PlatformServices()
+        public PlatformServicesInstance()
         {
             Current = this;
         }

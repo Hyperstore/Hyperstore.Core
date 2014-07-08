@@ -143,7 +143,7 @@ namespace Hyperstore.Modeling.Domain
                 }
                 else
                 {
-                    if (Session.Current.TrackingData.GetTrackingElementState(elem.Id) == TrackingState.Removed)
+                    if (Session.Current != null && Session.Current.TrackingData.GetTrackingElementState(elem.Id) == TrackingState.Removed)
                         return null;
 
                     return elem;

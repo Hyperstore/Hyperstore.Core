@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 
-namespace Hyperstore.Platform.Net
+namespace Hyperstore.Modeling.Platform.Net
 {
     internal class TransactionScopeWrapper : ITransactionScope
     {

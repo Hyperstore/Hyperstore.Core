@@ -1,11 +1,10 @@
-﻿using Hyperstore.Modeling.Platform;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hyperstore.Platform.Net
+namespace Hyperstore.Modeling.Platform.Net
 {
     class ConcurrentDictionaryWrapper<TKey, TValue> : System.Collections.Concurrent.ConcurrentDictionary<TKey, TValue>, IConcurrentDictionary<TKey, TValue>
     {
