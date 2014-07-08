@@ -200,5 +200,10 @@ namespace Hyperstore.Modeling.Platform
         {
             return new Hyperstore.Modeling.Domain.ModelElementFactory();
         }
+
+        public virtual IMefContainer MefContainer
+        {
+            get { return new MefContainer(); }
+        }
     }
 }

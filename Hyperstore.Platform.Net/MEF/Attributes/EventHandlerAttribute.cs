@@ -14,38 +14,39 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
-#if MEF_NATIVE
+
+
 #region Imports
 using System.ComponentModel.Composition;
 using System;
+using Hyperstore.Modeling.Events;
+
 #endregion
 
-namespace Hyperstore.Modeling.Commands
+namespace Hyperstore.Modeling.Events
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  Attribute for command handler.
+    ///  Attribute for event handler.
     /// </summary>
     /// <seealso cref="T:System.ComponentModel.Composition.ExportAttribute"/>
     ///-------------------------------------------------------------------------------------------------
     [PublicAPI]
     [MetadataAttribute]
-    [AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
-    public sealed class CommandHandlerAttribute : ExportAttribute
+    [AttributeUsage(AttributeTargets.Class, Inherited = true)]
+    public sealed class EventHandlerAttribute : ExportAttribute
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Constructor.
         /// </summary>
         /// <param name="domainModel">
-        ///  The domain model.
+        ///  (Optional) The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public CommandHandlerAttribute(string domainModel)
-            : base(typeof(ICommandHandler))
+        public EventHandlerAttribute(string domainModel = null)
+            : base(typeof(IEventHandler))
         {
-            Contract.RequiresNotEmpty(domainModel, "domainModel");
             DomainModel = domainModel;
         }
 
@@ -61,4 +62,3 @@ namespace Hyperstore.Modeling.Commands
     }
 }
 
-#endif

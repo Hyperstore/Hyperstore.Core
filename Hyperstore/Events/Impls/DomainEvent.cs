@@ -30,14 +30,14 @@ namespace Hyperstore.Modeling.Events
     /// </summary>
     /// <seealso cref="T:Hyperstore.Modeling.Events.IEvent"/>
     ///-------------------------------------------------------------------------------------------------
-    public abstract class DomainEvent : IEvent
+    public abstract class AbstractDomainEvent : IEvent
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Specialised default constructor for use only by derived classes.
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
-        protected DomainEvent()
+        protected AbstractDomainEvent()
         {
         }
 
@@ -55,7 +55,7 @@ namespace Hyperstore.Modeling.Events
         ///  The correlation identifier.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        protected DomainEvent(string domainModel, string extensionName, Guid correlationId)
+        protected AbstractDomainEvent(string domainModel, string extensionName, Guid correlationId)
             : this(domainModel, extensionName, 0, correlationId)
         {
         }
@@ -77,7 +77,7 @@ namespace Hyperstore.Modeling.Events
         ///  The correlation identifier.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        protected DomainEvent(string domainModel, string extensionName, long version, Guid correlationId)
+        protected AbstractDomainEvent(string domainModel, string extensionName, long version, Guid correlationId)
         {
             Contract.RequiresNotEmpty(domainModel, "domainModel");
 

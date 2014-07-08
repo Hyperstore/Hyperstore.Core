@@ -29,7 +29,7 @@ namespace Hyperstore.Modeling.Events
     /// </summary>
     /// <seealso cref="T:Hyperstore.Modeling.Events.DomainEvent"/>
     ///-------------------------------------------------------------------------------------------------
-    public class AddSchemaEntityEvent : DomainEvent
+    public class AddSchemaEntityEvent : AbstractDomainEvent
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

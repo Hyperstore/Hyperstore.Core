@@ -30,7 +30,7 @@ namespace Hyperstore.Modeling.Events
     /// <seealso cref="T:Hyperstore.Modeling.Events.DomainEvent"/>
     /// <seealso cref="T:Hyperstore.Modeling.Events.IUndoableEvent"/>
     ///-------------------------------------------------------------------------------------------------
-    public class ChangePropertyValueEvent : DomainEvent, IUndoableEvent
+    public class ChangePropertyValueEvent : AbstractDomainEvent, IUndoableEvent
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

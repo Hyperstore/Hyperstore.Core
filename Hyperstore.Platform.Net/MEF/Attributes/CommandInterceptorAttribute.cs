@@ -15,26 +15,24 @@
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
  
-#if MEF_NATIVE
+
 #region Imports
 using System.ComponentModel.Composition;
 using System;
-using Hyperstore.Modeling.Events;
-
 #endregion
 
-namespace Hyperstore.Modeling
+namespace Hyperstore.Modeling.Commands
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  Attribute for event handler.
+    ///  Attribute for command interceptor.
     /// </summary>
     /// <seealso cref="T:System.ComponentModel.Composition.ExportAttribute"/>
     ///-------------------------------------------------------------------------------------------------
     [PublicAPI]
     [MetadataAttribute]
     [AttributeUsage(AttributeTargets.Class, Inherited = true)]
-    public sealed class EventHandlerAttribute : ExportAttribute
+    public sealed class CommandInterceptorAttribute : ExportAttribute
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -44,10 +42,11 @@ namespace Hyperstore.Modeling
         ///  (Optional) The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public EventHandlerAttribute(string domainModel = null)
-            : base(typeof(IEventHandler))
+        public CommandInterceptorAttribute(string domainModel = null)
+            : base(typeof(ICommandInterceptor))
         {
             DomainModel = domainModel;
+            Priority = 0;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -59,7 +58,16 @@ namespace Hyperstore.Modeling
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         public string DomainModel { get; private set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the priority.
+        /// </summary>
+        /// <value>
+        ///  The priority.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public int Priority { get; set; }
     }
 }
 
-#endif

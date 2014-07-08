@@ -28,7 +28,7 @@ using System.Runtime.Serialization;
 
 namespace Hyperstore.Modeling.Platform.Net
 {
-    internal class ModelElementFactory : Hyperstore.Modeling.Domain.ModelElementFactory
+    internal class ModelElementFactory : global::Hyperstore.Modeling.Domain.ModelElementFactory
     {
         protected override IModelElement InstanciateModelElementCore(Type implementationType)
         {

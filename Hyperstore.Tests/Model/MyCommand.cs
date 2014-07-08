@@ -44,7 +44,7 @@ namespace Hyperstore.Tests
         }
     }
 
-    public class MyEvent : Hyperstore.Modeling.Events.DomainEvent
+    public class MyEvent : Hyperstore.Modeling.Events.AbstractDomainEvent
     {
         public MyEvent( IDomainModel domainModel, Guid correlationId )
             : base( domainModel.Name, domainModel.ExtensionName, 1, correlationId )

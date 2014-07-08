@@ -31,7 +31,7 @@ namespace Hyperstore.Modeling.Platform.Net
     /// </summary>
     /// <seealso cref="T:Hyperstore.Modeling.ISynchronizationContext"/>
     ///-------------------------------------------------------------------------------------------------
-    public class UIDispatcher : Hyperstore.Modeling.ISynchronizationContext
+    public class UIDispatcher : global::Hyperstore.Modeling.ISynchronizationContext
     {
         private readonly System.Windows.Threading.Dispatcher _dispatcher;
 

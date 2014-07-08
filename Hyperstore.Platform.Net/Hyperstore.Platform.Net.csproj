@@ -32,6 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
@@ -50,6 +51,10 @@
     <Compile Include="Dynamic\DynamicTypeDescriptor.cs" />
     <Compile Include="Dynamic\DynamicTypeDescriptorProvider.cs" />
     <Compile Include="IWCFHyperstoreChannel.cs" />
+    <Compile Include="MEF\Attributes\CommandHandlerAttribute.cs" />
+    <Compile Include="MEF\Attributes\CommandInterceptorAttribute.cs" />
+    <Compile Include="MEF\Attributes\EventHandlerAttribute.cs" />
+    <Compile Include="MEF\MefContainer.cs" />
     <Compile Include="P2PChannel.cs" />
     <Compile Include="Platform\ConcurrentDictionary.cs" />
     <Compile Include="Platform\ConcurrentQueue.cs" />

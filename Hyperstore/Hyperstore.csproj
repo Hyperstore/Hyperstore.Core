@@ -61,6 +61,10 @@
     <Reference Include="mscorlib" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Container\ICommandHandlerMetadata.cs" />
+    <Compile Include="Container\ICommandInterceptorMetadata.cs" />
+    <Compile Include="Container\IEventHandlerMetadata.cs" />
+    <Compile Include="Container\IMefContainer.cs" />
     <Compile Include="Platform\IConcurrentDictionary.cs" />
     <Compile Include="Platform\IConcurrentQueue.cs" />
     <Compile Include="Platform\IObjectSerializer.cs" />
@@ -73,7 +77,6 @@
       <Link>Properties\AssemblyVersion.cs</Link>
     </Compile>
     <Compile Include="Adapters\MemoryGraph\ConflictException.cs" />
-    <Compile Include="Attributes\ICommandHandlerMetadata.cs" />
     <Compile Include="Commands\Constraints\Impls\MessageHelper.cs" />
     <Compile Include="Commands\ErrorContinuationStatus.cs" />
     <Compile Include="Commands\IExecutionResultInternal.cs" />
@@ -117,11 +120,6 @@
     <Compile Include="Metadata\Impl\Primitives\InternalSchema.cs" />
     <Compile Include="Metadata\Impl\SchemaExtensionMode.cs" />
     <Compile Include="Metadata\Impl\SchemaInfo.cs" />
-    <Compile Include="Attributes\CommandHandlerAttribute.cs" />
-    <Compile Include="Attributes\EventHandlerAttribute.cs" />
-    <Compile Include="Attributes\CommandInterceptorAttribute.cs" />
-    <Compile Include="Attributes\ICommandInterceptorMetadata.cs" />
-    <Compile Include="Attributes\IEventHandlerMetadata.cs" />
     <Compile Include="Commands\BeforeContinuationStatus.cs" />
     <Compile Include="Commands\Constraints\IImplicitDomainModelConstraints.cs" />
     <Compile Include="Commands\Constraints\Impls\ConstraintsCategory.cs" />

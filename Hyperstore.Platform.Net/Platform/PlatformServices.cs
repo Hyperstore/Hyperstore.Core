@@ -43,5 +43,13 @@ namespace Hyperstore.Modeling.Platform
         {
             return new ModelElementFactory();
         }
+
+        public override IMefContainer MefContainer
+        {
+            get
+            {
+                return new MefContainer();
+            }
+        }
     }
 }
