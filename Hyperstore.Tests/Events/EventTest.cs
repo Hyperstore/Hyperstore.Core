@@ -53,7 +53,7 @@ namespace Hyperstore.Tests.Commands
                 cx++;
             });
  
-            domain.Events.ElementAdded.Subscribe(e =>
+            domain.Events.EntityAdded.Subscribe(e =>
             {
                 Assert.IsFalse(e.Event.IsTopLevelEvent);
                 cx++;
@@ -99,7 +99,7 @@ namespace Hyperstore.Tests.Commands
 
             int cx = 0;
             // Abonnements aux events
-            domain.Events.ElementRemoved.Subscribe(e =>
+            domain.Events.EntityRemoved.Subscribe(e =>
             {
                 Assert.IsTrue(e.Event.IsTopLevelEvent);
                 cx++;

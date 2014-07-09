@@ -137,6 +137,55 @@ namespace Hyperstore.Tests
         }
 
         [TestMethod]
+        public async Task PropertyChangedOnSetReferenceTest()
+        {
+            var store = new Store();
+            var schema = await store.LoadSchemaAsync(new TestDomainDefinition());
+            var dm = await store.CreateDomainModelAsync("Test", new DomainConfiguration().UsesIdGenerator(r=>new LongIdGenerator()));
+            XExtendsBaseClass x = null;
+            YClass y = null;
+            
+            var yrelationChanges = 0;
+            var allPropertychanges = 0;
+
+            using (var s = store.BeginSession())
+            {
+                x = new XExtendsBaseClass(dm);
+                s.AcceptChanges();
+            }
+
+            x.PropertyChanged += (sender, e) =>
+                    {
+                        allPropertychanges++;
+                        if (e.PropertyName == "YRelation") yrelationChanges++; 
+                    };
+
+            using (var s = store.BeginSession())
+            {
+                y = new YClass(dm) { Name = "1" };
+                x.YRelation = y;
+                s.AcceptChanges();
+            }
+
+            using (var s = store.BeginSession())
+            {
+                y = new YClass(dm) { Name = "2" };
+                x.YRelation = y;
+                s.AcceptChanges();
+            }
+
+            var rel = x.GetRelationships<XReferencesY>().FirstOrDefault();
+            using (var s = store.BeginSession())
+            {
+                x.YRelation = null;
+                s.AcceptChanges();
+            }
+
+            Assert.AreEqual(3, yrelationChanges);
+            Assert.AreEqual(3, allPropertychanges);
+        }
+
+        [TestMethod]
         public async Task SetReferenceToNullTest()
         {
             var store = new Store();

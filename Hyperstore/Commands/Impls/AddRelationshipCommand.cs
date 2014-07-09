@@ -81,7 +81,7 @@ namespace Hyperstore.Modeling.Commands
         ///  .
         /// </exception>
         ///-------------------------------------------------------------------------------------------------
-        public AddRelationshipCommand(IDomainModel domainModel, ISchemaRelationship relationshipSchema, Identity startId, ISchemaElement startSchema, Identity endId, ISchemaElement endSchema, Identity id = null)
+        public AddRelationshipCommand(IDomainModel domainModel, ISchemaRelationship relationshipSchema, Identity startId, ISchemaElement startSchema, Identity endId, ISchemaElement endSchema, Identity id = null, string propertyName=null)
             : base(domainModel)
         {
             Contract.Requires(startId, "startId");
@@ -98,6 +98,7 @@ namespace Hyperstore.Modeling.Commands
             if (!endSchema.IsA(relationshipSchema.End))
                 throw new Exception(string.Format(ExceptionMessages.TypeMismatchEndElementMustBeAFormat, relationshipSchema.End.Name));
 
+            PropertyName = propertyName;
             StartId = startId;
             EndId = endId;
             StartSchema = startSchema;
@@ -133,8 +134,8 @@ namespace Hyperstore.Modeling.Commands
         ///  .
         /// </exception>
         ///-------------------------------------------------------------------------------------------------
-        public AddRelationshipCommand(ISchemaRelationship relationshipSchema, IModelElement start, IModelElement end, Identity id = null)
-            : this(start.DomainModel, relationshipSchema, start.Id, start.SchemaInfo, end.Id, end.SchemaInfo, id)
+        public AddRelationshipCommand(ISchemaRelationship relationshipSchema, IModelElement start, IModelElement end, Identity id = null, string propertyName=null)
+            : this(start.DomainModel, relationshipSchema, start.Id, start.SchemaInfo, end.Id, end.SchemaInfo, id, propertyName)
         {
             Contract.Requires(start, "start");
             Contract.Requires(end, "end");
@@ -152,6 +153,16 @@ namespace Hyperstore.Modeling.Commands
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         public Identity Id { get; private set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the name of the property if the relationship is a 1..x reference
+        /// </summary>
+        /// <value>
+        ///  The name of the property.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public string PropertyName { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -246,7 +257,7 @@ namespace Hyperstore.Modeling.Commands
                 dm.CreateRelationship(Id, SchemaRelationship, start, EndId, EndSchema, _element);
             }
 
-            return new AddRelationshipEvent(_domainModel.Name, DomainModel.ExtensionName, Id, SchemaRelationship.Id, StartId, StartSchema.Id, EndId, EndSchema.Id, context.CurrentSession.SessionId, 1);
+            return new AddRelationshipEvent(_domainModel.Name, DomainModel.ExtensionName, Id, SchemaRelationship.Id, StartId, StartSchema.Id, EndId, EndSchema.Id, context.CurrentSession.SessionId, 1, PropertyName);
         }
 
         ///-------------------------------------------------------------------------------------------------

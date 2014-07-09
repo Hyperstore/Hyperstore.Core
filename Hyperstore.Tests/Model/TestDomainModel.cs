@@ -28,6 +28,11 @@ namespace Hyperstore.Tests.Model
 {
     public class CultureInfoSchema : SchemaValueObject<CultureInfo>
     {
+        protected CultureInfoSchema()
+        {
+
+        }
+
         public CultureInfoSchema(ISchema metaModel)
             : base(metaModel)
         {

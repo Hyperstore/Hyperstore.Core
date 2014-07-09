@@ -11,12 +11,6 @@ namespace Hyperstore.Tests.Model
 {
     public class CultureInfoSchema : SchemaValueObject<CultureInfo>
     {
-#if NETFX_CORE
-        protected CultureInfoSchema()
-        {
-        }
-#endif
-
         public CultureInfoSchema(ISchema metaModel)
             : base(metaModel)
         {

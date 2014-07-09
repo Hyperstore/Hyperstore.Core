@@ -56,7 +56,7 @@ namespace Hyperstore.Tests
             Assert.IsTrue(sw.ElapsedMilliseconds < 2000);
         }
 
-        [TestMethod]
+       // [TestMethod]
         public async Task BenchWithConstraints()
         {
             long nb = 0;

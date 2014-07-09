@@ -60,7 +60,7 @@ namespace Hyperstore.Modeling.Events
                 throw new InvalidElementException(@event.End);
 
             var metadata = domainModel.Store.GetSchemaRelationship(@event.SchemaRelationshipId);
-            yield return new AddRelationshipCommand(metadata, start, end, @event.Id);
+            yield return new AddRelationshipCommand(metadata, start, end, @event.RelationshipId, @event.PropertyName);
         }
     }
 }

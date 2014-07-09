@@ -148,7 +148,7 @@ namespace Hyperstore.Modeling.Events
         ///  The element added.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IObservable<EventContext<AddEntityEvent>> ElementAdded
+        public IObservable<EventContext<AddEntityEvent>> EntityAdded
         {
             get { return _elementAdded; }
         }
@@ -161,7 +161,7 @@ namespace Hyperstore.Modeling.Events
         ///  The element removed.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IObservable<EventContext<RemoveEntityEvent>> ElementRemoved
+        public IObservable<EventContext<RemoveEntityEvent>> EntityRemoved
         {
             get { return _elementRemoved; }
         }
@@ -265,7 +265,7 @@ namespace Hyperstore.Modeling.Events
         ///  The element adding.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IObservable<EventContext<AddEntityEvent>> ElementAdding
+        public IObservable<EventContext<AddEntityEvent>> EntityAdding
         {
             get { return _elementAdding; }
         }
@@ -278,7 +278,7 @@ namespace Hyperstore.Modeling.Events
         ///  The element removing.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IObservable<EventContext<RemoveEntityEvent>> ElementRemoving
+        public IObservable<EventContext<RemoveEntityEvent>> EntityRemoving
         {
             get { return _elementRemoving; }
         }
@@ -554,6 +554,7 @@ namespace Hyperstore.Modeling.Events
             // Si la session s'est terminée anormalement, aucun autre événement n'est envoyé
             if (!session.IsAborted && (session.Mode & SessionMode.SkipNotifications) != SessionMode.SkipNotifications)
             {
+                var notifications = PrepareNotificationList(session);
 
                 foreach (var ev in session.Events.Where(e => e.DomainModel == _domainModel.Name))
                 {
@@ -562,26 +563,68 @@ namespace Hyperstore.Modeling.Events
                     try
                     {
                         if (ev is AddEntityEvent)
+                        {
                             _elementAdded.OnNext(new EventContext<AddEntityEvent>(session, (AddEntityEvent)ev));
+                        }
                         else if (ev is AddRelationshipEvent)
-                            _relationshipAdded.OnNext(new EventContext<AddRelationshipEvent>(session, (AddRelationshipEvent)ev));
+                        {
+                            var evt = (AddRelationshipEvent)ev;
+                            _relationshipAdded.OnNext(new EventContext<AddRelationshipEvent>(session, evt));
+                            if (evt.PropertyName != null)
+                            {
+                                IModelElement mel;
+                                if (notifications.TryGetValue(evt.Start, out mel))
+                                {
+                                    NotifyPropertyChanged(mel, evt.PropertyName);
+                                }
+                                if (notifications.TryGetValue(evt.End, out mel))
+                                {
+                                    NotifyPropertyChanged(mel, evt.PropertyName);
+                                }
+                            }
+                        }
                         else if (ev is RemoveRelationshipEvent)
-                            _relationshipRemoved.OnNext(new EventContext<RemoveRelationshipEvent>(session, (RemoveRelationshipEvent)ev));
+                        {
+                            var evt = (RemoveRelationshipEvent)ev;
+                            _relationshipRemoved.OnNext(new EventContext<RemoveRelationshipEvent>(session, evt));
+                            if (evt.PropertyName != null)
+                            {
+                                IModelElement mel;
+                                if (notifications.TryGetValue(evt.Start, out mel))
+                                {
+                                    NotifyPropertyChanged(mel, evt.PropertyName);
+                                }
+                                if (notifications.TryGetValue(evt.End, out mel))
+                                {
+                                    NotifyPropertyChanged(mel, evt.PropertyName);
+                                }
+                            }
+                        }
                         else if (ev is RemoveEntityEvent)
+                        {
                             _elementRemoved.OnNext(new EventContext<RemoveEntityEvent>(session, (RemoveEntityEvent)ev));
+                        }
                         else if (ev is RemovePropertyEvent)
+                        {
                             _attributeRemoved.OnNext(new EventContext<RemovePropertyEvent>(session, (RemovePropertyEvent)ev));
+                        }
                         else if (ev is ChangePropertyValueEvent)
                         {
                             var cmd = (ChangePropertyValueEvent)ev;
-                            OnChangedAttributeEvent(session, log, cmd);
+                            OnChangedAttributeEvent(session, log, cmd, notifications);
                         }
                         else if (ev is AddSchemaEntityEvent)
+                        {
                             _metadataAdded.OnNext(new EventContext<AddSchemaEntityEvent>(session, (AddSchemaEntityEvent)ev));
+                        }
                         else if (ev is AddSchemaRelationshipEvent)
+                        {
                             _relationshipMetadataAdded.OnNext(new EventContext<AddSchemaRelationshipEvent>(session, (AddSchemaRelationshipEvent)ev));
+                        }
                         else
+                        {
                             _customEvents.OnNext(new EventContext<IEvent>(session, ev));
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -699,7 +742,7 @@ namespace Hyperstore.Modeling.Events
             log.Log(new DiagnosticMessage(MessageType.Error, ex.Message, "Notifications", false, null, ex));
         }
 
-        private void OnChangedAttributeEvent(ISessionInformation session, ISessionContext log, ChangePropertyValueEvent cmd)
+        private void OnChangedAttributeEvent(ISessionInformation session, ISessionContext log, ChangePropertyValueEvent cmd, Dictionary<Identity, IModelElement> notifications)
         {
             DebugContract.Requires(session);
             DebugContract.Requires(log);
@@ -717,21 +760,25 @@ namespace Hyperstore.Modeling.Events
                     NotifyEventError(log, ex);
                 }
 
-                var propertyName = cmd.PropertyName;
-                NotifyPropertyChanged(session, propertyName);
+                IModelElement mel;
+                if (notifications.TryGetValue(cmd.ElementId, out mel))
+                {
+                    var propertyName = cmd.PropertyName;
+                    NotifyPropertyChanged(mel, propertyName);
+                }
             }
         }
 
-        private void NotifyPropertyChanged(ISessionInformation session, string propertyName)
+        private Dictionary<Identity, IModelElement> PrepareNotificationList(ISessionInformation session)
         {
-            var list = new List<IModelElement>();
+            var list = new Dictionary<Identity, IModelElement>();
             _attributedChangedObserversSync.EnterReadLock();
             try
             {
                 foreach (var mel in session.TrackingData.InvolvedModelElements)
                 {
                     if (_attributedChangedObservers.ContainsKey(mel.Id))
-                        list.Add(mel);
+                        list.Add(mel.Id, mel);
                 }
             }
             finally
@@ -739,7 +786,12 @@ namespace Hyperstore.Modeling.Events
                 _attributedChangedObserversSync.ExitReadLock();
             }
 
-            foreach (var mel in list)
+            return list;
+        }
+
+        private static void NotifyPropertyChanged(IModelElement mel, string propertyName)
+        {
+            if( mel != null)
             {
                 var notifier = mel as IPropertyChangedNotifier;
                 if (notifier != null)

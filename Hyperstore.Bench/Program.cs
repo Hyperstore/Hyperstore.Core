@@ -64,7 +64,7 @@ namespace Hyperstore.Bench
                 Console.WriteLine("Removed in {0}ms ", sw.ElapsedMilliseconds);
                 sw.Restart();
                 sw.Stop();
-                break;
+               
                 Console.WriteLine("Expected {0} Value {1}", mx * nbc * 2, nb);
                 Console.ReadKey();
                 //Console.WriteLine();

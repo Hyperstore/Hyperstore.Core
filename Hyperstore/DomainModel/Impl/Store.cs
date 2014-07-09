@@ -76,7 +76,7 @@ namespace Hyperstore.Modeling
         private readonly ILockManager _lockManager;
         private readonly Statistics.Statistics _statistics;
         private bool _disposed;
-        private bool _initialized;
+        private int _initialized;
         private readonly StoreOptions _options;
         private Dictionary<string, ISchemaInfo> _schemaInfosCache;
         #endregion
@@ -1196,7 +1196,7 @@ namespace Hyperstore.Modeling
             Conventions.CheckValidDomainName(name);
 
             if (GetDomainModel(name) != null)
-                throw new Exception("A domain or a schema with the same name already exists in the store.");
+                throw new Exception("A domain with the same name already exists in the store : " + name);
 
             var resolver = DependencyResolver as IDependencyResolverInternal;
             if (resolver == null)
@@ -1263,14 +1263,14 @@ namespace Hyperstore.Modeling
             Contract.Requires(desc, "desc");
             Conventions.CheckValidName(desc.SchemaName, true);
 
-            if (desc.SchemaName == "$" && !(desc is PrimitivesSchemaDefinition))
-                throw new Exception("Invalid schema name");
-
-            if (GetDomainModel(desc.SchemaName) != null)
-                throw new Exception("A domain with the same name already exists in the store.");
-
             // On s'assure que le domaine primitif est bien chargé
             await Initialize();
+
+            if (desc.SchemaName == PrimitivesSchema.DomainModelName && !(desc is PrimitivesSchemaDefinition))
+                throw new Exception("Invalid schema name");
+
+            if (desc.SchemaName != PrimitivesSchema.DomainModelName && !(desc is ExtensionSchemaDefinition) && GetDomainModel(desc.SchemaName) != null)
+                throw new Exception("A domain or schema with the same name already exists in the store : " + desc.SchemaName);
 
             // Chargement du domaine
             using (var session = BeginSession(new SessionConfiguration { Mode = SessionMode.LoadingSchema }))
@@ -1430,10 +1430,8 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         protected virtual async Task Initialize()
         {
-            if (!_initialized)
+            if( System.Threading.Interlocked.CompareExchange( ref _initialized, 1, 0) == 0)
             {
-                _initialized = true;
-
                 await LoadSchemaAsync(new PrimitivesSchemaDefinition());
             }
         }

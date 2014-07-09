@@ -149,7 +149,7 @@ namespace Hyperstore.Modeling.Ioc
             // IPersistenceAdapter<Vertex> ?
             // IModelElementResolver 
 
-            const string platformTypeName = "Hyperstore.Platform.PlatformServicesInstance, Hyperstore.Platform";
+            const string platformTypeName = "Hyperstore.Modeling.Platform.PlatformServicesInstance, Hyperstore.Platform";
             var platformfactoryType = Type.GetType(platformTypeName, false);
             if (platformfactoryType != null)
             {
@@ -166,7 +166,9 @@ namespace Hyperstore.Modeling.Ioc
             // Par domain et par metamodel => Nouvelle instance à chaque fois
             Register<IHyperGraph>(r => new HyperGraph.HyperGraph(r));
             Register<IEventManager>(r => new EventManager(r));
-            Register<IModelElementFactory>(r => PlatformServices.Current.CreateModelElementFactory());
+            Register<IModelElementFactory>(r => 
+                PlatformServices.Current.CreateModelElementFactory()
+                );
             Register<ICommandManager>(r => new CommandManager());
             Register<IEventBus>(r => new EventBus(r));
             Register<IConstraintsManager>(r => new ConstraintsManager(r));

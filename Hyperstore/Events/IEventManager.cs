@@ -79,7 +79,7 @@ namespace Hyperstore.Modeling
         ///  The element added.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        IObservable<EventContext<AddEntityEvent>> ElementAdded { get; }
+        IObservable<EventContext<AddEntityEvent>> EntityAdded { get; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -89,7 +89,7 @@ namespace Hyperstore.Modeling
         ///  The element adding.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        IObservable<EventContext<AddEntityEvent>> ElementAdding { get; }
+        IObservable<EventContext<AddEntityEvent>> EntityAdding { get; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -99,7 +99,7 @@ namespace Hyperstore.Modeling
         ///  The element removed.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        IObservable<EventContext<RemoveEntityEvent>> ElementRemoved { get; }
+        IObservable<EventContext<RemoveEntityEvent>> EntityRemoved { get; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -109,7 +109,7 @@ namespace Hyperstore.Modeling
         ///  The element removing.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        IObservable<EventContext<RemoveEntityEvent>> ElementRemoving { get; }
+        IObservable<EventContext<RemoveEntityEvent>> EntityRemoving { get; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

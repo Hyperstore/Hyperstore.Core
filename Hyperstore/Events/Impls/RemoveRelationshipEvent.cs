@@ -51,7 +51,7 @@ namespace Hyperstore.Modeling.Events
         /// <param name="extensionName">
         ///  Name of the extension.
         /// </param>
-        /// <param name="id">
+        /// <param name="relationshipId">
         ///  The identifier.
         /// </param>
         /// <param name="schemaRelationshipId">
@@ -76,17 +76,18 @@ namespace Hyperstore.Modeling.Events
         ///  The version.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public RemoveRelationshipEvent(string domainModelName, string extensionName, Identity id, Identity schemaRelationshipId, Identity startId, Identity startSchema, Identity endId, Identity endSchema, Guid correlationId, long version)
+        public RemoveRelationshipEvent(string domainModelName, string extensionName, Identity relationshipId, Identity schemaRelationshipId, Identity startId, Identity startSchema, Identity endId, Identity endSchema, Guid correlationId, long version, string propertyName)
                 : base(domainModelName, extensionName, version, correlationId)
         {
-            Contract.Requires(id, "id");
+            Contract.Requires(relationshipId, "relationshipId");
             Contract.Requires(schemaRelationshipId, "schemaRelationshipId");
             Contract.Requires(startId, "startId");
             Contract.Requires(endId, "endId");
             Contract.Requires(startSchema, "startSchema");
             Contract.Requires(endSchema, "endSchema");
 
-            Id = id;
+            PropertyName = propertyName;
+            RelationshipId = relationshipId;
             Start = startId;
             End = endId;
             SchemaRelationshipId = schemaRelationshipId;
@@ -136,13 +137,23 @@ namespace Hyperstore.Modeling.Events
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
+        ///  Gets or sets the name of the property if the relationship is a 1..x reference
+        /// </summary>
+        /// <value>
+        ///  The name of the property.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public string PropertyName { get; set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
         ///  Gets or sets the identifier.
         /// </summary>
         /// <value>
         ///  The identifier.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity Id { get; set; }
+        public Identity RelationshipId { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -167,7 +178,7 @@ namespace Hyperstore.Modeling.Events
         ///-------------------------------------------------------------------------------------------------
         public IEvent GetReverseEvent(Guid correlationId)
         {
-            return new AddRelationshipEvent(DomainModel, ExtensionName, Id, SchemaRelationshipId, Start, StartSchema, End, EndSchema, correlationId, Version);
+            return new AddRelationshipEvent(DomainModel, ExtensionName, RelationshipId, SchemaRelationshipId, Start, StartSchema, End, EndSchema, correlationId, Version, PropertyName);
         }
 
         ///-------------------------------------------------------------------------------------------------

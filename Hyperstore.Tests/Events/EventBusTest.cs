@@ -64,7 +64,7 @@ namespace Hyperstore.Tests.Commands
 
             // Listen on the target domain
             ManualResetEvent set = new ManualResetEvent(false); // Used to indicate that the event has been received
-            domain2.Events.ElementAdded.Subscribe(e =>
+            domain2.Events.EntityAdded.Subscribe(e =>
             {
                 Assert.IsNotNull(store2.GetElements<XExtendsBaseClass>().First());
                 set.Set();

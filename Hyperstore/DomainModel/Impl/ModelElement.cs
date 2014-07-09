@@ -420,6 +420,8 @@ namespace Hyperstore.Modeling
                             .FirstOrDefault();
                 }
 
+                var pn = propertyName;
+
                 // Si cette relation existe dèjà mais sur un autre élement, on la supprime
                 if (relationship != null)
                 {
@@ -431,14 +433,16 @@ namespace Hyperstore.Modeling
                     }
 
                     // Suppression car elle pointe sur un élement diffèrent
-                    commands.Add(new RemoveRelationshipCommand(relationship));
+                    commands.Add(new RemoveRelationshipCommand(relationship, pn));
+                    // We do not want to generate two propertyChanged event when a reference changes
+                    pn = null;
                 }
 
                 // Si elle n'a pas été mise à null
                 if (end != null && start != null)
                 {
                     relationshipId = DomainModel.IdGenerator.NextValue(relationshipSchema);
-                    commands.Add(new AddRelationshipCommand(relationshipSchema, start, end, relationshipId));
+                    commands.Add(new AddRelationshipCommand(relationshipSchema, start, end, relationshipId, propertyName: pn));
                 }
 
                 Session.Current.Execute(commands.ToArray());

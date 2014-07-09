@@ -221,7 +221,7 @@ namespace Hyperstore.Modeling.Commands
                 var entity = new TrackingRelationship
                              {
                                  State = TrackingState.Added,
-                                 Id = addRelationEvent.Id,
+                                 Id = addRelationEvent.RelationshipId,
                                  SchemaId = addRelationEvent.SchemaRelationshipId,
                                  StartId = addRelationEvent.Start,
                                  StartSchemaId = addRelationEvent.StartSchema,
@@ -239,12 +239,12 @@ namespace Hyperstore.Modeling.Commands
             if (removeRelationshipEvent != null)
             {
                 TrackingElement entity;
-                if (!_elements.TryGetValue(removeRelationshipEvent.Id, out entity))
+                if (!_elements.TryGetValue(removeRelationshipEvent.RelationshipId, out entity))
                 {
                     entity = new TrackingRelationship
                              {
                                  State = TrackingState.Removed,
-                                 Id = removeRelationshipEvent.Id,
+                                 Id = removeRelationshipEvent.RelationshipId,
                                  SchemaId = removeRelationshipEvent.SchemaRelationshipId,
                                  StartId = removeRelationshipEvent.Start,
                                  StartSchemaId = removeRelationshipEvent.StartSchema,
@@ -298,7 +298,8 @@ namespace Hyperstore.Modeling.Commands
                 return false;
 
             var set = new HashSet<Identity>();
-            foreach (var element in _elements.Values)
+            var list = _elements.Values.ToList();
+            foreach (var element in list)
             {
                 if (element is TrackingRelationship)
                 {
@@ -323,23 +324,46 @@ namespace Hyperstore.Modeling.Commands
                                 }
                                 element.ModelElement = rel;
                             }
-                            continue;
                         }
 
                         if (set.Add(relationship.StartId) && GetTrackingElementState(relationship.StartId) != TrackingState.Removed)
                         {
                             var mel = _session.Store.GetElement(relationship.StartId, _session.Store.GetSchemaElement(relationship.StartSchemaId));
                             if (mel != null) // Au cas ou il a été supprimé
-                                element.ModelElement = mel;
-                            continue;
+                            {
+                                TrackingElement data;
+                                if( !_elements.TryGetValue(mel.Id, out data))
+                                {
+                                    data = new TrackingElement
+                                    {
+                                        State = TrackingState.Unknown,
+                                        Id = mel.Id,
+                                        SchemaId = mel.SchemaInfo.Id
+                                    };
+                                    _elements.Add(mel.Id, data);
+                                }
+                                data.ModelElement = mel;
+                            }
                         }
 
                         if (set.Add(relationship.EndId) && GetTrackingElementState(relationship.EndId) != TrackingState.Removed)
                         {
                             var mel = _session.Store.GetElement(relationship.EndId, _session.Store.GetSchemaElement(relationship.EndSchemaId));
-                            if (mel != null)
-                                element.ModelElement = mel;
-                            continue;
+                            if (mel != null) // Au cas ou il a été supprimé
+                            {
+                                TrackingElement data;
+                                if (!_elements.TryGetValue(mel.Id, out data))
+                                {
+                                    data = new TrackingElement
+                                    {
+                                        State = TrackingState.Unknown, // N'a pas de conséquense sur la mise à jour de l'entité
+                                        Id = mel.Id,
+                                        SchemaId = mel.SchemaInfo.Id
+                                    };
+                                    _elements.Add(mel.Id, data);
+                                }
+                                data.ModelElement = mel;
+                            }
                         }
                     }
                 }

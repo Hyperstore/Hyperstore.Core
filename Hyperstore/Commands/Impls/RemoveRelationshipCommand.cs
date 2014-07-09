@@ -55,13 +55,14 @@ namespace Hyperstore.Modeling.Commands
         ///  (Optional) if set to <c>true</c> [throw exception if not exists].
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public RemoveRelationshipCommand(IDomainModel domainModel, Identity id, Identity schemaRelationshipId, bool throwExceptionIfNotExists = true)
+        public RemoveRelationshipCommand(IDomainModel domainModel, Identity id, Identity schemaRelationshipId, string propertyName=null, bool throwExceptionIfNotExists = true)
             : base(domainModel)
         {
             Contract.Requires(domainModel, "domainModel");
             Contract.Requires(id, "id");
             Contract.Requires(schemaRelationshipId, "schemaRelationshipId");
 
+            PropertyName = propertyName;
             var metadata = domainModel.Store.GetSchemaRelationship(schemaRelationshipId);
             Relationship = domainModel.Store.GetRelationship(id, metadata);
             if (Relationship == null)
@@ -77,11 +78,12 @@ namespace Hyperstore.Modeling.Commands
         ///  The relationship.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public RemoveRelationshipCommand(IModelRelationship relationship)
+        public RemoveRelationshipCommand(IModelRelationship relationship, string propertyName = null)
             : base(relationship.DomainModel)
         {
             Contract.Requires(relationship, "relationship");
             Relationship = relationship;
+            PropertyName = propertyName;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -93,6 +95,16 @@ namespace Hyperstore.Modeling.Commands
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         public IModelRelationship Relationship { get; private set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the name of the property if the relationship is a 1..x reference
+        /// </summary>
+        /// <value>
+        ///  The name of the property.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public string PropertyName { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -127,7 +139,8 @@ namespace Hyperstore.Modeling.Commands
                                                      endId, 
                                                      endSchemaId,
                                                      context.CurrentSession.SessionId, 
-                                                     1);
+                                                     1,
+                                                     PropertyName);
 
             using (CodeMarker.MarkBlock("RemoveRelationshipCommand.Handle"))
             {

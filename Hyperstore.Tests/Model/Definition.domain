@@ -1,5 +1,5 @@
 ﻿// Sample Domain model definition
-
+[observable]
 domain Hyperstore.Tests.Model.TestDomain
 {
     extern System.Globalization.CultureInfo as CultureInfo;

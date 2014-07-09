@@ -160,7 +160,7 @@ namespace Hyperstore.Modeling.Domain
                 }
             }
 
-            if (elem != null && Session.Current.TrackingData.GetTrackingElementState(elem.Id) == TrackingState.Removed)
+            if (elem != null && Session.Current != null && Session.Current.TrackingData.GetTrackingElementState(elem.Id) == TrackingState.Removed)
                 return null;
             return elem;
         }
