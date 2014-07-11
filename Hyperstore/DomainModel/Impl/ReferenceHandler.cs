@@ -152,13 +152,10 @@ namespace Hyperstore.Modeling
         /// <param name="value">
         ///  The value.
         /// </param>
-        /// <param name="propertyName">
-        ///  (Optional) name of the property.
-        /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void SetReference(IModelElement value, string propertyName=null)
+        public void SetReference(IModelElement value)
         {
-            _owner.SetReference(propertyName, ref _id, SchemaRelationship, value, _opposite);
+            _owner.SetReference(ref _id, SchemaRelationship, value, _opposite);
         }
 
         ///-------------------------------------------------------------------------------------------------

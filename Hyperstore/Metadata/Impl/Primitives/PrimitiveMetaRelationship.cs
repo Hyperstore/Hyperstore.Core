@@ -27,6 +27,8 @@ namespace Hyperstore.Modeling.Metadata.Primitives
     {
         private readonly ISchemaElement _end;
         private readonly ISchemaElement _start;
+        private readonly string _startPropertyName;
+        private readonly string _endPropertyName;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -55,6 +57,12 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         /// <param name="name">
         ///  The name.
         /// </param>
+        /// <param name="startPropertyName">
+        ///  The start property name.
+        /// </param>
+        /// <param name="endPropertyName">
+        ///  The end property name.
+        /// </param>
         /// <param name="cardinality">
         ///  The cardinality.
         /// </param>
@@ -71,7 +79,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  (Optional) the end.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public PrimitiveMetaRelationship(ISchema domainModel, string name, Cardinality cardinality, bool isEmbedded = false, Identity id = null, ISchemaElement start = null, ISchemaElement end = null)
+        public PrimitiveMetaRelationship(ISchema domainModel, string name, string startPropertyName, string endPropertyName, Cardinality cardinality, bool isEmbedded = false, Identity id = null, ISchemaElement start = null, ISchemaElement end = null)
             : base(domainModel, typeof(ModelRelationship), null, name, id: id)
         {
             DebugContract.Requires(domainModel, "domainModel");
@@ -81,6 +89,8 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             IsEmbedded = isEmbedded;
             this._start = start;
             this._end = end;
+            this._startPropertyName = startPropertyName;
+            this._endPropertyName = endPropertyName;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -177,5 +187,15 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             get { return ((ISchemaRelationship)this).End.SchemaInfo.Id; }
         }
         #endregion
+
+        string ISchemaRelationship.StartPropertyName
+        {
+            get { return _startPropertyName; }
+        }
+
+        string ISchemaRelationship.EndPropertyName
+        {
+            get { return _endPropertyName; }
+        }
     }
 }

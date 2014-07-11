@@ -48,7 +48,7 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the start.
+        ///  Gets the start element schema
         /// </summary>
         /// <value>
         ///  The start.
@@ -58,12 +58,32 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the end.
+        ///  Gets the end element schema
         /// </summary>
         /// <value>
         ///  The end.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         new ISchemaElement End { get; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the name of the start property.
+        /// </summary>
+        /// <value>
+        ///  The name of the start property.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        string StartPropertyName { get; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the name of the end property.
+        /// </summary>
+        /// <value>
+        ///  The name of the end property.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        string EndPropertyName { get; }
     }
 }

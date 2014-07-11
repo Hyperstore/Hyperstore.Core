@@ -54,12 +54,18 @@ namespace Hyperstore.Modeling.Metadata
         /// <param name="name">
         ///  Relationship's name
         /// </param>
+        /// <param name="startPropertyName">
+        ///  The start property name.
+        /// </param>
+        /// <param name="endPropertyName">
+        ///  The end property name.
+        /// </param>
         /// <param name="inheritedSchema">
         ///  (Optional) The schema element inherited by the relationship
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public SchemaRelationship(ISchemaElement start, ISchemaElement end, Cardinality cardinality = Cardinality.OneToOne, bool isEmbedded = false, string name = null, ISchemaRelationship inheritedSchema = null)
-            : base(start, end, typeof(T), cardinality, isEmbedded, name ?? typeof(T).FullName, inheritedSchema)
+        public SchemaRelationship(ISchemaElement start, ISchemaElement end, Cardinality cardinality = Cardinality.OneToOne, bool isEmbedded = false, string name = null, string startPropertyName=null, string endPropertyName=null, ISchemaRelationship inheritedSchema = null)
+            : base(start, end, typeof(T), cardinality, isEmbedded, name ?? typeof(T).FullName, inheritedSchema, startPropertyName, endPropertyName)
         {
         }
     }
@@ -79,6 +85,10 @@ namespace Hyperstore.Modeling.Metadata
         private Identity _startId;
         private Cardinality? _cardinality;
         private bool? _isEmbedded;
+        private string _startPropertyName;
+        private bool _startPropertyNameInitialized;
+        private string _endPropertyName;
+        private bool _endPropertyNameInitialized;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -91,31 +101,40 @@ namespace Hyperstore.Modeling.Metadata
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  A schema relationship 
+        ///  A schema relationship.
         /// </summary>
+        /// <exception cref="Exception">
+        ///  Thrown when an exception error condition occurs.
+        /// </exception>
         /// <param name="start">
-        ///  The start element schema
+        ///  The start element schema.
         /// </param>
         /// <param name="end">
-        ///  The end element schema
+        ///  The end element schema.
         /// </param>
         /// <param name="implementedType">
         ///  Type of the implemented.
         /// </param>
         /// <param name="cardinality">
-        ///  Cardinality of the relationship
+        ///  Cardinality of the relationship.
         /// </param>
         /// <param name="isembedded">
-        ///  Defines if the relationship is embedded
+        ///  Defines if the relationship is embedded.
         /// </param>
         /// <param name="name">
-        ///  Relationship's name
+        ///  Relationship's name.
         /// </param>
         /// <param name="inheritedSchema">
-        ///  (Optional) The schema element inherited by the relationship
+        ///  (Optional) The schema element inherited by the relationship.
+        /// </param>
+        /// <param name="startPropertyName">
+        ///  The start property name.
+        /// </param>
+        /// <param name="endPropertyName">
+        ///  The end property name.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public SchemaRelationship(ISchemaElement start, ISchemaElement end, Type implementedType, Cardinality cardinality, bool isembedded, string name, ISchemaRelationship inheritedSchema = null)
+        public SchemaRelationship(ISchemaElement start, ISchemaElement end, Type implementedType, Cardinality cardinality, bool isembedded, string name, ISchemaRelationship inheritedSchema = null, string startPropertyName = null, string endPropertyName = null)
         {
             Contract.Requires(start, "start");
             Contract.Requires(end, "end");
@@ -136,7 +155,8 @@ namespace Hyperstore.Modeling.Metadata
             IsEmbedded = isembedded;
             StartId = start.Id;
             EndId = end.Id;
-
+            StartPropertyName = StartPropertyName;
+            EndPropertyName = endPropertyName;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -152,6 +172,7 @@ namespace Hyperstore.Modeling.Metadata
         /// <param name="end">
         ///  The end element schema
         /// </param>
+        /// </param>
         /// <param name="cardinality">
         ///  Cardinality of the relationship
         /// </param>
@@ -161,9 +182,15 @@ namespace Hyperstore.Modeling.Metadata
         /// <param name="inheritedSchema">
         ///  (Optional) The schema element inherited by the relationship
         /// </param>
+        /// <param name="startPropertyName">
+        ///  The start property name.
+        /// </param>
+        /// <param name="endPropertyName">
+        ///  The end property name.
+        /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public SchemaRelationship(string name, ISchemaElement start, ISchemaElement end, Cardinality cardinality = Cardinality.OneToOne, bool isembedded = false, ISchemaRelationship inheritedSchema = null)
-            : this(start, end, typeof(ModelRelationship), cardinality, isembedded, name, inheritedSchema)
+        public SchemaRelationship(string name, ISchemaElement start, ISchemaElement end, Cardinality cardinality = Cardinality.OneToOne, bool isembedded = false, ISchemaRelationship inheritedSchema = null, string startPropertyName = null, string endPropertyName = null)
+            : this(start, end, typeof(ModelRelationship), cardinality, isembedded, name, inheritedSchema, startPropertyName, endPropertyName)
         {
         }
 
@@ -274,6 +301,46 @@ namespace Hyperstore.Modeling.Metadata
         ISchemaElement ISchemaRelationship.End
         {
             get { return _end ?? (_end = Store.GetSchemaElement(EndId)); }
+        }
+
+        public string StartPropertyName
+        {
+            get
+            {
+                if (_startPropertyNameInitialized == null)
+                {
+                    _startPropertyNameInitialized = true;
+                    _startPropertyName = GetPropertyValue<string>("StartPropertyName");
+                }
+                return _startPropertyName;
+            }
+            set
+            {
+                _startPropertyName = value;
+                _startPropertyNameInitialized = true;
+                if (value != null)
+                    SetPropertyValue("StartPropertyName", value);
+            }
+        }
+
+        public string EndPropertyName
+        {
+            get
+            {
+                if (_endPropertyNameInitialized == null)
+                {
+                    _endPropertyNameInitialized = true;
+                    _endPropertyName = GetPropertyValue<string>("EndPropertyName");
+                }
+                return _startPropertyName;
+            }
+            set
+            {
+                _endPropertyName = value;
+                _endPropertyNameInitialized = true;
+                if( value != null)
+                    SetPropertyValue("EndPropertyName", value);
+            }
         }
 
         ///-------------------------------------------------------------------------------------------------

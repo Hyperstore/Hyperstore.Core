@@ -55,7 +55,6 @@ namespace Hyperstore.Tests
             public DynamicModelDefinition()
                 : base("Hyperstore.Tests")
             {
-
             }
 
             protected override void DefineSchema(ISchema metaModel)
@@ -65,11 +64,11 @@ namespace Hyperstore.Tests
                 Book = new SchemaEntity(metaModel, "Book");
                 Member = new SchemaEntity(metaModel, "Member", NamedElement);
                 Loan = new SchemaEntity(metaModel, "Loan");
-                LoanReferencesBook = new SchemaRelationship("LoanReferencesBook", Loan, Book, Cardinality.OneToOne, false);
-                LibraryHasBooks = new SchemaRelationship("LibraryHasBooks", Library, Book, Cardinality.OneToMany, true);
-                LibraryHasMembers = new SchemaRelationship("LibraryHasMembers", Library, Member, Cardinality.OneToMany, true);
-                LibraryHasLoans = new SchemaRelationship("LibraryHasLoans", Library, Loan, Cardinality.OneToMany, true);
-                LoanReferencesMember = new SchemaRelationship("LoanReferencesMember", Loan, Member, Cardinality.OneToOne, false);
+                LoanReferencesBook = new SchemaRelationship("LoanReferencesBook", Loan, Book, Cardinality.ManyToOne, false, null, "Book");
+                LibraryHasBooks = new SchemaRelationship("LibraryHasBooks", Library, Book, Cardinality.OneToMany, true, null, "Books");
+                LibraryHasMembers = new SchemaRelationship("LibraryHasMembers", Library, Member, Cardinality.OneToMany, true, null, "Members");
+                LibraryHasLoans = new SchemaRelationship("LibraryHasLoans", Library, Loan, Cardinality.OneToMany, true, null, "Loans");
+                LoanReferencesMember = new SchemaRelationship("LoanReferencesMember", Loan, Member, Cardinality.ManyToOne, false, null, "Member");
 
                 NamedElement.DefineProperty<string>("Name");
                 Book.DefineProperty<string>("Title");

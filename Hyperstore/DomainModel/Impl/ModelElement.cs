@@ -397,7 +397,7 @@ namespace Hyperstore.Modeling
         }
 
         // Création d'une référence 0..1 à partir de l'élément courant ou vers l'élement courant si opposite vaut true
-        internal void SetReference(string propertyName, ref Identity relationshipId, ISchemaRelationship relationshipSchema, IModelElement target, bool opposite)
+        internal void SetReference(ref Identity relationshipId, ISchemaRelationship relationshipSchema, IModelElement target, bool opposite)
         {
             DebugContract.Requires(relationshipSchema, "relationshipMetadata");
 
@@ -420,7 +420,7 @@ namespace Hyperstore.Modeling
                             .FirstOrDefault();
                 }
 
-                var pn = propertyName;
+                var propertyName = (!opposite ? relationshipSchema.StartPropertyName : relationshipSchema.EndPropertyName);
 
                 // Si cette relation existe dèjà mais sur un autre élement, on la supprime
                 if (relationship != null)
@@ -433,16 +433,16 @@ namespace Hyperstore.Modeling
                     }
 
                     // Suppression car elle pointe sur un élement diffèrent
-                    commands.Add(new RemoveRelationshipCommand(relationship, pn));
+                    commands.Add(new RemoveRelationshipCommand(relationship, propertyName));
                     // We do not want to generate two propertyChanged event when a reference changes
-                    pn = null;
+                    propertyName = null;
                 }
 
                 // Si elle n'a pas été mise à null
                 if (end != null && start != null)
                 {
                     relationshipId = DomainModel.IdGenerator.NextValue(relationshipSchema);
-                    commands.Add(new AddRelationshipCommand(relationshipSchema, start, end, relationshipId, propertyName: pn));
+                    commands.Add(new AddRelationshipCommand(relationshipSchema, start, end, relationshipId, propertyName: propertyName));
                 }
 
                 Session.Current.Execute(commands.ToArray());

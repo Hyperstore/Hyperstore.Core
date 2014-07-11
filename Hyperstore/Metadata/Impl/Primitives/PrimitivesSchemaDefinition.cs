@@ -70,7 +70,7 @@ namespace Hyperstore.Modeling.Metadata
             metaModel.RegisterMetadata(PrimitivesSchema.GuidSchema = new GuidPrimitive(schema));
             metaModel.RegisterMetadata(PrimitivesSchema.TypeSchema = new TypePrimitive(schema));
             metaModel.RegisterMetadata(PrimitivesSchema.IdentitySchema = new IdentityPrimitive(schema));
-            metaModel.RegisterMetadata(PrimitivesSchema.SchemaPropertyReferencesSchemaEntitySchema = new PrimitiveMetaRelationship(schema, "SchemaPropertyReferencesSchemaElement", Cardinality.OneToOne));
+            metaModel.RegisterMetadata(PrimitivesSchema.SchemaPropertyReferencesSchemaEntitySchema = new PrimitiveMetaRelationship(schema, "SchemaPropertyReferencesSchemaElement", "PropertySchema", null, Cardinality.OneToOne));
             metaModel.RegisterMetadata(PrimitivesSchema.CharSchema = new CharPrimitive(schema));
             metaModel.RegisterMetadata(PrimitivesSchema.ByteSchema = new BytePrimitive(schema));
             metaModel.RegisterMetadata(PrimitivesSchema.ByteArraySchema = new ByteArrayPrimitive(schema));
@@ -97,11 +97,13 @@ namespace Hyperstore.Modeling.Metadata
             PrimitivesSchema.SchemaRelationshipSchema.DefineProperty("EndId", PrimitivesSchema.IdentitySchema);
             PrimitivesSchema.SchemaRelationshipSchema.DefineProperty("StartMetaclassId", PrimitivesSchema.IdentitySchema);
             PrimitivesSchema.SchemaRelationshipSchema.DefineProperty("EndMetaclassId", PrimitivesSchema.IdentitySchema);
+            PrimitivesSchema.SchemaRelationshipSchema.DefineProperty("StartPropertyName", PrimitivesSchema.StringSchema);
+            PrimitivesSchema.SchemaRelationshipSchema.DefineProperty("EndPropertyName", PrimitivesSchema.StringSchema);
 
             // MetadataHasProperties : Relations vers les propriétés
             metaModel.RegisterMetadata(
                                        PrimitivesSchema.SchemaElementHasPropertiesSchema =
-                                               new PrimitiveMetaRelationship(schema, "SchemaElementHasPropertiesSchema", Cardinality.OneToMany, true, null, PrimitivesSchema.SchemaElementSchema, PrimitivesSchema.SchemaPropertySchema));
+                                               new PrimitiveMetaRelationship(schema, "SchemaElementHasPropertiesSchema", "Properties", null, Cardinality.OneToMany, true, null, PrimitivesSchema.SchemaElementSchema, PrimitivesSchema.SchemaPropertySchema));
 
             // ModelElementMetadata
             metaModel.RegisterMetadata(PrimitivesSchema.ModelEntitySchema = new PrimitiveModelElementMetaClass(schema));
@@ -110,7 +112,7 @@ namespace Hyperstore.Modeling.Metadata
             metaModel.RegisterMetadata(PrimitivesSchema.ModelRelationshipSchema = new PrimitiveModelRelationshipMetaClass(schema));
 
             // SuperTypeRelationship : Relation vers le superType
-            metaModel.RegisterMetadata(PrimitivesSchema.SchemaElementReferencesSuperElementSchema = new PrimitiveMetaRelationship(schema, "SchemaElementReferencesSuperElement", Cardinality.OneToOne));
+            metaModel.RegisterMetadata(PrimitivesSchema.SchemaElementReferencesSuperElementSchema = new PrimitiveMetaRelationship(schema, "SchemaElementReferencesSuperElement", "Super", "null", Cardinality.OneToOne));
         }
 
         ///-------------------------------------------------------------------------------------------------

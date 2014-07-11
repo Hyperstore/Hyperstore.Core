@@ -151,7 +151,7 @@ namespace Hyperstore.Modeling
                         throw new Exception(ExceptionMessages.InvalidValue);
                 }
 
-                ((ReferenceHandler)refer).SetReference(value as IModelElement, propertyName);
+                ((ReferenceHandler)refer).SetReference(value as IModelElement);
                 return value;
             }
 
@@ -161,6 +161,8 @@ namespace Hyperstore.Modeling
 
         private static bool IsMatchPropertyName(IModelRelationship relationship, string propertyName)
         {
+            // TODO a reprendre completement pour utiliser 
+            // relationship.SchemaRelationship.StartPropertyName ou end
             var name = relationship.Id.Key;
             if (String.Compare(name, propertyName, StringComparison.Ordinal) == 0)
                 return true;

@@ -36,7 +36,7 @@ namespace Hyperstore.Modeling.Metadata
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         public PrimitiveModelRelationshipMetaClass(ISchema domainModel)
-            : base(domainModel, "REL", Cardinality.OneToOne, false, new Identity(domainModel.Name, "REL"))
+            : base(domainModel, "REL", null, null, Cardinality.OneToOne, false, new Identity(domainModel.Name, "REL"))
         {
         }
     }

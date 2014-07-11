@@ -84,7 +84,7 @@ namespace Hyperstore.Modeling.Metadata
         public ISchemaValueObject PropertySchema
         {
             get { return _propertyMetadata ?? (_propertyMetadata = _propertyMetadataReference.GetReference() as ISchemaValueObject); }
-            private set { _propertyMetadataReference.SetReference(_propertyMetadata = value, null); }
+            private set { _propertyMetadataReference.SetReference(_propertyMetadata = value); }
         }
 
         #endregion Properties of MetaProperty (3)

@@ -169,7 +169,7 @@ namespace Hyperstore.Modeling.Metadata
         protected ISchemaElement SuperClass
         {
             get { return _superClass ?? (_superClass = (_superClassHandler.GetReference<ISchemaElement>() ?? DefaultSuperClass)); }
-            set { _superClassHandler.SetReference(_superClass = value, null); }
+            set { _superClassHandler.SetReference(_superClass = value); }
         }
 
         #endregion Properties of MetaClass (6)
@@ -178,7 +178,7 @@ namespace Hyperstore.Modeling.Metadata
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Specialised default constructor for use only by derived classes.
+        ///  Specialized default constructor for use only by derived classes.
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
         protected SchemaInfo()
