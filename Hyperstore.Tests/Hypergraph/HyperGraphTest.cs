@@ -133,7 +133,7 @@ namespace Hyperstore.Tests.HyperGraph
 
             using (var session = domain.Store.BeginSession())
             {
-                Assert.AreEqual(1, Graph.SetPropertyValue(mel, namePropertyMetadata, "am", null).CurrentVersion);
+                Assert.AreNotEqual(0, Graph.SetPropertyValue(mel, namePropertyMetadata, "am", null).CurrentVersion);
                 session.AcceptChanges();
             }
 
@@ -173,9 +173,11 @@ namespace Hyperstore.Tests.HyperGraph
                 mel = domain.GetElement(aid, metadata);
             }
 
+            var version = 0L;
             using (var session = domain.Store.BeginSession())
             {
-                Assert.AreEqual(1, Graph.SetPropertyValue(mel, mel.SchemaInfo.GetProperty("Name"), "am", null).CurrentVersion);
+                version = Graph.SetPropertyValue(mel, mel.SchemaInfo.GetProperty("Name"), "am", null).CurrentVersion;
+                Assert.AreNotEqual(0, version);
                 session.AcceptChanges();
             }
 
@@ -184,26 +186,33 @@ namespace Hyperstore.Tests.HyperGraph
             Assert.IsNotNull(prop);
             Assert.AreEqual("am", prop.Value);
 
+            await Task.Delay(20); // Délai mini entre diffèrents Ticks de UtcNow 
+
             using (var session = domain.Store.BeginSession())
             {
-                Assert.AreEqual(2, Graph.SetPropertyValue(mel, mel.SchemaInfo.GetProperty("Name"), "am2", null).CurrentVersion);
+                var v = Graph.SetPropertyValue(mel, mel.SchemaInfo.GetProperty("Name"), "am2", null).CurrentVersion;
+                Assert.IsTrue(v > version);
                 // Rollback
             }
 
             prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo, mel.SchemaInfo.GetProperty("Name"));
             Assert.IsNotNull(prop);
             Assert.AreEqual("am", prop.Value);
-            Assert.AreEqual(1, prop.CurrentVersion);
+            Assert.AreEqual(version, prop.CurrentVersion);
 
             using (var session = domain.Store.BeginSession())
             {
-                Assert.AreEqual(2, Graph.SetPropertyValue(mel, mel.SchemaInfo.GetProperty("Name"), "am2", null).CurrentVersion);
+                var v = Graph.SetPropertyValue(mel, mel.SchemaInfo.GetProperty("Name"), "am2", null).CurrentVersion;
+                Assert.IsTrue(v > version);
                 session.AcceptChanges();
+                version = v;
             }
+            await Task.Delay(20); // Délai mini entre diffèrents Ticks de UtcNow 
 
             using (var session = domain.Store.BeginSession())
             {
-                Assert.AreEqual(3, Graph.SetPropertyValue(mel, mel.SchemaInfo.GetProperty("Name"), "am", null).CurrentVersion);
+                var v = Graph.SetPropertyValue(mel, mel.SchemaInfo.GetProperty("Name"), "am", null).CurrentVersion;
+                Assert.IsTrue(v > version); 
                 session.AcceptChanges();
             }
         }
@@ -270,27 +279,33 @@ namespace Hyperstore.Tests.HyperGraph
             var prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo, mel.SchemaInfo.GetProperty("Name"));
             Assert.IsNull(prop);
 
+            var version = 0L;
             using (var session = domain.Store.BeginSession())
             {
-                Assert.AreEqual(1, Graph.SetPropertyValue(mel, mel.SchemaInfo.GetProperty("Name"), "am", null).CurrentVersion);
+                version = Graph.SetPropertyValue(mel, mel.SchemaInfo.GetProperty("Name"), "am", null).CurrentVersion;
+                Assert.AreNotEqual(0, version);
                 session.AcceptChanges();
             }
+
+            await Task.Delay(20); // Délai mini entre diffèrents Ticks de UtcNow 
 
             prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo, mel.SchemaInfo.GetProperty("Name"));
             Assert.IsNotNull(prop);
             Assert.AreEqual("am", prop.Value);
-            Assert.AreEqual(1, prop.CurrentVersion);
+            Assert.AreEqual(version, prop.CurrentVersion);
 
             using (var session = domain.Store.BeginSession())
             {
-                Assert.AreEqual(2, Graph.SetPropertyValue(mel, mel.SchemaInfo.GetProperty("Name"), "am2", null).CurrentVersion);
+                var v = Graph.SetPropertyValue(mel, mel.SchemaInfo.GetProperty("Name"), "am2", null).CurrentVersion;
+                Assert.IsTrue(v > version);
                 session.AcceptChanges();
+                version = v;
             }
 
             prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo, mel.SchemaInfo.GetProperty("Name"));
             Assert.IsNotNull(prop);
             Assert.AreEqual("am2", prop.Value);
-            Assert.AreEqual(2, prop.CurrentVersion);
+            Assert.AreEqual(version, prop.CurrentVersion);
         }
 
         [TestMethod()]

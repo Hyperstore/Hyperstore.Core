@@ -631,7 +631,7 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
                 if (pnode == null)
                 {
                     // N'existe pas encore. On crée l'attribut et une relation avec son owner
-                    pnode = new MemoryGraphNode(this.DomainModel.Store, pid, property.Id, NodeType.Property, value: value, version: version ?? 1);
+                    pnode = new MemoryGraphNode(this.DomainModel.Store, pid, property.Id, NodeType.Property, value: value, version: version ?? DateTime.UtcNow.Ticks);
                     Storage.AddNode(pnode, property, ownerId);
                     DeferAddIndex(ownerMetadata, ownerId, property.Name, value);
                     tx.Commit();
@@ -653,7 +653,7 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
 
                 DeferRemoveIndex(ownerMetadata, ownerId, property.Name, oldValue);
 
-                pnode = new MemoryGraphNode(pnode, version ?? (pnode.Version + 1));
+                pnode = new MemoryGraphNode(pnode, version ?? (DateTime.UtcNow.Ticks));
                 pnode.Value = value;
                 Storage.UpdateNode(pnode, property);
                 DeferAddIndex(ownerMetadata, ownerId, property.Name, value);

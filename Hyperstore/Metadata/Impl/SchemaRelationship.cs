@@ -91,31 +91,31 @@ namespace Hyperstore.Modeling.Metadata
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Constructor.
+        ///  A schema relationship 
         /// </summary>
         /// <param name="start">
-        ///  The start.
+        ///  The start element schema
         /// </param>
         /// <param name="end">
-        ///  The end.
+        ///  The end element schema
         /// </param>
         /// <param name="implementedType">
         ///  Type of the implemented.
         /// </param>
         /// <param name="cardinality">
-        ///  the cardinality.
+        ///  Cardinality of the relationship
         /// </param>
         /// <param name="isembedded">
-        ///  true if isembedded.
+        ///  Defines if the relationship is embedded
         /// </param>
         /// <param name="name">
-        ///  The name.
+        ///  Relationship's name
         /// </param>
-        /// <param name="superMetaClass">
-        ///  (Optional) the super meta class.
+        /// <param name="inheritedSchema">
+        ///  (Optional) The schema element inherited by the relationship
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public SchemaRelationship(ISchemaElement start, ISchemaElement end, Type implementedType, Cardinality cardinality, bool isembedded, string name, ISchemaRelationship superMetaClass = null)
+        public SchemaRelationship(ISchemaElement start, ISchemaElement end, Type implementedType, Cardinality cardinality, bool isembedded, string name, ISchemaRelationship inheritedSchema = null)
         {
             Contract.Requires(start, "start");
             Contract.Requires(end, "end");
@@ -126,7 +126,7 @@ namespace Hyperstore.Modeling.Metadata
             _end = end;
 
             name = Conventions.NormalizeMetaElementName(start.DomainModel.Name, name);
-            ConstructInternal(start.DomainModel, implementedType, new Identity(start.Schema.Name, name), name, superMetaClass, PrimitivesSchema.SchemaRelationshipSchema,
+            ConstructInternal(start.DomainModel, implementedType, new Identity(start.Schema.Name, name), name, inheritedSchema, PrimitivesSchema.SchemaRelationshipSchema,
                     (dm, melId, mid) => new AddSchemaRelationshipCommand(dm as ISchema, melId, (ISchemaRelationship)mid, start, end));
 
             if (!Hyperstore.Modeling.Utils.ReflectionHelper.IsAssignableFrom(typeof(IModelRelationship), ImplementedType))

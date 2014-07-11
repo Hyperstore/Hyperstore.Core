@@ -47,7 +47,7 @@ namespace Hyperstore.Modeling.Commands
         ///  The value.
         /// </param>
         /// <param name="version">
-        ///  (Optional) The version.
+        ///  (Optional) The version (corresponding at UtcNow.Ticks)
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         public ChangePropertyValueCommand(IModelElement element, ISchemaProperty propertySchema, object value, long? version=null)
@@ -64,7 +64,7 @@ namespace Hyperstore.Modeling.Commands
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets or sets the version.
+        ///  Gets or sets the version (UtcNow.Ticks)
         /// </summary>
         /// <value>
         ///  The version.

@@ -189,7 +189,7 @@ namespace Hyperstore.Tests.MemoryStore
                 
                 domain.SetPropertyValue( a, prop, ETest.B );
                 pv = domain.GetPropertyValue(((IModelElement)a).Id, TestDomainDefinition.XExtendsBaseClass, prop);
-                Assert.AreEqual(1, pv.CurrentVersion);
+                Assert.AreNotEqual(0, pv.CurrentVersion);
                 Assert.AreEqual(ETest.B, pv.Value);
                 s.AcceptChanges();
             }
@@ -216,7 +216,7 @@ namespace Hyperstore.Tests.MemoryStore
 
                 domain.SetPropertyValue(a, prop, ETest.B);
                 pv = domain.GetPropertyValue(((IModelElement)a).Id, TestDomainDefinition.XExtendsBaseClass, prop);
-                Assert.AreEqual(1, pv.CurrentVersion);
+                Assert.AreNotEqual(0, pv.CurrentVersion);
                 Assert.AreEqual(ETest.B, pv.Value);
                 s.AcceptChanges();
             }
