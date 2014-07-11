@@ -37,29 +37,29 @@ namespace Hyperstore.Modeling.Metadata
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Constructor.
+        ///  A schema relationship 
         /// </summary>
         /// <param name="start">
-        ///  The start.
+        ///  The start element schema
         /// </param>
         /// <param name="end">
-        ///  The end.
+        ///  The end element schema
         /// </param>
         /// <param name="cardinality">
-        ///  (Optional) the cardinality.
+        ///  Cardinality of the relationship
         /// </param>
-        /// <param name="isEmbedded">
-        ///  (Optional) true if this instance is embedded.
+        /// <param name="isembedded">
+        ///  Defines if the relationship is embedded
         /// </param>
         /// <param name="name">
-        ///  (Optional) the name.
+        ///  Relationship's name
         /// </param>
-        /// <param name="superMetaClass">
-        ///  (Optional) the super meta class.
+        /// <param name="inheritedSchema">
+        ///  (Optional) The schema element inherited by the relationship
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public SchemaRelationship(ISchemaElement start, ISchemaElement end, Cardinality cardinality = Cardinality.OneToOne, bool isEmbedded = false, string name = null, ISchemaRelationship superMetaClass = null)
-            : base(start, end, typeof(T), cardinality, isEmbedded, name ?? typeof(T).FullName, superMetaClass)
+        public SchemaRelationship(ISchemaElement start, ISchemaElement end, Cardinality cardinality = Cardinality.OneToOne, bool isEmbedded = false, string name = null, ISchemaRelationship inheritedSchema = null)
+            : base(start, end, typeof(T), cardinality, isEmbedded, name ?? typeof(T).FullName, inheritedSchema)
         {
         }
     }
@@ -141,29 +141,29 @@ namespace Hyperstore.Modeling.Metadata
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Constructor.
+        ///  A schema relationship 
         /// </summary>
-        /// <param name="name">
-        ///  The name.
+        ///  <param name="name">
+        ///  Relationship's name
         /// </param>
-        /// <param name="source">
-        ///  Source for the.
+        /// <param name="start">
+        ///  The start element schema
         /// </param>
         /// <param name="end">
-        ///  The end.
+        ///  The end element schema
         /// </param>
         /// <param name="cardinality">
-        ///  (Optional) the cardinality.
+        ///  Cardinality of the relationship
         /// </param>
         /// <param name="isembedded">
-        ///  (Optional) true if isembedded.
+        ///  Defines if the relationship is embedded
         /// </param>
-        /// <param name="superMetaClass">
-        ///  (Optional) the super meta class.
+        /// <param name="inheritedSchema">
+        ///  (Optional) The schema element inherited by the relationship
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public SchemaRelationship(string name, ISchemaElement source, ISchemaElement end, Cardinality cardinality = Cardinality.OneToOne, bool isembedded = false, ISchemaRelationship superMetaClass = null)
-            : this(source, end, typeof(ModelRelationship), cardinality, isembedded, name, superMetaClass)
+        public SchemaRelationship(string name, ISchemaElement start, ISchemaElement end, Cardinality cardinality = Cardinality.OneToOne, bool isembedded = false, ISchemaRelationship inheritedSchema = null)
+            : this(start, end, typeof(ModelRelationship), cardinality, isembedded, name, inheritedSchema)
         {
         }
 
