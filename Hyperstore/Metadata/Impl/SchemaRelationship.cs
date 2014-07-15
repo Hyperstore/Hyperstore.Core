@@ -155,7 +155,7 @@ namespace Hyperstore.Modeling.Metadata
             IsEmbedded = isembedded;
             StartId = start.Id;
             EndId = end.Id;
-            StartPropertyName = StartPropertyName;
+            StartPropertyName = startPropertyName;
             EndPropertyName = endPropertyName;
         }
 
@@ -307,7 +307,7 @@ namespace Hyperstore.Modeling.Metadata
         {
             get
             {
-                if (_startPropertyNameInitialized == null)
+                if (_startPropertyNameInitialized == false)
                 {
                     _startPropertyNameInitialized = true;
                     _startPropertyName = GetPropertyValue<string>("StartPropertyName");
@@ -327,12 +327,12 @@ namespace Hyperstore.Modeling.Metadata
         {
             get
             {
-                if (_endPropertyNameInitialized == null)
+                if (_endPropertyNameInitialized == false)
                 {
                     _endPropertyNameInitialized = true;
                     _endPropertyName = GetPropertyValue<string>("EndPropertyName");
                 }
-                return _startPropertyName;
+                return _endPropertyName;
             }
             set
             {

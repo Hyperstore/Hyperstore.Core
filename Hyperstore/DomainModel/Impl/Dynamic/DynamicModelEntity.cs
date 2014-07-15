@@ -130,28 +130,54 @@ namespace Hyperstore.Modeling
             var property = ((IModelElement)this).SchemaInfo.GetProperty(propertyName);
             if (property == null)
             {
-                object refer;
-                if (!_references.TryGetValue(propertyName, out refer))
+                ReferenceHandler refer = null;
+                object obj;
+                if (!_references.TryGetValue(propertyName, out obj))
                 {
+
                     // Find a relationship whith this name
-                    var relationship = ((IModelElement)this).SchemaInfo.GetRelationships()
-                            .FirstOrDefault(r => IsMatchPropertyName(r, propertyName)) as ISchemaRelationship;
-                    if (relationship == null)
-                        throw new Exception(string.Format(ExceptionMessages.UnknownPropertyFormat, propertyName));
-
-                    if (relationship.Cardinality == Cardinality.OneToOne || relationship.End.Id == ((IModelElement)this).SchemaInfo.Id) // Noeud terminal
+                    foreach (ISchemaRelationship relationship in ((IModelElement)this).SchemaInfo.GetRelationships())
                     {
-                        if (value != null && !(value is IModelElement))
-                            throw new Exception(ExceptionMessages.InvalidValue);
+                        if (relationship.StartPropertyName == propertyName)
+                        {
+                            if (relationship.Cardinality != Cardinality.OneToOne && relationship.Cardinality != Cardinality.ManyToOne)
+                            {
+                                throw new Exception(ExceptionMessages.InvalidValue);
+                            }
 
-                        refer = new ReferenceHandler(this, relationship, relationship.Cardinality != Cardinality.OneToOne);
-                        _references.TryAdd(propertyName, refer);
+                            refer = new ReferenceHandler(this, relationship, false);
+                            break;
+                        }
+
+                        if (relationship.EndPropertyName == propertyName)
+                        {
+                            if (relationship.Cardinality != Cardinality.OneToMany && relationship.Cardinality != Cardinality.OneToOne)
+                            {
+                                throw new Exception(ExceptionMessages.InvalidValue);
+                            }
+
+                            refer = new ReferenceHandler(this, relationship, true);
+                            break;
+                        }
                     }
-                    else
+
+                    _references.TryAdd(propertyName, refer); // adding even refer is null
+                    if (refer == null)
+                        throw new Exception(string.Format(ExceptionMessages.UnknownPropertyFormat, propertyName));
+                }
+                else
+                {
+                    refer = obj as ReferenceHandler;
+                    if (refer == null)
                         throw new Exception(ExceptionMessages.InvalidValue);
                 }
 
-                ((ReferenceHandler)refer).SetReference(value as IModelElement);
+                if (value != null && !(value is IModelElement))
+                    throw new Exception(ExceptionMessages.InvalidValue);
+
+                var mel = value as IModelElement;
+
+                ((ReferenceHandler)refer).SetReference(mel);
                 return value;
             }
 

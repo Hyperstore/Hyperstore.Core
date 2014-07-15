@@ -17,6 +17,7 @@
  
 #region Imports
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -65,7 +66,9 @@ namespace Hyperstore.Modeling
         private readonly ModelElement _owner;
         private Identity _id;
         private ISchemaRelationship _relationshipMetadata;
-        
+
+        public ISchemaRelationship RelationshipSchema { get { return _relationshipMetadata; } }
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Initializes a new instance of the <see cref="ReferenceHandler" /> class.
@@ -155,6 +158,9 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public void SetReference(IModelElement value)
         {
+            if (value != null && !value.SchemaInfo.IsA(RelationshipSchema.End))
+                throw new Exception(ExceptionMessages.InvalidValue);
+
             _owner.SetReference(ref _id, SchemaRelationship, value, _opposite);
         }
 

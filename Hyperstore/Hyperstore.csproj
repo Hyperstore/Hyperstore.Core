@@ -55,10 +55,10 @@
     <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\packages\Microsoft.Bcl.Immutable.1.0.30\lib\portable-net45+win8+wp8\System.Collections.Immutable.dll</HintPath>
-    </Reference>
     <Reference Include="mscorlib" />
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\packages\Microsoft.Bcl.Immutable.1.0.34\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Container\ICommandHandlerMetadata.cs" />
@@ -428,6 +428,7 @@
   <ItemGroup>
     <None Include="Metadata\ClassDiagram1.cd" />
     <None Include="Hyperstore.licenseheader" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <None Include="license.txt" />
