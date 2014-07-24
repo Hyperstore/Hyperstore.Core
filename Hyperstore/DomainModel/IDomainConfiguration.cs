@@ -25,6 +25,13 @@ using System.Text;
 
 namespace Hyperstore.Modeling
 {
+    [Flags]
+    public enum DomainBehavior
+    {
+        None,
+        EnableL1Cache=1
+    }
+
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
     ///  Interface for schema configuration.

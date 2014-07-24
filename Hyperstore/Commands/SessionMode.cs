@@ -74,6 +74,10 @@ namespace Hyperstore.Modeling
         /// <summary>
         /// No events will be raised
         /// </summary>
-        SkipNotifications = 128
+        SkipNotifications = 128,
+        /// <summary>
+        ///  Ignore L1 cache
+        /// </summary>
+        IgnoreCache=256
     }
 }

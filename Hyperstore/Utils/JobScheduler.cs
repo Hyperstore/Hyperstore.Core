@@ -28,7 +28,7 @@ namespace Hyperstore.Modeling.Utils
 {
     internal class JobScheduler : IDisposable
     {
-        private readonly Action _action;
+        private Action _action;
         private readonly int _interval;
         private CancellationTokenSource _cancellationToken;
         private int _ready;
@@ -68,6 +68,7 @@ namespace Hyperstore.Modeling.Utils
             if (_cancellationToken != null)
                 _cancellationToken.Cancel();
             _cancellationToken = null;
+            _action = null;
         }
 
         private bool Run(object arg)
@@ -81,9 +82,15 @@ namespace Hyperstore.Modeling.Utils
 
                     if (_ready != 0)
                     {
-                        _action();
+                        var tmp = _action;
+                        if (tmp == null)
+                            break;
+                        tmp();
                         Interlocked.Exchange(ref _ready, 0);
                     }
+
+                    if (_cancellationToken == null || _cancellationToken.IsCancellationRequested)
+                        break; 
                     
                     var t = Task.Delay(_interval, _cancellationToken.Token);
                     t.Wait();

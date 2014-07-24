@@ -140,7 +140,7 @@ namespace Hyperstore.Tests
         public async Task PropertyChangedOnSetReferenceTest()
         {
             var store = new Store();
-            var schema = await store.LoadSchemaAsync(new TestDomainDefinition());
+            var schema = await store.LoadSchemaAsync(new TestDomainDefinition((Action<IDependencyResolver>)null, DomainBehavior.EnableL1Cache));
             var dm = await store.CreateDomainModelAsync("Test", new DomainConfiguration().UsesIdGenerator(r=>new LongIdGenerator()));
             XExtendsBaseClass x = null;
             YClass y = null;

@@ -33,10 +33,11 @@ namespace Hyperstore.Modeling.Metadata
     [DebuggerDisplay("Meta Model {Name}")]
     internal class DomainSchema : DomainModel, ISchema, IUpdatableSchema
     {
-        private readonly IConstraintsManager _constraints;
+        private IConstraintsManager _constraints;
 
-        private readonly IConcurrentDictionary<Identity, IModelElement> _elements;
-        private readonly IConcurrentDictionary<Identity, IModelRelationship> _relationships;
+        private IConcurrentDictionary<Identity, IModelElement> _elements;
+        private IConcurrentDictionary<Identity, IModelRelationship> _relationships;
+        private readonly DomainBehavior _behavior;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -53,18 +54,29 @@ namespace Hyperstore.Modeling.Metadata
         ///  The constraints.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public DomainSchema(string name, IDependencyResolver dependencyResolver, IConstraintsManager constraints = null)
+        public DomainSchema(string name, IDependencyResolver dependencyResolver, DomainBehavior behavior= DomainBehavior.EnableL1Cache, IConstraintsManager constraints = null)
             : base(dependencyResolver, name)
         {
             Contract.Requires(dependencyResolver, "dependencyResolver");
 
             _elements = PlatformServices.Current.CreateConcurrentDictionary<Identity, IModelElement>();
             _relationships = PlatformServices.Current.CreateConcurrentDictionary<Identity, IModelRelationship>();
+            _behavior = behavior;
 
             _constraints = constraints ?? dependencyResolver.Resolve<IConstraintsManager>();
             if (_constraints is IDomainService)
                 ((IDomainService)_constraints).SetDomain(this);
         }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets domain behaviors.
+        /// </summary>
+        /// <value>
+        ///  The behavior.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public DomainBehavior Behavior { get { return _behavior; } }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -131,6 +143,32 @@ namespace Hyperstore.Modeling.Metadata
         protected override void CreateCache()
         {
             // No cache
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            var disposable = _constraints as IDisposable;
+            if (disposable != null)
+                disposable.Dispose();
+            _constraints = null;
+
+            foreach(var kv in _elements)
+            {
+                disposable = kv.Value as IDisposable;
+                if (disposable != null)
+                    disposable.Dispose();
+            }
+            _elements = null;
+            
+            foreach (var kv in _relationships)
+            {
+                disposable = kv.Value as IDisposable;
+                if (disposable != null)
+                    disposable.Dispose();
+            }
+            _relationships = null;
         }
 
         ///-------------------------------------------------------------------------------------------------

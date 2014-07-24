@@ -40,7 +40,7 @@ namespace Hyperstore.Modeling.DomainExtension
                     dm.Dispose();
                 }
                 _domainModels.Clear();
-                _domainModelList.Clear();
+                _domainModelList = null;
             }
         }
 

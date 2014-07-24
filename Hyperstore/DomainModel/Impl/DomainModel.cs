@@ -520,15 +520,37 @@ namespace Hyperstore.Modeling.Domain
                 }
             }
 
+            if (_cache != null)
+            {
+                _cache.Dispose();
+            }
+
             var disposable = InnerGraph as IDisposable;
             if (disposable != null)
                 disposable.Dispose();
+            InnerGraph = null;
 
-            if (_cache != null)
-            {
-                DependencyResolver.Dispose();
-                _cache.Dispose();
-            }
+            disposable = _commandManager as IDisposable;
+            if (disposable != null)
+                disposable.Dispose();
+            _commandManager = null;
+
+            disposable = _eventManager as IDisposable;
+            if (disposable != null)
+                disposable.Dispose();
+            _eventManager = null;
+
+            disposable = IdGenerator as IDisposable;
+            if (disposable != null)
+                disposable.Dispose();
+            IdGenerator = null;
+
+            disposable = _modelElementFactory as IDisposable;
+            if (disposable != null)
+                disposable.Dispose();
+            _modelElementFactory = null;
+            
+            DependencyResolver.Dispose();
         }
 
         ///-------------------------------------------------------------------------------------------------

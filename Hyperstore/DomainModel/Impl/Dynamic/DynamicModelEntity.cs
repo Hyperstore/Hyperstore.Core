@@ -268,5 +268,18 @@ namespace Hyperstore.Modeling
             var pv = GetPropertyValue(property);
             return pv.Value;
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            foreach(var r in _references)
+            {
+                var disposable = r.Value as IDisposable;
+                if (disposable != null)
+                    disposable.Dispose();
+            }
+            _references = null;
+        }
     }
 }

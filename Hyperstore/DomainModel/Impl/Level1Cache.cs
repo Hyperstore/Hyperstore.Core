@@ -32,10 +32,6 @@ namespace Hyperstore.Modeling.Domain
     internal sealed class Level1Cache : IDisposable
     {
         private readonly IConcurrentDictionary<Identity, IModelElement> _cache;
-        /// <summary>
-        ///     Gestionnaire des demandes de vaccum
-        /// </summary>
-      //  private readonly JobScheduler _jobScheduler;
         private IHyperGraph _innerGraph;
 
         ///-------------------------------------------------------------------------------------------------
@@ -53,8 +49,6 @@ namespace Hyperstore.Modeling.Domain
             _cache = PlatformServices.Current.CreateConcurrentDictionary<Identity, IModelElement>();
             _innerGraph = innerGraph;
 
-       //     _jobScheduler = new JobScheduler(Vacuum, TimeSpan.FromSeconds(60));
-
             innerGraph.DomainModel.Store.SessionCreated += OnSessionCreated;
         }
 
@@ -66,8 +60,11 @@ namespace Hyperstore.Modeling.Domain
         ///-------------------------------------------------------------------------------------------------
         public void Dispose()
         {
-          //  _jobScheduler.Dispose();
-            _innerGraph = null;
+            if (_innerGraph != null)
+            {
+                _innerGraph.DomainModel.Store.SessionCreated -= OnSessionCreated;
+                _innerGraph = null;
+            }
         }
 
         private void OnSessionCreated(object sender, SessionCreatedEventArgs e)
@@ -87,26 +84,6 @@ namespace Hyperstore.Modeling.Domain
             }
         }
 
-        /// <summary>
-        ///     Demande d'une execution du vaccum
-        /// </summary>
-        private void NotifyVacuum()
-        {
-#if !DEBUG
-       //     _jobScheduler.RequestJob();
-#endif
-        }
-
-        private void Vacuum()
-        {
-            //var queue = new Queue<Identity>(_cache.Where(c => c.Value.Target == null)
-            //        .Select(c => c.Key));
-            //while (queue.Count > 0)
-            //{
-            //    WeakReference weak;
-            //    _cache.TryRemove(queue.Dequeue(), out weak);
-            //}
-        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -131,8 +108,9 @@ namespace Hyperstore.Modeling.Domain
             IModelElement weak;
             IModelElement elem;
 
-            NotifyVacuum();
-            if (_cache.TryGetValue(id, out weak))
+            var cacheEnabled = (metaclass.Schema.Behavior & DomainBehavior.EnableL1Cache) == DomainBehavior.EnableL1Cache;
+
+            if (cacheEnabled && _cache.TryGetValue(id, out weak))
             {
                 elem = weak as IModelElement;
                 if (elem == null)
@@ -151,7 +129,10 @@ namespace Hyperstore.Modeling.Domain
             }
 
             elem = _innerGraph.GetElement(id, metaclass, localOnly);
-            if (elem != null)
+            if (elem != null && Session.Current != null && Session.Current.TrackingData.GetTrackingElementState(elem.Id) == TrackingState.Removed)
+                return null;
+
+            if (cacheEnabled && elem != null)
             {
                 if (!_cache.TryAdd(id, elem))
                 {
@@ -160,8 +141,6 @@ namespace Hyperstore.Modeling.Domain
                 }
             }
 
-            if (elem != null && Session.Current != null && Session.Current.TrackingData.GetTrackingElementState(elem.Id) == TrackingState.Removed)
-                return null;
             return elem;
         }
 
@@ -179,7 +158,9 @@ namespace Hyperstore.Modeling.Domain
         public IModelElement AddElement(IModelElement instance)
         {
             DebugContract.Requires(instance);
-            NotifyVacuum();
+
+            if ((instance.SchemaInfo.Schema.Behavior & DomainBehavior.EnableL1Cache) != DomainBehavior.EnableL1Cache)
+                return instance;
 
             var val = _cache.GetOrAdd(instance.Id, instance);
             var mel = val as IModelElement;

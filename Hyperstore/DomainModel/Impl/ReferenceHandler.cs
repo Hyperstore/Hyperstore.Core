@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -60,13 +60,21 @@ namespace Hyperstore.Modeling
     ///  Gestionnaire des références.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
-    public class ReferenceHandler
+    public class ReferenceHandler : IDisposable
     {
         private readonly bool _opposite;
-        private readonly ModelElement _owner;
+        private ModelElement _owner;
         private Identity _id;
         private ISchemaRelationship _relationshipMetadata;
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the relationship schema.
+        /// </summary>
+        /// <value>
+        ///  The relationship schema.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public ISchemaRelationship RelationshipSchema { get { return _relationshipMetadata; } }
 
         ///-------------------------------------------------------------------------------------------------
@@ -111,7 +119,7 @@ namespace Hyperstore.Modeling
 
             if (schemaRelationship.Cardinality == Cardinality.ManyToMany)
                 throw new System.Exception(ExceptionMessages.ReferenceHandlerCantBeUsedWithManyToManyRelationship);
-            else if( schemaRelationship.Cardinality == Cardinality.ManyToOne && opposite)
+            else if (schemaRelationship.Cardinality == Cardinality.ManyToOne && opposite)
                 throw new System.Exception(ExceptionMessages.ReferenceHandlerCantBeUsedWithManyToManyRelationship);
 
             _owner = owner;
@@ -158,7 +166,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public void SetReference(IModelElement value)
         {
-            if (value != null && !value.SchemaInfo.IsA(RelationshipSchema.End))
+            if (value != null && !value.SchemaInfo.IsA(_opposite ? RelationshipSchema.Start : RelationshipSchema.End))
                 throw new Exception(ExceptionMessages.InvalidValue);
 
             _owner.SetReference(ref _id, SchemaRelationship, value, _opposite);
@@ -205,6 +213,18 @@ namespace Hyperstore.Modeling
         public IEnumerable<IModelElement> GetReferences()
         {
             return _owner.GetRelationships(SchemaRelationship);
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged
+        ///  resources.
+        /// </summary>
+        ///-------------------------------------------------------------------------------------------------
+        public virtual void Dispose()
+        {
+            _owner = null;
+            _relationshipMetadata = null;
         }
     }
 }

@@ -77,6 +77,16 @@ namespace Hyperstore.Modeling.Metadata
         IEventManager IDomainModel.Events { get { return null; } }
         IIdGenerator IDomainModel.IdGenerator { get { return null; } }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets domain behaviors.
+        /// </summary>
+        /// <value>
+        ///  The behavior.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public DomainBehavior Behavior { get { return DomainBehavior.None; } }
+
         // Mechant bug sur windowsphone : si on remplace le type du parametre en IMetaElement, l'application crashe sur
         // l'insertion de MetaclassReferencesSuperClass
         internal void RegisterMetadata(IModelElement metaclass)

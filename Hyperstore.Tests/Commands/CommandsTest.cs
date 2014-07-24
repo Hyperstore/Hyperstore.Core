@@ -180,7 +180,7 @@ namespace Hyperstore.Tests.Commands
 
         [TestMethod]
         [TestCategory("Commands")]
-        public async void Constraint_Cannot_modify_the_model()
+        public async Task Constraint_Cannot_modify_the_model()
         {
             await AssertHelper.ThrowsException<SessionException>(async () =>
             {
@@ -207,7 +207,7 @@ namespace Hyperstore.Tests.Commands
 
         [TestMethod]
         [TestCategory("Commands")]
-        public async void Inherited_constraint()
+        public async Task Inherited_constraint()
         {
             await AssertHelper.ThrowsException<SessionException>(async () =>
             {

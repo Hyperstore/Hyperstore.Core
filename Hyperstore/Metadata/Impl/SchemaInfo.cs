@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -38,7 +38,7 @@ namespace Hyperstore.Modeling.Metadata
     /// <seealso cref="T:Hyperstore.Modeling.ISchemaInfo"/>
     ///-------------------------------------------------------------------------------------------------
     [DebuggerDisplay("SchemaElement {DebuggerDisplay,nq}")]
-    public abstract class SchemaInfo : ModelElement, ISchemaInfo 
+    public abstract class SchemaInfo : ModelElement, ISchemaInfo
     {
         #region Enums of MetaClass (7)
 
@@ -111,7 +111,8 @@ namespace Hyperstore.Modeling.Metadata
         ///  The type of the implemented.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        protected Type ImplementedType {
+        protected Type ImplementedType
+        {
             get { return _implementedType ?? (_implementedType = GetPropertyValue<Type>("ImplementedType")); }
             set { SetPropertyValue("ImplementedType", _implementedType = value); }
         }
@@ -213,7 +214,7 @@ namespace Hyperstore.Modeling.Metadata
             Contract.Requires(schema, "schema");
 
             if (implementedType == null)
-                implementedType = typeof (DynamicModelEntity);
+                implementedType = typeof(DynamicModelEntity);
 
             name = Conventions.NormalizeMetaElementName(schema.Name, name ?? implementedType.FullName);
 
@@ -233,8 +234,8 @@ namespace Hyperstore.Modeling.Metadata
             //        }
             //    }
             //}
-          
-            ConstructInternal(schema, implementedType, id, name, superMetaClass, metaclass, (dm, melId, m) => new AddSchemaEntityCommand(dm as ISchema, melId, (ISchemaEntity) m));
+
+            ConstructInternal(schema, implementedType, id, name, superMetaClass, metaclass, (dm, melId, m) => new AddSchemaEntityCommand(dm as ISchema, melId, (ISchemaEntity)m));
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -317,9 +318,9 @@ namespace Hyperstore.Modeling.Metadata
             Contract.Requires(ctx, "ctx");
             var upd = ctx.DomainModel as IUpdatableDomainModel;
             if (upd == null)
-                throw new Exception(string.Format(ExceptionMessages.DomainModelIsReadOnlyCantCreateElementFormat,ctx.Id));
+                throw new Exception(string.Format(ExceptionMessages.DomainModelIsReadOnlyCantCreateElementFormat, ctx.Id));
 
-            var mel = upd.ModelElementFactory.InstanciateModelElement(ctx.Schema, ImplementedType ?? typeof (DynamicModelEntity));
+            var mel = upd.ModelElementFactory.InstanciateModelElement(ctx.Schema, ImplementedType ?? typeof(DynamicModelEntity));
             var element = mel as ISerializableModelElement;
             if (element != null)
             {
@@ -393,7 +394,7 @@ namespace Hyperstore.Modeling.Metadata
         {
             Contract.Requires(metaClass, "metaClass");
 
-            if (metaClass != null && metaClass.Id == ((IModelElement) this).Id)
+            if (metaClass != null && metaClass.Id == ((IModelElement)this).Id)
                 return true;
 
             var superType = SuperClass;
@@ -458,7 +459,7 @@ namespace Hyperstore.Modeling.Metadata
 
             var trace = DomainModel.Resolve<IHyperstoreTrace>(false);
             if (trace != null)
-                trace.WriteTrace(TraceCategory.Metadata, ExceptionMessages.CreatePropertyWithIdForMetaclassFormat, property.Name, property.Id, ((IModelElement) this).Id);
+                trace.WriteTrace(TraceCategory.Metadata, ExceptionMessages.CreatePropertyWithIdForMetaclassFormat, property.Name, property.Id, ((IModelElement)this).Id);
             return property;
         }
 
@@ -488,8 +489,8 @@ namespace Hyperstore.Modeling.Metadata
 
             var metadata = Store.GetSchemaInfo<T>(false);
 
-            if (metadata == null && ReflectionHelper.IsEnum(typeof (T)))
-                metadata = new EnumPrimitive(Schema, typeof (T));
+            if (metadata == null && ReflectionHelper.IsEnum(typeof(T)))
+                metadata = new EnumPrimitive(Schema, typeof(T));
 
             var mv = metadata as ISchemaValueObject;
             if (mv == null)
@@ -518,7 +519,7 @@ namespace Hyperstore.Modeling.Metadata
             DebugContract.RequiresNotEmpty(name);
 
             var type = GetType();
-            if (type == typeof (SchemaEntity)) // Evite boucle infinie
+            if (type == typeof(SchemaEntity)) // Evite boucle infinie
                 return PrimitivesSchema.SchemaEntitySchema;
 
             return base.EnsuresSchemaExists(domainModel, name);
@@ -617,6 +618,24 @@ namespace Hyperstore.Modeling.Metadata
 
         #endregion Methods of MetaClass (12)
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Releases the unmanaged resources used by the Hyperstore.Modeling.ModelElement and optionally
+        ///  releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        ///  true to release both managed and unmanaged resources; false to release only unmanaged
+        ///  resources.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            _propertiesByName = null;
+            _properties.Dispose();
+            _superClassHandler.Dispose();
+        }
 
         object ISchemaInfo.Deserialize(SerializationContext ctx)
         {
@@ -635,7 +654,7 @@ namespace Hyperstore.Modeling.Metadata
 
         private string DebuggerDisplay
         {
-            get { return String.Format("Name={0}, Id={1}", Name, ((IModelElement) this).Id); }
+            get { return String.Format("Name={0}, Id={1}", Name, ((IModelElement)this).Id); }
         }
 
         ///-------------------------------------------------------------------------------------------------

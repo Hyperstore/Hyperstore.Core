@@ -122,7 +122,7 @@ namespace Hyperstore.Tests.Extension
         }
 
         [TestMethod]
-        public async void Extension_constraint_in_updatable_mode()
+        public async Task Extension_constraint_in_updatable_mode()
         {
             // En mode updatable, les contraintes du domaine étendu s'appliquent
             await AssertHelper.ThrowsException<SessionException>(async () =>
@@ -155,7 +155,7 @@ namespace Hyperstore.Tests.Extension
         }
 
         [TestMethod]
-        public async void Extension_constraint()
+        public async Task Extension_constraint()
         {
             await AssertHelper.ThrowsException<SessionException>(async () =>
                 {

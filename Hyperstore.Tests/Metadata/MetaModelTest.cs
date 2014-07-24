@@ -37,9 +37,10 @@ namespace Hyperstore.Tests.MemoryStore
     {
         [TestMethod]
         [TestCategory("Meta")]
-        public void PrimitivesIsATest()
+        public async Task PrimitivesIsATest()
         {
             var store = new Store();
+            await store.CreateDomainModelAsync("test");
 
             var metaClass = PrimitivesSchema.SchemaEntitySchema;
             Assert.IsTrue(metaClass.IsA(metaClass));
@@ -132,7 +133,7 @@ namespace Hyperstore.Tests.MemoryStore
         }
 
         [TestMethod()]
-        public async void UnknowMetadata_raises_exception()
+        public async Task UnknowMetadata_raises_exception()
         {
             await AssertHelper.ThrowsException<MetadataNotFoundException>( async () =>
             {

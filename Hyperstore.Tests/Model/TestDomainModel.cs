@@ -73,13 +73,14 @@ namespace Hyperstore.Tests.Model
     {
         private Action<IDependencyResolver> _prepareDependency;
 
-        public TestDomainDefinition() : this((Action<IDependencyResolver>)null)
+        public TestDomainDefinition()
+            : this((Action<IDependencyResolver>)null, DomainBehavior.None)
         {
             UsesIdGenerator(r=>new LongIdGenerator());
         }
 
-        public TestDomainDefinition(Action<IDependencyResolver> handler=null) 
-            : base("Hyperstore.Tests")
+        public TestDomainDefinition(Action<IDependencyResolver> handler=null, DomainBehavior behavior = DomainBehavior.None) 
+            : base("Hyperstore.Tests", behavior)
         {
             _prepareDependency = handler;
         }

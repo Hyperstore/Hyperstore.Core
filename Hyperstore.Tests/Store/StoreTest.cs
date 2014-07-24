@@ -35,7 +35,7 @@ namespace Hyperstore.Tests
         {
             var store = new Store();
             await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test");
+            var domain = await store.CreateDomainModelAsync("Test", new DomainConfiguration().UsesIdGenerator(r=>new Hyperstore.Modeling.Domain.LongIdGenerator()));
 
             XReferencesY rel = null;
 

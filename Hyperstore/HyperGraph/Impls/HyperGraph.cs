@@ -848,7 +848,6 @@ namespace Hyperstore.Modeling.HyperGraph
                 ((IDisposable)_cache).Dispose();
             _disposed = true;
             _domainModel = null;
-            _resolver.Dispose();
         }
 
         private void RemoveDependencies(IGraphNode node, ISchemaElement metaClass, bool localOnly)

@@ -36,7 +36,7 @@ namespace Hyperstore.Modeling.Commands
     ///     handler de la commande
     ///     dans un pipeline contenant les intercepteurs.
     /// </remarks>
-    internal sealed class CommandManager : ICommandManager, IDomainService
+    internal sealed class CommandManager : ICommandManager, IDomainService, IDisposable
     {
         // Stockage de l'appel typé du processor de la commande.
         // L'implémentation du processor utilise une méthode acceptant une commande typée (Méthode générique)
@@ -109,6 +109,12 @@ namespace Hyperstore.Modeling.Commands
                 if (ReflectionHelper.IsAssignableFrom(commandRuleType, commandType))
                     item.Value.IsPrepared = false;
             }
+        }
+
+        void IDisposable.Dispose()
+        {
+            _commandProcessors.Clear();
+            GC.SuppressFinalize(this);
         }
 
         ///-------------------------------------------------------------------------------------------------

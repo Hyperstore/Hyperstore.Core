@@ -45,8 +45,8 @@ namespace Hyperstore.Modeling.DomainExtension
         ///  The constraints.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public DomainExtensionSchema(ISchema extendedMetaModel, IDependencyResolver dependencyResolver, IConstraintsManager constraints=null) 
-            : base(extendedMetaModel.Name, dependencyResolver, constraints)
+        public DomainExtensionSchema(ISchema extendedMetaModel, IDependencyResolver dependencyResolver, DomainBehavior behavior=DomainBehavior.None, IConstraintsManager constraints=null) 
+            : base(extendedMetaModel.Name, dependencyResolver, behavior, constraints)
         {
             DebugContract.Requires(extendedMetaModel);
             DebugContract.Requires(dependencyResolver);

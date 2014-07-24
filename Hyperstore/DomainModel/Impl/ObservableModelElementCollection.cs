@@ -81,6 +81,7 @@ namespace Hyperstore.Modeling
     public class ObservableModelElementCollection<T> : ModelElementCollection<T>, INotifyCollectionChanged, IList<T>, IList where T : IModelElement
     {
         private readonly List<IModelElement> _items;
+        private bool _loaded;
         private readonly object _sync = new object();
         private IDisposable _propertyChangedSubscription;
         private readonly ISynchronizationContext _synchronizationContext;
@@ -132,9 +133,7 @@ namespace Hyperstore.Modeling
             Contract.Requires(source, "source");
             Contract.Requires(schemaRelationship, "schemaRelationship");
 
-            _items = DomainModel.GetRelationships(SchemaRelationship, Source, End)
-                    .Select(link => Source != null ? link.End : link.Start)
-                    .ToList();
+            _items = new List<IModelElement>();
 
             var query = DomainModel.Events.RelationshipAdded;
             var query2 = DomainModel.Events.RelationshipRemoved;
@@ -145,6 +144,28 @@ namespace Hyperstore.Modeling
 
             query.Subscribe(a => AddItem(a.Event));
             query2.Subscribe(a => RemoveItem(a.Event));
+        }
+
+        private void LoadItems()
+        {
+            if (_loaded)
+                return;
+
+            lock (_items)
+            {
+                if (_loaded)
+                    return;
+
+                var query = DomainModel.GetRelationships(SchemaRelationship, Source, End)
+                        .Select(link => Source != null ? link.End : link.Start);
+
+                foreach (var mel in query)
+                {
+                    if (WhereClause == null || WhereClause((T)mel))
+                        _items.Add(mel);
+                }
+                _loaded = true;
+            }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -293,7 +314,6 @@ namespace Hyperstore.Modeling
         public override void Clear()
         {
             base.Clear();
-           // _items.Clear();
             _synchronizationContext.Send(() => OnCollectionChanged(null, NotifyCollectionChangedAction.Reset));
         }
 
@@ -329,7 +349,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public T this[int index]
         {
-            get { return (T) _items[index]; }
+            get { LoadItems(); return (T)_items[index]; }
             set { Insert(index, value); }
         }
 
@@ -359,7 +379,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public override int Count
         {
-            get { return _items.Count; }
+            get { LoadItems(); return _items.Count; }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -372,6 +392,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public void RemoveAt(int index)
         {
+            LoadItems();
             var value = _items[index];
             if (value != null)
             {
@@ -417,6 +438,8 @@ namespace Hyperstore.Modeling
 
         private void OnPropertyChanged(ChangePropertyValueEvent evt)
         {
+            LoadItems();
+
             if (WhereClause == null)
                 return;
 
@@ -452,6 +475,7 @@ namespace Hyperstore.Modeling
 
         private int IndexOfCore(Identity id)
         {
+            LoadItems();
             lock (_items)
             {
                 // TODO optimisation
@@ -525,6 +549,8 @@ namespace Hyperstore.Modeling
         {
             DebugContract.Requires(item);
 
+            LoadItems();
+            
             var index = -1;
             if (WhereClause != null && !WhereClause((T) item))
                 return -1;
@@ -575,6 +601,8 @@ namespace Hyperstore.Modeling
 
         private bool RemoveItemAt(int pos)
         {
+            LoadItems();
+
             if (pos < 0)
                 return false;
 

@@ -70,6 +70,12 @@ namespace Hyperstore.Modeling
             EnableMarkers();
         }
 
+        internal static void Dispose()
+        {
+            if (_actions != null)
+                _actions.Dispose();
+        }
+
         internal static void EnableMarkers()
         {
             if (_enabled == false)

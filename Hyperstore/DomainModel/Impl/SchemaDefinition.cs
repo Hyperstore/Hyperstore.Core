@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -37,6 +37,9 @@ namespace Hyperstore.Modeling
     {
         private readonly List<Action<IDependencyResolver>> _factories = new List<Action<IDependencyResolver>>();
         private readonly string _name;
+        private readonly DomainBehavior _behavior;
+
+        protected DomainBehavior Behavior { get { return _behavior; } }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -45,13 +48,17 @@ namespace Hyperstore.Modeling
         /// <param name="name">
         ///  The name.
         /// </param>
+        /// <param name="behavior">
+        ///  (Optional) the behavior.
+        /// </param>
         ///-------------------------------------------------------------------------------------------------
-        protected SchemaDefinition(string name)
+        protected SchemaDefinition(string name, DomainBehavior behavior = DomainBehavior.None)
         {
             Contract.Requires(name, "name");
             Conventions.CheckValidDomainName(name);
 
             _name = name;
+            _behavior = behavior;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -249,7 +256,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public ISchemaDefinition RegisterInEventBus(Messaging.ChannelPolicy outputProperty, Messaging.ChannelPolicy inputProperty = null)
         {
-            _factories.Add( new Action<IDependencyResolver>(r=>r.Register(new Hyperstore.Modeling.RegistrationEventBusSetting{ OutputProperty=outputProperty, InputProperty=inputProperty})));
+            _factories.Add(new Action<IDependencyResolver>(r => r.Register(new Hyperstore.Modeling.RegistrationEventBusSetting { OutputProperty = outputProperty, InputProperty = inputProperty })));
             return this;
         }
 
@@ -283,7 +290,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         protected virtual ISchema CreateSchema(IDependencyResolver domainResolver)
         {
-            return new Hyperstore.Modeling.Metadata.DomainSchema(_name, domainResolver);
+            return new Hyperstore.Modeling.Metadata.DomainSchema(_name, domainResolver, _behavior);
         }
 
         ///-------------------------------------------------------------------------------------------------

@@ -16,14 +16,20 @@ namespace Hyperstore.Bench
         private ConcurrentDictionary<int, Identity> ids;
         static void Main(string[] args)
         {
-            new Program().BenchWithConstraints().Wait();
-        }
-
-        public async Task BenchWithConstraints()
-        {
             var cx = 0;
+
             for (; ; )
             {
+                var p = new Program();
+                p.BenchWithConstraints(cx).Wait();
+                if (Console.ReadKey().Key == ConsoleKey.Escape)
+                    break;
+                cx++;
+            }
+        }
+
+        public async Task BenchWithConstraints(int cx)
+        {
                 long nb = 0;
                 store = new Store();
                 await store.LoadSchemaAsync(new TestDomainDefinition("Hyperstore.Tests.Model"));
@@ -66,10 +72,11 @@ namespace Hyperstore.Bench
                 sw.Stop();
                
                 Console.WriteLine("Expected {0} Value {1}", mx * nbc * 2, nb);
-                Console.ReadKey();
+                domain = null;
+                store.Dispose();
+
                 //Console.WriteLine();
-                cx++;
-            }
+            
 
             //Assert.AreEqual(mx * nbc * 2, nb); // Nbre de fois la contrainte est appelée (sur le add et le update)
             //Assert.IsTrue(sw.ElapsedMilliseconds < 3000, String.Format("ElapsedTime = {0}", sw.ElapsedMilliseconds));

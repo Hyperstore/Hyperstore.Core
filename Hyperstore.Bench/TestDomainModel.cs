@@ -51,7 +51,7 @@ namespace Hyperstore.Tests.Model
         }
 
         public TestDomainDefinition(Action<IDependencyResolver> handler=null) 
-            : base("Hyperstore.Tests")
+            : base("Hyperstore.Tests", DomainBehavior.None)
         {
             _prepareDependency = handler;
         }

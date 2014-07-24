@@ -91,6 +91,7 @@ namespace Hyperstore.Modeling
         {
             return new Hyperstore.Modeling.DomainExtension.DomainExtensionSchema(_extendedSchema,
                                                                               resolver,
+                                                                              Behavior,
                                                                               new Hyperstore.Modeling.DomainExtension.DomainExtensionConstraintsManager(resolver, _extendedSchema, _mode));
         }
     }

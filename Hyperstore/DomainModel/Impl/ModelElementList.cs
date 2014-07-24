@@ -66,7 +66,7 @@ namespace Hyperstore.Modeling
     /// </typeparam>
     /// <seealso cref="T:System.Collections.Generic.IEnumerable{T}"/>
     ///-------------------------------------------------------------------------------------------------
-    public class ModelElementList<T> : IEnumerable<T> where T : IModelElement
+    public class ModelElementList<T> : IDisposable, IEnumerable<T> where T : IModelElement
     {
         private Func<T, bool> _whereClause;
 
@@ -249,6 +249,20 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         protected virtual void OnWhereClauseChanged(Func<T, bool> oldClause, Func<T, bool> newClause)
         {
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged
+        ///  resources.
+        /// </summary>
+        ///-------------------------------------------------------------------------------------------------
+        public virtual void Dispose()
+        {
+            Source = null;
+            DomainModel = null;
+            End = null;
+            SchemaRelationship = null;
         }
     }
 }

@@ -74,7 +74,7 @@ namespace Hyperstore.Modeling
         private readonly IDomainModelControler<IDomainModel> _domainControler;
         private readonly IDomainModelControler<ISchema> _schemaControler;
         private readonly ILockManager _lockManager;
-        private readonly Statistics.Statistics _statistics;
+        private Statistics.Statistics _statistics;
         private bool _disposed;
         private int _initialized;
         private readonly StoreOptions _options;
@@ -1198,6 +1198,9 @@ namespace Hyperstore.Modeling
             if (GetDomainModel(name) != null)
                 throw new Exception("A domain with the same name already exists in the store : " + name);
 
+            // On s'assure que le domaine primitif est bien chargé
+            await Initialize();
+
             var resolver = DependencyResolver as IDependencyResolverInternal;
             if (resolver == null)
                 throw new Exception(ExceptionMessages.DependencyResolverMustInheritFromDefaultDependencyResolver);
@@ -1361,22 +1364,25 @@ namespace Hyperstore.Modeling
 
             var session = Session.Current;
             var flag = session == null;
-            if (flag)
-            {
-                session = BeginSession(new SessionConfiguration
-                                       {
-                                           Readonly = true
-                                       });
-            }
-
-            _disposed = true; // Il n'est plus possible de créer des sessions
-
-            var disposable = EventBus as IDisposable;
-            if (disposable != null)
-                disposable.Dispose();
-
             try
             {
+                if (flag)
+                {
+                    session = BeginSession(new SessionConfiguration
+                                           {
+                                               Readonly = true
+                                           });
+                }
+
+                _disposed = true; // Il n'est plus possible de créer des sessions
+
+                var disposable = EventBus as IDisposable;
+                if (disposable != null)
+                    disposable.Dispose();
+                EventBus = null;
+
+                _statistics = null;
+
                 // Envoi de l'événement OnCompleted à tous les observeurs
                 NotifyEnd();
                 var tmp = Closed;
@@ -1390,15 +1396,20 @@ namespace Hyperstore.Modeling
                     {
                     }
                 }
-
-                _domainControler.Dispose();
-
-                DependencyResolver.Dispose();
             }
             finally
             {
-                if (flag)
+                if (flag && session != null)
                     session.Dispose();
+
+                _domainControler.Dispose();
+                _schemaControler.Dispose();
+                DependencyResolver.Dispose();
+
+                _schemaInfosCache.Clear();
+                _notifiersCache.Clear();
+
+                CodeMarker.Dispose();
             }
         }
 

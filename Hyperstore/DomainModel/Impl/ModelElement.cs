@@ -580,6 +580,8 @@ namespace Hyperstore.Modeling
 
             OnDisposing();
             _status = ModelElementStatus.Disposed;
+            _domainModel = null;
+            _store = null;
         }
 
         ///-------------------------------------------------------------------------------------------------

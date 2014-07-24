@@ -163,6 +163,13 @@ namespace Hyperstore.Modeling.Metadata
             _defaultValueProperty = ((IModelElement)this).SchemaInfo.GetProperty("DefaultValue");
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            _propertyMetadataReference.Dispose();
+            _defaultValueProperty = null;
+        }
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Gets or sets the default value.

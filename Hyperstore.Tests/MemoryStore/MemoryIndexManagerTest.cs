@@ -37,7 +37,7 @@ namespace Hyperstore.Tests.Memory
     {
         [TestMethod]
         [TestCategory("MemoryIndexManager")]
-        public async void CreateIndex()
+        public async Task CreateIndex()
         {
             await AssertHelper.ThrowsException<DuplicateIndexException>(async () =>
             {
@@ -70,7 +70,7 @@ namespace Hyperstore.Tests.Memory
 
         [TestMethod]
         [TestCategory("MemoryIndexManager")]
-        public async  void GetIndex()
+        public async Task GetIndex()
         {
             var store = new Store();
             await store.LoadSchemaAsync(new TestDomainDefinition());
@@ -101,7 +101,7 @@ namespace Hyperstore.Tests.Memory
         
         [TestCategory("MemoryIndexManager")]
         [TestMethod()]
-        public async void WrongIndexNameTest()
+        public async Task WrongIndexNameTest()
         {
             await AssertHelper.ThrowsException<InvalidNameException>(async () =>
             {
@@ -141,7 +141,7 @@ namespace Hyperstore.Tests.Memory
 
         [TestMethod]
         [TestCategory("MemoryIndexManager")]
-        public async void UniqueConstraintIndex()
+        public async Task UniqueConstraintIndex()
         {
             await AssertHelper.ThrowsException<UniqueConstraintException>(async () =>
             {
