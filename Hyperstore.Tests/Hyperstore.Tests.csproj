@@ -15,7 +15,7 @@
     <TestProjectType>UnitTest</TestProjectType>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-    <NuGetPackageImportStamp>7ef8fb87</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>3fd818c2</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -106,6 +106,7 @@
     <Compile Include="Utils\SessionIndexProviderTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Hyperstore.Tests.licenseheader" />
     <None Include="Key.snk" />
     <None Include="Model\Definition.domain">
@@ -133,7 +134,9 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Hyperstore.DomainLanguage.0.9.23\build\Hyperstore.DomainLanguage.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Hyperstore.DomainLanguage.0.9.23\build\Hyperstore.DomainLanguage.targets'))" />
+    <Error Condition="!Exists('..\packages\Hyperstore.DomainLanguage.0.9.24\build\Hyperstore.DomainLanguage.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Hyperstore.DomainLanguage.0.9.24\build\Hyperstore.DomainLanguage.targets'))" />
   </Target>
+  <Import Project="..\packages\Hyperstore.DomainLanguage.0.9.24\build\Hyperstore.DomainLanguage.targets" Condition="Exists('..\packages\Hyperstore.DomainLanguage.0.9.24\build\Hyperstore.DomainLanguage.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

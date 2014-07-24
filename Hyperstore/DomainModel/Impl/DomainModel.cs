@@ -44,6 +44,7 @@ namespace Hyperstore.Modeling.Domain
     {
         private readonly IDependencyResolver _dependencyResolver;
         private readonly object _resolversLock = new object();
+        private bool _disposed;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -294,6 +295,8 @@ namespace Hyperstore.Modeling.Domain
         public Task<IDomainModel> LoadExtensionAsync(string extensionName, ExtendedMode mode, IDomainConfiguration configuration = null)
         {
             Contract.RequiresNotEmpty(extensionName, "extensionName");
+            CheckInitialized();
+
             if (this is ISchema)
                 throw new Exception("Uses LoadSchemaExtension for a schema");
 
@@ -374,6 +377,9 @@ namespace Hyperstore.Modeling.Domain
         {
             if (!_initialized)
                 throw new Exception("Domain model must be loaded in a store");
+
+            if (_disposed)
+                throw new Exception("Can not access to a disposed domain.");
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -550,7 +556,8 @@ namespace Hyperstore.Modeling.Domain
                 disposable.Dispose();
             _modelElementFactory = null;
             
-            DependencyResolver.Dispose();
+                DependencyResolver.Dispose();
+                _disposed = true;
         }
 
         ///-------------------------------------------------------------------------------------------------

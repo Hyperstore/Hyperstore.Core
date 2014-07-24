@@ -14,7 +14,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-    <NuGetPackageImportStamp>3fa03abd</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>bdbfb5dd</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -99,8 +99,10 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
     <Error Condition="!Exists('..\packages\Hyperstore.DomainLanguage.0.9.23\build\Hyperstore.DomainLanguage.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Hyperstore.DomainLanguage.0.9.23\build\Hyperstore.DomainLanguage.targets'))" />
+    <Error Condition="!Exists('..\packages\Hyperstore.DomainLanguage.0.9.24\build\Hyperstore.DomainLanguage.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Hyperstore.DomainLanguage.0.9.24\build\Hyperstore.DomainLanguage.targets'))" />
   </Target>
   <Import Project="..\packages\Hyperstore.DomainLanguage.0.9.23\build\Hyperstore.DomainLanguage.targets" Condition="Exists('..\packages\Hyperstore.DomainLanguage.0.9.23\build\Hyperstore.DomainLanguage.targets')" />
+  <Import Project="..\packages\Hyperstore.DomainLanguage.0.9.24\build\Hyperstore.DomainLanguage.targets" Condition="Exists('..\packages\Hyperstore.DomainLanguage.0.9.24\build\Hyperstore.DomainLanguage.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
