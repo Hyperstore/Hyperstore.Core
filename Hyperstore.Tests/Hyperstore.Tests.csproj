@@ -15,7 +15,7 @@
     <TestProjectType>UnitTest</TestProjectType>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-    <NuGetPackageImportStamp>3fd818c2</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>5626a9dc</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
