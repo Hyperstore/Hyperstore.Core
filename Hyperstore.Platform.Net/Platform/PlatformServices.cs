@@ -16,7 +16,7 @@ namespace Hyperstore.Modeling.Platform
 
         protected override Modeling.Platform.IObjectSerializer CreateObjectSerializer()
         {
-            return new JSonSerializer();
+            return new Hyperstore.Modeling.Platform.Net.JSonSerializer();
         }
 
         public override Hyperstore.Modeling.Commands.ITransactionScope CreateTransactionScope(Modeling.Session session, Modeling.SessionConfiguration cfg)
@@ -48,7 +48,7 @@ namespace Hyperstore.Modeling.Platform
         {
             get
             {
-                return new MefContainer();
+                return new Hyperstore.Modeling.Platform.Net.MefContainer();
             }
         }
     }
