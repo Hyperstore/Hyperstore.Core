@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 using System;
 using System.Globalization;
 using Hyperstore.Modeling;
@@ -69,45 +69,45 @@ namespace Hyperstore.Tests.Model
         Est
     }
 
-    public partial class TestDomainDefinition 
+    public partial class TestDomainDefinition
     {
         private Action<IDependencyResolver> _prepareDependency;
 
         public TestDomainDefinition()
-            : this((Action<IDependencyResolver>)null, DomainBehavior.None)
+            : this((Action<IDependencyResolver>)null)
         {
-            UsesIdGenerator(r=>new LongIdGenerator());
+            UsesIdGenerator(r => new LongIdGenerator());
         }
 
-        public TestDomainDefinition(Action<IDependencyResolver> handler=null, DomainBehavior behavior = DomainBehavior.None) 
+        public TestDomainDefinition(Action<IDependencyResolver> handler = null, DomainBehavior behavior= DomainBehavior.Standard)
             : base("Hyperstore.Tests", behavior)
         {
             _prepareDependency = handler;
         }
 
-    //    public override void DefineMetaModel(IMetaModel metaModel)
-    //    {
-    //        new EnumPrimitive<Direction>(metaModel);
-    //        new CultureInfoMetadata(metaModel);
+        //    public override void DefineMetaModel(IMetaModel metaModel)
+        //    {
+        //        new EnumPrimitive<Direction>(metaModel);
+        //        new CultureInfoMetadata(metaModel);
 
-    //        AbstractClass = new MetaClass<AbstractBaseClass>(metaModel);
-    //        AbstractClass.DefineProperty<string>("Name");
+        //        AbstractClass = new MetaClass<AbstractBaseClass>(metaModel);
+        //        AbstractClass.DefineProperty<string>("Name");
 
-    //        XExtendsBaseClass = new MetaClass<XExtendsBaseClass>(metaModel, AbstractClass);
-    //        XExtendsBaseClass.DefineProperty<int>("Value");
+        //        XExtendsBaseClass = new MetaClass<XExtendsBaseClass>(metaModel, AbstractClass);
+        //        XExtendsBaseClass.DefineProperty<int>("Value");
 
-    //        YClass = new MetaClass<YClass>(metaModel);
-    //        YClass.DefineProperty<int>("Value");
-    //        YClass.DefineProperty<string>("Name");
-    //        YClass.DefineProperty<Direction>("Direction", Direction.South);
-    //        YClass.DefineProperty<CultureInfo>("Culture", new CultureInfo("fr"));
+        //        YClass = new MetaClass<YClass>(metaModel);
+        //        YClass.DefineProperty<int>("Value");
+        //        YClass.DefineProperty<string>("Name");
+        //        YClass.DefineProperty<Direction>("Direction", Direction.South);
+        //        YClass.DefineProperty<CultureInfo>("Culture", new CultureInfo("fr"));
 
-    //        XReferencesY = new MetaRelationship<XReferencesY>(XExtendsBaseClass, YClass);
-    //        XReferencesX = new MetaRelationship("XReferencesX", XExtendsBaseClass, XExtendsBaseClass, Cardinality.OneToMany );
+        //        XReferencesY = new MetaRelationship<XReferencesY>(XExtendsBaseClass, YClass);
+        //        XReferencesX = new MetaRelationship("XReferencesX", XExtendsBaseClass, XExtendsBaseClass, Cardinality.OneToMany );
 
-    //        XExtendsBaseClass.DefineProperty("YRelation", XReferencesY);
-    //        XExtendsBaseClass.DefineProperty("OthersX", XReferencesX);
-    //    }
+        //        XExtendsBaseClass.DefineProperty("YRelation", XReferencesY);
+        //        XExtendsBaseClass.DefineProperty("OthersX", XReferencesX);
+        //    }
 
         protected override IDependencyResolver PrepareDependencyResolver(IDependencyResolver defaultDependencyResolver)
         {

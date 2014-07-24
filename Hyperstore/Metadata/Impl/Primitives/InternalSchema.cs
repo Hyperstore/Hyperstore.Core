@@ -85,7 +85,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The behavior.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public DomainBehavior Behavior { get { return DomainBehavior.None; } }
+        public DomainBehavior Behavior { get { return DomainBehavior.Standard; } }
 
         // Mechant bug sur windowsphone : si on remplace le type du parametre en IMetaElement, l'application crashe sur
         // l'insertion de MetaclassReferencesSuperClass

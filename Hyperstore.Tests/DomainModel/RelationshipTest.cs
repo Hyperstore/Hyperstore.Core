@@ -36,7 +36,7 @@ namespace Hyperstore.Tests.Relationships
     // Définition d'un modèle avec de relations many to many
     public class RelationshipTestModel : SchemaDefinition
     {
-        public RelationshipTestModel(DomainBehavior behavior = DomainBehavior.None)
+        public RelationshipTestModel(DomainBehavior behavior = DomainBehavior.Standard)
             : base("Hyperstore.Tests.Relationships", behavior)
         {
         }
@@ -64,7 +64,7 @@ namespace Hyperstore.Tests.Relationships
         protected override void Initialize(ISchemaElement metadata, IDomainModel domainModel)
         {
             base.Initialize(metadata, domainModel);
-            var observable = metadata.Schema.Behavior == DomainBehavior.EnableL1Cache; 
+            var observable = metadata.Schema.Behavior == DomainBehavior.Standard; 
             _products = observable ? new ObservableModelElementCollection<Product>(this, "CustomerReferencesProducts") : new ModelElementCollection<Product>(this, "CustomerReferencesProducts");
             _products2 = observable ? new ObservableModelElementList<Product>(this, "CustomerReferencesProducts") : new ModelElementList<Product>(this, "CustomerReferencesProducts");
             ((ModelElementList<Product>)_products2).WhereClause = item => item.Name.EndsWith("0");
@@ -98,7 +98,7 @@ namespace Hyperstore.Tests.Relationships
         protected override void Initialize(ISchemaElement metadata, IDomainModel domainModel)
         {
             base.Initialize(metadata, domainModel);
-            var observable = metadata.Schema.Behavior == DomainBehavior.EnableL1Cache;
+            var observable = metadata.Schema.Behavior == DomainBehavior.Standard;
             _customers = observable ? new ObservableModelElementCollection<Customer>(this, "CustomerReferencesProducts", true) : new ModelElementCollection<Customer>(this, "CustomerReferencesProducts", true);
         }
 
@@ -187,7 +187,7 @@ namespace Hyperstore.Tests.Relationships
         public async Task ObservableManyToManyTest()
         {
             var store = new Store();
-            await store.LoadSchemaAsync(new RelationshipTestModel(DomainBehavior.EnableL1Cache));
+            await store.LoadSchemaAsync(new RelationshipTestModel());
             var dm = await store.CreateDomainModelAsync("Test");
             store.DefaultSessionConfiguration.DefaultDomainModel = dm;
             int size = 10;

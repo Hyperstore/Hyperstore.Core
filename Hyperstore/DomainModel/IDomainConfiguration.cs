@@ -25,11 +25,22 @@ using System.Text;
 
 namespace Hyperstore.Modeling
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  Bitfield of flags for specifying DomainBehavior.
+    /// </summary>
+    ///-------------------------------------------------------------------------------------------------
     [Flags]
     public enum DomainBehavior
     {
-        None,
-        EnableL1Cache=1
+        /// <summary>
+        ///  Standard
+        /// </summary>
+        Standard,
+        /// <summary>
+        ///  Specifies the disable L1 cache
+        /// </summary>
+        DisableL1Cache=1
     }
 
     ///-------------------------------------------------------------------------------------------------

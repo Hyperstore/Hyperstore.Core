@@ -108,7 +108,7 @@ namespace Hyperstore.Modeling.Domain
             IModelElement weak;
             IModelElement elem;
 
-            var cacheEnabled = (metaclass.Schema.Behavior & DomainBehavior.EnableL1Cache) == DomainBehavior.EnableL1Cache;
+            var cacheEnabled = (metaclass.Schema.Behavior & DomainBehavior.DisableL1Cache) != DomainBehavior.DisableL1Cache;
 
             if (cacheEnabled && _cache.TryGetValue(id, out weak))
             {
@@ -159,7 +159,7 @@ namespace Hyperstore.Modeling.Domain
         {
             DebugContract.Requires(instance);
 
-            if ((instance.SchemaInfo.Schema.Behavior & DomainBehavior.EnableL1Cache) != DomainBehavior.EnableL1Cache)
+            if ((instance.SchemaInfo.Schema.Behavior & DomainBehavior.DisableL1Cache) == DomainBehavior.DisableL1Cache)
                 return instance;
 
             var val = _cache.GetOrAdd(instance.Id, instance);

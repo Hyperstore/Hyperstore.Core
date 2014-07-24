@@ -54,7 +54,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The constraints.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public DomainSchema(string name, IDependencyResolver dependencyResolver, DomainBehavior behavior= DomainBehavior.EnableL1Cache, IConstraintsManager constraints = null)
+        public DomainSchema(string name, IDependencyResolver dependencyResolver, DomainBehavior behavior= DomainBehavior.DisableL1Cache, IConstraintsManager constraints = null)
             : base(dependencyResolver, name)
         {
             Contract.Requires(dependencyResolver, "dependencyResolver");

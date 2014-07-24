@@ -52,7 +52,7 @@ namespace Hyperstore.Modeling
         ///  (Optional) the behavior.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        protected SchemaDefinition(string name, DomainBehavior behavior = DomainBehavior.None)
+        protected SchemaDefinition(string name, DomainBehavior behavior = DomainBehavior.Standard)
         {
             Contract.Requires(name, "name");
             Conventions.CheckValidDomainName(name);
