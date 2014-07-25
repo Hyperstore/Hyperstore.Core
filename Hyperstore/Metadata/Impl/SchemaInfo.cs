@@ -670,6 +670,14 @@ namespace Hyperstore.Modeling.Metadata
             throw new Exception(ExceptionMessages.CantRemoveSchemaElementSchemaIsImmutable);
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the JSON serializer.
+        /// </summary>
+        /// <value>
+        ///  The JSON serializer.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         protected IObjectSerializer JsonSerializer
         {
             get { return PlatformServices.Current.ObjectSerializer; }

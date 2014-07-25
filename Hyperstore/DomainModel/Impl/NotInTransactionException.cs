@@ -31,6 +31,14 @@ namespace Hyperstore.Modeling
     ///-------------------------------------------------------------------------------------------------
     public class NotInTransactionException : Exception
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Constructor.
+        /// </summary>
+        /// <param name="message">
+        ///  (Optional) the message.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         public NotInTransactionException(string message=null) : base(message ?? "Transaction required")
         {
         }

@@ -166,4 +166,11 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         void SetMode(SessionMode mode);
     }
+
+    interface ISupportsCalculatedPropertiesTracking
+    {
+        IDisposable PushCalculatedPropertyTracker(CalculatedProperty tracker);
+
+        CalculatedProperty CurrentTracker { get; }
+    }
 }

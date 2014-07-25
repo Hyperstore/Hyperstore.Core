@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 namespace Hyperstore.Modeling.Domain
 {
     internal interface IPropertyChangedNotifier
@@ -28,5 +28,15 @@ namespace Hyperstore.Modeling.Domain
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         void NotifyPropertyChanged(string propertyName);
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Notifies a calculated properties.
+        /// </summary>
+        /// <param name="propertyName">
+        ///  Name of the property.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
+        void NotifyCalculatedProperties(string propertyName);
     }
 }

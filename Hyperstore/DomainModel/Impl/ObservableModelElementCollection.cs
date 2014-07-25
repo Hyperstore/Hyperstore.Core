@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -42,7 +42,9 @@ namespace Hyperstore.Modeling
     /// </typeparam>
     /// <seealso cref="T:Hyperstore.Modeling.ObservableModelElementCollection{TElement}"/>
     ///-------------------------------------------------------------------------------------------------
-    public class ObservableModelElementCollection<TRelationship, TElement> : ObservableModelElementCollection<TElement> where TElement : IModelElement where TRelationship : IModelRelationship
+    public class ObservableModelElementCollection<TRelationship, TElement> : ObservableModelElementCollection<TElement>
+        where TElement : IModelElement
+        where TRelationship : IModelRelationship
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -58,7 +60,7 @@ namespace Hyperstore.Modeling
         ///  (Optional) true to read only.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public ObservableModelElementCollection(IModelElement source, bool opposite = false, bool readOnly = false) 
+        public ObservableModelElementCollection(IModelElement source, bool opposite = false, bool readOnly = false)
             : base(source, source.DomainModel.Store.GetSchemaRelationship<TRelationship>(), opposite, readOnly)
         {
         }
@@ -103,7 +105,7 @@ namespace Hyperstore.Modeling
         ///  (Optional) true to read only.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public ObservableModelElementCollection(IModelElement source, string schemaRelationshipName, bool opposite = false, bool readOnly = false) 
+        public ObservableModelElementCollection(IModelElement source, string schemaRelationshipName, bool opposite = false, bool readOnly = false)
             : this(source, source.DomainModel.Store.GetSchemaRelationship(schemaRelationshipName), opposite, readOnly)
         {
             Contract.Requires(source, "source");
@@ -182,7 +184,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public int Add(object value)
         {
-            base.Add((T) value);
+            base.Add((T)value);
             return -1;//AddItem((T) value);
         }
 
@@ -248,7 +250,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public void Remove(object value)
         {
-            base.Remove((T) value);
+            base.Remove((T)value);
             // On ne met pas à jour directement le tableau d'item, on attend que cela se fasse via
             // l'événement généré si la transaction se termine correctement sinon en cas de rollback
             // le tabealu n'est plus valide
@@ -258,7 +260,7 @@ namespace Hyperstore.Modeling
         object IList.this[int index]
         {
             get { return this[index]; }
-            set { Insert(index, (T) value); }
+            set { Insert(index, (T)value); }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -396,7 +398,7 @@ namespace Hyperstore.Modeling
             var value = _items[index];
             if (value != null)
             {
-                base.Remove((T) value);
+                base.Remove((T)value);
                 RemoveItemAt(IndexOfCore(((IModelElement)value).Id));
             }
         }
@@ -451,7 +453,7 @@ namespace Hyperstore.Modeling
             if (item == null)
                 return;
 
-            if (WhereClause((T) item) == false)
+            if (WhereClause((T)item) == false)
                 RemoveItemAt(pos);
         }
 
@@ -527,7 +529,7 @@ namespace Hyperstore.Modeling
             }
             else // Opposite
             {
-                if (evt.SchemaRelationshipId != SchemaRelationship.Id ||  (End != null && evt.End != End.Id))
+                if (evt.SchemaRelationshipId != SchemaRelationship.Id || (End != null && evt.End != End.Id))
                     return -1;
 
                 var id = evt.Start;
@@ -550,9 +552,9 @@ namespace Hyperstore.Modeling
             DebugContract.Requires(item);
 
             LoadItems();
-            
+
             var index = -1;
-            if (WhereClause != null && !WhereClause((T) item))
+            if (WhereClause != null && !WhereClause((T)item))
                 return -1;
 
             lock (_items)

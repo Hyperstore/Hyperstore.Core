@@ -896,7 +896,7 @@ namespace Hyperstore.Modeling.HyperGraph
                             dm = Store.GetDomainModel(outv.DomainModelName);
                             // Si le noeud est dans un domaine diffèrent, c'est à nous de supprimer la relation entrante car
                             // elle n'a pas été mise à jour sur le noeud distant
-                            commands.Add(new RemoveRelationshipCommand(_domainModel, outgoing.Id, outgoing.SchemaId, null, false));
+                            commands.Add(new RemoveRelationshipCommand(_domainModel, outgoing.Id, outgoing.SchemaId, false));
                         }
                         // Suppression du noeud distant
                         commands.Add(new RemoveEntityCommand(dm, outv, outgoing.EndSchemaId, false));

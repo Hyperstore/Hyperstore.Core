@@ -60,6 +60,86 @@ namespace Hyperstore.Modeling
         protected Dictionary<string, List<string>> ValidationMessages;
         private EventHandler<DataErrorsChangedEventArgs> _errorsChangedEventHandler;
 
+        private Dictionary<string, CalculatedProperty> _calculatedProperties;
+
+        void IPropertyChangedNotifier.NotifyCalculatedProperties(string propertyName)
+        {
+            if (_calculatedProperties == null)
+                return;
+
+            CalculatedProperty tracker;
+            if (!_calculatedProperties.TryGetValue(propertyName, out tracker))
+                return;
+
+            if (tracker == null)
+                return;
+
+            tracker.NotifyTargets();
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Calculated property.
+        /// </summary>
+        /// <typeparam name="T">
+        ///  Generic type parameter.
+        /// </typeparam>
+        /// <param name="calculation">
+        ///  The calculation.
+        /// </param>
+        /// <param name="propertyName">
+        ///  Name of the property.
+        /// </param>
+        /// <returns>
+        ///  A T.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        protected T CalculatedProperty<T>(Func<T> calculation, [System.Runtime.CompilerServices.CallerMemberName]string propertyName = null)
+        {
+            Contract.RequiresNotEmpty(propertyName, "propertyName");
+            Contract.Requires(calculation, "calculation");
+
+
+            if (!(this is INotifyPropertyChanged))
+                return calculation();
+
+            var session = EnsuresRunInSession();
+            try
+            {
+                var tracker = (session ?? Session.Current) as ISupportsCalculatedPropertiesTracking;
+                Debug.Assert(tracker != null);
+
+                CalculatedProperty calculatedProperty = null;
+                if (_calculatedProperties == null)
+                    _calculatedProperties = new Dictionary<string, CalculatedProperty>();
+                else
+                    _calculatedProperties.TryGetValue(propertyName, out calculatedProperty);
+
+                if (calculatedProperty == null)
+                {
+                    calculatedProperty = new CalculatedProperty(propertyName);
+                    _calculatedProperties.Add(propertyName, calculatedProperty);
+                }
+                if( calculatedProperty.Handler == null)
+                {
+                    calculatedProperty.Handler = () => ((IPropertyChangedNotifier)this).NotifyPropertyChanged(propertyName);
+                }
+
+                using (tracker.PushCalculatedPropertyTracker(calculatedProperty))
+                {
+                    return calculatedProperty.GetResult(calculation);
+                }
+            }
+            finally
+            {
+                if (session != null)
+                {
+                    session.AcceptChanges();
+                    session.Dispose();
+                }
+            }
+        }
+
         internal IHyperstore Store
         {
             [DebuggerStepThrough]
@@ -355,9 +435,12 @@ namespace Hyperstore.Modeling
 
         #region Gestion des références
 
-        internal IModelElement GetReference(ref Identity relationshipId, ISchemaRelationship relationshipSchema, bool wantsOpposite)
+        internal IModelElement GetReference(ref Identity relationshipId, ISchemaRelationship relationshipSchema, bool isOpposite)
         {
             DebugContract.Requires(relationshipSchema, "relationshipSchema");
+
+            var propertyName = isOpposite ? relationshipSchema.EndPropertyName : relationshipSchema.StartPropertyName;
+            SetCalculatedPropertySource(propertyName);
 
             IModelRelationship relationship = null;
             if (relationshipId != null)
@@ -365,35 +448,59 @@ namespace Hyperstore.Modeling
 
             if (relationship == null)
             {
-                var start = wantsOpposite ? null : this;
-                var end = wantsOpposite ? this : null;
+                var start = isOpposite ? null : this;
+                var end = isOpposite ? this : null;
                 relationship = DomainModel.GetRelationships(relationshipSchema, start, end).FirstOrDefault();
             }
 
             if (relationship != null)
             {
                 relationshipId = relationship.Id;
-                var opposite = wantsOpposite ? relationship.Start : relationship.End;
+
+                var opposite = isOpposite ? relationship.Start : relationship.End;
                 if (opposite != null)
                 {
                     var metaclass = opposite.SchemaInfo;
                     if (metaclass == null)
                         throw new Exception(ExceptionMessages.InvalidMetaclassForReference);
 
-                    opposite = wantsOpposite ? relationship.Start : relationship.End;
-                    if (opposite != null)
-                    {
-                        var mel = _store.GetElement(opposite.Id, metaclass);
-                        if (mel == null)
-                            throw new Exception(ExceptionMessages.InvalidReference);
+                    //var mel = _store.GetElement(opposite.Id, metaclass);
+                    //if (mel == null)
+                    //    throw new Exception(ExceptionMessages.InvalidReference);
 
-                        return mel;
-                    }
+                    //return mel;
                 }
+                return opposite;
             }
 
             relationshipId = null;
             return null;
+        }
+
+        protected void SetCalculatedPropertySource(string propertyName)
+        {
+            var tracker = Session.Current as ISupportsCalculatedPropertiesTracking;
+            if (tracker != null)
+            {
+                var calculatedProperty = tracker.CurrentTracker;
+                if (calculatedProperty != null)
+                {
+                    CalculatedProperty sourceProperty = null;
+                    if (_calculatedProperties == null)
+                        _calculatedProperties = new Dictionary<string, CalculatedProperty>();
+                    else
+                        _calculatedProperties.TryGetValue(propertyName, out sourceProperty);
+
+                    if (sourceProperty == null)
+                    {
+                        sourceProperty = new CalculatedProperty(propertyName);
+                        _calculatedProperties.Add(propertyName, sourceProperty);
+                    }
+                    
+
+                    sourceProperty.AddTarget(calculatedProperty);
+                }
+            }
         }
 
         // Création d'une référence 0..1 à partir de l'élément courant ou vers l'élement courant si opposite vaut true
@@ -416,11 +523,8 @@ namespace Hyperstore.Modeling
 
                 if (relationship == null)
                 {
-                    relationship = DomainModel.GetRelationships(relationshipSchema, start, end)
-                            .FirstOrDefault();
+                    relationship = DomainModel.GetRelationships(relationshipSchema, start, end).FirstOrDefault();
                 }
-
-                var propertyName = (!opposite ? relationshipSchema.StartPropertyName : relationshipSchema.EndPropertyName);
 
                 // Si cette relation existe dèjà mais sur un autre élement, on la supprime
                 if (relationship != null)
@@ -433,16 +537,14 @@ namespace Hyperstore.Modeling
                     }
 
                     // Suppression car elle pointe sur un élement diffèrent
-                    commands.Add(new RemoveRelationshipCommand(relationship, propertyName));
-                    // We do not want to generate two propertyChanged event when a reference changes
-                    propertyName = null;
+                    commands.Add(new RemoveRelationshipCommand(relationship));
                 }
 
                 // Si elle n'a pas été mise à null
                 if (end != null && start != null)
                 {
                     relationshipId = DomainModel.IdGenerator.NextValue(relationshipSchema);
-                    commands.Add(new AddRelationshipCommand(relationshipSchema, start, end, relationshipId, propertyName: propertyName));
+                    commands.Add(new AddRelationshipCommand(relationshipSchema, start, end, relationshipId));
                 }
 
                 Session.Current.Execute(commands.ToArray());
@@ -503,7 +605,7 @@ namespace Hyperstore.Modeling
             DebugContract.RequiresNotEmpty(propertyName);
             var tmp = PropertyChanged;
             if (tmp != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+                tmp(this, new PropertyChangedEventArgs(propertyName));
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -569,7 +671,7 @@ namespace Hyperstore.Modeling
         {
             if (this is INotifyPropertyChanged)
             {
-                if (_domainModel != null)
+                if (_domainModel != null && _domainModel.Events != null)
                     _domainModel.Events.UnregisterForAttributeChangedEvent(this);
                 DisableDataErrorsNotification();
 
@@ -578,7 +680,20 @@ namespace Hyperstore.Modeling
                 GC.SuppressFinalize(this);
             }
 
+            if (_calculatedProperties != null)
+            {
+                foreach (var p in _calculatedProperties.Values)
+                {
+                    var disposable = p as IDisposable;
+                    if (disposable != null)
+                        disposable.Dispose();
+                }
+            }
+
             OnDisposing();
+
+            _errorsChangedEventHandler = null;
+            _calculatedProperties = null;
             _status = ModelElementStatus.Disposed;
             _domainModel = null;
             _store = null;
@@ -594,6 +709,9 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         protected void NotifyPropertyChanged(string propertyName)
         {
+#if DEBUG
+            Debug.WriteLine("Property {0} changed for entity {1}", propertyName, _id);
+#endif
             ((IPropertyChangedNotifier)this).NotifyPropertyChanged(propertyName);
         }
 
@@ -754,6 +872,7 @@ namespace Hyperstore.Modeling
             Contract.Requires(property, "property");
 
             var pv = DomainModel.GetPropertyValue(_id, ((IModelElement)this).SchemaInfo, property);
+            SetCalculatedPropertySource(property.Name);
             return pv;
         }
 

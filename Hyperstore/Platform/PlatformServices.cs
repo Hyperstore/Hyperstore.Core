@@ -196,11 +196,27 @@ namespace Hyperstore.Modeling.Platform
             return new EmptyDispatcher();
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Creates model element factory.
+        /// </summary>
+        /// <returns>
+        ///  The new model element factory.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public virtual IModelElementFactory CreateModelElementFactory()
         {
             return new Hyperstore.Modeling.Domain.ModelElementFactory();
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the MEF container.
+        /// </summary>
+        /// <value>
+        ///  The MEF container.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public virtual IMefContainer MefContainer
         {
             get { return new MefContainer(); }

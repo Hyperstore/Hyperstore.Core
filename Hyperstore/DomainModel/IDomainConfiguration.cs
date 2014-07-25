@@ -40,7 +40,11 @@ namespace Hyperstore.Modeling
         /// <summary>
         ///  Specifies the disable L1 cache
         /// </summary>
-        DisableL1Cache=1
+        DisableL1Cache=1,
+        /// <summary>
+        ///  Specifies the observable= 3 option.
+        /// </summary>
+        Observable=2 
     }
 
     ///-------------------------------------------------------------------------------------------------

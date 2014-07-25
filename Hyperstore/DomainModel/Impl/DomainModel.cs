@@ -366,7 +366,10 @@ namespace Hyperstore.Modeling.Domain
                 else
                 {
                     result = (IModelElement)metaClass.Deserialize(new SerializationContext(this, metaClass, r));
+                    if (_cache != null)
+                        _cache.AddElement(result);
                 }
+
                 if (session != null)
                     session.AcceptChanges();
                 return result;

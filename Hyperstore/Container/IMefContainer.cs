@@ -18,8 +18,22 @@
 using System;
 namespace Hyperstore.Modeling
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  Interface for MEF container.
+    /// </summary>
+    /// <seealso cref="T:ICompositionService"/>
+    ///-------------------------------------------------------------------------------------------------
     public interface IMefContainer : ICompositionService 
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Composes the given assemblies.
+        /// </summary>
+        /// <param name="assemblies">
+        ///  The assemblies.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         void Compose(params global::System.Reflection.Assembly[] assemblies);
     }
 }

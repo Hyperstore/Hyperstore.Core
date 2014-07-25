@@ -79,7 +79,7 @@ namespace Hyperstore.Tests.Model
             UsesIdGenerator(r => new LongIdGenerator());
         }
 
-        public TestDomainDefinition(Action<IDependencyResolver> handler = null, DomainBehavior behavior= DomainBehavior.Standard)
+        public TestDomainDefinition(Action<IDependencyResolver> handler = null, DomainBehavior behavior = DomainBehavior.Observable)
             : base("Hyperstore.Tests", behavior)
         {
             _prepareDependency = handler;

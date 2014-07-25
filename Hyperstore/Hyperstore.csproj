@@ -65,6 +65,7 @@
     <Compile Include="Container\ICommandInterceptorMetadata.cs" />
     <Compile Include="Container\IEventHandlerMetadata.cs" />
     <Compile Include="Container\IMefContainer.cs" />
+    <Compile Include="DomainModel\Impl\CalculatedProperty.cs" />
     <Compile Include="Platform\IConcurrentDictionary.cs" />
     <Compile Include="Platform\IConcurrentQueue.cs" />
     <Compile Include="Platform\IObjectSerializer.cs" />

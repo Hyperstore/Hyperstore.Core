@@ -39,6 +39,14 @@ namespace Hyperstore.Modeling
         private readonly string _name;
         private readonly DomainBehavior _behavior;
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the behavior.
+        /// </summary>
+        /// <value>
+        ///  The behavior.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         protected DomainBehavior Behavior { get { return _behavior; } }
 
         ///-------------------------------------------------------------------------------------------------
@@ -59,6 +67,10 @@ namespace Hyperstore.Modeling
 
             _name = name;
             _behavior = behavior;
+            if ((_behavior & DomainBehavior.Observable) == DomainBehavior.Observable)
+            {
+                _behavior &= ~DomainBehavior.DisableL1Cache;
+            }
         }
 
         ///-------------------------------------------------------------------------------------------------

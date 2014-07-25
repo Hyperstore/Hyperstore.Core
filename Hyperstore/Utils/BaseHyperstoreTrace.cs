@@ -47,6 +47,17 @@ namespace Hyperstore.Modeling
             _outputCategory = outputCategory;
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Query if 'category' is enabled.
+        /// </summary>
+        /// <param name="category">
+        ///  The category.
+        /// </param>
+        /// <returns>
+        ///  true if enabled, false if not.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public bool IsEnabled(string category)
         {
             if (_outputCategory == null)

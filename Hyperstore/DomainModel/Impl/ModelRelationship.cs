@@ -205,6 +205,14 @@ namespace Hyperstore.Modeling
             }
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>
+        ///  A string that represents the current object.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public override string ToString()
         {
             return String.Format("{0} : {1} ({2}->{3})", GetType().Name, ((IModelElement)this).Id, _startId, _endId );

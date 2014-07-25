@@ -48,7 +48,7 @@ namespace Hyperstore.Modeling.Events
             var metadata = domainModel.Store.GetSchemaRelationship(@event.SchemaRelationshipId);
             var mel = domainModel.GetRelationship(@event.RelationshipId, metadata);
             if (mel != null)
-                yield return new RemoveRelationshipCommand(mel, @event.PropertyName);
+                yield return new RemoveRelationshipCommand(mel);
         }
     }
 }

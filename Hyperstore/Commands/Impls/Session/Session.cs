@@ -41,7 +41,7 @@ namespace Hyperstore.Modeling
     /// <seealso cref="T:Hyperstore.Modeling.ISessionContext"/>
     /// <seealso cref="T:Hyperstore.Modeling.ISessionInternal"/>
     ///-------------------------------------------------------------------------------------------------
-    public class Session : ISession, ISessionContext, ISessionInternal
+    public class Session : ISession, ISessionContext, ISessionInternal, ISupportsCalculatedPropertiesTracking 
     {
         /// <summary>
         ///     Gestion des numéros de session.
@@ -859,6 +859,7 @@ namespace Hyperstore.Modeling
             // Top transaction
             if (ctx.Depth == 0)
             {
+                System.Diagnostics.Debug.Assert(ctx.Trackers == null || ctx.Trackers.Count == 0);
                 using (CodeMarker.MarkBlock("Session.Dispose"))
                 {
                     var notifiers = GetNotifiers();
@@ -1142,5 +1143,30 @@ namespace Hyperstore.Modeling
         private static readonly IConcurrentDictionary<UInt16, SessionDataContext> SessionContexts;
 
         #endregion
+
+        IDisposable ISupportsCalculatedPropertiesTracking.PushCalculatedPropertyTracker(CalculatedProperty tracker)
+        {
+            var ctx = SessionDataContext;
+            if (ctx == null)
+                return Disposables.Empty;
+
+            if( ctx.Trackers == null)
+                ctx.Trackers = new Stack<CalculatedProperty>();
+
+            ctx.Trackers.Push(tracker);
+            
+            
+            return Disposables.ExecuteOnDispose(() =>  SessionDataContext.Trackers.Pop());
+        }
+
+        CalculatedProperty ISupportsCalculatedPropertiesTracking.CurrentTracker
+        {
+            get 
+            {
+                var ctx = SessionDataContext;
+                var trackers = ctx != null ? ctx.Trackers : null;
+                return trackers != null && trackers.Count > 0 ? trackers.Peek() : null; 
+            }
+        }
     }
 }

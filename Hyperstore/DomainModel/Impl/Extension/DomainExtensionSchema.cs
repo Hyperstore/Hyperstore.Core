@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System.Collections.Generic;
@@ -40,12 +40,15 @@ namespace Hyperstore.Modeling.DomainExtension
         /// <param name="dependencyResolver">
         ///  The dependency resolver.
         /// </param>
+        /// <param name="behavior">
+        ///  (Optional) the behavior.
+        /// </param>
         /// <param name="constraints">
         ///  (Optional)
         ///  The constraints.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public DomainExtensionSchema(ISchema extendedMetaModel, IDependencyResolver dependencyResolver, DomainBehavior behavior=DomainBehavior.Standard, IConstraintsManager constraints=null) 
+        public DomainExtensionSchema(ISchema extendedMetaModel, IDependencyResolver dependencyResolver, DomainBehavior behavior = DomainBehavior.Standard, IConstraintsManager constraints = null)
             : base(extendedMetaModel.Name, dependencyResolver, behavior, constraints)
         {
             DebugContract.Requires(extendedMetaModel);
@@ -330,6 +333,6 @@ namespace Hyperstore.Modeling.DomainExtension
         public override IModelRelationship GetRelationship(Identity id, ISchemaRelationship metaclass, bool localOnly = true)
         {
             return base.GetRelationship(id, metaclass, localOnly) ?? _extendedMetaModel.GetRelationship(id, metaclass, localOnly);
-        }       
+        }
     }
 }

@@ -191,5 +191,12 @@ namespace Hyperstore.Modeling.Commands
         {
             get { return SessionInfos.Count; }
         }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  The trackers.
+        /// </summary>
+        ///-------------------------------------------------------------------------------------------------
+        public Stack<CalculatedProperty> Trackers;
     }
 }

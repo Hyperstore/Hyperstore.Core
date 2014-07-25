@@ -49,6 +49,9 @@ namespace Hyperstore.Modeling.Metadata
         /// <param name="dependencyResolver">
         ///  The dependency resolver.
         /// </param>
+        /// <param name="behavior">
+        ///  (Optional) The behavior.
+        /// </param>
         /// <param name="constraints">
         ///  (Optional)
         ///  The constraints.

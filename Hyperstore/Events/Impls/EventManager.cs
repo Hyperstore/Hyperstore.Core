@@ -23,6 +23,7 @@ using System.Linq;
 using System.Threading;
 using Hyperstore.Modeling.Domain;
 using Hyperstore.Modeling.Utils;
+using System.Diagnostics;
 
 #endregion
 
@@ -570,16 +571,18 @@ namespace Hyperstore.Modeling.Events
                         {
                             var evt = (AddRelationshipEvent)ev;
                             _relationshipAdded.OnNext(new EventContext<AddRelationshipEvent>(session, evt));
-                            if (evt.PropertyName != null)
+
+                            IModelElement mel;
+                            var relationshipSchema = session.Store.GetSchemaRelationship(evt.SchemaRelationshipId, false);
+                            if (relationshipSchema != null && (relationshipSchema.Schema.Behavior & DomainBehavior.Observable) == DomainBehavior.Observable)
                             {
-                                IModelElement mel;
                                 if (notifications.TryGetValue(evt.Start, out mel))
                                 {
-                                    NotifyPropertyChanged(mel, evt.PropertyName);
+                                    NotifyPropertyChanged(mel, relationshipSchema.StartPropertyName);
                                 }
                                 if (notifications.TryGetValue(evt.End, out mel))
                                 {
-                                    NotifyPropertyChanged(mel, evt.PropertyName);
+                                    NotifyPropertyChanged(mel, relationshipSchema.StartPropertyName);
                                 }
                             }
                         }
@@ -587,16 +590,18 @@ namespace Hyperstore.Modeling.Events
                         {
                             var evt = (RemoveRelationshipEvent)ev;
                             _relationshipRemoved.OnNext(new EventContext<RemoveRelationshipEvent>(session, evt));
-                            if (evt.PropertyName != null)
+
+                            IModelElement mel;
+                            var relationshipSchema = session.Store.GetSchemaRelationship(evt.SchemaRelationshipId, false);
+                            if (relationshipSchema != null && (relationshipSchema.Schema.Behavior & DomainBehavior.Observable) == DomainBehavior.Observable)
                             {
-                                IModelElement mel;
                                 if (notifications.TryGetValue(evt.Start, out mel))
                                 {
-                                    NotifyPropertyChanged(mel, evt.PropertyName);
+                                    NotifyPropertyChanged(mel, relationshipSchema.StartPropertyName);
                                 }
                                 if (notifications.TryGetValue(evt.End, out mel))
                                 {
-                                    NotifyPropertyChanged(mel, evt.PropertyName);
+                                    NotifyPropertyChanged(mel, relationshipSchema.StartPropertyName);
                                 }
                             }
                         }
@@ -797,6 +802,7 @@ namespace Hyperstore.Modeling.Events
                 if (notifier != null)
                 {
                     notifier.NotifyPropertyChanged(propertyName);
+                    notifier.NotifyCalculatedProperties(propertyName);
                 }
             }
         }

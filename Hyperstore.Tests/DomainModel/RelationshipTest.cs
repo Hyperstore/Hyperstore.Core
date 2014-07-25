@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading.Tasks;
@@ -36,7 +36,7 @@ namespace Hyperstore.Tests.Relationships
     // Définition d'un modèle avec de relations many to many
     public class RelationshipTestModel : SchemaDefinition
     {
-        public RelationshipTestModel(DomainBehavior behavior = DomainBehavior.Standard)
+        public RelationshipTestModel(DomainBehavior behavior = DomainBehavior.Observable)
             : base("Hyperstore.Tests.Relationships", behavior)
         {
         }
@@ -56,15 +56,16 @@ namespace Hyperstore.Tests.Relationships
         private ICollection<Product> _products;
         private IEnumerable<Product> _products2;
 
-        public Customer(IDomainModel domain=null):base(domain)
+        public Customer(IDomainModel domain = null)
+            : base(domain)
         {
-           
+
         }
 
         protected override void Initialize(ISchemaElement metadata, IDomainModel domainModel)
         {
             base.Initialize(metadata, domainModel);
-            var observable = metadata.Schema.Behavior == DomainBehavior.Standard; 
+            var observable = metadata.Schema.Behavior == DomainBehavior.Observable;
             _products = observable ? new ObservableModelElementCollection<Product>(this, "CustomerReferencesProducts") : new ModelElementCollection<Product>(this, "CustomerReferencesProducts");
             _products2 = observable ? new ObservableModelElementList<Product>(this, "CustomerReferencesProducts") : new ModelElementList<Product>(this, "CustomerReferencesProducts");
             ((ModelElementList<Product>)_products2).WhereClause = item => item.Name.EndsWith("0");
@@ -91,14 +92,14 @@ namespace Hyperstore.Tests.Relationships
     {
         private ICollection<Customer> _customers;
 
-        public Product(IDomainModel domain=null)
+        public Product(IDomainModel domain = null)
             : base(domain)
         {
         }
         protected override void Initialize(ISchemaElement metadata, IDomainModel domainModel)
         {
             base.Initialize(metadata, domainModel);
-            var observable = metadata.Schema.Behavior == DomainBehavior.Standard;
+            var observable = metadata.Schema.Behavior == DomainBehavior.Observable;
             _customers = observable ? new ObservableModelElementCollection<Customer>(this, "CustomerReferencesProducts", true) : new ModelElementCollection<Customer>(this, "CustomerReferencesProducts", true);
         }
 
@@ -123,7 +124,7 @@ namespace Hyperstore.Tests.Relationships
             await store.LoadSchemaAsync(new RelationshipTestModel());
             var dm = await store.CreateDomainModelAsync("Test");
             store.DefaultSessionConfiguration.DefaultDomainModel = dm;
-            int size=10;
+            int size = 10;
 
             var customers = new Customer[size];
             using (var s = store.BeginSession())
@@ -248,20 +249,20 @@ namespace Hyperstore.Tests.Relationships
             // Change property from the whereclause
             using (var session = store.BeginSession())
             {
-                products[0].Name = "Test";                
+                products[0].Name = "Test";
                 session.AcceptChanges();
             }
 
             Assert.AreEqual(0, customers[0].Products2.Count());
 
             customers[0].Products.Remove(products[0]);
-            Assert.AreEqual(size-1, customers[0].Products.Count);
+            Assert.AreEqual(size - 1, customers[0].Products.Count);
             Assert.AreEqual(2, products[0].Customers.Count);
 
             products[0].Customers.Remove(customers[2]);
             Assert.AreEqual(0, customers[2].Products.Count);
             Assert.AreEqual(1, products[0].Customers.Count);
 
-        }    
+        }
     }
 }

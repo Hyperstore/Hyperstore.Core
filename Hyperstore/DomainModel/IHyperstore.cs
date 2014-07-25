@@ -656,6 +656,14 @@ namespace Hyperstore.Modeling
     ///-------------------------------------------------------------------------------------------------
     public interface IExtensionManager
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets events notifiers.
+        /// </summary>
+        /// <returns>
+        ///  The events notifiers.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         List<IEventNotifier> GetEventsNotifiers();
 
     }

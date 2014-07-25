@@ -37,31 +37,36 @@ namespace Hyperstore.Modeling.Metadata
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  A schema relationship 
+        ///  A schema relationship.
         /// </summary>
         /// <param name="start">
-        ///  The start element schema
+        ///  The start element schema.
         /// </param>
         /// <param name="end">
-        ///  The end element schema
+        ///  The end element schema.
         /// </param>
         /// <param name="cardinality">
-        ///  Cardinality of the relationship
+        ///  (Optional)
+        ///  Cardinality of the relationship.
         /// </param>
-        /// <param name="isembedded">
-        ///  Defines if the relationship is embedded
+        /// <param name="isEmbedded">
+        ///  (Optional)
+        ///  Defines if the relationship is embedded.
         /// </param>
         /// <param name="name">
-        ///  Relationship's name
+        ///  (Optional)
+        ///  Relationship's name.
         /// </param>
         /// <param name="startPropertyName">
+        ///  (Optional)
         ///  The start property name.
         /// </param>
         /// <param name="endPropertyName">
+        ///  (Optional)
         ///  The end property name.
         /// </param>
         /// <param name="inheritedSchema">
-        ///  (Optional) The schema element inherited by the relationship
+        ///  (Optional) The schema element inherited by the relationship.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         public SchemaRelationship(ISchemaElement start, ISchemaElement end, Cardinality cardinality = Cardinality.OneToOne, bool isEmbedded = false, string name = null, string startPropertyName=null, string endPropertyName=null, ISchemaRelationship inheritedSchema = null)
@@ -161,31 +166,34 @@ namespace Hyperstore.Modeling.Metadata
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  A schema relationship 
+        ///  A schema relationship.
         /// </summary>
-        ///  <param name="name">
-        ///  Relationship's name
+        /// <param name="name">
+        ///  Relationship's name.
         /// </param>
         /// <param name="start">
-        ///  The start element schema
+        ///  The start element schema.
         /// </param>
         /// <param name="end">
-        ///  The end element schema
-        /// </param>
+        ///  The end element schema.
         /// </param>
         /// <param name="cardinality">
-        ///  Cardinality of the relationship
+        ///  (Optional)
+        ///  Cardinality of the relationship.
         /// </param>
         /// <param name="isembedded">
-        ///  Defines if the relationship is embedded
+        ///  (Optional)
+        ///  Defines if the relationship is embedded.
         /// </param>
         /// <param name="inheritedSchema">
-        ///  (Optional) The schema element inherited by the relationship
+        ///  (Optional) The schema element inherited by the relationship.
         /// </param>
         /// <param name="startPropertyName">
+        ///  (Optional)
         ///  The start property name.
         /// </param>
         /// <param name="endPropertyName">
+        ///  (Optional)
         ///  The end property name.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
@@ -303,6 +311,14 @@ namespace Hyperstore.Modeling.Metadata
             get { return _end ?? (_end = Store.GetSchemaElement(EndId)); }
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the name of the start property.
+        /// </summary>
+        /// <value>
+        ///  The name of the start property.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public string StartPropertyName
         {
             get
@@ -323,6 +339,14 @@ namespace Hyperstore.Modeling.Metadata
             }
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the name of the end property.
+        /// </summary>
+        /// <value>
+        ///  The name of the end property.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public string EndPropertyName
         {
             get

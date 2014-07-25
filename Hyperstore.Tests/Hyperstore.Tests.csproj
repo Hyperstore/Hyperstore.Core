@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssertHelper.cs" />
+    <Compile Include="CalculatedProperty\PropertiesTest.cs" />
     <Compile Include="Commands\CommandsTest.cs" />
     <Compile Include="Commands\CommandEventTest.cs" />
     <Compile Include="Commands\InterceptorsTest.cs" />

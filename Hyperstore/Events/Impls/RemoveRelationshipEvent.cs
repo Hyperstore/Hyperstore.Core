@@ -76,7 +76,7 @@ namespace Hyperstore.Modeling.Events
         ///  The version.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public RemoveRelationshipEvent(string domainModelName, string extensionName, Identity relationshipId, Identity schemaRelationshipId, Identity startId, Identity startSchema, Identity endId, Identity endSchema, Guid correlationId, long version, string propertyName)
+        public RemoveRelationshipEvent(string domainModelName, string extensionName, Identity relationshipId, Identity schemaRelationshipId, Identity startId, Identity startSchema, Identity endId, Identity endSchema, Guid correlationId, long version)
                 : base(domainModelName, extensionName, version, correlationId)
         {
             Contract.Requires(relationshipId, "relationshipId");
@@ -86,7 +86,6 @@ namespace Hyperstore.Modeling.Events
             Contract.Requires(startSchema, "startSchema");
             Contract.Requires(endSchema, "endSchema");
 
-            PropertyName = propertyName;
             RelationshipId = relationshipId;
             Start = startId;
             End = endId;
@@ -137,16 +136,6 @@ namespace Hyperstore.Modeling.Events
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets or sets the name of the property if the relationship is a 1..x reference
-        /// </summary>
-        /// <value>
-        ///  The name of the property.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public string PropertyName { get; set; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
         ///  Gets or sets the identifier.
         /// </summary>
         /// <value>
@@ -178,7 +167,7 @@ namespace Hyperstore.Modeling.Events
         ///-------------------------------------------------------------------------------------------------
         public IEvent GetReverseEvent(Guid correlationId)
         {
-            return new AddRelationshipEvent(DomainModel, ExtensionName, RelationshipId, SchemaRelationshipId, Start, StartSchema, End, EndSchema, correlationId, Version, PropertyName);
+            return new AddRelationshipEvent(DomainModel, ExtensionName, RelationshipId, SchemaRelationshipId, Start, StartSchema, End, EndSchema, correlationId, Version);
         }
 
         ///-------------------------------------------------------------------------------------------------

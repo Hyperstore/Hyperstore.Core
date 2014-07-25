@@ -57,6 +57,17 @@ namespace Hyperstore.Modeling
             Schema = schemaElement;
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Constructor.
+        /// </summary>
+        /// <param name="schemaProperty">
+        ///  The schema property.
+        /// </param>
+        /// <param name="value">
+        ///  The value.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         public SerializationContext(ISchemaProperty schemaProperty, object value)
         {
             Contract.Requires(schemaProperty, "schemaProperty");
@@ -64,6 +75,17 @@ namespace Hyperstore.Modeling
             Value = value;
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Constructor.
+        /// </summary>
+        /// <param name="schemaValueObject">
+        ///  The schema value object.
+        /// </param>
+        /// <param name="value">
+        ///  The value.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         public SerializationContext(ISchemaValueObject schemaValueObject, object value)
         {
             Contract.Requires(schemaValueObject, "schemaValueObject");
