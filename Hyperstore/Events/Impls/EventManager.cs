@@ -28,7 +28,7 @@ using Hyperstore.Modeling.Utils;
 
 namespace Hyperstore.Modeling.Events
 {
-    internal sealed class EventManager : IEventNotifier, IEventManager, IDomainService
+    internal sealed class EventManager : IEventNotifier, IEventManager, IDomainService, IDisposable
     {
         #region SubjectFactory
 
@@ -802,5 +802,11 @@ namespace Hyperstore.Modeling.Events
         }
 
         #endregion
+
+        void IDisposable.Dispose()
+        {
+            _domainModel = null;
+            _attributedChangedObservers.Clear();
+        }
     }
 }
