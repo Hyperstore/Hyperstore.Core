@@ -24,6 +24,7 @@ using System.Threading;
 using Hyperstore.Modeling.Domain;
 using Hyperstore.Modeling.Utils;
 using System.Diagnostics;
+using System.ComponentModel;
 
 #endregion
 
@@ -796,7 +797,7 @@ namespace Hyperstore.Modeling.Events
 
         private static void NotifyPropertyChanged(IModelElement mel, string propertyName)
         {
-            if( mel != null)
+            if( mel is INotifyPropertyChanged)
             {
                 var notifier = mel as IPropertyChangedNotifier;
                 if (notifier != null)
