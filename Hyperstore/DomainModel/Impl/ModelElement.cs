@@ -26,6 +26,7 @@ using System.Threading;
 using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.Domain;
 using Hyperstore.Modeling.Metadata;
+using System.Runtime.CompilerServices;
 
 #endregion
 
@@ -102,6 +103,8 @@ namespace Hyperstore.Modeling
 
             if (!(this is INotifyPropertyChanged))
                 return calculation();
+
+            SetCalculatedPropertySource(propertyName);
 
             var session = EnsuresRunInSession();
             try
@@ -477,7 +480,7 @@ namespace Hyperstore.Modeling
             return null;
         }
 
-        protected void SetCalculatedPropertySource(string propertyName)
+        protected void SetCalculatedPropertySource([CallerMemberName]string propertyName=null)
         {
             var tracker = Session.Current as ISupportsCalculatedPropertiesTracking;
             if (tracker != null)
