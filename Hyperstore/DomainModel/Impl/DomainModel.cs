@@ -229,7 +229,11 @@ namespace Hyperstore.Modeling.Domain
         public virtual IEventManager Events
         {
             [DebuggerStepThrough]
-            get { return _eventManager; }
+            get
+            {
+                CheckInitialized();
+                return _eventManager;
+            }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -243,7 +247,11 @@ namespace Hyperstore.Modeling.Domain
         public virtual ICommandManager Commands
         {
             [DebuggerStepThrough]
-            get { return _commandManager; }
+            get
+            {
+                CheckInitialized();
+                return _commandManager;
+            }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -558,9 +566,9 @@ namespace Hyperstore.Modeling.Domain
             if (disposable != null)
                 disposable.Dispose();
             _modelElementFactory = null;
-            
-                DependencyResolver.Dispose();
-                _disposed = true;
+
+            DependencyResolver.Dispose();
+            _disposed = true;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -741,7 +749,7 @@ namespace Hyperstore.Modeling.Domain
         ///-------------------------------------------------------------------------------------------------
         public virtual IModelElement GetElement(Identity id, ISchemaElement metaclass, bool localOnly = true)
         {
-            if( !localOnly && Session.Current == null)
+            if (!localOnly && Session.Current == null)
             {
                 throw new NotInTransactionException("You must be in a transaction when localOnly is false.");
             }

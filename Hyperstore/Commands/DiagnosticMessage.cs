@@ -61,8 +61,7 @@ namespace Hyperstore.Modeling
             MessageType = messageType;
             Message = message;
             Category = category;
-            if( modelElement != null)
-                ElementId = modelElement.Id;
+            Element = modelElement;
             Exception = ex;
             PropertyName = propertyName;
         }
@@ -130,13 +129,13 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  The model element id associated with this message.
+        ///  Gets or sets the element.
         /// </summary>
         /// <value>
-        ///  The identifier of the model element.
+        ///  The element.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity ElementId { get; private set; }
+        public IModelElement Element { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

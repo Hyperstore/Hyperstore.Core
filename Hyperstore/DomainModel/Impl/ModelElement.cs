@@ -42,7 +42,7 @@ namespace Hyperstore.Modeling
     /// <seealso cref="T:System.IEquatable{Hyperstore.Modeling.ModelElement}"/>
     /// <seealso cref="T:Hyperstore.Modeling.Domain.IPropertyChangedNotifier"/>
     ///-------------------------------------------------------------------------------------------------
-    public abstract class ModelElement : IModelElement, ISerializableModelElement, IDisposable, IEquatable<ModelElement>, IPropertyChangedNotifier, INotifyDataErrorInfo
+    public abstract class ModelElement : IModelElement, ISerializableModelElement, IDisposable, IEquatable<ModelElement>, IPropertyChangedNotifier, INotifyDataErrorInfo, IDataErrorNotifier
     {
         private static int _globalSequence = 1;
         private IDomainModel _domainModel;
@@ -123,7 +123,7 @@ namespace Hyperstore.Modeling
                     calculatedProperty = new CalculatedProperty(propertyName);
                     _calculatedProperties.Add(propertyName, calculatedProperty);
                 }
-                if( calculatedProperty.Handler == null)
+                if (calculatedProperty.Handler == null)
                 {
                     calculatedProperty.Handler = () => ((IPropertyChangedNotifier)this).NotifyPropertyChanged(propertyName);
                 }
@@ -406,33 +406,50 @@ namespace Hyperstore.Modeling
                 // DataErrorInfo
                 _onErrorsSubscription = DomainModel.Events.OnErrors.Subscribe(result =>
                 {
-                    var set = new HashSet<string>(ValidationMessages.Select(m => m.Key));
-                    ValidationMessages.Clear();
+                    ((IDataErrorNotifier)this).NotifyDataErrors(result);
 
-                    foreach (var msg in result.Messages.Where(m => m.ElementId == _id))
-                    {
-                        if (msg.PropertyName == null)
-                            continue;
-
-                        set.Add(msg.PropertyName);
-                        List<string> messages;
-                        if (!ValidationMessages.TryGetValue(msg.PropertyName, out messages))
-                        {
-                            messages = new List<string>();
-                            ValidationMessages.Add(msg.PropertyName, messages);
-                        }
-                        messages.Add(msg.Message);
-                    }
-
-                    foreach (var property in set)
-                    {
-                        NotifyErrorsChanged(property);
-                    }
                 });
             }
         }
 
+        void IDataErrorNotifier.NotifyDataErrors(IExecutionResult result)
+        {
+            var set = BeginDataErrorNotifications();
+            foreach (var msg in result.Messages)
+            {
+                if (msg.MessageType != MessageType.Info && msg.PropertyName != null && msg.Element != null && msg.Element.Id == _id)
+                    AddDataError(set, msg);
+            }
+            EndDataErrorNotification(set);
+        }
 
+        private void AddDataError(HashSet<string> set, DiagnosticMessage msg)
+        {
+            set.Add(msg.PropertyName);
+            List<string> messages;
+            if (!ValidationMessages.TryGetValue(msg.PropertyName, out messages))
+            {
+                messages = new List<string>();
+                ValidationMessages.Add(msg.PropertyName, messages);
+            }
+            messages.Add(msg.Message);
+
+        }
+
+        private HashSet<string> BeginDataErrorNotifications()
+        {
+            var set = new HashSet<string>(ValidationMessages.Select(m => m.Key));
+            ValidationMessages.Clear();
+            return set;
+        }
+
+        private void EndDataErrorNotification(HashSet<string> set)
+        {
+            foreach (var property in set)
+            {
+                NotifyErrorsChanged(property);
+            }
+        }
 
         #endregion
 
@@ -480,7 +497,7 @@ namespace Hyperstore.Modeling
             return null;
         }
 
-        protected void SetCalculatedPropertySource([CallerMemberName]string propertyName=null)
+        protected void SetCalculatedPropertySource([CallerMemberName]string propertyName = null)
         {
             var tracker = Session.Current as ISupportsCalculatedPropertiesTracking;
             if (tracker != null)
@@ -499,7 +516,7 @@ namespace Hyperstore.Modeling
                         sourceProperty = new CalculatedProperty(propertyName);
                         _calculatedProperties.Add(propertyName, sourceProperty);
                     }
-                    
+
 
                     sourceProperty.AddTarget(calculatedProperty);
                 }
@@ -674,8 +691,16 @@ namespace Hyperstore.Modeling
         {
             if (this is INotifyPropertyChanged)
             {
-                if (_domainModel != null && _domainModel.Events != null)
-                    _domainModel.Events.UnregisterForAttributeChangedEvent(this);
+                try
+                {
+                    if (_domainModel != null && _domainModel.Events != null)
+                        _domainModel.Events.UnregisterForAttributeChangedEvent(this);
+                }
+                catch
+                {
+                    // Domain already disposed
+                }
+
                 DisableDataErrorsNotification();
 
                 // Le finalizer existe pour être certain qu'une instance d'un élément sera bien déréférencée du gestionnaire d'événements,
@@ -1027,7 +1052,7 @@ namespace Hyperstore.Modeling
         ///  Name of the property.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        protected void NotifyErrorsChanged(string propertyName)
+        private void NotifyErrorsChanged(string propertyName)
         {
             var tmp = _errorsChangedEventHandler;
             if (tmp != null)

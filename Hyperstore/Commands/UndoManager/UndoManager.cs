@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -131,7 +131,7 @@ namespace Hyperstore.Modeling.Commands
                     return _undos.Count > 0
                             ? (Guid?)_undos.Peek()
                                     .SessionId
-                            : null;
+                            : Guid.Empty;
                 }
             }
         }
@@ -302,6 +302,9 @@ namespace Hyperstore.Modeling.Commands
                     string domainModelName = null;
                     while (mainStack.Count > 0)
                     {
+                        if (toSavePoint != null && mainStack.Peek().SessionId == toSavePoint.Value)
+                            break;
+
                         var ci = mainStack.Pop();
                         foreach (var @event in Enumerable.Reverse(ci.Events))
                         {
@@ -320,7 +323,7 @@ namespace Hyperstore.Modeling.Commands
                         }
 
                         sid = ci.SessionId;
-                        if (toSavePoint == null || ci.SessionId == toSavePoint.Value)
+                        if (toSavePoint == null)
                             break;
                     }
 

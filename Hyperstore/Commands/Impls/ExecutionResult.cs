@@ -135,5 +135,14 @@ namespace Hyperstore.Modeling.Validations
                 AddMessage(msg);
             }
         }
+
+
+        public void NotifyDataErrors()
+        {
+            foreach (var msg in Messages.Where(m=> m.Element != null))
+            {
+                ((Hyperstore.Modeling.Domain.IDataErrorNotifier)msg.Element).NotifyDataErrors(this);
+            }
+        }
     }
 }

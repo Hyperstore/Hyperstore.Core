@@ -164,6 +164,25 @@ namespace Hyperstore.Modeling.Validations
         /// <summary>
         ///  Explicit validation.
         /// </summary>
+        /// <param name="domain">
+        ///  The domain.
+        /// </param>
+        /// <param name="policyName">
+        ///  (Optional) name of the policy.
+        /// </param>
+        /// <returns>
+        ///  An IExecutionResult.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        public IExecutionResult Validate(IDomainModel domain, string policyName = null)
+        {
+            return ValidateCore(policyName ?? ConstraintsCategory.ExplicitPolicy, domain.GetElements());
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Explicit validation.
+        /// </summary>
         /// <exception cref="ArgumentException">
         ///  Thrown when one or more arguments have unsupported or illegal values.
         /// </exception>
@@ -179,10 +198,15 @@ namespace Hyperstore.Modeling.Validations
         ///-------------------------------------------------------------------------------------------------
         public IExecutionResult Validate(string policyName, params IModelElement[] elements)
         {
+            return ValidateCore(policyName, elements);
+        }
+
+        private IExecutionResult ValidateCore(string policyName, IEnumerable<IModelElement> elements)
+        {
             if (policyName == ConstraintsCategory.ImplicitPolicy)
                 throw new ArgumentException("You can not use Implicit policy directly");
 
-            if (_constraints.Count == 0)
+            if (_constraints.Count == 0 || !elements.Any())
                 return ExecutionResult.Empty;
 
             using (CodeMarker.MarkBlock("ConstraintsManager.Validate"))

@@ -122,6 +122,22 @@ namespace Hyperstore.Modeling.Validations
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
+        ///  Validates some elements using all the constraints of the specified category.
+        /// </summary>
+        /// <param name="domain">
+        ///  The domain.
+        /// </param>
+        /// <param name="categoryName">
+        ///  (Optional) Name of the category.
+        /// </param>
+        /// <returns>
+        ///  The result of the validation.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        IExecutionResult Validate(IDomainModel domain, string categoryName=null);
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
         ///  Add a specific constraint.
         /// </summary>
         /// <param name="constraint">

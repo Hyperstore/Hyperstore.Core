@@ -19,6 +19,7 @@
 
 using System.Linq;
 using Hyperstore.Modeling.Validations;
+using System.Collections.Generic;
 
 #endregion
 
@@ -153,6 +154,25 @@ namespace Hyperstore.Modeling.DomainExtension
             return ((IExecutionResultInternal)messages).Merge(_extendedDomainConstraints.Validate(policyName, extendedElements.ToArray()));
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Validates the given elements.
+        /// </summary>
+        /// <param name="domain">
+        ///  The domain.
+        /// </param>
+        /// <param name="policyName">
+        ///  (Optional) Name of the policy.
+        /// </param>
+        /// <returns>
+        ///  An IExecutionResult.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        public IExecutionResult Validate(IDomainModel domain, string policyName=null)
+        {
+            return Validate(policyName, domain.GetElements().ToArray());
+        }
+        
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Adds a constraint.
