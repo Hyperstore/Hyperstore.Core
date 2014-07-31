@@ -88,6 +88,7 @@ namespace Hyperstore.Modeling.Metadata
             metaModel.RegisterMetadata(PrimitivesSchema.SchemaPropertySchema = new PrimitiveMetaEntity<SchemaProperty>(schema));
             // PrimitivesDomainModel.MetaProperty.DefineProperty("PropertyMetadata", PrimitivesDomainModel.MetaPropertyReferencesMetadata);
             PrimitivesSchema.SchemaPropertySchema.DefineProperty("DefaultValue", PrimitivesSchema.StringSchema);
+            PrimitivesSchema.SchemaPropertySchema.DefineProperty("Kind", new EnumPrimitiveInternal(metaModel, typeof(PropertyKind)));
 
             // MetaRelationship
             metaModel.RegisterMetadata(PrimitivesSchema.SchemaRelationshipSchema = new PrimitiveMetaRelationship(schema, new Identity(schema.Name, "SER")));

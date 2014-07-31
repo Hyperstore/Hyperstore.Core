@@ -293,11 +293,14 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         /// <param name="defaultValue">
         ///  (Optional) The default value.
         /// </param>
+        /// <param name="kind">
+        ///  (Optional) the kind.
+        /// </param>
         /// <returns>
         ///  An ISchemaProperty.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public ISchemaProperty DefineProperty(string name, ISchemaValueObject metadata, object defaultValue = null)
+        public ISchemaProperty DefineProperty(string name, ISchemaValueObject metadata, object defaultValue = null, PropertyKind kind = PropertyKind.Normal)
         {
             DebugContract.RequiresNotEmpty(name, "name");
             DebugContract.Requires(metadata, "metadata");
@@ -339,11 +342,14 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         /// <param name="defaultValue">
         ///  (Optional) The default value.
         /// </param>
+        /// <param name="kind">
+        ///  (Optional) the kind.
+        /// </param>
         /// <returns>
         ///  An ISchemaProperty.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public ISchemaProperty DefineProperty<T>(string name, object defaultValue = null)
+        public ISchemaProperty DefineProperty<T>(string name, object defaultValue = null, PropertyKind kind = PropertyKind.Normal)
         {
             DebugContract.RequiresNotEmpty(name, "name");
 

@@ -69,6 +69,11 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             get { return Name; }
         }
 
+        public PropertyKind Kind
+        {
+            get { return PropertyKind.Normal; }
+        }
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Gets the property schema.

@@ -69,6 +69,8 @@
     <Compile Include="DomainModel\IDataErrorNotifier.cs" />
     <Compile Include="DomainModel\Impl\DomainExtensions.cs" />
     <Compile Include="DomainModel\Impl\ModelElementEqualityComparer.cs" />
+    <Compile Include="Metadata\Impl\Primitives\EnumPrimitiveInternal.cs" />
+    <Compile Include="Metadata\PropertyKind.cs" />
     <Compile Include="Platform\IConcurrentDictionary.cs" />
     <Compile Include="Platform\IConcurrentQueue.cs" />
     <Compile Include="Platform\IObjectSerializer.cs" />

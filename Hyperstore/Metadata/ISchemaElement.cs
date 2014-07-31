@@ -59,11 +59,14 @@ namespace Hyperstore.Modeling
         /// <param name="defaultValue">
         ///  (Optional) The default value.
         /// </param>
+        /// <param name="kind">
+        ///  (Optional) the kind.
+        /// </param>
         /// <returns>
         ///  An ISchemaProperty.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        ISchemaProperty DefineProperty(string name, ISchemaValueObject property, object defaultValue = null);
+        ISchemaProperty DefineProperty(string name, ISchemaValueObject property, object defaultValue = null, PropertyKind kind = PropertyKind.Normal);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -91,11 +94,14 @@ namespace Hyperstore.Modeling
         /// <param name="defaultValue">
         ///  (Optional) The default value.
         /// </param>
+        /// <param name="kind">
+        ///  (Optional) the kind.
+        /// </param>
         /// <returns>
         ///  An ISchemaProperty.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        ISchemaProperty DefineProperty<T>(string name, object defaultValue = null);
+        ISchemaProperty DefineProperty<T>(string name, object defaultValue = null, PropertyKind kind = PropertyKind.Normal);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

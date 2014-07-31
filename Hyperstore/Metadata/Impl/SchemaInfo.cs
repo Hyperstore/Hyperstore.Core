@@ -421,12 +421,12 @@ namespace Hyperstore.Modeling.Metadata
         ///  An ISchemaProperty.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected ISchemaProperty DefineProperty(string name, ISchemaValueObject metadata, object defaultValue = null)
+        protected ISchemaProperty DefineProperty(string name, ISchemaValueObject metadata, PropertyKind kind=PropertyKind.Normal, object defaultValue = null)
         {
             Contract.RequiresNotEmpty(name, "name");
             Contract.Requires(metadata, "metadata");
 
-            var prop = new SchemaProperty(this, name, metadata, defaultValue);
+            var prop = new SchemaProperty(this, name, metadata, kind, defaultValue);
             return DefineProperty(prop);
         }
 
@@ -482,11 +482,14 @@ namespace Hyperstore.Modeling.Metadata
         /// <param name="defaultValue">
         ///  (Optional) The default value.
         /// </param>
+        /// <param name="kind">
+        ///  (Optional) the kind.
+        /// </param>
         /// <returns>
         ///  An ISchemaProperty.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected ISchemaProperty DefineProperty<T>(string name, object defaultValue = null)
+        protected ISchemaProperty DefineProperty<T>(string name, object defaultValue = null, PropertyKind kind=PropertyKind.Normal)
         {
             Contract.RequiresNotEmpty(name, "name");
 
@@ -499,7 +502,7 @@ namespace Hyperstore.Modeling.Metadata
             if (mv == null)
                 throw new Exception(ExceptionMessages.NoSchemaFoundForThisProperty);
 
-            return DefineProperty(name, metadata as ISchemaValueObject, defaultValue);
+            return DefineProperty(name, metadata as ISchemaValueObject, kind, defaultValue);
         }
 
         ///-------------------------------------------------------------------------------------------------

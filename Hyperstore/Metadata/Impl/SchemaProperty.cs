@@ -55,6 +55,7 @@ namespace Hyperstore.Modeling.Metadata
         private object _defaultValue;
         private bool _defaultValueInitialized;
         private ISchemaProperty _defaultValueProperty;
+        private PropertyKind? _kind;
 
         #endregion Enums of MetaProperty (3)
 
@@ -87,6 +88,17 @@ namespace Hyperstore.Modeling.Metadata
             private set { _propertyMetadataReference.SetReference(_propertyMetadata = value); }
         }
 
+        public PropertyKind Kind
+        {
+            get { 
+                if( _kind.HasValue)
+                return _kind.Value;
+                    _kind = GetPropertyValue<PropertyKind>("Kind");
+                return _kind.Value;
+            }
+            set { _kind = value; SetPropertyValue<PropertyKind>("Kind", value); }
+        }
+
         #endregion Properties of MetaProperty (3)
 
         #region Constructors of MetaProperty (1)
@@ -104,9 +116,6 @@ namespace Hyperstore.Modeling.Metadata
         /// <summary>
         ///  Initializes a new instance of the <see cref="SchemaProperty" /> class.
         /// </summary>
-        /// <exception cref="Exception">
-        ///  Thrown when an exception error condition occurs.
-        /// </exception>
         /// <param name="owner">
         ///  The owner.
         /// </param>
@@ -116,6 +125,9 @@ namespace Hyperstore.Modeling.Metadata
         /// <param name="propertyMetaclass">
         ///  The property metaclass.
         /// </param>
+        /// <param name="kind">
+        ///  (Optional) the kind.
+        /// </param>
         /// <param name="defaultValue">
         ///  (Optional)
         /// </param>
@@ -123,7 +135,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  (Optional) Type of the implemented.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public SchemaProperty(ISchemaInfo owner, string propertyName, ISchemaValueObject propertyMetaclass, object defaultValue = null, Type implementedType = null)
+        public SchemaProperty(ISchemaInfo owner, string propertyName, ISchemaValueObject propertyMetaclass, PropertyKind kind = PropertyKind.Normal, object defaultValue = null, Type implementedType = null)
         {
             Contract.Requires(owner, "owner");
             Contract.RequiresNotEmpty(propertyName, "propertyName");
@@ -139,6 +151,7 @@ namespace Hyperstore.Modeling.Metadata
             PropertySchema = propertyMetaclass;
             if (defaultValue != null)
                 DefaultValue = defaultValue;
+            Kind = kind;
         }
 
         #endregion Constructors of MetaProperty (1)

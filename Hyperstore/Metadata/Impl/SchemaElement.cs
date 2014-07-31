@@ -81,9 +81,9 @@ namespace Hyperstore.Modeling.Metadata
             return GetProperty(name);
         }
 
-        ISchemaProperty ISchemaElement.DefineProperty(string name, ISchemaValueObject property, object defaultValue)
+        ISchemaProperty ISchemaElement.DefineProperty(string name, ISchemaValueObject property, object defaultValue, PropertyKind kind)
         {
-            return DefineProperty(name, property, defaultValue);
+            return DefineProperty(name, property, kind, defaultValue);
         }
 
         ISchemaProperty ISchemaElement.DefineProperty(ISchemaProperty property)
@@ -91,9 +91,9 @@ namespace Hyperstore.Modeling.Metadata
             return DefineProperty(property);
         }
 
-        ISchemaProperty ISchemaElement.DefineProperty<T>(string name, object defaultValue)
+        ISchemaProperty ISchemaElement.DefineProperty<T>(string name, object defaultValue, PropertyKind kind)
         {
-            return DefineProperty<T>(name, defaultValue);
+            return DefineProperty<T>(name, defaultValue, kind);
         }
 
         System.Collections.Generic.IEnumerable<ISchemaProperty> ISchemaElement.GetProperties(bool recursive)

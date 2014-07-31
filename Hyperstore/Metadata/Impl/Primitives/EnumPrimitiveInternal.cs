@@ -14,13 +14,18 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
-
+ 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
 namespace Hyperstore.Modeling.Metadata.Primitives
 {
-    internal class StringPrimitive : PrimitiveMetaValue
+    internal class EnumPrimitiveInternal : PrimitiveMetaValue
     {
-        protected StringPrimitive()
+        protected EnumPrimitiveInternal()
         {
         }
 
@@ -28,42 +33,23 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <param name="domainModel">
-        ///  The domain model.
+        /// <param name="schema">
+        ///  The schema.
+        /// </param>
+        /// <param name="tenum">
+        ///  The tenum.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public StringPrimitive(ISchema domainModel)
-            : base(domainModel, typeof(string))
+        public EnumPrimitiveInternal(ISchema schema, Type tenum)
+            : base(schema, tenum)
         {
-            DebugContract.Requires(domainModel, "domainModel");
         }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  true this instance to the given stream.
+        ///  Serializes the specified data.
         /// </summary>
-        /// <param name="ctx">
-        ///  The context.
-        /// </param>
-        /// <returns>
-        ///  An object.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override object Deserialize(SerializationContext ctx)
-        {
-            DebugContract.Requires(ctx);
-            var str = ctx.Value as string;
-            if (str == null || str.Length < 3)
-                return null;
-
-            return str.Substring(1, str.Length - 2);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  true this instance to the given stream.
-        /// </summary>
-        /// <param name="data">
+        /// <param name="mel">
         ///  The data.
         /// </param>
         /// <param name="serializer">
@@ -73,13 +59,32 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  A string.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public override string Serialize(object data, IJsonSerializer serializer)
+        public override string Serialize(object mel, IJsonSerializer serializer)
         {
-            var str = data as string;
-            if (str == null)
-                return null;
+            return mel != null ? ((Enum)mel).ToString("F") : null;
+        }
 
-            return String.Format("\"{0}\"", str.Replace("\"", @"\"""));
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Deserializes an element from the specified context.
+        /// </summary>
+        /// <param name="ctx">
+        ///  Serialization context.
+        /// </param>
+        /// <returns>
+        ///  An object.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        public override object Deserialize(SerializationContext ctx)
+        {
+            DebugContract.Requires(ctx);
+            if (ctx.Value == null)
+                return DefaultValue;
+
+            if (ctx.Value.GetType() == ImplementedType)
+                return ctx.Value;
+
+            return Enum.Parse(ImplementedType, ctx.Value.ToString());
         }
     }
 }
