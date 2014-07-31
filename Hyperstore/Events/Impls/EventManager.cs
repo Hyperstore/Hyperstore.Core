@@ -24,6 +24,7 @@ using System.Threading;
 using Hyperstore.Modeling.Domain;
 using Hyperstore.Modeling.Utils;
 using System.Diagnostics;
+using System.ComponentModel;
 
 #endregion
 
@@ -581,7 +582,7 @@ namespace Hyperstore.Modeling.Events
                                 {
                                     var key = mel.Id.CreateAttributeIdentity(relationshipSchema.StartPropertyName);
                                     if( notifiedProperties.Add(key))
-                                        NotifyPropertyChanged(mel, relationshipSchema.StartPropertyName);
+                                    NotifyPropertyChanged(mel, relationshipSchema.StartPropertyName);
                                 }
                                 if (notifications.TryGetValue(evt.End, out mel) && relationshipSchema.EndPropertyName != null)
                                 {
@@ -604,7 +605,7 @@ namespace Hyperstore.Modeling.Events
                                 {
                                     var key = mel.Id.CreateAttributeIdentity(relationshipSchema.StartPropertyName);
                                     if (notifiedProperties.Add(key))
-                                        NotifyPropertyChanged(mel, relationshipSchema.StartPropertyName);
+                                    NotifyPropertyChanged(mel, relationshipSchema.StartPropertyName);
                                 }
                                 if (notifications.TryGetValue(evt.End, out mel) && relationshipSchema.EndPropertyName != null)
                                 {

@@ -253,7 +253,8 @@ namespace Hyperstore.Modeling
                     else
                     {
                         // TODO create a proxy for enumerable to take into account extensions (convert First() to Enumerable.First(..)) - proxy for Observablecollection should implement inotifycollectionchanged
-                        refer = this is INotifyPropertyChanged ? new ObservableModelElementCollection<IModelElement>(this, relationship) : new ModelElementCollection<IModelElement>(this, relationship);
+                        var isObservable = this is INotifyPropertyChanged && (((IModelElement)this).SchemaInfo.Schema.Behavior & DomainBehavior.Observable) != DomainBehavior.Observable;
+                        refer = isObservable ? new ObservableModelElementCollection<IModelElement>(this, relationship) : new ModelElementCollection<IModelElement>(this, relationship);
                         _references.TryAdd(propertyName, refer);
                     }
                 }

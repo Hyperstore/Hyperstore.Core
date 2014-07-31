@@ -61,15 +61,15 @@ namespace Hyperstore.Modeling
         protected Dictionary<string, List<string>> ValidationMessages;
         private EventHandler<DataErrorsChangedEventArgs> _errorsChangedEventHandler;
 
-        private Dictionary<string, CalculatedProperty> _calculatedProperties;
+        private Lazy<Dictionary<string, CalculatedProperty>> _calculatedProperties = new Lazy<Dictionary<string, CalculatedProperty>>(() => new Dictionary<string, CalculatedProperty>());
 
         void IPropertyChangedNotifier.NotifyCalculatedProperties(string propertyName)
         {
-            if (_calculatedProperties == null)
+            if (_calculatedProperties.IsValueCreated == false)
                 return;
 
             CalculatedProperty tracker;
-            if (!_calculatedProperties.TryGetValue(propertyName, out tracker))
+            if (!_calculatedProperties.Value.TryGetValue(propertyName, out tracker))
                 return;
 
             if (tracker == null)
@@ -101,7 +101,7 @@ namespace Hyperstore.Modeling
             Contract.Requires(calculation, "calculation");
 
 
-            if (!(this is INotifyPropertyChanged))
+            if (!(this is INotifyPropertyChanged) || (_schema.Schema.Behavior & DomainBehavior.Observable) != DomainBehavior.Observable)
                 return calculation();
 
             SetCalculatedPropertySource(propertyName);
@@ -113,15 +113,12 @@ namespace Hyperstore.Modeling
                 Debug.Assert(tracker != null);
 
                 CalculatedProperty calculatedProperty = null;
-                if (_calculatedProperties == null)
-                    _calculatedProperties = new Dictionary<string, CalculatedProperty>();
-                else
-                    _calculatedProperties.TryGetValue(propertyName, out calculatedProperty);
+                _calculatedProperties.Value.TryGetValue(propertyName, out calculatedProperty);
 
                 if (calculatedProperty == null)
                 {
                     calculatedProperty = new CalculatedProperty(propertyName);
-                    _calculatedProperties.Add(propertyName, calculatedProperty);
+                    _calculatedProperties.Value.Add(propertyName, calculatedProperty);
                 }
                 if (calculatedProperty.Handler == null)
                 {
@@ -398,7 +395,7 @@ namespace Hyperstore.Modeling
         {
             // Abonnement aux événements de modification d'une propriété afin de générer l'événement OnPropertyChanged
             // Cet événement ne sera généré que si la classe implémente INotifyPropertyChanged
-            if (_store != null && this is INotifyPropertyChanged)
+            if (_store != null && this is INotifyPropertyChanged && (_schema.Schema.Behavior & DomainBehavior.Observable) == DomainBehavior.Observable)
             {
                 DomainModel.Events.RegisterForAttributeChangedEvent(this);
 
@@ -506,15 +503,12 @@ namespace Hyperstore.Modeling
                 if (calculatedProperty != null)
                 {
                     CalculatedProperty sourceProperty = null;
-                    if (_calculatedProperties == null)
-                        _calculatedProperties = new Dictionary<string, CalculatedProperty>();
-                    else
-                        _calculatedProperties.TryGetValue(propertyName, out sourceProperty);
+                    _calculatedProperties.Value.TryGetValue(propertyName, out sourceProperty);
 
                     if (sourceProperty == null)
                     {
                         sourceProperty = new CalculatedProperty(propertyName);
-                        _calculatedProperties.Add(propertyName, sourceProperty);
+                        _calculatedProperties.Value.Add(propertyName, sourceProperty);
                     }
 
 
@@ -651,7 +645,7 @@ namespace Hyperstore.Modeling
             if (Session.Current != null)
                 return null;
 
-            if (!(this is INotifyPropertyChanged))
+            if (!(this is INotifyPropertyChanged) || (_schema.Schema.Behavior & DomainBehavior.Observable) != DomainBehavior.Observable)
                 throw new SessionRequiredException();
 
             return _store.BeginSession();
@@ -689,7 +683,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         protected virtual void Dispose(bool disposing)
         {
-            if (this is INotifyPropertyChanged)
+            if (this is INotifyPropertyChanged && (_schema.Schema.Behavior & DomainBehavior.Observable) == DomainBehavior.Observable )
             {
                 try
                 {
@@ -708,9 +702,9 @@ namespace Hyperstore.Modeling
                 GC.SuppressFinalize(this);
             }
 
-            if (_calculatedProperties != null)
+            if (_calculatedProperties.IsValueCreated)
             {
-                foreach (var p in _calculatedProperties.Values)
+                foreach (var p in _calculatedProperties.Value.Values)
                 {
                     var disposable = p as IDisposable;
                     if (disposable != null)
