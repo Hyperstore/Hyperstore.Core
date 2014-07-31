@@ -29,7 +29,7 @@ namespace Hyperstore.Modeling.Traversal
     ///  Interface for graph traversal configuration.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
-    public interface IGraphTraversalConfiguration
+    public interface ITraversalQuery
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

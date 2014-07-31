@@ -44,9 +44,12 @@ namespace Hyperstore.Modeling
         /// <param name="schemaElement">
         ///  The schema element.
         /// </param>
+        /// <param name="serializer">
+        ///  (Optional) the serializer.
+        /// </param>
         ///-------------------------------------------------------------------------------------------------
         [DebuggerStepThrough]
-        public SerializationContext(IDomainModel domainModel, Identity id, ISchemaInfo schemaElement)
+        public SerializationContext(IDomainModel domainModel, Identity id, ISchemaInfo schemaElement, IJsonSerializer serializer=null)
         {
             Contract.Requires(domainModel, "domainModel");
             Contract.Requires(id, "id");
@@ -108,6 +111,15 @@ namespace Hyperstore.Modeling
             StartSchemaId = v.StartSchemaId;
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the serializer.
+        /// </summary>
+        /// <value>
+        ///  The serializer.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public IJsonSerializer Serializer { get; private set; }
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Gets the domain model.

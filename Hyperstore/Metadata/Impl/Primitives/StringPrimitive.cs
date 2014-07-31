@@ -15,6 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
 
+using System;
 namespace Hyperstore.Modeling.Metadata.Primitives
 {
     internal class StringPrimitive : PrimitiveMetaValue
@@ -62,13 +63,20 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         /// <param name="data">
         ///  The data.
         /// </param>
+        /// <param name="serializer">
+        ///  The serializer.
+        /// </param>
         /// <returns>
         ///  A string.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public override string Serialize(object data)
+        public override string Serialize(object data, IJsonSerializer serializer)
         {
-            return (string)data;
+            var str = data as string;
+            if (str == null)
+                return null;
+
+            return String.Format("\"{0}\"", str.Replace("\"", @"\"""));
         }
     }
 }

@@ -48,10 +48,10 @@ namespace Hyperstore.Modeling.Metadata
             var metaModel = schema as PrimitivesSchema;
 
             // La méta classe de base de tous les métadonnées
-            metaModel.RegisterMetadata(PrimitivesSchema.SchemaElementSchema = new PrimitiveMetaClass(schema, null, null, "SchemaElement", new Identity(schema.Name, "SEL")));
-            metaModel.RegisterMetadata(PrimitivesSchema.SchemaEntitySchema = new PrimitiveMetaClass(schema, typeof(SchemaEntity), PrimitivesSchema.SchemaElementSchema, null, new Identity(schema.Name, "SEN")));
-            metaModel.RegisterMetadata(PrimitivesSchema.GeneratedSchemaEntitySchema = new PrimitiveMetaClass(schema, typeof(SchemaEntity), PrimitivesSchema.SchemaElementSchema, typeof(GeneratedSchemaEntity).FullName, new Identity(schema.Name, "$EN")));
-            metaModel.RegisterMetadata(PrimitivesSchema.SchemaValueObjectSchema = new PrimitiveMetaClass(schema, typeof(SchemaValueObject), PrimitivesSchema.SchemaElementSchema, null, new Identity(schema.Name, "SVO")));
+            metaModel.RegisterMetadata(PrimitivesSchema.SchemaElementSchema = new PrimitiveMetaEntity(schema, null, null, "SchemaElement", new Identity(schema.Name, "SEL")));
+            metaModel.RegisterMetadata(PrimitivesSchema.SchemaEntitySchema = new PrimitiveMetaEntity(schema, typeof(SchemaEntity), PrimitivesSchema.SchemaElementSchema, null, new Identity(schema.Name, "SEN")));
+            metaModel.RegisterMetadata(PrimitivesSchema.GeneratedSchemaEntitySchema = new PrimitiveMetaEntity(schema, typeof(SchemaEntity), PrimitivesSchema.SchemaElementSchema, typeof(GeneratedSchemaEntity).FullName, new Identity(schema.Name, "$EN")));
+            metaModel.RegisterMetadata(PrimitivesSchema.SchemaValueObjectSchema = new PrimitiveMetaEntity(schema, typeof(SchemaValueObject), PrimitivesSchema.SchemaElementSchema, null, new Identity(schema.Name, "SVO")));
 
             // Les types primitifs simples
             metaModel.RegisterMetadata(PrimitivesSchema.StringSchema = new StringPrimitive(schema));
@@ -85,7 +85,7 @@ namespace Hyperstore.Modeling.Metadata
             metaModel.RegisterMetadata(cardinality); 
 
             // MetaProperty
-            metaModel.RegisterMetadata(PrimitivesSchema.SchemaPropertySchema = new PrimitiveMetaClass<SchemaProperty>(schema));
+            metaModel.RegisterMetadata(PrimitivesSchema.SchemaPropertySchema = new PrimitiveMetaEntity<SchemaProperty>(schema));
             // PrimitivesDomainModel.MetaProperty.DefineProperty("PropertyMetadata", PrimitivesDomainModel.MetaPropertyReferencesMetadata);
             PrimitivesSchema.SchemaPropertySchema.DefineProperty("DefaultValue", PrimitivesSchema.StringSchema);
 

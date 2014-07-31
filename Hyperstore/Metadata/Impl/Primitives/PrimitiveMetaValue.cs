@@ -23,7 +23,7 @@ using System;
 
 namespace Hyperstore.Modeling.Metadata.Primitives
 {
-    internal class PrimitiveMetaValue : PrimitiveMetaClass, ISchemaValueObject
+    internal class PrimitiveMetaValue : PrimitiveMetaEntity, ISchemaValueObject
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

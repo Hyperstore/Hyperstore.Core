@@ -59,12 +59,12 @@ namespace Hyperstore.Modeling.DomainExtension
             ExtensionMode = extensionMode;
         }
 
-        protected override void CreateCache()
-        {
-            // TODO suppression du cache pour éviter les problèmes de cast quand on lit un elément avec un type defini dans l'extension
-            // et qu'il existe dèjà sous un autre type dans le domaine étendu
-            // Pour tester, mettre cette méthode en commentaire et relancer un des tests de ExtensionTest
-        }
+        //protected override void CreateCache()
+        //{
+        //    // TODO suppression du cache pour éviter les problèmes de cast quand on lit un elément avec un type defini dans l'extension
+        //    // et qu'il existe dèjà sous un autre type dans le domaine étendu
+        //    // Pour tester, mettre cette méthode en commentaire et relancer un des tests de ExtensionTest
+        //}
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

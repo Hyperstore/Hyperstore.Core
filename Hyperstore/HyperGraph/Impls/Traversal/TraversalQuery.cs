@@ -35,7 +35,7 @@ namespace Hyperstore.Modeling.Traversal
     /// </summary>
     /// <seealso cref="T:Hyperstore.Modeling.Traversal.IGraphTraversalConfiguration"/>
     ///-------------------------------------------------------------------------------------------------
-    public class TraversalQuery : IGraphTraversalConfiguration
+    public class TraversalQuery : ITraversalQuery
     {
         #region Classes of TraversalQuery (3)
 
@@ -219,7 +219,7 @@ namespace Hyperstore.Modeling.Traversal
         ///-------------------------------------------------------------------------------------------------
         public IEnumerable<GraphPath> GetPaths(IModelElement startNode)
         {
-            DebugContract.Requires(startNode, "startNode");
+            Contract.Requires(startNode, "startNode");
 
             ISession session = null;
             if (Session.Current == null)

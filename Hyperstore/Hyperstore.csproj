@@ -67,6 +67,8 @@
     <Compile Include="Container\IMefContainer.cs" />
     <Compile Include="DomainModel\Impl\CalculatedProperty.cs" />
     <Compile Include="DomainModel\IDataErrorNotifier.cs" />
+    <Compile Include="DomainModel\Impl\DomainExtensions.cs" />
+    <Compile Include="DomainModel\Impl\ModelElementEqualityComparer.cs" />
     <Compile Include="Platform\IConcurrentDictionary.cs" />
     <Compile Include="Platform\IConcurrentQueue.cs" />
     <Compile Include="Platform\IObjectSerializer.cs" />
@@ -395,6 +397,9 @@
     <Compile Include="Messaging\EventProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Adapters\EntityUpdaters\AbstractPersistenceProvider.cs" />
+    <Compile Include="Serialization\JSonDeserializer.cs" />
+    <Compile Include="Serialization\JsonReader.cs" />
+    <Compile Include="Serialization\JSonSerializer.cs" />
     <Compile Include="Serialization\XmlDomainModelSerializer.cs" />
     <Compile Include="Serialization\SerializationOption.cs" />
     <Compile Include="Utils\CompletedTask.cs" />

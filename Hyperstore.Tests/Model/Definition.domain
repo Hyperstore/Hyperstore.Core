@@ -5,7 +5,7 @@ domain Hyperstore.Tests.Model.TestDomain
     extern System.Globalization.CultureInfo as CultureInfo;
     extern enum Hyperstore.Tests.Model.Direction as Direction;
  
-    [modifier("public abstract")]
+    [modifier("public abstract")] 
     def entity AbstractClass {
         Name : string;
     }

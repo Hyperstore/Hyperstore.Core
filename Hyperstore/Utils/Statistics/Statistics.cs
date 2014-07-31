@@ -24,6 +24,51 @@ using System.Text;
 
 namespace Hyperstore.Modeling.Statistics
 {
+    internal class EmptyStatistics : IStatistics
+    {
+        class EmptyCounter : IStatisticCounter
+        {
+            public static IStatisticCounter Empty = new EmptyCounter();
+
+            public StatisticCounterType CounterType
+            {
+                get { throw new System.NotImplementedException(); }
+            }
+
+            public string Description
+            {
+                get { throw new System.NotImplementedException(); }
+            }
+
+            public double Value
+            {
+                get { throw new System.NotImplementedException(); }
+            }
+
+            public void Dec()
+            {
+            }
+
+            public void Incr()
+            {
+            }
+
+            public void IncrBy(long value)
+            {
+            }
+        }
+
+        public IStatisticCounter GetCounter(string category, string name)
+        {
+            return null;
+        }
+
+        public IStatisticCounter RegisterCounter(string category, string name, string description, StatisticCounterType counterType)
+        {
+            return EmptyCounter.Empty;
+        }
+    }
+ 
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
     ///  A statistics.

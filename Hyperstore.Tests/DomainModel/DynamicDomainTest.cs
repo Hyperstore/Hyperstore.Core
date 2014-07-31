@@ -125,7 +125,7 @@ namespace Hyperstore.Tests
             dynamic x = null;
             using (var session = domain.Store.BeginSession())
             {
-                x = domain.Store.CreateEntity(domain.Store.GetSchemaEntity("Library"), domain);
+                x = domain.CreateEntity(domain.Store.GetSchemaEntity("Library"));
                 x.Name = "LIB";
                 session.AcceptChanges();
             }

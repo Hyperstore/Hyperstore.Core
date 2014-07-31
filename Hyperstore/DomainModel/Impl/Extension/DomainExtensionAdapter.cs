@@ -22,16 +22,19 @@ using System.Collections.Generic;
 using System.Linq;
 using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.HyperGraph;
+using Hyperstore.Modeling.HyperGraph.Adapters;
 
 #endregion
 
 namespace Hyperstore.Modeling.DomainExtension
 {
-    internal class DomainExtensionAdapter : ICacheAdapter
+    internal class DomainExtensionAdapter : ICacheAdapter, IDisposable
     {
         private readonly ICacheAdapter _extendedDomainAdapter;
         private readonly ICacheAdapter _extensionAdapter;
         private readonly ExtendedMode _extensionMode;
+
+        private IKeyValueStore _deletedElements;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -80,6 +83,11 @@ namespace Hyperstore.Modeling.DomainExtension
             DebugContract.Requires(domainModel, "domainModel");
             DomainModel = domainModel;
             _extensionAdapter.SetDomain(domainModel);
+            _deletedElements = new Hyperstore.Modeling.MemoryStore.TransactionalMemoryStore(
+                                        _extensionAdapter.DomainModel.Name, 
+                                        5,
+                                        _extendedDomainAdapter.DomainModel.DependencyResolver.Resolve < Hyperstore.Modeling.MemoryStore.ITransactionManager>()
+                                        );
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -103,6 +111,9 @@ namespace Hyperstore.Modeling.DomainExtension
         {
             DebugContract.Requires(id);
             DebugContract.Requires(metaclass);
+
+            if (_deletedElements.GetNode(id, null) != null)
+                return null;
 
             var node = _extensionAdapter.GetGraphNode(id, metaclass, localOnly);
             if (node != null)
@@ -134,7 +145,8 @@ namespace Hyperstore.Modeling.DomainExtension
             foreach (var node in _extensionAdapter.GetGraphNodes(elementType, metadata, localOnly))
             {
                 identities.Add(node.Id);
-                yield return node;
+                if (_deletedElements.GetNode(node.Id, null) == null)
+                    yield return node;
             }
 
             foreach (var node in _extendedDomainAdapter.GetGraphNodes(elementType, metadata, localOnly))
@@ -163,7 +175,8 @@ namespace Hyperstore.Modeling.DomainExtension
             DebugContract.Requires(id);
             DebugContract.Requires(metaClass);
 
-            if (IsInMode(ExtendedMode.ReadOnly) )
+            _deletedElements.RemoveNode(id);
+            if (IsInMode(ExtendedMode.ReadOnly))
                 return _extensionAdapter.CreateEntity(id, metaClass);
 
             return _extendedDomainAdapter.CreateEntity(id, metaClass);
@@ -204,7 +217,8 @@ namespace Hyperstore.Modeling.DomainExtension
             DebugContract.Requires(endId);
             DebugContract.Requires(endMetaclass);
 
-            if (IsInMode(ExtendedMode.ReadOnly) )
+            _deletedElements.RemoveNode(id);
+            if (IsInMode(ExtendedMode.ReadOnly))
                 return _extensionAdapter.CreateRelationship(id, metaRelationship, startId, startMetaclass, endId, endMetaclass);
 
             return _extendedDomainAdapter.CreateRelationship(id, metaRelationship, startId, startMetaclass, endId, endMetaclass);
@@ -226,11 +240,12 @@ namespace Hyperstore.Modeling.DomainExtension
             DebugContract.Requires(node);
             DebugContract.Requires(metadata);
 
+            _deletedElements.AddNode(node, null);
             _extensionAdapter.RemoveEntity(node, metadata);
 
             if (IsInMode(ExtendedMode.ReadOnly))
                 return;
-            
+
             _extendedDomainAdapter.RemoveEntity(node, metadata);
         }
 
@@ -250,6 +265,7 @@ namespace Hyperstore.Modeling.DomainExtension
             DebugContract.Requires(node);
             DebugContract.Requires(metadata);
 
+            _deletedElements.AddNode(node, null);
             _extensionAdapter.RemoveRelationship(node, metadata);
 
             if (IsInMode(ExtendedMode.ReadOnly))
@@ -290,7 +306,8 @@ namespace Hyperstore.Modeling.DomainExtension
                 if (edge != null)
                 {
                     identities.Add(edge.Id);
-                    yield return edge;
+                    if (_deletedElements.GetNode(edge.Id, null) == null)
+                        yield return edge;
                 }
             }
 
@@ -324,9 +341,12 @@ namespace Hyperstore.Modeling.DomainExtension
             DebugContract.Requires(ownerMetadata);
             DebugContract.Requires(property);
 
+            if (_deletedElements.GetNode(ownerId, null) != null)
+                throw new InvalidElementException(ownerId);
+
             // on recherche dans l'extension
             PropertyValue p = _extensionAdapter.GetPropertyValue(ownerId, ownerMetadata, property);
-            if (p != null ) //|| IsInMode(ExtendedMode.ReadOnly) */|| IsDefinedOnlyInExtension(property))// obligatoirement faux ici || IsDefinedInExtension(ownerMetadata))
+            if (p != null) //|| IsInMode(ExtendedMode.ReadOnly) */|| IsDefinedOnlyInExtension(property))// obligatoirement faux ici || IsDefinedInExtension(ownerMetadata))
                 return p;
 
             // Sinon, on le cherche dans le domaine étendu.
@@ -358,6 +378,9 @@ namespace Hyperstore.Modeling.DomainExtension
             DebugContract.Requires(owner);
             DebugContract.Requires(property);
 
+            if (_deletedElements.GetNode(owner.Id, null) != null)
+                throw new InvalidElementException(owner.Id);
+
             // Mise à jour dans le domaine d'extension d'une propriété faisant partie du domaine étendu
             if (//IsDefinedOnlyInExtension(owner.SchemaInfo) ||  // Le owner n'est pas un élément du domaine étendu (directement)
                 //IsDefinedOnlyInExtension(property) ||          // La propriété a été définie dans l'extension
@@ -367,6 +390,8 @@ namespace Hyperstore.Modeling.DomainExtension
                 // Il est peut-être nécéssaire de créer le noeud parent dans le domaine d'extension
                 if (_extensionAdapter.GetGraphNode(owner.Id, owner.SchemaInfo, false) == null)
                 {
+                    _deletedElements.RemoveNode(owner.Id);
+
                     var rel = owner as IModelRelationship;
                     if (rel == null)
                         _extensionAdapter.CreateEntity(owner.Id, (ISchemaEntity)owner.SchemaInfo);
@@ -406,23 +431,33 @@ namespace Hyperstore.Modeling.DomainExtension
             return (_extensionMode & mode) == mode;
         }
 
-    //    private bool IsDefinedOnlyInExtension(ISchemaInfo schema)
-    //    {
-    //        DebugContract.Requires(schema);
+        //    private bool IsDefinedOnlyInExtension(ISchemaInfo schema)
+        //    {
+        //        DebugContract.Requires(schema);
 
-    //        if (schema is ISchemaProperty)
-    //        {
-    //            return schema.DomainModel.InstanceId == DomainModel.Schema.InstanceId;
-    //        }
+        //        if (schema is ISchemaProperty)
+        //        {
+        //            return schema.DomainModel.InstanceId == DomainModel.Schema.InstanceId;
+        //        }
 
-    //        var sp = schema;
-    //        while (sp != null && !sp.IsPrimitive)
-    //        {
-    //            if (sp.DomainModel.InstanceId == _extendedDomainAdapter.DomainModel.Schema.InstanceId)
-    //                return false;
-    //            sp = sp.SuperClass;
-    //        }
-    //        return true;
-    //    }
+        //        var sp = schema;
+        //        while (sp != null && !sp.IsPrimitive)
+        //        {
+        //            if (sp.DomainModel.InstanceId == _extendedDomainAdapter.DomainModel.Schema.InstanceId)
+        //                return false;
+        //            sp = sp.SuperClass;
+        //        }
+        //        return true;
+        //    }
+
+        void IDisposable.Dispose()
+        {
+            var disposable = _deletedElements as IDisposable;
+            if (disposable != null)
+                disposable.Dispose();
+            disposable = _extensionAdapter as IDisposable;
+            if (disposable != null)
+                disposable.Dispose();
+        }
     }
 }

@@ -44,7 +44,9 @@ namespace Hyperstore.Modeling.DomainExtension
         ///-------------------------------------------------------------------------------------------------
         void IDisposable.Dispose()
         {
-            var activeSessions = _activeSessions.Except(new[] {Session.Current.SessionId}).ToList();
+            var activeSessions =  _activeSessions.ToList();
+            if( Session.Current != null)
+                activeSessions = activeSessions.Except(new[] {Session.Current.SessionId}).ToList();
 
             for (var i = _domainModels.Count - 1; i >= 0; i--)
             {

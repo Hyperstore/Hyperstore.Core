@@ -78,11 +78,14 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         /// <param name="data">
         ///  The data.
         /// </param>
+        /// <param name="serializer">
+        ///  The serializer.
+        /// </param>
         /// <returns>
         ///  A string.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public override string Serialize(object data)
+        public override string Serialize(object data, IJsonSerializer serializer)
         {
             if (data == null)
                 return null;

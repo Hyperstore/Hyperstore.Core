@@ -38,7 +38,7 @@ namespace Hyperstore.Modeling.Traversal
         ///  The query.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        void Initialize(IGraphTraversalConfiguration query);
+        void Initialize(ITraversalQuery query);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

@@ -14,7 +14,7 @@ namespace Hyperstore.Modeling.Platform
             Current = this;
         }
 
-        protected override Modeling.Platform.IObjectSerializer CreateObjectSerializer()
+        protected override Modeling.IJsonSerializer CreateObjectSerializer()
         {
             return new Hyperstore.Modeling.Platform.Net.JSonSerializer();
         }

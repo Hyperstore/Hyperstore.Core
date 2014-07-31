@@ -72,11 +72,14 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         /// <param name="mel">
         ///  The data.
         /// </param>
+        /// <param name="serializer">
+        ///  The serializer.
+        /// </param>
         /// <returns>
         ///  A string.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected override string Serialize(object mel)
+        protected override string Serialize(object mel, IJsonSerializer serializer)
         {
             return mel != null ? ((Enum)mel).ToString("F") : null;
         }

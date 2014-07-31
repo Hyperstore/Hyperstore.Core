@@ -17,14 +17,14 @@
 
 using System;
 
-namespace Hyperstore.Modeling.Platform
+namespace Hyperstore.Modeling
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
     ///  Interface for object serializer.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
-    public interface IObjectSerializer
+    public interface IJsonSerializer
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

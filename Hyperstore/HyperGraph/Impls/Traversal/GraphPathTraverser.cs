@@ -32,7 +32,7 @@ namespace Hyperstore.Modeling.Traversal
     ///-------------------------------------------------------------------------------------------------
     public abstract class GraphPathTraverser : IGraphPathTraverser
     {
-        private IGraphTraversalConfiguration _query;
+        private ITraversalQuery _query;
         private IHyperstoreTrace _trace;
 
         ///-------------------------------------------------------------------------------------------------
@@ -43,7 +43,7 @@ namespace Hyperstore.Modeling.Traversal
         ///  The query.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void Initialize(IGraphTraversalConfiguration query)
+        public void Initialize(ITraversalQuery query)
         {
             Contract.Requires(query, "query");
             _query = query;

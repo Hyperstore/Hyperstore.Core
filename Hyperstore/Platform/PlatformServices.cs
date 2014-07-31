@@ -92,7 +92,7 @@ namespace Hyperstore.Modeling.Platform
             return new DefaultCodeMarkerListener();
         }
 
-        private IObjectSerializer _objectSerializer;
+        private IJsonSerializer _objectSerializer;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -102,7 +102,7 @@ namespace Hyperstore.Modeling.Platform
         ///  The object serializer.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IObjectSerializer ObjectSerializer
+        public IJsonSerializer ObjectSerializer
         {
             get
             {
@@ -118,7 +118,7 @@ namespace Hyperstore.Modeling.Platform
         ///  The new object serializer.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected virtual IObjectSerializer CreateObjectSerializer() { return new JSonSerializer(); }
+        protected virtual IJsonSerializer CreateObjectSerializer() { return new JSonSerializer(); }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

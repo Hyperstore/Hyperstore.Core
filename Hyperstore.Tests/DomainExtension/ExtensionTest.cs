@@ -23,6 +23,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Hyperstore.Modeling;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Hyperstore.Modeling.Commands;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 #endif
@@ -67,8 +68,8 @@ namespace Hyperstore.Tests.Extension
         {
             protected Category() { }
 
-            public Category(IDomainModel domainModel)
-                : base(domainModel)
+            public Category(IDomainModel domainModel, Identity id=null)
+                : base(domainModel, id:id)
             {
             }
 
@@ -206,45 +207,45 @@ namespace Hyperstore.Tests.Extension
             }
         }
 
-        [TestMethod]
-        public async Task TestExtension()
-        {
-            var initialResult = @"<?xml version=""1.0"" encoding=""utf-8""?><domain name=""d1""><model><elements><element id=""d1:1"" metadata=""hyperstore.tests:extension.extensionstest+categoryex""><attributes><attribute name=""Value"">10</attribute><attribute name=""Name"">Cat x</attribute></attributes></element></elements><relationships /></model></domain>";
-            var extensionResult = @"<?xml version=""1.0"" encoding=""utf-8""?><domain name=""d1""><model><elements><element id=""d1:1"" metadata=""hyperstore.tests:extension.extensionstest+categoryex""><attributes><attribute name=""XValue"">20</attribute></attributes></element></elements><relationships /></model></domain>";
+        //[TestMethod]
+        //public async Task TestExtension()
+        //{
+        //    var initialResult = @"<?xml version=""1.0"" encoding=""utf-8""?><domain name=""d1""><model><elements><element id=""d1:1"" metadata=""hyperstore.tests:extension.extensionstest+categoryex""><attributes><attribute name=""Value"">10</attribute><attribute name=""Name"">Cat x</attribute></attributes></element></elements><relationships /></model></domain>";
+        //    var extensionResult = @"<?xml version=""1.0"" encoding=""utf-8""?><domain name=""d1""><model><elements><element id=""d1:1"" metadata=""hyperstore.tests:extension.extensionstest+categoryex""><attributes><attribute name=""XValue"">20</attribute></attributes></element></elements><relationships /></model></domain>";
 
-            var store = new Hyperstore.Modeling.Store(StoreOptions.EnableExtensions);
-            var schema = await store.LoadSchemaAsync(new InitialDomainDefinition());
-            var initial = await store.CreateDomainModelAsync("D1", new DomainConfiguration().UsesIdGenerator(r => new Hyperstore.Modeling.Domain.LongIdGenerator()));
-            await schema.LoadSchemaExtension(new ExtensionsDomainDefinition());
-            var extended = await initial.LoadExtensionAsync("Ex1", ExtendedMode.Updatable, new DomainConfiguration().UsesIdGenerator(r => new Hyperstore.Modeling.Domain.LongIdGenerator()));
+        //    var store = new Hyperstore.Modeling.Store(StoreOptions.EnableExtensions);
+        //    var schema = await store.LoadSchemaAsync(new InitialDomainDefinition());
+        //    var initial = await store.CreateDomainModelAsync("D1", new DomainConfiguration().UsesIdGenerator(r => new Hyperstore.Modeling.Domain.LongIdGenerator()));
+        //    await schema.LoadSchemaExtension(new ExtensionsDomainDefinition());
+        //    var extended = await initial.LoadExtensionAsync("Ex1", ExtendedMode.Updatable, new DomainConfiguration().UsesIdGenerator(r => new Hyperstore.Modeling.Domain.LongIdGenerator()));
 
-            CategoryEx catx;
-            using (var s = store.BeginSession())
-            {
-                catx = new CategoryEx(extended);
-                catx.Name = "Cat x";
-                catx.Value = 10;
-                catx.XValue = 20;
-                s.AcceptChanges();
-            }
+        //    CategoryEx catx;
+        //    using (var s = store.BeginSession())
+        //    {
+        //        catx = new CategoryEx(extended);
+        //        catx.Name = "Cat x";
+        //        catx.Value = 10;
+        //        catx.XValue = 20;
+        //        s.AcceptChanges();
+        //    }
 
-            using (var ms = new MemoryStream())
-            {
-                var ser = new Hyperstore.Modeling.Serialization.XmlDomainModelSerializer();
-                await ser.Serialize(initial, ms);
+        //    using (var ms = new MemoryStream())
+        //    {
+        //        var ser = new Hyperstore.Modeling.Serialization.XmlDomainModelSerializer();
+        //        await ser.Serialize(initial, ms);
 
-                var result = System.Text.Encoding.UTF8.GetString(ms.GetBuffer());
-                Assert.IsTrue(String.Compare(initialResult, result) == 0);
-            }
+        //        var result = System.Text.Encoding.UTF8.GetString(ms.GetBuffer());
+        //        Assert.IsTrue(String.Compare(initialResult, result) == 0);
+        //    }
 
-            using (var ms = new MemoryStream())
-            {
-                var ser = new Hyperstore.Modeling.Serialization.XmlDomainModelSerializer();
-                await ser.Serialize(extended, ms);
-                var result = System.Text.Encoding.UTF8.GetString(ms.GetBuffer());
-                Assert.IsTrue(String.Compare(extensionResult, result) == 0);
-            }
-        }
+        //    using (var ms = new MemoryStream())
+        //    {
+        //        var ser = new Hyperstore.Modeling.Serialization.XmlDomainModelSerializer();
+        //        await ser.Serialize(extended, ms);
+        //        var result = System.Text.Encoding.UTF8.GetString(ms.GetBuffer());
+        //        Assert.IsTrue(String.Compare(extensionResult, result) == 0);
+        //    }
+        //}
 
         //[TestMethod]
         //public void ReadOnlyException()
@@ -265,12 +266,13 @@ namespace Hyperstore.Tests.Extension
         //}    
 
         [TestMethod]
-        public async Task ExtendedTest()
+        public async Task ExtendedUnloadTest()
         {
             var store = new Hyperstore.Modeling.Store(StoreOptions.EnableExtensions);
             var initialSchema = await store.LoadSchemaAsync(new InitialDomainDefinition());
             var initial = await store.CreateDomainModelAsync("D1");
 
+            // Create a category in the initial domain
             Category a = null;
             try
             {
@@ -287,13 +289,16 @@ namespace Hyperstore.Tests.Extension
                 Assert.Inconclusive();
             }
 
+            // Add a constraint
             store.GetSchemaEntity<Category>().AddImplicitConstraint<Category>(
                 ca =>
                     ca.Value > 0,
                 "Value ==0");
+
             Random rnd = new Random(DateTime.Now.Millisecond);
             System.Threading.CancellationTokenSource cancel = new System.Threading.CancellationTokenSource();
 
+            // Run 2 thread in parallel
             Task.Factory.StartNew(() =>
             {
                 while (!cancel.Token.IsCancellationRequested)
@@ -325,8 +330,10 @@ namespace Hyperstore.Tests.Extension
                 }
             }, cancel.Token);
 
+            // Load a schema extension
             await initialSchema.LoadSchemaExtension( new ExtensionsDomainDefinition());
 
+            // Iterate to make hot load an unload of the extension
             for (int i = 1; i < 3; i++)
             {
                 Sleep(100);
@@ -354,5 +361,70 @@ namespace Hyperstore.Tests.Extension
             cancel.Cancel(false);
         }
 
+
+        [TestMethod]
+        public async Task ExtendedDeleteElementTest()
+        {
+            var store = new Hyperstore.Modeling.Store(StoreOptions.EnableExtensions);
+            var initialSchema = await store.LoadSchemaAsync(new InitialDomainDefinition());
+            var initial = await store.CreateDomainModelAsync("D1");
+
+            // Create a category in the initial domain
+            Category a = null;
+            try
+            {
+                using (var tx = store.BeginSession())
+                {
+                    a = new Category(initial);
+                    a.Name = "Classe A";
+                    a.Value = 1;
+
+                    tx.AcceptChanges();
+                }
+            }
+            catch (SessionException)
+            {
+                Assert.Inconclusive();
+            }
+
+            var xDomain = await initial.LoadExtensionAsync("Ex1", ExtendedMode.ReadOnly);
+            var id = ((IModelElement)a).Id;
+            using (var tx = store.BeginSession())
+            {
+                var c = store.GetElement<Category>(id);
+                xDomain.Commands.ProcessCommands(new[] { new RemoveEntityCommand(c) });
+                // rollback
+            }
+
+            Assert.IsNotNull(store.GetElement<Category>(id));
+
+            using (var tx = store.BeginSession())
+            {
+                var c = store.GetElement<Category>(id);
+                xDomain.Commands.ProcessCommands(new[] { new RemoveEntityCommand(c) });
+                tx.AcceptChanges();
+            }
+
+            Assert.IsNull( store.GetElement<Category>(id));
+            Assert.IsNull(xDomain.GetElement<Category>(id));
+            Assert.IsNotNull(initial.GetElement<Category>(id));
+            Assert.AreEqual(1, initial.GetElement<Category>(id).Value);
+
+            using (var tx = store.BeginSession())
+            {
+                a = new Category(xDomain, id);
+                a.Name = "Classe A";
+                a.Value = 10;
+                tx.AcceptChanges();
+            }
+
+            Assert.IsNotNull(store.GetElement<Category>(id));
+            Assert.AreEqual(10, store.GetElement<Category>(id).Value);
+
+            Assert.AreEqual(1, initial.GetElement<Category>(id).Value);
+
+            
+            store.Dispose();
+        }
     }
 }

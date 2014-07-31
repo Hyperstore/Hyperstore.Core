@@ -38,7 +38,7 @@ namespace Hyperstore.Tests.Model
         {
         }
 
-        protected override string Serialize(object data)
+        protected override string Serialize(object data, IJsonSerializer serializer)
         {
             var c = data as CultureInfo;
             return c == null ? null : c.DisplayName;

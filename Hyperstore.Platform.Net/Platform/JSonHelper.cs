@@ -29,7 +29,7 @@ namespace Hyperstore.Modeling.Platform.Net
     ///  A son helper.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
-    public class JSonSerializer : IObjectSerializer
+    public class JSonSerializer : IJsonSerializer
     {
         private readonly JavaScriptSerializer _serializer;
 

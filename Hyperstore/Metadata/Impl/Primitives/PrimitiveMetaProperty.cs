@@ -24,7 +24,7 @@ using System.Diagnostics;
 namespace Hyperstore.Modeling.Metadata.Primitives
 {
     [DebuggerDisplay("Primitive Property {_name} Id={_id}")]
-    internal class PrimitiveMetaProperty : PrimitiveMetaClass, ISchemaProperty
+    internal class PrimitiveMetaProperty : PrimitiveMetaEntity, ISchemaProperty
     {
         private readonly ISchemaValueObject _metadata;
 
@@ -110,9 +110,9 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  A string.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public override string Serialize(object data)
+        public override string Serialize(object data, IJsonSerializer serializer)
         {
-            return _metadata.Serialize(data);
+            return _metadata.Serialize(data, serializer);
         }
 
         ///-------------------------------------------------------------------------------------------------

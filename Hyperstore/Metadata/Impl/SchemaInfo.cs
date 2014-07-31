@@ -339,11 +339,14 @@ namespace Hyperstore.Modeling.Metadata
         /// <param name="data">
         ///  The data.
         /// </param>
+        /// <param name="serializer">
+        ///  The serializer.
+        /// </param>
         /// <returns>
         ///  A string.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected virtual string Serialize(object data)
+        protected virtual string Serialize(object data, IJsonSerializer serializer)
         {
             return null;
         }
@@ -642,9 +645,9 @@ namespace Hyperstore.Modeling.Metadata
             return Deserialize(ctx);
         }
 
-        string ISchemaInfo.Serialize(object value)
+        string ISchemaInfo.Serialize(object value, IJsonSerializer serializer)
         {
-            return Serialize(value);
+            return Serialize(value, serializer);
         }
 
         bool ISchemaInfo.IsA(ISchemaInfo metaClass)
@@ -678,7 +681,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The JSON serializer.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        protected IObjectSerializer JsonSerializer
+        protected IJsonSerializer JsonSerializer
         {
             get { return PlatformServices.Current.ObjectSerializer; }
         }

@@ -28,7 +28,7 @@ using Hyperstore.Modeling.Platform;
 
 namespace Hyperstore.Modeling.Metadata.Primitives
 {
-    internal class PrimitiveMetaClass<T> : PrimitiveMetaClass
+    internal class PrimitiveMetaEntity<T> : PrimitiveMetaEntity
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -38,14 +38,14 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public PrimitiveMetaClass(ISchema domainModel)
+        public PrimitiveMetaEntity(ISchema domainModel)
             : base(domainModel, typeof(T), PrimitivesSchema.SchemaEntitySchema)
         {
         }
     }
 
     [DebuggerDisplay("Primitive {_name} Id={_id}")]
-    internal class PrimitiveMetaClass : ISchemaEntity
+    internal class PrimitiveMetaEntity : ISchemaEntity
     {
         private static int _sequence = 1;
         private readonly ISchema _domainModel;
@@ -59,7 +59,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  Specialised default constructor for use only by derived classes.
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
-        protected PrimitiveMetaClass()
+        protected PrimitiveMetaEntity()
         {
             _sequence = Interlocked.Increment(ref _sequence);
         }
@@ -84,7 +84,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  (Optional) The identifier.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public PrimitiveMetaClass(ISchema domainModel, Type implementedType, ISchemaElement superClass, string name = null, Identity id = null) : this()
+        public PrimitiveMetaEntity(ISchema domainModel, Type implementedType, ISchemaElement superClass, string name = null, Identity id = null) : this()
         {
             DebugContract.Requires(domainModel, "domainModel");
 
@@ -212,11 +212,14 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         /// <param name="data">
         ///  The data.
         /// </param>
+        /// <param name="serializer">
+        ///  The serializer.
+        /// </param>
         /// <returns>
         ///  A string.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual string Serialize(object data)
+        public virtual string Serialize(object data, IJsonSerializer serializer)
         {
             if (data == null)
                 return null;
@@ -225,7 +228,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             if (mel == null)
                 throw new Exception(ExceptionMessages.InvalidClassSerialization);
 
-            return PlatformServices.Current.ObjectSerializer.Serialize(mel.Id);
+            return (serializer ?? PlatformServices.Current.ObjectSerializer).Serialize(mel.Id);
         }
 
         ///-------------------------------------------------------------------------------------------------

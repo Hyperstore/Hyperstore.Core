@@ -23,7 +23,7 @@ using System;
 
 namespace Hyperstore.Modeling.Metadata.Primitives
 {
-    internal class PrimitiveMetaRelationship : PrimitiveMetaClass, ISchemaRelationship
+    internal class PrimitiveMetaRelationship : PrimitiveMetaEntity, ISchemaRelationship
     {
         private readonly ISchemaElement _end;
         private readonly ISchemaElement _start;

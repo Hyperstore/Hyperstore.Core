@@ -19,7 +19,7 @@ namespace Hyperstore.XTests
             {
 
             }
-            protected override string Serialize(object data)
+            protected override string Serialize(object data, IJsonSerializer serializer)
             {
                 if (data == null)
                     return null;

@@ -555,6 +555,7 @@ namespace Hyperstore.Modeling.Events
             // Si la session s'est terminée anormalement, aucun autre événement n'est envoyé
             if (!session.IsAborted && (session.Mode & SessionMode.SkipNotifications) != SessionMode.SkipNotifications)
             {
+                var notifiedProperties = new HashSet<Identity>();
                 var notifications = PrepareNotificationList(session);
 
                 foreach (var ev in session.Events.Where(e => e.DomainModel == _domainModel.Name))
@@ -572,17 +573,21 @@ namespace Hyperstore.Modeling.Events
                             var evt = (AddRelationshipEvent)ev;
                             _relationshipAdded.OnNext(new EventContext<AddRelationshipEvent>(session, evt));
 
-                            IModelElement mel;
                             var relationshipSchema = session.Store.GetSchemaRelationship(evt.SchemaRelationshipId, false);
                             if (relationshipSchema != null && (relationshipSchema.Schema.Behavior & DomainBehavior.Observable) == DomainBehavior.Observable)
                             {
-                                if (notifications.TryGetValue(evt.Start, out mel))
+                                IModelElement mel;
+                                if (notifications.TryGetValue(evt.Start, out mel) && relationshipSchema.StartPropertyName != null)
                                 {
-                                    NotifyPropertyChanged(mel, relationshipSchema.StartPropertyName);
+                                    var key = mel.Id.CreateAttributeIdentity(relationshipSchema.StartPropertyName);
+                                    if( notifiedProperties.Add(key))
+                                        NotifyPropertyChanged(mel, relationshipSchema.StartPropertyName);
                                 }
-                                if (notifications.TryGetValue(evt.End, out mel))
+                                if (notifications.TryGetValue(evt.End, out mel) && relationshipSchema.EndPropertyName != null)
                                 {
-                                    NotifyPropertyChanged(mel, relationshipSchema.StartPropertyName);
+                                    var key = mel.Id.CreateAttributeIdentity(relationshipSchema.EndPropertyName);
+                                    if (notifiedProperties.Add(key))
+                                        NotifyPropertyChanged(mel, relationshipSchema.EndPropertyName);
                                 }
                             }
                         }
@@ -591,17 +596,21 @@ namespace Hyperstore.Modeling.Events
                             var evt = (RemoveRelationshipEvent)ev;
                             _relationshipRemoved.OnNext(new EventContext<RemoveRelationshipEvent>(session, evt));
 
-                            IModelElement mel;
                             var relationshipSchema = session.Store.GetSchemaRelationship(evt.SchemaRelationshipId, false);
                             if (relationshipSchema != null && (relationshipSchema.Schema.Behavior & DomainBehavior.Observable) == DomainBehavior.Observable)
                             {
-                                if (notifications.TryGetValue(evt.Start, out mel))
+                                IModelElement mel;
+                                if (notifications.TryGetValue(evt.Start, out mel) && relationshipSchema.StartPropertyName != null)
                                 {
-                                    NotifyPropertyChanged(mel, relationshipSchema.StartPropertyName);
+                                    var key = mel.Id.CreateAttributeIdentity(relationshipSchema.StartPropertyName);
+                                    if (notifiedProperties.Add(key))
+                                        NotifyPropertyChanged(mel, relationshipSchema.StartPropertyName);
                                 }
-                                if (notifications.TryGetValue(evt.End, out mel))
+                                if (notifications.TryGetValue(evt.End, out mel) && relationshipSchema.EndPropertyName != null)
                                 {
-                                    NotifyPropertyChanged(mel, relationshipSchema.StartPropertyName);
+                                    var key = mel.Id.CreateAttributeIdentity(relationshipSchema.EndPropertyName);
+                                    if (notifiedProperties.Add(key))
+                                        NotifyPropertyChanged(mel, relationshipSchema.EndPropertyName);
                                 }
                             }
                         }
@@ -796,7 +805,7 @@ namespace Hyperstore.Modeling.Events
 
         private static void NotifyPropertyChanged(IModelElement mel, string propertyName)
         {
-            if( mel != null)
+            if( mel != null && propertyName != null)
             {
                 var notifier = mel as IPropertyChangedNotifier;
                 if (notifier != null)

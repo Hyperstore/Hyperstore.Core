@@ -41,20 +41,21 @@ namespace Hyperstore.Modeling.MemoryStore
     internal sealed class TransactionalMemoryStore : IKeyValueStore, IDisposable
     {
         #region fields
+        private const int defaultInterval = 3;
 
-        private readonly IStatisticCounter _statVaccumSkipped;
-        private readonly IStatisticCounter _statVaccumCount;
-        private readonly IStatisticCounter _statVaccumAverage;
+        private IStatisticCounter _statVaccumSkipped;
+        private IStatisticCounter _statVaccumCount;
+        private IStatisticCounter _statVaccumAverage;
 
-        private readonly IStatisticCounter _statGeIGraphNode;
-        private readonly IStatisticCounter _statUpdateValue;
-        private readonly IStatisticCounter _statRemoveValue;
-        private readonly IStatisticCounter _statAddValue;
+        private IStatisticCounter _statGeIGraphNode;
+        private IStatisticCounter _statUpdateValue;
+        private IStatisticCounter _statRemoveValue;
+        private IStatisticCounter _statAddValue;
 
         private Guid __id = Guid.NewGuid();
         private bool _disposed;
         private IEvictionPolicy _evictionPolicy;
-        private readonly IHyperstoreTrace _trace;
+        private IHyperstoreTrace _trace;
 
         /// <summary>
         ///     Le store est thread-safe.
@@ -75,7 +76,7 @@ namespace Hyperstore.Modeling.MemoryStore
         ///     Gestionnaire des demandes de vaccum
         /// </summary>
         private JobScheduler _jobScheduler;
-        private readonly IConcurrentQueue<ISlot> _involvedSlots;
+        private IConcurrentQueue<ISlot> _involvedSlots;
 
         #endregion
 
@@ -95,32 +96,44 @@ namespace Hyperstore.Modeling.MemoryStore
             DebugContract.Requires(domainModel, "domainModel");
 
             var dependencyResolver = domainModel.DependencyResolver;
-            var defaultMemoryStoreVacuumIntervalInSeconds = dependencyResolver.GetSettingValue<int?>(Setting.MemoryStoreVacuumIntervalInSeconds);
-
-            _trace = dependencyResolver.Resolve<IHyperstoreTrace>() ?? new EmptyHyperstoreTrace();
-
-            _evictionPolicy = dependencyResolver.Resolve<IEvictionPolicy>();
-
-            _transactionManager = dependencyResolver.Resolve<ITransactionManager>();
-
-            var stat = dependencyResolver.Resolve<IStatistics>();
-            _statAddValue = stat.RegisterCounter("MemoryStore", String.Format("#AddValue {0}", domainModel.Name), "xxx", StatisticCounterType.Value);
-            _statGeIGraphNode = stat.RegisterCounter("MemoryStore", String.Format("#GeIGraphNode {0}", domainModel.Name), "xxx", StatisticCounterType.Value);
-            _statUpdateValue = stat.RegisterCounter("MemoryStore", String.Format("#UpdateValue {0}", domainModel.Name), "xxx", StatisticCounterType.Value);
-            _statRemoveValue = stat.RegisterCounter("MemoryStore", String.Format("#RemoveValue {0}", domainModel.Name), "xxx", StatisticCounterType.Value);
-            _statVaccumCount = stat.RegisterCounter("MemoryStore", String.Format("#Vaccum{0}", domainModel.Name), "xxx", StatisticCounterType.Value);
-            _statVaccumAverage = stat.RegisterCounter("MemoryStore", String.Format("VaccumAvgTimes{0}", domainModel.Name), "xxx", StatisticCounterType.Average);
-            _statVaccumSkipped = stat.RegisterCounter("MemoryStore", String.Format("#VaccumSkipped{0}", domainModel.Name), "xxx", StatisticCounterType.Value);
 
             // On utilise RX pour empiler les demandes de Vaccum en utilisant le principe du sample. c a d quelque soit le nombre de demande de vaccum, on le lancera que toutes les
             // x secondes.
-            const int defaultInterval = 3;
+            var defaultMemoryStoreVacuumIntervalInSeconds = dependencyResolver.GetSettingValue<int?>(Setting.MemoryStoreVacuumIntervalInSeconds);
             var n = defaultMemoryStoreVacuumIntervalInSeconds != null ? defaultMemoryStoreVacuumIntervalInSeconds.Value : defaultInterval;
-            if (n < 0)
-                n = defaultInterval;
 
-            _jobScheduler = new JobScheduler(Vacuum, TimeSpan.FromSeconds(n));
+            Initialize(domainModel.Name, n, dependencyResolver.Resolve<ITransactionManager>(), dependencyResolver.Resolve<IEvictionPolicy>(), dependencyResolver.Resolve<IHyperstoreTrace>(), dependencyResolver.Resolve<IStatistics>());
+        }
+
+        public TransactionalMemoryStore(string domainModelName, int memoryStoreVacuumIntervalInSeconds, ITransactionManager transactionManager, IEvictionPolicy evictionPolicy = null, IHyperstoreTrace trace = null, IStatistics stat = null)
+        {
+            Initialize(domainModelName, memoryStoreVacuumIntervalInSeconds, transactionManager, evictionPolicy, trace, stat);
+        }
+
+        private void Initialize(string domainModelName, int memoryStoreVacuumIntervalInSeconds, ITransactionManager transactionManager, IEvictionPolicy evictionPolicy, IHyperstoreTrace trace, IStatistics stat)
+        {
+            DebugContract.RequiresNotEmpty(domainModelName);
+            DebugContract.Requires(transactionManager);
+
+            _evictionPolicy = evictionPolicy;
+            _trace = trace ?? new EmptyHyperstoreTrace();
+            _transactionManager = transactionManager;
+            if (memoryStoreVacuumIntervalInSeconds < 0)
+                memoryStoreVacuumIntervalInSeconds = defaultInterval; 
+            
+            _jobScheduler = new JobScheduler(Vacuum, TimeSpan.FromSeconds(memoryStoreVacuumIntervalInSeconds));
             _involvedSlots = PlatformServices.Current.CreateConcurrentQueue<ISlot>();
+
+            if (stat == null)
+                stat = new EmptyStatistics();
+
+            _statAddValue = stat.RegisterCounter("MemoryStore", String.Format("#AddValue {0}", domainModelName), domainModelName, StatisticCounterType.Value);
+            _statGeIGraphNode = stat.RegisterCounter("MemoryStore", String.Format("#GeIGraphNode {0}", domainModelName), domainModelName, StatisticCounterType.Value);
+            _statUpdateValue = stat.RegisterCounter("MemoryStore", String.Format("#UpdateValue {0}", domainModelName), domainModelName, StatisticCounterType.Value);
+            _statRemoveValue = stat.RegisterCounter("MemoryStore", String.Format("#RemoveValue {0}", domainModelName), domainModelName, StatisticCounterType.Value);
+            _statVaccumCount = stat.RegisterCounter("MemoryStore", String.Format("#Vaccum{0}", domainModelName), domainModelName, StatisticCounterType.Value);
+            _statVaccumAverage = stat.RegisterCounter("MemoryStore", String.Format("VaccumAvgTimes{0}", domainModelName), domainModelName, StatisticCounterType.Average);
+            _statVaccumSkipped = stat.RegisterCounter("MemoryStore", String.Format("#VaccumSkipped{0}", domainModelName), domainModelName, StatisticCounterType.Value);
         }
 
         /// <summary>

@@ -22,7 +22,7 @@ using System.Text;
 
 namespace Hyperstore.Modeling.Platform
 {
-    internal class JSonSerializer : Hyperstore.Modeling.Platform.IObjectSerializer
+    internal class JSonSerializer : Hyperstore.Modeling.IJsonSerializer
     {
         public string Serialize(object data)
         {
@@ -63,8 +63,8 @@ namespace Hyperstore.Modeling.Platform
             var _bytes = Encoding.Unicode.GetBytes(data);
             using (MemoryStream _Stream = new MemoryStream(_bytes))
             {
-                var _Serializer = new DataContractJsonSerializer(implementationType);
-                return _Serializer.ReadObject(_Stream);
+                var serializer = new DataContractJsonSerializer(implementationType);
+                return serializer.ReadObject(_Stream);
             }
         }
     }

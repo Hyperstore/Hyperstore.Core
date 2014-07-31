@@ -25,7 +25,7 @@ using Hyperstore.Modeling.Metadata.Primitives;
 namespace Hyperstore.Modeling.Metadata
 {
     [DebuggerDisplay("Primitive MEL {_name} Id={_id}")]
-    internal class PrimitiveModelElementMetaClass : PrimitiveMetaClass
+    internal class PrimitiveModelElementMetaClass : PrimitiveMetaEntity
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

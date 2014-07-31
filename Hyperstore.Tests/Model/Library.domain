@@ -1,0 +1,30 @@
+﻿// Sample Domain model definition
+[observable]
+domain Hyperstore.Tests.Model.Library
+{
+    def entity NamedElement {
+        Name : string check "Name is required" : !String.IsNullOrEmpty(self.Name);
+    } 	 
+
+    def entity Library extends NamedElement
+    {
+        Books   => Book*   : LibraryHasBooks;			
+        Members => Member* : LibraryHasMembers;
+        Loans   => Loan*   : LibraryHasLoans;
+    }
+
+    def entity Book {
+        Title  : string;
+        Copies : int;
+		Library *<- Library : LibraryHasBooks;
+    }
+
+    def entity Member extends NamedElement {
+        //Library *<- Library : LibraryHasMembers;
+    }
+
+    def entity Loan {
+        Book   -> Book   : LoanReferencesBook; 
+        Member -> Member : LoanReferencesMember;
+    }
+}
