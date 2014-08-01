@@ -21,12 +21,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Hyperstore.Modeling.Metadata;
 using Hyperstore.Modeling.Validations;
-
 #endregion
 
 namespace Hyperstore.Modeling.DomainExtension
 {
-    internal class DomainExtensionSchema : DomainSchema, IExtension
+    internal class DomainExtensionSchema : DomainSchema, IExtension, ISchemaExtension
     {
         private readonly ISchema _extendedMetaModel;
 
@@ -333,6 +332,26 @@ namespace Hyperstore.Modeling.DomainExtension
         public override IModelRelationship GetRelationship(Identity id, ISchemaRelationship metaclass, bool localOnly = true)
         {
             return base.GetRelationship(id, metaclass, localOnly) ?? _extendedMetaModel.GetRelationship(id, metaclass, localOnly);
+        }
+
+        IEnumerable<IModelElement> IDomainModelExtension.GetExtensionElements(ISchemaElement schemaElement)
+        {
+            return base.GetElements(schemaElement);
+        }
+
+        IEnumerable<IModelEntity> IDomainModelExtension.GetExtensionEntities(ISchemaEntity schemaEntity)
+        {
+            return base.GetEntities(schemaEntity);
+        }
+
+        IEnumerable<IModelElement> IDomainModelExtension.GetDeletedElements()
+        {
+            yield break;
+        }
+
+        IEnumerable<IModelRelationship> IDomainModelExtension.GetExtensionRelationships(ISchemaRelationship schemaRelationship, IModelElement start, IModelElement end)
+        {
+            return base.GetRelationships(schemaRelationship, start, end);
         }
     }
 }

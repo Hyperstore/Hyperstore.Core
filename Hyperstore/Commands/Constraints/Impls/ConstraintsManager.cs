@@ -155,9 +155,9 @@ namespace Hyperstore.Modeling.Validations
         ///  An IExecutionResult.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IExecutionResult Validate(params IModelElement[] elements)
+        public IExecutionResult Validate(IEnumerable<IModelElement> elements, string categoryName=null)
         {
-            return Validate(ConstraintsCategory.ExplicitPolicy, elements);
+            return ValidateCore(categoryName ?? ConstraintsCategory.ExplicitPolicy, elements);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -179,27 +179,6 @@ namespace Hyperstore.Modeling.Validations
             return ValidateCore(policyName ?? ConstraintsCategory.ExplicitPolicy, domain.GetElements());
         }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Explicit validation.
-        /// </summary>
-        /// <exception cref="ArgumentException">
-        ///  Thrown when one or more arguments have unsupported or illegal values.
-        /// </exception>
-        /// <param name="policyName">
-        ///  Policy name or null for all.
-        /// </param>
-        /// <param name="elements">
-        ///  .
-        /// </param>
-        /// <returns>
-        ///  An IExecutionResult.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public IExecutionResult Validate(string policyName, params IModelElement[] elements)
-        {
-            return ValidateCore(policyName, elements);
-        }
 
         private IExecutionResult ValidateCore(string policyName, IEnumerable<IModelElement> elements)
         {

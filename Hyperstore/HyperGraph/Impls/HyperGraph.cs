@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.HyperGraph.Adapters;
 using Hyperstore.Modeling.Ioc;
+using System.Linq;
 
 #endregion
 
@@ -286,25 +287,8 @@ namespace Hyperstore.Modeling.HyperGraph
         ///-------------------------------------------------------------------------------------------------
         public IEnumerable<IModelElement> GetElements(ISchemaElement metadata, int skip, bool localOnly)
         {
-            ISchemaElement currentMetadata = null;
-            var cx = 0;
-            foreach (var e in _cache.GetGraphNodes(NodeType.EdgeOrNode, metadata, localOnly))
-            {
-                if (e == null)
-                    continue;
-
-                if (currentMetadata == null || currentMetadata.Id != e.SchemaId)
-                    currentMetadata = _domainModel.Store.GetSchemaElement(e.SchemaId);
-
-                if (metadata == null || currentMetadata.IsA(metadata))
-                {
-                    if (cx++ >= skip)
-                    {
-                        var ctx = new SerializationContext(_domainModel, currentMetadata, e);
-                        yield return (IModelElement)currentMetadata.Deserialize(ctx);
-                    }
-                }
-            }
+            var query = _cache.GetGraphNodes(NodeType.EdgeOrNode, metadata, localOnly);
+            return GetElementsCore<IModelElement>(query, metadata, skip, localOnly);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -329,15 +313,21 @@ namespace Hyperstore.Modeling.HyperGraph
         ///-------------------------------------------------------------------------------------------------
         public IEnumerable<T> GetEntities<T>(ISchemaEntity metadata, int skip, bool localOnly) where T : IModelEntity
         {
-            ISchemaEntity currentMetadata = null;
+            var query = _cache.GetGraphNodes(NodeType.Node, metadata, localOnly);
+            return GetElementsCore<T>(query, metadata, skip, localOnly);
+        }
+
+        protected IEnumerable<T> GetElementsCore<T>(IEnumerable<IGraphNode> query, ISchemaElement metadata, int skip, bool localOnly) where T : IModelElement
+        {
+            ISchemaElement currentMetadata = null;
             var cx = 0;
-            foreach (var e in _cache.GetGraphNodes(NodeType.Node, metadata, localOnly))
+            foreach (var e in query)
             {
                 if (e == null)
                     continue;
 
                 if (currentMetadata == null || currentMetadata.Id != e.SchemaId)
-                    currentMetadata = _domainModel.Store.GetSchemaEntity(e.SchemaId);
+                    currentMetadata = _domainModel.Store.GetSchemaElement(e.SchemaId);
 
                 if (metadata == null || currentMetadata.IsA(metadata))
                 {
@@ -429,76 +419,51 @@ namespace Hyperstore.Modeling.HyperGraph
         ///-------------------------------------------------------------------------------------------------
         public IEnumerable<T> GetRelationships<T>(ISchemaRelationship metadata, IModelElement start, IModelElement end, int skip, bool localOnly) where T : IModelRelationship
         {
-            var currentMetadata = metadata;
-
-            var cx = 0;
+            IEnumerable<IGraphNode> query;
             if (start != null)
             {
                 var node = _cache.GetGraphNode(start.Id, start.SchemaInfo, localOnly);
                 if (node != null)
                 {
-                    //using (Session.Current.AcquireLock(LockType.Shared, start.Id))
-                    {
-                        foreach (var edge in _cache.GetEdges(node, Direction.Outgoing, metadata, localOnly))
-                        {
-                            if (edge == null)
-                                continue;
-
-                            if (end == null || end.Id == edge.EndId)
-                            {
-                                if (cx++ < skip)
-                                    continue;
-
-                                if (currentMetadata == null || currentMetadata.Id != edge.SchemaId)
-                                    currentMetadata = _domainModel.Store.GetSchemaRelationship(edge.SchemaId);
-
-                                var ctx = new SerializationContext(_domainModel, currentMetadata, edge);
-                                yield return (T)currentMetadata.Deserialize(ctx);
-                            }
-                        }
-                    }
+                    query = _cache.GetEdges(node, Direction.Outgoing, metadata, localOnly);
+                    if (end != null)
+                        query = query.Where(n => n.EndId == end.Id);
+                    return GetRelationshipsCore<T>(query, skip, metadata);
                 }
+                return Enumerable.Empty<T>();
             }
             else if (end != null)
             {
                 var node = _cache.GetGraphNode(end.Id, end.SchemaInfo, localOnly);
                 if (node != null)
                 {
-                    //using (Session.Current.AcquireLock(LockType.Shared, end.Id))
-                    {
-                        foreach (var edge in _cache.GetEdges(node, Direction.Incoming, metadata, localOnly))
-                        {
-                            if (cx++ < skip)
-                                continue;
-
-                            if (currentMetadata == null || currentMetadata.Id != edge.SchemaId)
-                                currentMetadata = _domainModel.Store.GetSchemaRelationship(edge.SchemaId);
-
-                            var ctx = new SerializationContext(_domainModel, currentMetadata, edge);
-                            yield return (T)currentMetadata.Deserialize(ctx);
-                        }
-                    }
+                    query = _cache.GetEdges(node, Direction.Incoming, metadata, localOnly);
+                    return GetRelationshipsCore<T>(query, skip, metadata);
                 }
+                return Enumerable.Empty<T>();
             }
-            else
+
+            query = _cache.GetGraphNodes(NodeType.Edge, metadata, localOnly);
+            return GetRelationshipsCore<T>(query, skip, metadata);
+        }
+
+        protected IEnumerable<T> GetRelationshipsCore<T>(IEnumerable<IGraphNode> query, int skip, ISchemaRelationship metadata) where T : IModelRelationship
+        {
+            var cx = 0;
+            var currentMetadata = metadata;
+            foreach (var edge in query)
             {
-                foreach (var e in _cache.GetGraphNodes(NodeType.Edge, metadata, localOnly))
-                {
-                    if (e == null || e.NodeType != NodeType.Edge) // Ce n'est pas une relation
-                        continue;
+                if (edge == null)
+                    continue;
 
-                    if (cx++ < skip)
-                        continue;
+                if (cx++ < skip)
+                    continue;
 
-                    if (currentMetadata == null || currentMetadata.Id != e.SchemaId)
-                        currentMetadata = _domainModel.Store.GetSchemaRelationship(e.SchemaId);
+                if (currentMetadata == null || currentMetadata.Id != edge.SchemaId)
+                    currentMetadata = _domainModel.Store.GetSchemaRelationship(edge.SchemaId);
 
-                    if (metadata == null || currentMetadata.IsA(metadata))
-                    {
-                        var ctx = new SerializationContext(_domainModel, currentMetadata, e);
-                        yield return (T)currentMetadata.Deserialize(ctx);
-                    }
-                }
+                var ctx = new SerializationContext(_domainModel, currentMetadata, edge);
+                yield return (T)currentMetadata.Deserialize(ctx);
             }
         }
 

@@ -14,18 +14,19 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using Hyperstore.Modeling.Domain;
 using Hyperstore.Modeling.HyperGraph;
 using Hyperstore.Modeling.Validations;
-
+using System.Collections.Generic;
+using System.Diagnostics;
 #endregion
 
 namespace Hyperstore.Modeling.DomainExtension
 {
-    internal class DomainModelExtension : DomainModel, IExtension
+    internal class DomainModelExtension : DomainModel, IExtension, IDomainModelExtension
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -47,7 +48,8 @@ namespace Hyperstore.Modeling.DomainExtension
         ///  The extension mode.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public DomainModelExtension(IDependencyResolver resolver, string name, string extensionName, IDomainModel extendeDomainModel, ExtendedMode extensionMode) : base(resolver, name)
+        public DomainModelExtension(IDependencyResolver resolver, string name, string extensionName, IDomainModel extendeDomainModel, ExtendedMode extensionMode)
+            : base(resolver, name)
         {
             DebugContract.Requires(resolver);
             DebugContract.RequiresNotEmpty(name);
@@ -99,20 +101,36 @@ namespace Hyperstore.Modeling.DomainExtension
             return ExtendedDomainModel.IdGenerator;
         }
 
-        //public override IModelElement GetElement(Identity id, ISchemaElement metaclass, bool localOnly = true)
-        //{
-        //    return base.GetElement(id, metaclass, localOnly);
-        //}
+        public IEnumerable<IModelElement> GetExtensionElements(ISchemaElement schemaElement = null)
+        {
+            var adapter = InnerGraph as IExtensionHyperGraph;
+            Debug.Assert(adapter != null);
+            return adapter.GetExtensionElements(schemaElement);
+        }
 
-        //public override System.Collections.Generic.IEnumerable<IModelElement> GetElements(ISchemaElement metaClass = null, int skip = 0, bool localOnly = true)
-        //{
-        //    return base.GetElements(metaClass, skip, localOnly);
-        //}
+        public IEnumerable<IModelEntity> GetExtensionEntities(ISchemaEntity schemaEntity = null)
+        {
+            var adapter = InnerGraph as IExtensionHyperGraph;
+            Debug.Assert(adapter != null);
+            return adapter.GetExtensionEntities(schemaEntity);
+        }
 
-        //public override System.Collections.Generic.IEnumerable<IModelEntity> GetEntities(ISchemaEntity metaClass = null, int skip = 0, bool localOnly = true)
-        //{
-        //    return base.GetEntities(metaClass, skip, localOnly);
-        //}
+        public IEnumerable<IModelElement> GetDeletedElements()
+        {
+            var adapter = InnerGraph as IExtensionHyperGraph;
+            Debug.Assert(adapter != null);
+            foreach(var tuple in adapter.GetDeletedElements())
+            {
+                yield return ExtendedDomainModel.GetElement(tuple.Item1, ExtendedDomainModel.Store.GetSchemaElement(tuple.Item2));
+            }
+        }
+
+        public IEnumerable<IModelRelationship> GetExtensionRelationships(ISchemaRelationship schemaRelationship = null, IModelElement start = null, IModelElement end = null)
+        {
+            var adapter = InnerGraph as IExtensionHyperGraph;
+            Debug.Assert(adapter != null);
+            return adapter.GetExtensionRelationships(schemaRelationship, start, end);
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

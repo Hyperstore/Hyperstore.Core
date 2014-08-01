@@ -129,7 +129,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The schema extension.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public System.Threading.Tasks.Task<ISchema> LoadSchemaExtension(ISchemaDefinition definition, SchemaConstraintExtensionMode mode)
+        public async System.Threading.Tasks.Task<ISchemaExtension> LoadSchemaExtension(ISchemaDefinition definition, SchemaConstraintExtensionMode mode)
         {
             Contract.Requires(definition, "definition");
 
@@ -140,7 +140,8 @@ namespace Hyperstore.Modeling.Metadata
                 throw new Exception("Extension schema must have the same name that the extended schema.");
 
             var desc = new ExtensionSchemaDefinition(definition, this, mode);
-            return Store.LoadSchemaAsync(desc);
+            var schema = await Store.LoadSchemaAsync(desc);
+            return (ISchemaExtension)schema;
         }
 
         protected override void CreateCache()

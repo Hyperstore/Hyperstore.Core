@@ -14,7 +14,8 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
+using System.Collections.Generic;
 namespace Hyperstore.Modeling.Validations
 {
     ///-------------------------------------------------------------------------------------------------
@@ -93,22 +94,6 @@ namespace Hyperstore.Modeling.Validations
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Validates some elements using all the constraints of the specified category.
-        /// </summary>
-        /// <param name="categoryName">
-        ///  Name of the category.
-        /// </param>
-        /// <param name="elements">
-        ///  List of the elements to validate or null for all domain elements.
-        /// </param>
-        /// <returns>
-        ///  The result of the validation.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        IExecutionResult Validate(string categoryName, params IModelElement[] elements);
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
         ///  Validates some elements using all the constraintsof the domain.
         /// </summary>
         /// <param name="elements">
@@ -118,7 +103,7 @@ namespace Hyperstore.Modeling.Validations
         ///  The result of the validation.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IExecutionResult Validate(params IModelElement[] elements);
+        IExecutionResult Validate(IEnumerable<IModelElement> elements, string categoryName = null);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

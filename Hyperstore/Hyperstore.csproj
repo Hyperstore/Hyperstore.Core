@@ -68,6 +68,9 @@
     <Compile Include="DomainModel\Impl\CalculatedProperty.cs" />
     <Compile Include="DomainModel\IDataErrorNotifier.cs" />
     <Compile Include="DomainModel\Impl\DomainExtensions.cs" />
+    <Compile Include="DomainModel\Impl\Extension\IExtensionAdapter.cs" />
+    <Compile Include="DomainModel\Impl\Extension\IExtensionHypergraph.cs" />
+    <Compile Include="DomainModel\Impl\Extension\ISchemaExtension.cs" />
     <Compile Include="DomainModel\Impl\ModelElementEqualityComparer.cs" />
     <Compile Include="Metadata\Impl\Primitives\EnumPrimitiveInternal.cs" />
     <Compile Include="Metadata\PropertyKind.cs" />
@@ -106,7 +109,7 @@
     <Compile Include="DomainModel\Impl\DomainConfiguration.cs" />
     <Compile Include="DomainModel\Impl\Extension\Controler\DomainModelControler.cs" />
     <Compile Include="DomainModel\Impl\Extension\Controler\IDomainModelControler.cs" />
-    <Compile Include="DomainModel\Impl\IExtension.cs" />
+    <Compile Include="DomainModel\Impl\Extension\IDomainExtension.cs" />
     <Compile Include="DomainModel\Impl\ModelElementList.cs" />
     <Compile Include="DomainModel\Impl\ModelEntity.cs" />
     <Compile Include="DomainModel\Impl\ObservableModelElementList.cs" />

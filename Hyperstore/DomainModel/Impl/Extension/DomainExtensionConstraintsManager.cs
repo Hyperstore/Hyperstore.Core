@@ -128,36 +128,6 @@ namespace Hyperstore.Modeling.DomainExtension
         /// <summary>
         ///  Validates the given elements.
         /// </summary>
-        /// <param name="policyName">
-        ///  Name of the policy.
-        /// </param>
-        /// <param name="elements">
-        ///  A variable-length parameters list containing elements.
-        /// </param>
-        /// <returns>
-        ///  An IExecutionResult.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public IExecutionResult Validate(string policyName, params IModelElement[] elements)
-        {
-            Contract.RequiresNotEmpty(policyName, "policyName");
-            Contract.Requires(elements, "elements");
-
-            var messages = _domainConstraints.Validate(policyName, elements);
-
-            var extendedElements = elements.Where(e => GetExtensionLevel(e.SchemaInfo) > 1);
-
-            // Si le domain étendu est en read-only, on n'execute pas ses contraintes
-            if (!extendedElements.Any() || IsInMode(SchemaConstraintExtensionMode.Replace))
-                return messages;
-
-            return ((IExecutionResultInternal)messages).Merge(_extendedDomainConstraints.Validate(policyName, extendedElements.ToArray()));
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Validates the given elements.
-        /// </summary>
         /// <param name="domain">
         ///  The domain.
         /// </param>
@@ -170,7 +140,7 @@ namespace Hyperstore.Modeling.DomainExtension
         ///-------------------------------------------------------------------------------------------------
         public IExecutionResult Validate(IDomainModel domain, string policyName=null)
         {
-            return Validate(policyName, domain.GetElements().ToArray());
+            return Validate(domain.GetElements().ToArray(), policyName);
         }
         
         ///-------------------------------------------------------------------------------------------------
@@ -258,9 +228,20 @@ namespace Hyperstore.Modeling.DomainExtension
         ///  An IExecutionResult.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IExecutionResult Validate(params IModelElement[] elements)
+        public IExecutionResult Validate(IEnumerable<IModelElement> elements, string categoryName = null)
         {
-            return Validate(ConstraintsCategory.ExplicitPolicy, elements);
+            Contract.RequiresNotEmpty(categoryName, "categoryName");
+            Contract.Requires(elements, "elements");
+
+            var messages = _domainConstraints.Validate(elements, categoryName);
+
+            var extendedElements = elements.Where(e => GetExtensionLevel(e.SchemaInfo) > 1);
+
+            // Si le domain étendu est en read-only, on n'execute pas ses contraintes
+            if (!extendedElements.Any() || IsInMode(SchemaConstraintExtensionMode.Replace))
+                return messages;
+
+            return ((IExecutionResultInternal)messages).Merge(_extendedDomainConstraints.Validate(extendedElements, categoryName));
         }
 
         /// <summary>

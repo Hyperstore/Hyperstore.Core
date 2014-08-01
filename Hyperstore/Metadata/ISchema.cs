@@ -58,7 +58,7 @@ namespace Hyperstore.Modeling
         ///  The schema extension.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        Task<ISchema> LoadSchemaExtension(ISchemaDefinition definition, SchemaConstraintExtensionMode mode = SchemaConstraintExtensionMode.Inherit);
+        Task<ISchemaExtension> LoadSchemaExtension(ISchemaDefinition definition, SchemaConstraintExtensionMode mode = SchemaConstraintExtensionMode.Inherit);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

@@ -220,6 +220,19 @@ namespace Hyperstore.Modeling.Domain
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
+        ///  Gets a value indicating whether this instance is disposed.
+        /// </summary>
+        /// <value>
+        ///  true if this instance is disposed, false if not.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public bool IsDisposed
+        {
+            get { return _disposed; }
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
         ///  Gets the events.
         /// </summary>
         /// <value>
@@ -300,7 +313,7 @@ namespace Hyperstore.Modeling.Domain
         ///  The extension.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public Task<IDomainModel> LoadExtensionAsync(string extensionName, ExtendedMode mode, IDomainConfiguration configuration = null)
+        public async Task<IDomainModelExtension> LoadExtensionAsync(string extensionName, ExtendedMode mode, IDomainConfiguration configuration = null)
         {
             Contract.RequiresNotEmpty(extensionName, "extensionName");
             CheckInitialized();
@@ -312,7 +325,8 @@ namespace Hyperstore.Modeling.Domain
             if ((Store.Options & StoreOptions.EnableExtensions) != StoreOptions.EnableExtensions)
                 throw new Exception("Extensions are not enabled. Use StoreOptions.EnableExtensions when instancing the store.");
 
-            return Store.CreateDomainModelAsync(extensionName, configuration, (resolver, name) => new DomainExtension.DomainModelExtension(resolver, ((IDomainModel)this).Name, extensionName, this, mode));
+            var domain = await Store.CreateDomainModelAsync(extensionName, configuration, (resolver, name) => new DomainExtension.DomainModelExtension(resolver, ((IDomainModel)this).Name, extensionName, this, mode));
+            return (IDomainModelExtension)domain;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -1164,7 +1178,7 @@ namespace Hyperstore.Modeling.Domain
         ///  An enumerator that allows foreach to be used to process the relationships in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<IModelRelationship> GetRelationships(ISchemaRelationship metadata = null, IModelElement start = null, IModelElement end = null, int skip = 0, bool localOnly = true)
+        public virtual IEnumerable<IModelRelationship> GetRelationships(ISchemaRelationship metadata = null, IModelElement start = null, IModelElement end = null, int skip = 0, bool localOnly = true)
         {
             if (!localOnly && Session.Current == null)
             {

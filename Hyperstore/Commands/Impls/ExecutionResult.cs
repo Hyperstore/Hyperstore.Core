@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System.Collections.Generic;
@@ -139,9 +139,10 @@ namespace Hyperstore.Modeling.Validations
 
         public void NotifyDataErrors()
         {
-            foreach (var msg in Messages.Where(m=> m.Element != null))
+            foreach (var msg in Messages.Where(m => m.Element != null))
             {
-                ((Hyperstore.Modeling.Domain.IDataErrorNotifier)msg.Element).NotifyDataErrors(this);
+                var mel = msg.Element.DomainModel.Store.GetElement(msg.Element.Id, msg.Element.SchemaInfo); // ensures getting in the L1Cache
+                ((Hyperstore.Modeling.Domain.IDataErrorNotifier)mel).NotifyDataErrors(this);
             }
         }
     }

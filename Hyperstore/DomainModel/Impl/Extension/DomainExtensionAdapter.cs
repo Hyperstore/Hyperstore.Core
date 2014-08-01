@@ -28,7 +28,7 @@ using Hyperstore.Modeling.HyperGraph.Adapters;
 
 namespace Hyperstore.Modeling.DomainExtension
 {
-    internal class DomainExtensionAdapter : ICacheAdapter, IDisposable
+    internal class DomainExtensionAdapter : ICacheAdapter, IDisposable, IExtensionAdapter
     {
         private readonly ICacheAdapter _extendedDomainAdapter;
         private readonly ICacheAdapter _extensionAdapter;
@@ -84,9 +84,9 @@ namespace Hyperstore.Modeling.DomainExtension
             DomainModel = domainModel;
             _extensionAdapter.SetDomain(domainModel);
             _deletedElements = new Hyperstore.Modeling.MemoryStore.TransactionalMemoryStore(
-                                        _extensionAdapter.DomainModel.Name, 
+                                        _extensionAdapter.DomainModel.Name,
                                         5,
-                                        _extendedDomainAdapter.DomainModel.DependencyResolver.Resolve < Hyperstore.Modeling.MemoryStore.ITransactionManager>()
+                                        _extendedDomainAdapter.DomainModel.DependencyResolver.Resolve<Hyperstore.Modeling.MemoryStore.ITransactionManager>()
                                         );
         }
 
@@ -154,6 +154,34 @@ namespace Hyperstore.Modeling.DomainExtension
                 if (identities.Add(node.Id))
                     yield return node;
             }
+        }
+
+        public IEnumerable<IGraphNode> GetExtensionGraphNodes(NodeType elementType, ISchemaElement metadata)
+        {
+            foreach (var node in _extensionAdapter.GetGraphNodes(elementType, metadata, true))
+            {
+                if (_deletedElements.GetNode(node.Id, null) == null)
+                    yield return node;
+            }
+        }
+
+        public IEnumerable<IGraphNode> GetExtensionEdges(IGraphNode node, Direction direction, ISchemaRelationship schemaRelationship)
+        {
+            DebugContract.Requires(node);
+
+            foreach (var edge in _extensionAdapter.GetEdges(node, direction, schemaRelationship, true))
+            {
+                if (edge != null)
+                {
+                    if (_deletedElements.GetNode(edge.Id, null) == null)
+                        yield return edge;
+                }
+            }
+        }
+
+        public IEnumerable<IGraphNode> GetDeletedGraphNodes()
+        {
+            return _deletedElements.GetAllNodes(NodeType.EdgeOrNode);
         }
 
         ///-------------------------------------------------------------------------------------------------

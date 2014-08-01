@@ -61,7 +61,7 @@ namespace Hyperstore.Modeling
         protected Dictionary<string, List<string>> ValidationMessages;
         private EventHandler<DataErrorsChangedEventArgs> _errorsChangedEventHandler;
 
-        private Lazy<Dictionary<string, CalculatedProperty>> _calculatedProperties = new Lazy<Dictionary<string, CalculatedProperty>>(() => new Dictionary<string, CalculatedProperty>());
+        private Lazy<Dictionary<string, CalculatedProperty>> _calculatedProperties;
 
         void IPropertyChangedNotifier.NotifyCalculatedProperties(string propertyName)
         {
@@ -77,6 +77,13 @@ namespace Hyperstore.Modeling
 
             tracker.NotifyTargets();
         }
+
+#if DEBUG
+        public int Sequence
+        {
+            get { return _sequence; }
+        }
+#endif
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -365,6 +372,7 @@ namespace Hyperstore.Modeling
             //DebugContract.Requires(Session.Current);
 
             _sequence = Interlocked.Increment(ref _globalSequence);
+            _calculatedProperties = new Lazy<Dictionary<string, CalculatedProperty>>(() => new Dictionary<string, CalculatedProperty>());
 
             _store = domainModel.Store;
             _domainModel = domainModel;
@@ -683,26 +691,26 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         protected virtual void Dispose(bool disposing)
         {
-            if (this is INotifyPropertyChanged && (_schema.Schema.Behavior & DomainBehavior.Observable) == DomainBehavior.Observable )
+            try
             {
-                try
+                if (this is INotifyPropertyChanged && (_schema.Schema.IsDisposed || (_schema.Schema.Behavior & DomainBehavior.Observable) == DomainBehavior.Observable))
                 {
-                    if (_domainModel != null && _domainModel.Events != null)
+                    if (_domainModel != null && !_domainModel.IsDisposed && _domainModel.Events != null)
                         _domainModel.Events.UnregisterForAttributeChangedEvent(this);
-                }
-                catch
-                {
-                    // Domain already disposed
-                }
 
-                DisableDataErrorsNotification();
+                    DisableDataErrorsNotification();
 
-                // Le finalizer existe pour être certain qu'une instance d'un élément sera bien déréférencée du gestionnaire d'événements,
-                // comme cela a été fait, ce n'est plus la peine de l'appeler.
-                GC.SuppressFinalize(this);
+                    // Le finalizer existe pour être certain qu'une instance d'un élément sera bien déréférencée du gestionnaire d'événements,
+                    // comme cela a été fait, ce n'est plus la peine de l'appeler.
+                    GC.SuppressFinalize(this);
+                }
+            }
+            catch
+            {
+                // Domain already disposed
             }
 
-            if (_calculatedProperties.IsValueCreated)
+            if (_calculatedProperties != null && _calculatedProperties.IsValueCreated)
             {
                 foreach (var p in _calculatedProperties.Value.Values)
                 {

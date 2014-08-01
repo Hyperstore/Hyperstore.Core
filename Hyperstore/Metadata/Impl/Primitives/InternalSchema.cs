@@ -77,6 +77,11 @@ namespace Hyperstore.Modeling.Metadata
         IEventManager IDomainModel.Events { get { return null; } }
         IIdGenerator IDomainModel.IdGenerator { get { return null; } }
 
+        public bool IsDisposed
+        {
+            get { return false; }
+        }
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Gets domain behaviors.
@@ -513,12 +518,12 @@ namespace Hyperstore.Modeling.Metadata
             get { return null; }
         }
 
-        Task<IDomainModel> IDomainModel.LoadExtensionAsync(string extensionName, ExtendedMode mode, IDomainConfiguration config)
+        Task<IDomainModelExtension> IDomainModel.LoadExtensionAsync(string extensionName, ExtendedMode mode, IDomainConfiguration config)
         {
             throw new NotSupportedException();
         }
 
-        Task<ISchema> ISchema.LoadSchemaExtension(ISchemaDefinition definition, SchemaConstraintExtensionMode mode)
+        Task<ISchemaExtension> ISchema.LoadSchemaExtension(ISchemaDefinition definition, SchemaConstraintExtensionMode mode)
         {
             throw new NotSupportedException();
         }

@@ -86,7 +86,6 @@ namespace Hyperstore.Modeling.Serialization
         private Dictionary<Identity, int> _schemaElements;
         private HashSet<IModelElement> _toSerialize;
         private HashSet<Identity> _serialized;
-        private int _index;
         private readonly JSonSerializationOption _options;
         private int _depth;
         private Queue<IModelElement> _elements;
@@ -187,7 +186,6 @@ namespace Hyperstore.Modeling.Serialization
             _serialized = new HashSet<Identity>();
             _schemaElements = new Dictionary<Identity, int>();
             _elements = new Queue<IModelElement>(elements);
-            _index = 0;
 
             if (!HasOption(JSonSerializationOption.SerializeGraphObject))
             {

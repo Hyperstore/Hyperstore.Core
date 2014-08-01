@@ -462,7 +462,7 @@ namespace Hyperstore.Modeling
         /// <param name="configuration">    (Optional) the configuration. </param>
         /// <returns>   The extension. </returns>
         ///-------------------------------------------------------------------------------------------------
-        Task<IDomainModel> LoadExtensionAsync(string extensionName, ExtendedMode extendedMode, IDomainConfiguration configuration=null);
+        Task<IDomainModelExtension> LoadExtensionAsync(string extensionName, ExtendedMode extendedMode, IDomainConfiguration configuration=null);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -495,5 +495,15 @@ namespace Hyperstore.Modeling
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
         Identity CreateId(long key, ISchemaElement schemaElement = null);
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets a value indicating whether this instance is disposed.
+        /// </summary>
+        /// <value>
+        ///  true if this instance is disposed, false if not.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        bool IsDisposed { get; }
     }
 }

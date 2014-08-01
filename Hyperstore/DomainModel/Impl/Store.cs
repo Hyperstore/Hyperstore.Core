@@ -1289,7 +1289,7 @@ namespace Hyperstore.Modeling
 
                 desc.PrepareDependencyResolver(domainResolver);
 
-                ISchema schema = desc.CreateSchema(domainResolver);
+                var schema = desc.CreateSchema(domainResolver);
 
                 // Enregistrement du domaine au niveau du store
                 _schemaControler.RegisterDomainModel(schema);

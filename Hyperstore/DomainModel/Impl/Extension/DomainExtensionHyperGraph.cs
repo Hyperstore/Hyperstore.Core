@@ -19,12 +19,13 @@
 
 using System;
 using Hyperstore.Modeling.HyperGraph;
-
+using System.Collections.Generic;
+using System.Linq;
 #endregion
 
 namespace Hyperstore.Modeling.DomainExtension
 {
-    internal class DomainExtensionHyperGraph : HyperGraph.HyperGraph
+    internal class DomainExtensionHyperGraph : HyperGraph.HyperGraph, IExtensionHyperGraph
     {
         private readonly IDomainModel _extendedDomain;
         private readonly ExtendedMode _extensionMode;
@@ -75,6 +76,58 @@ namespace Hyperstore.Modeling.DomainExtension
                 throw new Exception(ExceptionMessages.CantExtendDomainModel_GraphAdapter);
 
             return new DomainExtensionAdapter(adapter, extendedDomainModelAdapter, _extensionMode);
+        }
+
+        System.Collections.Generic.IEnumerable<IModelElement> IExtensionHyperGraph.GetExtensionElements(ISchemaElement schemaElement)
+        {
+            var adapter = Adapter as IExtensionAdapter;
+            var query = adapter.GetExtensionGraphNodes(NodeType.EdgeOrNode, schemaElement);
+            return base.GetElementsCore<IModelElement>(query, schemaElement, 0, true);
+        }
+
+        System.Collections.Generic.IEnumerable<Tuple<Identity,Identity>> IExtensionHyperGraph.GetDeletedElements()
+        {
+            var adapter = Adapter as IExtensionAdapter;
+            return adapter.GetDeletedGraphNodes().Select( n => Tuple.Create(n.Id, n.SchemaId));
+        }
+
+        System.Collections.Generic.IEnumerable<IModelRelationship> IExtensionHyperGraph.GetExtensionRelationships(ISchemaRelationship schemaRelationship, IModelElement start, IModelElement end)
+        {
+            var adapter = Adapter as IExtensionAdapter;
+            IEnumerable<IGraphNode> query;
+            if (start != null)
+            {
+                var node = adapter.GetGraphNode(start.Id, start.SchemaInfo, true);
+                if (node != null)
+                {
+                        query = adapter.GetExtensionEdges(node, Direction.Outgoing, schemaRelationship);
+                        if (end != null)
+                            query = query.Where(n => n.EndId == end.Id);
+                        return GetRelationshipsCore<IModelRelationship>(query, 0, schemaRelationship);
+                }
+                return Enumerable.Empty<IModelRelationship>();
+            }
+            else if (end != null)
+            {
+                var node = adapter.GetGraphNode(end.Id, end.SchemaInfo, true);
+                if (node != null)
+                {
+                    query = adapter.GetExtensionEdges(node, Direction.Incoming, schemaRelationship);
+                    return GetRelationshipsCore<IModelRelationship>(query, 0, schemaRelationship);
+                }
+                return Enumerable.Empty<IModelRelationship>();
+            }
+
+            query = adapter.GetExtensionGraphNodes(NodeType.Edge, schemaRelationship);
+            return GetRelationshipsCore<IModelRelationship>(query, 0, schemaRelationship);
+
+        }
+
+        System.Collections.Generic.IEnumerable<IModelEntity> IExtensionHyperGraph.GetExtensionEntities(ISchemaEntity schemaEntity)
+        {
+            var adapter = Adapter as IExtensionAdapter;
+            var query = adapter.GetExtensionGraphNodes(NodeType.Node, schemaEntity);
+            return base.GetElementsCore<IModelEntity>(query, schemaEntity, 0, true);
         }
     }
 }
