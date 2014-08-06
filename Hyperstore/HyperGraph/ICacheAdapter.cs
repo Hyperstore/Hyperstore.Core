@@ -105,7 +105,7 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  An enumerator that allows foreach to be used to process the edges in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<IGraphNode> GetEdges(IGraphNode node, Direction direction, ISchemaRelationship schemaRelationship, bool localOnly);
+        IEnumerable<IGraphNode> GetEdges(Identity id, ISchemaElement schemaElement, Direction direction, ISchemaRelationship schemaRelationship, bool localOnly);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

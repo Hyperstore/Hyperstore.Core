@@ -24,6 +24,6 @@ namespace Hyperstore.Modeling
     {
         IEnumerable<Hyperstore.Modeling.HyperGraph.IGraphNode> GetDeletedGraphNodes();
         IEnumerable<Hyperstore.Modeling.HyperGraph.IGraphNode> GetExtensionGraphNodes(Hyperstore.Modeling.NodeType elementType, Hyperstore.Modeling.ISchemaElement schemaElement);
-        IEnumerable<IGraphNode> GetExtensionEdges(IGraphNode node, Direction direction, ISchemaRelationship schemaRelationship);
+        IEnumerable<IGraphNode> GetExtensionEdges(Identity id, ISchemaElement schemaElement, Direction direction, ISchemaRelationship schemaRelationship);
     }
 }

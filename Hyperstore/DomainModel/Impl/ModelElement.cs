@@ -693,9 +693,10 @@ namespace Hyperstore.Modeling
         {
             try
             {
-                if (this is INotifyPropertyChanged && (_schema.Schema.IsDisposed || (_schema.Schema.Behavior & DomainBehavior.Observable) == DomainBehavior.Observable))
+                var domainModelDisposed = _domainModel != null && _domainModel.IsDisposed;
+                if (this is INotifyPropertyChanged && (domainModelDisposed || _schema.Schema.IsDisposed || (_schema.Schema.Behavior & DomainBehavior.Observable) == DomainBehavior.Observable))
                 {
-                    if (_domainModel != null && !_domainModel.IsDisposed && _domainModel.Events != null)
+                    if (!domainModelDisposed && _domainModel.Events != null)
                         _domainModel.Events.UnregisterForAttributeChangedEvent(this);
 
                     DisableDataErrorsNotification();

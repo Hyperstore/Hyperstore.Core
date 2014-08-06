@@ -97,30 +97,19 @@ namespace Hyperstore.Modeling.DomainExtension
             IEnumerable<IGraphNode> query;
             if (start != null)
             {
-                var node = adapter.GetGraphNode(start.Id, start.SchemaInfo, true);
-                if (node != null)
-                {
-                        query = adapter.GetExtensionEdges(node, Direction.Outgoing, schemaRelationship);
-                        if (end != null)
-                            query = query.Where(n => n.EndId == end.Id);
-                        return GetRelationshipsCore<IModelRelationship>(query, 0, schemaRelationship);
-                }
-                return Enumerable.Empty<IModelRelationship>();
+                query = adapter.GetExtensionEdges(start.Id, start.SchemaInfo, Direction.Outgoing, schemaRelationship);
+                if (end != null)
+                    query = query.Where(n => n.EndId == end.Id);
+                return GetRelationshipsCore<IModelRelationship>(query, 0, schemaRelationship);
             }
             else if (end != null)
             {
-                var node = adapter.GetGraphNode(end.Id, end.SchemaInfo, true);
-                if (node != null)
-                {
-                    query = adapter.GetExtensionEdges(node, Direction.Incoming, schemaRelationship);
-                    return GetRelationshipsCore<IModelRelationship>(query, 0, schemaRelationship);
-                }
-                return Enumerable.Empty<IModelRelationship>();
+                query = adapter.GetExtensionEdges(end.Id, end.SchemaInfo, Direction.Incoming, schemaRelationship);
+                return GetRelationshipsCore<IModelRelationship>(query, 0, schemaRelationship);
             }
 
             query = adapter.GetExtensionGraphNodes(NodeType.Edge, schemaRelationship);
             return GetRelationshipsCore<IModelRelationship>(query, 0, schemaRelationship);
-
         }
 
         System.Collections.Generic.IEnumerable<IModelEntity> IExtensionHyperGraph.GetExtensionEntities(ISchemaEntity schemaEntity)

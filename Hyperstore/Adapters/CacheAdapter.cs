@@ -393,20 +393,21 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
         ///  An enumerator that allows foreach to be used to process the edges in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<IGraphNode> GetEdges(IGraphNode node, Direction direction, ISchemaRelationship metadata, bool localOnly)
+        public IEnumerable<IGraphNode> GetEdges(Identity id, ISchemaElement schemaElement, Direction direction, ISchemaRelationship metadata, bool localOnly)
         {
-            DebugContract.Requires(node);
+            DebugContract.Requires(id);
+            DebugContract.Requires(schemaElement);
 
             var edges = new HashSet<Identity>();
-            foreach (var me in _memory.GetEdges(node, direction, metadata, true))
+            foreach (var me in _memory.GetEdges(id, schemaElement, direction, metadata, true))
             {
                 edges.Add(me.Id);
                 yield return me;
             }
 
-            if (!localOnly && _adapter != null && (Session.Current == null || Session.Current.TrackingData.GetTrackingElementState(node.Id) == TrackingState.Unknown))
+            if (!localOnly && _adapter != null && (Session.Current == null || Session.Current.TrackingData.GetTrackingElementState(id) == TrackingState.Unknown))
             {
-                foreach (var edge in _adapter.GetEdges(node.Id, direction, metadata, true))
+                foreach (var edge in _adapter.GetEdges(id, direction, metadata, true))
                 {
                     if ((Session.Current == null || Session.Current.TrackingData.GetTrackingElementState(edge.Id) != TrackingState.Removed) && edges.Add(edge.Id))
                     {

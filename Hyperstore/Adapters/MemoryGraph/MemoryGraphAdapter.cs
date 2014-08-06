@@ -495,13 +495,15 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
         ///  An enumerator that allows foreach to be used to process the edges in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<IGraphNode> GetEdges(IGraphNode node, Direction direction, ISchemaRelationship metadata, bool localOnly)
+        public IEnumerable<IGraphNode> GetEdges(Identity id, ISchemaElement schemaElement, Direction direction, ISchemaRelationship metadata, bool localOnly)
         {
-            DebugContract.Requires(node);
+            DebugContract.Requires(id);
+            DebugContract.Requires(schemaElement);
             //DebugContract.Requires(Session.Current);
 
-            var source = node as MemoryGraphNode;
-            Debug.Assert(source != null, "source != null");
+            var source = GetGraphNode(id, schemaElement, localOnly) as MemoryGraphNode;
+            if (source == null)
+                yield break;
 
             if ((direction & Direction.Outgoing) == Direction.Outgoing)
             {

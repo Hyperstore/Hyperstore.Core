@@ -422,25 +422,15 @@ namespace Hyperstore.Modeling.HyperGraph
             IEnumerable<IGraphNode> query;
             if (start != null)
             {
-                var node = _cache.GetGraphNode(start.Id, start.SchemaInfo, localOnly);
-                if (node != null)
-                {
-                    query = _cache.GetEdges(node, Direction.Outgoing, metadata, localOnly);
-                    if (end != null)
-                        query = query.Where(n => n.EndId == end.Id);
-                    return GetRelationshipsCore<T>(query, skip, metadata);
-                }
-                return Enumerable.Empty<T>();
+                query = _cache.GetEdges(start.Id, start.SchemaInfo, Direction.Outgoing, metadata, localOnly);
+                if (end != null)
+                    query = query.Where(n => n.EndId == end.Id);
+                return GetRelationshipsCore<T>(query, skip, metadata);
             }
             else if (end != null)
             {
-                var node = _cache.GetGraphNode(end.Id, end.SchemaInfo, localOnly);
-                if (node != null)
-                {
-                    query = _cache.GetEdges(node, Direction.Incoming, metadata, localOnly);
-                    return GetRelationshipsCore<T>(query, skip, metadata);
-                }
-                return Enumerable.Empty<T>();
+                query = _cache.GetEdges(end.Id, end.SchemaInfo, Direction.Incoming, metadata, localOnly);
+                return GetRelationshipsCore<T>(query, skip, metadata);
             }
 
             query = _cache.GetGraphNodes(NodeType.Edge, metadata, localOnly);
@@ -815,14 +805,14 @@ namespace Hyperstore.Modeling.HyperGraph
             _domainModel = null;
         }
 
-        private void RemoveDependencies(IGraphNode node, ISchemaElement metaClass, bool localOnly)
+        private void RemoveDependencies(IGraphNode node, ISchemaElement schemaElement, bool localOnly)
         {
             DebugContract.Requires(node);
-            DebugContract.Requires(metaClass);
+            DebugContract.Requires(schemaElement);
             DebugContract.Requires(Session.Current);
 
-            if (metaClass == null)
-                metaClass = _domainModel.Store.GetSchemaElement(node.SchemaId);
+            if (schemaElement == null)
+                schemaElement = _domainModel.Store.GetSchemaElement(node.SchemaId);
 
             // Dans le cas de la suppression d'un noeud, on ne supprime que les relations entrantes.
             // Pour les relations sortantes de type IsEmbedded, on va supprimer le noeud opposé qui va lui-même supprimer
@@ -830,7 +820,7 @@ namespace Hyperstore.Modeling.HyperGraph
             var commands = new List<IDomainCommand>();
 
             // Suppression des relations entrantes
-            foreach (var incoming in _cache.GetEdges(node, Direction.Incoming, null, localOnly))
+            foreach (var incoming in _cache.GetEdges(node.Id, schemaElement, Direction.Incoming, null, localOnly))
             {
                 if (incoming == null)
                     continue;
@@ -843,7 +833,7 @@ namespace Hyperstore.Modeling.HyperGraph
 
             // Gestion des relations sortantes
             // On sait que ces relations sont toujours dans le graphe courant mais peut-être pas le noeud terminal
-            foreach (var outgoing in _cache.GetEdges(node, Direction.Outgoing, null, localOnly))
+            foreach (var outgoing in _cache.GetEdges(node.Id, schemaElement, Direction.Outgoing, null, localOnly))
             {
                 if (outgoing == null)
                     continue;
@@ -872,7 +862,7 @@ namespace Hyperstore.Modeling.HyperGraph
             }
 
             // Suppression des propriétés 
-            foreach (var prop in metaClass.GetProperties(true))
+            foreach (var prop in schemaElement.GetProperties(true))
             {
                 // Pour chaque propriété qui n'est pas une relation, on va générer un événement spécifique
                 if (prop.PropertySchema is ISchemaRelationship)
@@ -881,9 +871,9 @@ namespace Hyperstore.Modeling.HyperGraph
                 // TODO - Est ce la bonne solution ?
                 // Verif si le noeud existe pour ne générer la commande que sur les noeuds existants. On fait 
                 // cela car c'est le cas pour les propriétés de type relation
-                var pnode = _cache.GetPropertyValue(node.Id, metaClass, prop);
+                var pnode = _cache.GetPropertyValue(node.Id, schemaElement, prop);
                 if (pnode != null)
-                    commands.Add(new RemovePropertyCommand(_domainModel, node.Id, metaClass, prop));
+                    commands.Add(new RemovePropertyCommand(_domainModel, node.Id, schemaElement, prop));
             }
 
             if (commands.Count > 0)

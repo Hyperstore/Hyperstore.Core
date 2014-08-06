@@ -165,11 +165,12 @@ namespace Hyperstore.Modeling.DomainExtension
             }
         }
 
-        public IEnumerable<IGraphNode> GetExtensionEdges(IGraphNode node, Direction direction, ISchemaRelationship schemaRelationship)
+        public IEnumerable<IGraphNode> GetExtensionEdges(Identity id, ISchemaElement schemaElement, Direction direction, ISchemaRelationship schemaRelationship)
         {
-            DebugContract.Requires(node);
+            DebugContract.Requires(id);
+            DebugContract.Requires(schemaElement);
 
-            foreach (var edge in _extensionAdapter.GetEdges(node, direction, schemaRelationship, true))
+            foreach (var edge in _extensionAdapter.GetEdges(id, schemaElement, direction, schemaRelationship, true))
             {
                 if (edge != null)
                 {
@@ -324,12 +325,13 @@ namespace Hyperstore.Modeling.DomainExtension
         ///  An enumerator that allows foreach to be used to process the edges in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<IGraphNode> GetEdges(IGraphNode node, Direction direction, ISchemaRelationship metadata, bool localOnly)
+        public IEnumerable<IGraphNode> GetEdges(Identity id, ISchemaElement schemaElement, Direction direction, ISchemaRelationship metadata, bool localOnly)
         {
-            DebugContract.Requires(node);
+            DebugContract.Requires(id);
+            DebugContract.Requires(schemaElement);
 
             var identities = new HashSet<Identity>();
-            foreach (var edge in _extensionAdapter.GetEdges(node, direction, metadata, localOnly))
+            foreach (var edge in _extensionAdapter.GetEdges(id, schemaElement, direction, metadata, localOnly))
             {
                 if (edge != null)
                 {
@@ -339,7 +341,7 @@ namespace Hyperstore.Modeling.DomainExtension
                 }
             }
 
-            foreach (var edge in _extendedDomainAdapter.GetEdges(node, direction, metadata, localOnly)
+            foreach (var edge in _extendedDomainAdapter.GetEdges(id, schemaElement, direction, metadata, localOnly)
                     .Where(edge => identities.Add(edge.Id)))
             {
                 yield return edge;
