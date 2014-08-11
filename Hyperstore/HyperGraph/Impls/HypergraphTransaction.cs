@@ -191,7 +191,7 @@ namespace Hyperstore.Modeling.HyperGraph
             /// <summary>
             ///  Executes the given graph.
             /// </summary>
-            /// <param name="graph">
+            /// <param name="indexManager">
             ///  The graph.
             /// </param>
             ///-------------------------------------------------------------------------------------------------

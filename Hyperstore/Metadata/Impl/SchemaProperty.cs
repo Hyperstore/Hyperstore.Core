@@ -88,6 +88,14 @@ namespace Hyperstore.Modeling.Metadata
             private set { _propertyMetadataReference.SetReference(_propertyMetadata = value); }
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the kind.
+        /// </summary>
+        /// <value>
+        ///  The kind.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public PropertyKind Kind
         {
             get { 

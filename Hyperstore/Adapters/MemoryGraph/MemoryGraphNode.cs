@@ -250,6 +250,12 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
         /// <param name="direction">
         ///  The direction.
         /// </param>
+        /// <param name="endId">
+        ///  The identifier of the end.
+        /// </param>
+        /// <param name="endSchemaId">
+        ///  The identifier of the end schema.
+        /// </param>
         ///-------------------------------------------------------------------------------------------------
         public void AddEdge(Identity id, Identity metadataId, Direction direction, Identity endId, Identity endSchemaId)
         {

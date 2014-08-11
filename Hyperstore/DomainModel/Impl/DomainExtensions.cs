@@ -24,6 +24,11 @@ using System.Threading.Tasks;
 
 namespace Hyperstore.Modeling
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  A domain extensions.
+    /// </summary>
+    ///-------------------------------------------------------------------------------------------------
     public static class DomainExtensions
     {
         ///-------------------------------------------------------------------------------------------------
@@ -33,15 +38,9 @@ namespace Hyperstore.Modeling
         /// <exception cref="SessionRequiredException">
         ///  Thrown when a Session Required error condition occurs.
         /// </exception>
-        /// <exception cref="ArgumentException">
-        ///  Thrown when one or more arguments have unsupported or illegal values.
-        /// </exception>
         /// <typeparam name="T">
         ///  Generic type parameter.
         /// </typeparam>
-        /// <param name="store">
-        ///  The store to act on.
-        /// </param>
         /// <param name="domain">
         ///  (Optional) the domain model.
         /// </param>
@@ -71,17 +70,11 @@ namespace Hyperstore.Modeling
         /// <exception cref="SessionRequiredException">
         ///  Thrown when a Session Required error condition occurs.
         /// </exception>
-        /// <exception cref="ArgumentException">
-        ///  Thrown when one or more arguments have unsupported or illegal values.
-        /// </exception>
-        /// <param name="store">
-        ///  The store to act on.
+        /// <param name="domain">
+        ///  the domain model.
         /// </param>
         /// <param name="schema">
         ///  The schema.
-        /// </param>
-        /// <param name="domainModel">
-        ///  (Optional) the domain model.
         /// </param>
         /// <param name="id">
         ///  (Optional) the identifier.
@@ -102,6 +95,38 @@ namespace Hyperstore.Modeling
             return cmd.Entity;
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  An IDomainModel extension method that creates a relationship.
+        /// </summary>
+        /// <exception cref="SessionRequiredException">
+        ///  Thrown when a Session Required error condition occurs.
+        /// </exception>
+        /// <param name="domain">
+        ///  the domain model.
+        /// </param>
+        /// <param name="schema">
+        ///  The schema.
+        /// </param>
+        /// <param name="startId">
+        ///  The start identifier.
+        /// </param>
+        /// <param name="startSchema">
+        ///  The start schema.
+        /// </param>
+        /// <param name="endId">
+        ///  The end identifier.
+        /// </param>
+        /// <param name="endSchema">
+        ///  The end schema.
+        /// </param>
+        /// <param name="id">
+        ///  (Optional) the identifier.
+        /// </param>
+        /// <returns>
+        ///  The new relationship.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public static IModelRelationship CreateRelationship(this IDomainModel domain, ISchemaRelationship schema, Identity startId, ISchemaElement startSchema, Identity endId, ISchemaElement endSchema, Identity id = null)
         {
             Contract.Requires(domain != null, "domain");

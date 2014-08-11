@@ -203,6 +203,12 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <summary>
         ///  Create a relationship.
         /// </summary>
+        /// <exception cref="NotInTransactionException">
+        ///  Thrown when a Not In Transaction error condition occurs.
+        /// </exception>
+        /// <exception cref="InvalidElementException">
+        ///  Thrown when an Invalid Element error condition occurs.
+        /// </exception>
         /// <param name="id">
         ///  .
         /// </param>
@@ -215,7 +221,7 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="startSchema">
         ///  The start schema.
         /// </param>
-        /// <param name="end">
+        /// <param name="endId">
         ///  The end.
         /// </param>
         /// <param name="endSchema">
@@ -604,103 +610,7 @@ namespace Hyperstore.Modeling.HyperGraph
             }
         }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the elements.
-        /// </summary>
-        /// <param name="query">
-        ///  The query.
-        /// </param>
-        /// <param name="option">
-        ///  The option.
-        /// </param>
-        /// <returns>
-        ///  The element with graph provider asynchronous.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        //public Task<int> LoadElementWithGraphProviderAsync(Query query, MergeOption option)
-        //{
-        //    var tcs = new TaskCompletionSource<int>();
-        //    if (_graphAdapter == null)
-        //    {
-        //        tcs.TrySetResult(0);
-        //        return tcs.Task;
-        //    }
-
-        //    var cx = 0;
-        //    try
-        //    {
-        //        var q = _graphAdapter.LoadNodes(query);
-        //        using (var session = this.Store.BeginSession(new SessionConfiguration { Mode = SessionMode.Loading | SessionMode.SkipConstraints }))
-        //        {
-        //            foreach (var result in q)
-        //            {
-        //                if (Session.Current != null && Session.Current.TrackingData.GetTrackingElementState(result.Id) == TrackingState.Removed)
-        //                    continue;
-        //                cx++;
-        //                var newInCache = false;
-        //                var nodeMetaclass = result.SchemaInfo;
-
-        //                // Si ce noeud n'existe pas dans le cache, on le met
-        //                var node = _storage.GetGraphNode(result.Id, nodeMetaclass, true) as MemoryGraphNode;
-        //                if (node == null)
-        //                {
-        //                    if (result.NodeType == NodeType.Edge)
-        //                    {
-        //                        node =
-        //                                _storage.CreateRelationship(result.Id, nodeMetaclass as ISchemaRelationship, result.StartId, _storage.DomainModel.Store.GetSchemaElement(result.StartSchemaId), result.EndId,
-        //                                        _storage.DomainModel.Store.GetSchemaElement(result.EndSchemaId)) as MemoryGraphNode;
-        //                    }
-        //                    else
-        //                        node = _storage.CreateEntity(result.Id, nodeMetaclass as ISchemaEntity) as MemoryGraphNode;
-        //                    newInCache = true;
-        //                }
-
-        //                // TODO
-        //                //if (option == MergeOption.AppendOnly && newInCache || option == MergeOption.OverwriteChanges)
-        //                //{
-        //                //    foreach (var edge in this._graphAdapter.GetEdges(node, Direction.Outgoing, null))
-        //                //    {
-        //                //        node.AddEdge(edge.Id, edge.MetaClassId, edge.End, edge.EndMetadata, Direction.Outgoing);
-        //                //    }
-
-        //                //    foreach (var edge in this._adapter.GetEdges(node, Direction.Incoming))
-        //                //    {
-        //                //        node.AddEdge(edge.Id, edge.MetaClassId, edge.End, edge.EndMetadata, Direction.Incoming);
-        //                //    }
-        //                //}
-
-        //                var ctx = new SerializationContext(_domainModel, result.SchemaInfo, result);
-        //                var mel = (IModelElement)result.SchemaInfo.Deserialize(ctx);
-        //                if (mel != null)
-        //                {
-        //                    if (result.Properties != null)
-        //                    {
-        //                        foreach (var property in result.Properties)
-        //                        {
-        //                            // Mise à jour des propriétés lues
-        //                            if (option == MergeOption.AppendOnly && newInCache || option == MergeOption.OverwriteChanges)
-        //                                _storage.SetPropertyValue(mel, property.Key, property.Value.Value, property.Value.CurrentVersion);
-        //                            else if (option == MergeOption.PreserveChanges)
-        //                            {
-        //                                if (_storage.GetPropertyValue(node.Id, nodeMetaclass, property.Key) == null)
-        //                                    _storage.SetPropertyValue(mel, property.Key, property.Value.Value, property.Value.CurrentVersion);
-        //                            }
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //            session.AcceptChanges();
-        //        }
-        //        tcs.TrySetResult(cx);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        tcs.SetException(ex);
-        //    }
-        //    return tcs.Task;
-        //}
-
+     
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Removes the element.
@@ -866,17 +776,17 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <summary>
         ///  Gets the attribute.
         /// </summary>
+        /// <exception cref="InvalidElementException">
+        ///  Thrown when an Invalid Element error condition occurs.
+        /// </exception>
         /// <param name="ownerId">
         ///  The identifier that owns this item.
-        /// </param>
-        /// <param name="ownerMetadata">
-        ///  The metadata that owns this item.
         /// </param>
         /// <param name="property">
         ///  The property.
         /// </param>
         /// <returns>
-        ///  The property value or null if not exists
+        ///  The property value or null if not exists.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
         public PropertyValue GetPropertyValue(Identity ownerId, ISchemaProperty property)

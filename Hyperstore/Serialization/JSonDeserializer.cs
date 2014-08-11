@@ -33,7 +33,7 @@ namespace Hyperstore.Modeling.Serialization
             if (string.IsNullOrEmpty(json))
                 return;
 
-            var ser = new JSonDomainModelDeserializer();
+            var ser = new JSonDomainModelDeserializer(domain);
             ser.Deserialize(json);
         }
 
@@ -41,8 +41,10 @@ namespace Hyperstore.Modeling.Serialization
         private JToken _currentToken;
         private IDomainModel _domain;
 
-        public JSonDomainModelDeserializer()
+        public JSonDomainModelDeserializer(IDomainModel domain)
         {
+            Contract.Requires(domain, "domain");
+            _domain = domain;
         }
 
         private void Deserialize(string json)

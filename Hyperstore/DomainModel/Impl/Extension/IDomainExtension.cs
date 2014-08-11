@@ -10,10 +10,37 @@ namespace Hyperstore.Modeling
     {
     }
 
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  Interface for domain model extension.
+    /// </summary>
+    /// <seealso cref="T:IDomainModel"/>
+    ///-------------------------------------------------------------------------------------------------
     public interface IDomainModelExtension : IDomainModel
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the extension elements in this collection.
+        /// </summary>
+        /// <param name="schemaElement">
+        ///  (Optional) the schema element.
+        /// </param>
+        /// <returns>
+        ///  An enumerator that allows foreach to be used to process the extension elements in this
+        ///  collection.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         IEnumerable<IModelElement> GetExtensionElements(ISchemaElement schemaElement = null);
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the deleted elements in this collection.
+        /// </summary>
+        /// <returns>
+        ///  An enumerator that allows foreach to be used to process the deleted elements in this
+        ///  collection.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         IEnumerable<INodeInfo> GetDeletedElements();
     }
 }

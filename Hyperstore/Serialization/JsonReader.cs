@@ -24,17 +24,52 @@ using System.Threading.Tasks;
 
 namespace Hyperstore.Modeling.Serialization
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  Values that represent JToken.
+    /// </summary>
+    ///-------------------------------------------------------------------------------------------------
     public enum JToken
     {
+        /// <summary>
+        ///  Specifies the begin option.
+        /// </summary>
         Begin,
+        /// <summary>
+        ///  Specifies the EOF option.
+        /// </summary>
         EOF,
+        /// <summary>
+        ///  Specifies the start object option.
+        /// </summary>
         StartObject,
+        /// <summary>
+        ///  Specifies the end object option.
+        /// </summary>
         EndObject,
+        /// <summary>
+        ///  Specifies the start array option.
+        /// </summary>
         StartArray,
+        /// <summary>
+        ///  Specifies the end array option.
+        /// </summary>
         EndArray,
+        /// <summary>
+        ///  Specifies the string option.
+        /// </summary>
         String,
+        /// <summary>
+        ///  Specifies the value option.
+        /// </summary>
         Value,
+        /// <summary>
+        ///  Specifies the comma option.
+        /// </summary>
         Comma,
+        /// <summary>
+        ///  Specifies the colon option.
+        /// </summary>
         Colon
     }
 
@@ -50,16 +85,40 @@ namespace Hyperstore.Modeling.Serialization
         private char _currentChar;
         private int _pos;
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the current position.
+        /// </summary>
+        /// <value>
+        ///  The current position.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public int CurrentPos
         {
             get { return _pos; }
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the current value.
+        /// </summary>
+        /// <value>
+        ///  The current value.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public string CurrentValue
         {
             get { return _value; }
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Constructor.
+        /// </summary>
+        /// <param name="reader">
+        ///  The reader.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         public JsonReader(TextReader reader)
         {
             _reader = reader;
@@ -94,6 +153,14 @@ namespace Hyperstore.Modeling.Serialization
             _bufferPos = 0;
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the read.
+        /// </summary>
+        /// <returns>
+        ///  A JToken.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public JToken Read()
         {
             SkipWhiteSpace();

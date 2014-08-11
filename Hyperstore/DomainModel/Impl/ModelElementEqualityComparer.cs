@@ -23,23 +23,80 @@ using System.Text;
 
 namespace Hyperstore.Modeling
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  A model element comparer.
+    /// </summary>
+    /// <seealso cref="T:System.Collections.Generic.IEqualityComparer{Hyperstore.Modeling.IModelElement}"/>
+    /// <seealso cref="T:System.Collections.IEqualityComparer"/>
+    ///-------------------------------------------------------------------------------------------------
     public class ModelElementComparer : IEqualityComparer<IModelElement>, IEqualityComparer
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Tests if two IModelElement objects are considered equal.
+        /// </summary>
+        /// <param name="x">
+        ///  I model element to be compared.
+        /// </param>
+        /// <param name="y">
+        ///  I model element to be compared.
+        /// </param>
+        /// <returns>
+        ///  true if the objects are considered equal, false if they are not.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public bool Equals(IModelElement x, IModelElement y)
         {
             return x != null && y != null && x.Id == y.Id; 
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Calculates a hash code for this instance.
+        /// </summary>
+        /// <param name="obj">
+        ///  The object.
+        /// </param>
+        /// <returns>
+        ///  A hash code for this instance.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public int GetHashCode(IModelElement obj)
         {
             return obj.Id.GetHashCode();
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Determines whether the specified objects are equal.
+        /// </summary>
+        /// <param name="x">
+        ///  I model element to be compared.
+        /// </param>
+        /// <param name="y">
+        ///  I model element to be compared.
+        /// </param>
+        /// <returns>
+        ///  true if the specified objects are equal; otherwise, false.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public bool Equals(object x, object y)
         {
             return Equals(x as IModelElement, y as IModelElement);
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Returns a hash code for the specified object.
+        /// </summary>
+        /// <param name="obj">
+        ///  The object.
+        /// </param>
+        /// <returns>
+        ///  A hash code for the specified object.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public int GetHashCode(object obj)
         {
             return obj.GetHashCode();

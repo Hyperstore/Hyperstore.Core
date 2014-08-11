@@ -309,20 +309,15 @@ namespace Hyperstore.Modeling.HyperGraph
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the elements.
+        ///  Query if 'id' is deleted.
         /// </summary>
-        /// <param name="query">
-        ///  .
-        /// </param>
-        /// <param name="option">
-        ///  .
+        /// <param name="id">
+        ///  The id.
         /// </param>
         /// <returns>
-        ///  The element with graph provider asynchronous.
+        ///  true if deleted, false if not.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        //Task<int> LoadElementWithGraphProviderAsync(Query query, MergeOption option);
-
         bool IsDeleted(Identity id);
     }
 }

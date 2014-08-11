@@ -27,6 +27,11 @@ using System.Threading.Tasks;
 
 namespace Hyperstore.Modeling.Serialization
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  Bitfield of flags for specifying JSonSerializationOption.
+    /// </summary>
+    ///-------------------------------------------------------------------------------------------------
     [Flags]
     public enum JSonSerializationOption
     {
@@ -68,17 +73,49 @@ namespace Hyperstore.Modeling.Serialization
         SerializeGraphObject=1024
     }
 
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  A son serialization settings.
+    /// </summary>
+    ///-------------------------------------------------------------------------------------------------
     public class JSonSerializationSettings
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the serializer.
+        /// </summary>
+        /// <value>
+        ///  The serializer.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public IJsonSerializer Serializer { get; set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets options for controlling the operation.
+        /// </summary>
+        /// <value>
+        ///  The options.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public JSonSerializationOption Options { get; set; }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Default constructor.
+        /// </summary>
+        ///-------------------------------------------------------------------------------------------------
         public JSonSerializationSettings()
         {
             Options = JSonSerializationOption.Json;
         }
     }
 
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  A son domain model serializer.
+    /// </summary>
+    ///-------------------------------------------------------------------------------------------------
     public class JSonDomainModelSerializer
     {
         private readonly TextWriter _writer;
@@ -91,21 +128,81 @@ namespace Hyperstore.Modeling.Serialization
         private Queue<IModelElement> _elements;
 
         #region static
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  true this instance to the given stream.
+        /// </summary>
+        /// <param name="domain">
+        ///  The domain.
+        /// </param>
+        /// <param name="option">
+        ///  (Optional) the option.
+        /// </param>
+        /// <returns>
+        ///  A string.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public static string Serialize(IDomainModel domain, JSonSerializationOption option = JSonSerializationOption.Json)
         {
             return Serialize(domain, new JSonSerializationSettings { Options = option });
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  true this instance to the given stream.
+        /// </summary>
+        /// <param name="elements">
+        ///  The elements.
+        /// </param>
+        /// <param name="option">
+        ///  (Optional) the option.
+        /// </param>
+        /// <returns>
+        ///  A string.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public static string Serialize(IEnumerable<IModelElement> elements, JSonSerializationOption option = JSonSerializationOption.Json)
         {
             return Serialize(elements, new JSonSerializationSettings { Options = option });
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  true this instance to the given stream.
+        /// </summary>
+        /// <param name="mel">
+        ///  The mel.
+        /// </param>
+        /// <param name="option">
+        ///  (Optional) the option.
+        /// </param>
+        /// <param name="query">
+        ///  (Optional) the query.
+        /// </param>
+        /// <returns>
+        ///  A string.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public static string Serialize(IModelElement mel, JSonSerializationOption option = JSonSerializationOption.Json, ITraversalQuery query = null)
         {
             return Serialize(mel, new JSonSerializationSettings { Options = option }, query);
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  true this instance to the given stream.
+        /// </summary>
+        /// <param name="domain">
+        ///  The domain.
+        /// </param>
+        /// <param name="settings">
+        ///  Options for controlling the operation.
+        /// </param>
+        /// <returns>
+        ///  A string.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public static string Serialize(IDomainModel domain, JSonSerializationSettings settings)
         {
             Contract.Requires(domain, "domain");
@@ -118,6 +215,20 @@ namespace Hyperstore.Modeling.Serialization
             return Serialize(domain.GetElements(), settings);
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  true this instance to the given stream.
+        /// </summary>
+        /// <param name="elements">
+        ///  The elements.
+        /// </param>
+        /// <param name="settings">
+        ///  Options for controlling the operation.
+        /// </param>
+        /// <returns>
+        ///  A string.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public static string Serialize(IEnumerable<IModelElement> elements, JSonSerializationSettings settings)
         {
             Contract.Requires(elements, "elements");
@@ -129,6 +240,23 @@ namespace Hyperstore.Modeling.Serialization
             return sw.ToString();
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  true this instance to the given stream.
+        /// </summary>
+        /// <param name="mel">
+        ///  The mel.
+        /// </param>
+        /// <param name="settings">
+        ///  Options for controlling the operation.
+        /// </param>
+        /// <param name="query">
+        ///  (Optional) the query.
+        /// </param>
+        /// <returns>
+        ///  A string.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public static string Serialize(IModelElement mel, JSonSerializationSettings settings, ITraversalQuery query = null)
         {
             Contract.Requires(mel, "mel");

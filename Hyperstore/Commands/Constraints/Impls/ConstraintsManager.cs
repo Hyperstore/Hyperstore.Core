@@ -149,7 +149,10 @@ namespace Hyperstore.Modeling.Validations
         ///  s'appliquent sur la metadata de l'élément.
         /// </summary>
         /// <param name="elements">
-        ///  .
+        ///  The elements.
+        /// </param>
+        /// <param name="categoryName">
+        ///  (Optional) name of the category.
         /// </param>
         /// <returns>
         ///  An IExecutionResult.

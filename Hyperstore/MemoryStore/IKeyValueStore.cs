@@ -117,6 +117,17 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         IEnumerable<IGraphNode> GetAllNodes(NodeType elementType);
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Exists the given identifier.
+        /// </summary>
+        /// <param name="id">
+        ///  The identifier.
+        /// </param>
+        /// <returns>
+        ///  true if it succeeds, false if it fails.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         bool Exists(Identity id);
     }
 }

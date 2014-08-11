@@ -77,6 +77,14 @@ namespace Hyperstore.Modeling.Metadata
         IEventManager IDomainModel.Events { get { return null; } }
         IIdGenerator IDomainModel.IdGenerator { get { return null; } }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets a value indicating whether this instance is disposed.
+        /// </summary>
+        /// <value>
+        ///  true if this instance is disposed, false if not.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public bool IsDisposed
         {
             get { return false; }

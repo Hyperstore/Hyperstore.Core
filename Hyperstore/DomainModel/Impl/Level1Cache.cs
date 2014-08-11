@@ -29,6 +29,12 @@ using Hyperstore.Modeling.Platform;
 
 namespace Hyperstore.Modeling.Domain
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  A level 1 cache.
+    /// </summary>
+    /// <seealso cref="T:System.IDisposable"/>
+    ///-------------------------------------------------------------------------------------------------
     public sealed class Level1Cache : IDisposable
     {
         private IConcurrentDictionary<Identity, IModelElement> _cache;
@@ -40,8 +46,8 @@ namespace Hyperstore.Modeling.Domain
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <param name="innerGraph">
-        ///  The inner graph.
+        /// <param name="domain">
+        ///  The domain.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         public Level1Cache(IHyperGraphProvider domain)

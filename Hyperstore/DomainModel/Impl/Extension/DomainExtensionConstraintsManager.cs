@@ -224,6 +224,9 @@ namespace Hyperstore.Modeling.DomainExtension
         /// <param name="elements">
         ///  A variable-length parameters list containing elements.
         /// </param>
+        /// <param name="categoryName">
+        ///  (Optional) name of the category.
+        /// </param>
         /// <returns>
         ///  An IExecutionResult.
         /// </returns>

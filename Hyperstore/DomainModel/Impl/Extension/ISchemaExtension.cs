@@ -22,6 +22,13 @@ using System.Text;
 
 namespace Hyperstore.Modeling
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  Interface for schema extension.
+    /// </summary>
+    /// <seealso cref="T:ISchema"/>
+    /// <seealso cref="T:IDomainModelExtension"/>
+    ///-------------------------------------------------------------------------------------------------
     public interface ISchemaExtension : ISchema, IDomainModelExtension
     {
     }

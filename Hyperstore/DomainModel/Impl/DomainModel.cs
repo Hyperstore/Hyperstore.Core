@@ -46,14 +46,23 @@ namespace Hyperstore.Modeling.Domain
         private readonly object _resolversLock = new object();
         private bool _disposed;
 
+        IHyperGraph IHyperGraphProvider.InnerGraph { get { return ((DomainModel)this).InnerGraph; } }
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  The inner graph.
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
-        IHyperGraph IHyperGraphProvider.InnerGraph { get { return ((DomainModel)this).InnerGraph; } }
         protected IHyperGraph InnerGraph;
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the 1 cache.
+        /// </summary>
+        /// <value>
+        ///  The l 1 cache.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         protected Level1Cache L1Cache { get; private set; }
 
         private ICommandManager _commandManager;
@@ -134,6 +143,14 @@ namespace Hyperstore.Modeling.Domain
             ConfigureCore();
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Determines if we can configure core.
+        /// </summary>
+        /// <returns>
+        ///  true if it succeeds, false if it fails.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         protected virtual bool ConfigureCore()
         {
             if (_initialized)
@@ -374,6 +391,23 @@ namespace Hyperstore.Modeling.Domain
             return CreateEntityCore(id, metaClass, instance);
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Creates entity core.
+        /// </summary>
+        /// <param name="id">
+        ///  The identifier.
+        /// </param>
+        /// <param name="metaClass">
+        ///  the meta class.
+        /// </param>
+        /// <param name="instance">
+        ///  The instance.
+        /// </param>
+        /// <returns>
+        ///  The new entity core.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         protected virtual IModelElement CreateEntityCore(Identity id, ISchemaEntity metaClass, IModelEntity instance)
         {
             Contract.Requires(id, "id");
@@ -391,6 +425,14 @@ namespace Hyperstore.Modeling.Domain
             }
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Check initialized.
+        /// </summary>
+        /// <exception cref="Exception">
+        ///  Thrown when an exception error condition occurs.
+        /// </exception>
+        ///-------------------------------------------------------------------------------------------------
         protected void CheckInitialized()
         {
             if (!_initialized)
@@ -727,6 +769,23 @@ namespace Hyperstore.Modeling.Domain
             return RemoveEntityCore(id, metadata, throwExceptionIfNotExists);
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Removes the entity core.
+        /// </summary>
+        /// <param name="id">
+        ///  The identifier.
+        /// </param>
+        /// <param name="metadata">
+        ///  the metadata.
+        /// </param>
+        /// <param name="throwExceptionIfNotExists">
+        ///  true to throw exception if not exists.
+        /// </param>
+        /// <returns>
+        ///  true if it succeeds, false if it fails.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         protected virtual bool RemoveEntityCore(Identity id, ISchemaEntity metadata, bool throwExceptionIfNotExists)
         {
             Contract.Requires(id, "id");
@@ -825,32 +884,7 @@ namespace Hyperstore.Modeling.Domain
         {
             return (TElement)GetEntity(id, Store.GetSchemaEntity<TElement>());
         }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Loads element with graph provider asynchronous.
-        /// </summary>
-        /// <exception cref="Exception">
-        ///  Thrown when an exception error condition occurs.
-        /// </exception>
-        /// <param name="query">
-        ///  The query.
-        /// </param>
-        /// <param name="option">
-        ///  (Optional) the option.
-        /// </param>
-        /// <returns>
-        ///  The element with graph provider asynchronous.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        //public async Task<int> LoadElementWithGraphProviderAsync(Query query, MergeOption option = MergeOption.PreserveChanges)
-        //{
-        //    CheckInitialized();
-        //    if (Session.Current != null)
-        //        throw new Exception(ExceptionMessages.AwaitInSessionIsNotAllowed);
-
-        //    return await InnerGraph.LoadElementWithGraphProviderAsync(query, option).ConfigureAwait(false);
-        //}
+      
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -946,6 +980,26 @@ namespace Hyperstore.Modeling.Domain
             return SetPropertyValueCore(owner, propertyMetadata, value, version);
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Sets property value core.
+        /// </summary>
+        /// <param name="owner">
+        ///  The owner.
+        /// </param>
+        /// <param name="propertyMetadata">
+        ///  The property metadata.
+        /// </param>
+        /// <param name="value">
+        ///  The value.
+        /// </param>
+        /// <param name="version">
+        ///  The version.
+        /// </param>
+        /// <returns>
+        ///  A PropertyValue.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         protected virtual PropertyValue SetPropertyValueCore(IModelElement owner, ISchemaProperty propertyMetadata, object value, long? version)
         {
             Contract.Requires(owner, "owner");
@@ -965,6 +1019,32 @@ namespace Hyperstore.Modeling.Domain
             return CreateRelationshipCore(id, relationshipSchema, start, endId, endSchema, relationship);
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Creates relationship core.
+        /// </summary>
+        /// <param name="id">
+        ///  The identifier.
+        /// </param>
+        /// <param name="relationshipSchema">
+        ///  The relationship schema.
+        /// </param>
+        /// <param name="start">
+        ///  the start.
+        /// </param>
+        /// <param name="endId">
+        ///  The end identifier.
+        /// </param>
+        /// <param name="endSchema">
+        ///  The end schema.
+        /// </param>
+        /// <param name="relationship">
+        ///  The relationship.
+        /// </param>
+        /// <returns>
+        ///  The new relationship core.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         protected virtual IModelRelationship CreateRelationshipCore(Identity id, ISchemaRelationship relationshipSchema, IModelElement start, Identity endId, ISchemaElement endSchema, IModelRelationship relationship)
         {
             Contract.Requires(id, "id");
@@ -989,6 +1069,23 @@ namespace Hyperstore.Modeling.Domain
             return RemoveRelationshipCore(id, metadata, throwExceptionIfNotExists);
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Removes the relationship core.
+        /// </summary>
+        /// <param name="id">
+        ///  The identifier.
+        /// </param>
+        /// <param name="metadata">
+        ///  the metadata.
+        /// </param>
+        /// <param name="throwExceptionIfNotExists">
+        ///  true to throw exception if not exists.
+        /// </param>
+        /// <returns>
+        ///  true if it succeeds, false if it fails.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         protected virtual bool RemoveRelationshipCore(Identity id, ISchemaRelationship metadata, bool throwExceptionIfNotExists)
         {
             Contract.Requires(id, "id");

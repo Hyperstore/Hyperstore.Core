@@ -41,6 +41,12 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="metaClassId">
         ///  The identifier of the meta class.
         /// </param>
+        /// <param name="endId">
+        ///  The end identifier.
+        /// </param>
+        /// <param name="endSchemaId">
+        ///  The end schema identifier.
+        /// </param>
         ///-------------------------------------------------------------------------------------------------
         public EdgeInfo(Identity id, Identity metaClassId, Identity endId, Identity endSchemaId)
         {
@@ -75,25 +81,24 @@ namespace Hyperstore.Modeling.HyperGraph
         ///-------------------------------------------------------------------------------------------------
         public Identity Id { get; private set; }
 
-        /////-------------------------------------------------------------------------------------------------
-        ///// <summary>
-        /////  Identifiant du noeud sortant. Ceci permet d'optimiser les traversées de graphe en èvitant de
-        /////  lire la relation pour naviguer de noeud en noeud.
-        ///// </summary>
-        ///// <value>
-        /////  The identifier of the end.
-        ///// </value>
-        /////-------------------------------------------------------------------------------------------------
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the identifier of the end.
+        /// </summary>
+        /// <value>
+        ///  The identifier of the end.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public Identity EndId { get; private set; }
 
-        /////-------------------------------------------------------------------------------------------------
-        ///// <summary>
-        /////  Gets the identifier of the end schema.
-        ///// </summary>
-        ///// <value>
-        /////  The identifier of the end schema.
-        ///// </value>
-        /////-------------------------------------------------------------------------------------------------
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the identifier of the end schema.
+        /// </summary>
+        /// <value>
+        ///  The identifier of the end schema.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public Identity EndSchemaId { get; private set; }
     }
 }

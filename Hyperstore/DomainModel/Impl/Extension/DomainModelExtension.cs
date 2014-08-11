@@ -29,57 +29,6 @@ namespace Hyperstore.Modeling.DomainExtension
 {
     internal class DomainModelExtension : DomainModel, IExtension, IDomainModelExtension
     {
-        #region deleted node info
-        class DeletedNodeInfo : IGraphNode
-        {
-            public DeletedNodeInfo(Identity id, ISchemaElement schemaElement)
-            {
-                Id = id;
-                SchemaId = schemaElement.Id;
-            }
-
-            public Identity StartId
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            public Identity StartSchemaId
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            public Identity EndId
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            public Identity EndSchemaId
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            public NodeType NodeType
-            {
-                get { return Modeling.NodeType.Node; }
-            }
-
-            public Identity Id
-            {
-                get;
-                private set;
-            }
-
-            public Identity SchemaId
-            {
-                get;
-                private set;
-            }
-        }
-
-        #endregion
-
-        private IKeyValueStore _deletedElements;
-
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Constructor.
@@ -111,29 +60,6 @@ namespace Hyperstore.Modeling.DomainExtension
             ExtensionName = extensionName;
             ExtendedDomainModel = extendeDomainModel;
             ExtensionMode = extensionMode;
-        }
-
-        protected override bool ConfigureCore()
-        {
-            if (!base.ConfigureCore())
-            {
-                _deletedElements = new Hyperstore.Modeling.MemoryStore.TransactionalMemoryStore(
-                            String.Format("{0}-{1}-deleted", ExtendedDomainModel.Name, ExtensionName),
-                            5,
-                            DependencyResolver.Resolve<Hyperstore.Modeling.MemoryStore.ITransactionManager>()
-                            );
-                return true;
-            }
-
-            return false;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-            if (_deletedElements is IDisposable)
-                ((IDisposable)_deletedElements).Dispose();
-            _deletedElements = null;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -178,10 +104,9 @@ namespace Hyperstore.Modeling.DomainExtension
 
         public IEnumerable<INodeInfo> GetDeletedElements()
         {
-            foreach (var tuple in _deletedElements.GetAllNodes(NodeType.Edge))
-            {
-                yield return tuple;
-            }
+            var graph = InnerGraph as IExtensionHyperGraph;
+            Debug.Assert(graph != null);
+            return graph.GetDeletedElements();
         }
 
         public IEnumerable<IModelRelationship> GetExtensionRelationships(ISchemaRelationship schemaRelationship = null, IModelElement start = null, IModelElement end = null)

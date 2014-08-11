@@ -502,6 +502,14 @@ namespace Hyperstore.Modeling
             return null;
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Sets calculated property source.
+        /// </summary>
+        /// <param name="propertyName">
+        ///  (Optional) Name of the property.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         protected void SetCalculatedPropertySource([CallerMemberName]string propertyName = null)
         {
             var tracker = Session.Current as ISupportsCalculatedPropertiesTracking;

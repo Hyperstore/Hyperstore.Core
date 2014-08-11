@@ -65,7 +65,7 @@
     <Compile Include="Container\ICommandInterceptorMetadata.cs" />
     <Compile Include="Container\IEventHandlerMetadata.cs" />
     <Compile Include="Container\IMefContainer.cs" />
-    <Compile Include="DomainModel\IInternalDomainModel.cs" />
+    <Compile Include="DomainModel\IHyperGraphProvider.cs" />
     <Compile Include="DomainModel\Impl\CalculatedProperty.cs" />
     <Compile Include="DomainModel\IDataErrorNotifier.cs" />
     <Compile Include="DomainModel\Impl\DomainExtensions.cs" />

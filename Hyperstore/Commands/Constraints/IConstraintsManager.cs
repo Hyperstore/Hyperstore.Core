@@ -99,6 +99,9 @@ namespace Hyperstore.Modeling.Validations
         /// <param name="elements">
         ///  List of the elements to validate or null for all domain elements.
         /// </param>
+        /// <param name="categoryName">
+        ///  (Optional) Name of the category.
+        /// </param>
         /// <returns>
         ///  The result of the validation.
         /// </returns>

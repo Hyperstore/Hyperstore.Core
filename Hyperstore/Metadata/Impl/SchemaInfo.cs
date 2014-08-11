@@ -414,6 +414,9 @@ namespace Hyperstore.Modeling.Metadata
         /// <param name="metadata">
         ///  The metadata.
         /// </param>
+        /// <param name="kind">
+        ///  (Optional) the kind.
+        /// </param>
         /// <param name="defaultValue">
         ///  (Optional) The default value.
         /// </param>

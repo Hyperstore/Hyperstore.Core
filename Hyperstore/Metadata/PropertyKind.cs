@@ -22,9 +22,20 @@ using System.Text;
 
 namespace Hyperstore.Modeling
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  Values that represent PropertyKind.
+    /// </summary>
+    ///-------------------------------------------------------------------------------------------------
     public enum PropertyKind
     {
+        /// <summary>
+        ///  Specifies the normal option.
+        /// </summary>
         Normal,
+        /// <summary>
+        ///  Specifies the calculated option.
+        /// </summary>
         Calculated
     }
 }
