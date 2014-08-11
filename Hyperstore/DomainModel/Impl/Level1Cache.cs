@@ -29,10 +29,12 @@ using Hyperstore.Modeling.Platform;
 
 namespace Hyperstore.Modeling.Domain
 {
-    internal sealed class Level1Cache : IDisposable
+    public sealed class Level1Cache : IDisposable
     {
-        private readonly IConcurrentDictionary<Identity, IModelElement> _cache;
-        private IHyperGraph _innerGraph;
+        private IConcurrentDictionary<Identity, IModelElement> _cache;
+        private IHyperGraphProvider _domain;
+
+        private IHyperGraph InnerGraph { get { return _domain.InnerGraph; } }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -42,14 +44,14 @@ namespace Hyperstore.Modeling.Domain
         ///  The inner graph.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public Level1Cache(IHyperGraph innerGraph)
+        public Level1Cache(IHyperGraphProvider domain)
         {
-            DebugContract.Requires(innerGraph);
+            DebugContract.Requires(domain);
 
             _cache = PlatformServices.Current.CreateConcurrentDictionary<Identity, IModelElement>();
-            _innerGraph = innerGraph;
+            _domain = domain;
 
-            innerGraph.DomainModel.Store.SessionCreated += OnSessionCreated;
+            InnerGraph.DomainModel.Store.SessionCreated += OnSessionCreated;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -60,10 +62,11 @@ namespace Hyperstore.Modeling.Domain
         ///-------------------------------------------------------------------------------------------------
         public void Dispose()
         {
-            if (_innerGraph != null)
+            if (_domain != null)
             {
-                _innerGraph.DomainModel.Store.SessionCreated -= OnSessionCreated;
-                _innerGraph = null;
+                InnerGraph.DomainModel.Store.SessionCreated -= OnSessionCreated;
+                _domain = null;
+                _cache = null;
             }
         }
 
@@ -84,51 +87,25 @@ namespace Hyperstore.Modeling.Domain
             }
         }
 
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets an element.
-        /// </summary>
-        /// <param name="id">
-        ///  The identifier.
-        /// </param>
-        /// <param name="metaclass">
-        ///  The metaclass.
-        /// </param>
-        /// <param name="localOnly">
-        ///  true to local only.
-        /// </param>
-        /// <returns>
-        ///  The element.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public IModelElement GetElement(Identity id, ISchemaElement metaclass, bool localOnly)
+        internal IModelElement GetElement(Identity id, ISchemaElement metaclass)
         {
             DebugContract.Requires(id);
-            IModelElement weak;
             IModelElement elem;
 
             var cacheEnabled = (metaclass.Schema.Behavior & DomainBehavior.DisableL1Cache) != DomainBehavior.DisableL1Cache;
 
-            if (cacheEnabled && _cache.TryGetValue(id, out weak))
+            if (cacheEnabled && _cache.TryGetValue(id, out elem))
             {
-                elem = weak as IModelElement;
-                if (elem == null)
-                {
-                    _cache.TryRemove(id, out weak);
-                    if (elem != null) // Implique elem.Status == ModelElementStatus.Disposed
-                        return null;
-                }
-                else
-                {
-                    if (Session.Current != null && Session.Current.TrackingData.GetTrackingElementState(elem.Id) == TrackingState.Removed)
-                        return null;
+                if (InnerGraph.IsDeleted(id))
+                    return null;
 
-                    return elem;
-                }
+                if (Session.Current != null && Session.Current.TrackingData.GetTrackingElementState(elem.Id) == TrackingState.Removed)
+                    return null;
+
+                return elem;
             }
 
-            elem = _innerGraph.GetElement(id, metaclass, localOnly);
+            elem = InnerGraph.GetElement(id, metaclass);
             if (elem != null && Session.Current != null && Session.Current.TrackingData.GetTrackingElementState(elem.Id) == TrackingState.Removed)
                 return null;
 
@@ -136,26 +113,14 @@ namespace Hyperstore.Modeling.Domain
             {
                 if (!_cache.TryAdd(id, elem))
                 {
-                    if (_cache.TryGetValue(id, out weak))
-                        elem = weak as IModelElement;
+                    _cache.TryGetValue(id, out elem);
                 }
             }
 
             return elem;
         }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Adds an element.
-        /// </summary>
-        /// <param name="instance">
-        ///  The instance.
-        /// </param>
-        /// <returns>
-        ///  An IModelElement.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public IModelElement AddElement(IModelElement instance)
+        private IModelElement AddElement(IModelElement instance)
         {
             DebugContract.Requires(instance);
 
@@ -171,6 +136,62 @@ namespace Hyperstore.Modeling.Domain
             // To ensure data was not removed after the last GetOrAdd
             val = _cache.GetOrAdd(instance.Id, val);
             return val as IModelElement;
+        }
+
+        internal IModelElement CreateEntity(Identity id, ISchemaEntity metaClass, IModelEntity instance)
+        {
+            IModelElement mel = instance;
+            var r = InnerGraph.CreateEntity(id, metaClass);
+            if (instance == null)
+            {
+                mel = (IModelElement)metaClass.Deserialize(new SerializationContext(_domain, metaClass, r));
+            }
+            AddElement(mel);
+
+            return mel;
+        }
+
+        internal IModelRelationship CreateRelationship(Identity id, ISchemaRelationship relationshipSchema, IModelElement start, Identity endId, ISchemaElement endSchema, IModelRelationship relationship)
+        {
+            var r = InnerGraph.CreateRelationship(id, relationshipSchema, start.Id, start.SchemaInfo, endId, endSchema);
+
+            if (relationship == null)
+            {
+                relationship = (IModelRelationship)relationshipSchema.Deserialize(new SerializationContext(_domain, relationshipSchema, r));
+            }
+            AddElement(relationship);
+
+            return relationship;
+        }
+
+        internal IEnumerable<IModelEntity> GetEntities(ISchemaEntity metaClass, int skip)
+        {
+            foreach (var e in InnerGraph.GetEntities(metaClass, skip))
+            {
+                // TODO voir commentaire dans DomainModelExtension.CreateCache
+                // Dans le cas d'une extension de de domaine, il faut s'assurer de ne conserver dans le cache que les instances
+                // d'un type du domaine sous peine d'avoir des casts invalides si le domaine est déchargé
+                yield return (IModelEntity)AddElement(e);
+            }
+        }
+
+        internal IEnumerable<IModelElement> GetElements(ISchemaElement metaClass, int skip)
+        {
+            foreach (var e in InnerGraph.GetElements(metaClass, skip))
+            {
+                // TODO voir commentaire dans DomainModelExtension.CreateCache
+                // Dans le cas d'une extension de de domaine, il faut s'assurer de ne conserver dans le cache que les instances
+                // d'un type du domaine sous peine d'avoir des casts invalides si le domaine est déchargé
+                yield return AddElement(e);
+            }
+        }
+
+        internal IEnumerable<IModelRelationship> GetRelationships(ISchemaRelationship metadata = null, IModelElement start = null, IModelElement end = null, int skip = 0)
+        {
+            foreach (var e in InnerGraph.GetRelationships(metadata, start, end, skip))
+            {
+                yield return (IModelRelationship)AddElement(e);
+            }
         }
     }
 }

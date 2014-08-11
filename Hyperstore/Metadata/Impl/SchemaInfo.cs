@@ -639,8 +639,10 @@ namespace Hyperstore.Modeling.Metadata
             base.Dispose(disposing);
 
             _propertiesByName = null;
-            _properties.Dispose();
-            _superClassHandler.Dispose();
+            if (_properties != null)
+                _properties.Dispose();
+            if (_superClassHandler != null)
+                _superClassHandler.Dispose();
         }
 
         object ISchemaInfo.Deserialize(SerializationContext ctx)

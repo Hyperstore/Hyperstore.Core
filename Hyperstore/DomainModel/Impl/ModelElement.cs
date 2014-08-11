@@ -902,7 +902,7 @@ namespace Hyperstore.Modeling
         {
             Contract.Requires(property, "property");
 
-            var pv = DomainModel.GetPropertyValue(_id, ((IModelElement)this).SchemaInfo, property);
+            var pv = DomainModel.GetPropertyValue(_id, property);
             SetCalculatedPropertySource(property.Name);
             return pv;
         }

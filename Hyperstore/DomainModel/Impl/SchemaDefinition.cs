@@ -102,23 +102,6 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Useses the query adapter.
-        /// </summary>
-        /// <param name="factory">
-        ///  The factory.
-        /// </param>
-        /// <returns>
-        ///  An ISchemaDefinition.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public ISchemaDefinition UsesGraphAdapter(Func<IDependencyResolver, IGraphAdapter> factory)
-        {
-            Uses(factory);
-            return this;
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
         ///  Useses the specified factory.
         /// </summary>
         /// <typeparam name="TService">

@@ -345,14 +345,14 @@ namespace Hyperstore.Tests.MemoryStore
             {
                 using (var s2 = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
                 {
-                    provider.AddNode(new Data("1", 10), PrimitivesSchema.Int32Schema);
-                    provider.UpdateNode(new Data("1", 20), PrimitivesSchema.Int32Schema);
+                    provider.AddNode(new Data("1", 10));
+                    provider.UpdateNode(new Data("1", 20));
                     s2.AcceptChanges();
                 }
                 s.AcceptChanges();
             }
 
-            Assert.AreEqual(((Data)provider.GetNode(new Identity("test", "1"), PrimitivesSchema.Int32Schema)).Value, 20);
+            Assert.AreEqual(((Data)provider.GetNode(new Identity("test", "1"))).Value, 20);
         }
 
         [TestMethod]
@@ -367,14 +367,14 @@ namespace Hyperstore.Tests.MemoryStore
             {
                 using (var s2 = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
                 {
-                    provider.AddNode(new Data("1", 10), PrimitivesSchema.Int32Schema);
-                    provider.UpdateNode(new Data("1", 20), PrimitivesSchema.Int32Schema);
+                    provider.AddNode(new Data("1", 10));
+                    provider.UpdateNode(new Data("1", 20));
                 }
             }
 
             using (var s = store.BeginSession())
             {
-                Assert.AreEqual(provider.GetNode(new Identity("test", "1"), PrimitivesSchema.Int32Schema), null);
+                Assert.AreEqual(provider.GetNode(new Identity("test", "1")), null);
                 s.AcceptChanges();
             }
         }
@@ -388,17 +388,17 @@ namespace Hyperstore.Tests.MemoryStore
             var provider = new TransactionalMemoryStore(domain);
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
             {
-                provider.AddNode(new Data("1", 10), PrimitivesSchema.Int32Schema);
+                provider.AddNode(new Data("1", 10));
                 using (var s2 = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
                 {
-                    provider.UpdateNode(new Data("1", 20), PrimitivesSchema.Int32Schema);
+                    provider.UpdateNode(new Data("1", 20));
                 }
                 s.AcceptChanges();
             }
 
             using (var s = store.BeginSession())
             {
-                Assert.AreEqual(provider.GetNode(new Identity("test", "1"), PrimitivesSchema.Int32Schema), null);
+                Assert.AreEqual(provider.GetNode(new Identity("test", "1")), null);
                 s.AcceptChanges();
             }
         }
@@ -413,12 +413,12 @@ namespace Hyperstore.Tests.MemoryStore
             var provider = new TransactionalMemoryStore(domain);
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
             {
-                provider.AddNode(new Data("1", 10), PrimitivesSchema.Int32Schema);
+                provider.AddNode(new Data("1", 10));
                 s.AcceptChanges();
             }
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
             {
-                Assert.AreEqual(((Data)provider.GetNode(new Identity("test", "1"), PrimitivesSchema.Int32Schema)).Value, 10);
+                Assert.AreEqual(((Data)provider.GetNode(new Identity("test", "1"))).Value, 10);
                 s.AcceptChanges();
             }
         }
@@ -433,12 +433,12 @@ namespace Hyperstore.Tests.MemoryStore
             var provider = new TransactionalMemoryStore(domain);
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
             {
-                provider.AddNode(new Data("1", 10), PrimitivesSchema.Int32Schema);
+                provider.AddNode(new Data("1", 10));
             }
 
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
             {
-                Assert.AreEqual(provider.GetNode(new Identity("test", "1"), PrimitivesSchema.Int32Schema), null);
+                Assert.AreEqual(provider.GetNode(new Identity("test", "1")), null);
                 s.AcceptChanges();
             }
         }
@@ -452,17 +452,17 @@ namespace Hyperstore.Tests.MemoryStore
             var provider = new TransactionalMemoryStore(domain);
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
             {
-                provider.AddNode(new Data("1", 10), PrimitivesSchema.Int32Schema);
+                provider.AddNode(new Data("1", 10));
                 s.AcceptChanges();
             }
 
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
             {
-                provider.UpdateNode(new Data("1", 20), PrimitivesSchema.Int32Schema);
+                provider.UpdateNode(new Data("1", 20));
             }
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
             {
-                Assert.AreEqual(((Data)provider.GetNode(new Identity("test", "1"), PrimitivesSchema.Int32Schema)).Value, 10);
+                Assert.AreEqual(((Data)provider.GetNode(new Identity("test", "1"))).Value, 10);
                 s.AcceptChanges();
             }
         }
@@ -476,7 +476,7 @@ namespace Hyperstore.Tests.MemoryStore
             var provider = new TransactionalMemoryStore(domain);
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
             {
-                provider.AddNode(new Data("1", 10), PrimitivesSchema.Int32Schema);
+                provider.AddNode(new Data("1", 10));
                 s.AcceptChanges();
             }
 
@@ -487,7 +487,7 @@ namespace Hyperstore.Tests.MemoryStore
 
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
             {
-                Assert.AreEqual(((Data)provider.GetNode(new Identity("test", "1"), PrimitivesSchema.Int32Schema)).Value, 10);
+                Assert.AreEqual(((Data)provider.GetNode(new Identity("test", "1"))).Value, 10);
             }
 
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
@@ -498,7 +498,7 @@ namespace Hyperstore.Tests.MemoryStore
 
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
             {
-                Assert.AreEqual(provider.GetNode(new Identity("test", "1"), PrimitivesSchema.Int32Schema), null);
+                Assert.AreEqual(provider.GetNode(new Identity("test", "1")), null);
                 s.AcceptChanges();
             }
         }

@@ -353,14 +353,11 @@ namespace Hyperstore.Modeling
         /// <param name="entitySchema">
         ///  The entity schema.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) if set to <c>true</c> [local only].
-        /// </param>
         /// <returns>
         ///  The element.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IModelElement GetElement(Identity id, ISchemaElement entitySchema, bool localOnly = true);
+        IModelElement GetElement(Identity id, ISchemaElement entitySchema);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -372,14 +369,11 @@ namespace Hyperstore.Modeling
         /// <param name="id">
         ///  The id.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional)
-        /// </param>
         /// <returns>
         ///  The element.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        T GetElement<T>(Identity id, bool localOnly = true) where T : IModelElement;
+        T GetElement<T>(Identity id) where T : IModelElement;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -391,14 +385,11 @@ namespace Hyperstore.Modeling
         /// <param name="entitySchema">
         ///  The entity schema.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional)
-        /// </param>
         /// <returns>
         ///  The entity.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IModelEntity GetEntity(Identity id, ISchemaEntity entitySchema, bool localOnly = true);
+        IModelEntity GetEntity(Identity id, ISchemaEntity entitySchema);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -410,14 +401,11 @@ namespace Hyperstore.Modeling
         /// <param name="id">
         ///  The id.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional)
-        /// </param>
         /// <returns>
         ///  The entity.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        T GetEntity<T>(Identity id, bool localOnly = true) where T : IModelEntity;
+        T GetEntity<T>(Identity id) where T : IModelEntity;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -490,14 +478,11 @@ namespace Hyperstore.Modeling
         /// <param name="relationshipSchema">
         ///  The relationship schema.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) if set to <c>true</c> [local only].
-        /// </param>
         /// <returns>
         ///  The relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IModelRelationship GetRelationship(Identity id, ISchemaRelationship relationshipSchema, bool localOnly = true);
+        IModelRelationship GetRelationship(Identity id, ISchemaRelationship relationshipSchema);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -509,14 +494,11 @@ namespace Hyperstore.Modeling
         /// <param name="id">
         ///  The id.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional)
-        /// </param>
         /// <returns>
         ///  The relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        T GetRelationship<T>(Identity id, bool localOnly = true) where T : IModelRelationship;
+        T GetRelationship<T>(Identity id) where T : IModelRelationship;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -528,14 +510,11 @@ namespace Hyperstore.Modeling
         /// <param name="skip">
         ///  (Optional) The skip.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) if set to <c>true</c> [local only].
-        /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the elements in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<T> GetElements<T>(int skip = 0, bool localOnly = true) where T : IModelElement;
+        IEnumerable<T> GetElements<T>(int skip = 0) where T : IModelElement;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -547,14 +526,11 @@ namespace Hyperstore.Modeling
         /// <param name="skip">
         ///  (Optional) The skip.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) if set to <c>true</c> [local only].
-        /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the elements in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<IModelElement> GetElements(ISchemaElement containerSchema = null, int skip = 0, bool localOnly = true);
+        IEnumerable<IModelElement> GetElements(ISchemaElement containerSchema = null, int skip = 0);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -566,14 +542,11 @@ namespace Hyperstore.Modeling
         /// <param name="skip">
         ///  (Optional) The skip.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) if set to <c>true</c> [local only].
-        /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the entities in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<T> GetEntities<T>(int skip = 0, bool localOnly = true) where T : IModelEntity;
+        IEnumerable<T> GetEntities<T>(int skip = 0) where T : IModelEntity;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -585,14 +558,11 @@ namespace Hyperstore.Modeling
         /// <param name="skip">
         ///  (Optional) The skip.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) if set to <c>true</c> [local only].
-        /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the entities in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<IModelEntity> GetEntities(ISchemaEntity entitySchema = null, int skip = 0, bool localOnly = true);
+        IEnumerable<IModelEntity> GetEntities(ISchemaEntity entitySchema = null, int skip = 0);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -604,14 +574,11 @@ namespace Hyperstore.Modeling
         /// <param name="skip">
         ///  (Optional) The skip.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) if set to <c>true</c> [local only].
-        /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the relationships in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<T> GetRelationships<T>(int skip = 0, bool localOnly = true) where T : IModelRelationship;
+        IEnumerable<T> GetRelationships<T>(int skip = 0) where T : IModelRelationship;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -623,14 +590,11 @@ namespace Hyperstore.Modeling
         /// <param name="skip">
         ///  (Optional) The skip.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) if set to <c>true</c> [local only].
-        /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the relationships in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<IModelRelationship> GetRelationships(ISchemaRelationship relationshipSchema = null, int skip = 0, bool localOnly = true);
+        IEnumerable<IModelRelationship> GetRelationships(ISchemaRelationship relationshipSchema = null, int skip = 0);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

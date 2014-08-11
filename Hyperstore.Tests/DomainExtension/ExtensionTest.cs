@@ -108,9 +108,6 @@ namespace Hyperstore.Tests.Extension
             var schema = await store.LoadSchemaAsync(new InitialDomainDefinition());
             var initial = await store.CreateDomainModelAsync("D1");
 
-            await schema.LoadSchemaExtension(new ExtensionsDomainDefinition());
-            var extended = await initial.LoadExtensionAsync("Ex1", ExtendedMode.ReadOnly);
-
             Category cat;
             using (var s = store.BeginSession())
             {
@@ -118,6 +115,9 @@ namespace Hyperstore.Tests.Extension
                 cat.Value = 10;
                 s.AcceptChanges();
             }
+
+            await schema.LoadSchemaExtension(new ExtensionsDomainDefinition());
+            var extended = await initial.LoadExtensionAsync("Ex1", ExtendedMode.ReadOnly);
 
             Assert.IsNotNull(store.GetElement<CategoryEx>(((IModelElement)cat).Id));
         }
@@ -132,9 +132,6 @@ namespace Hyperstore.Tests.Extension
                     var schema = await store.LoadSchemaAsync(new InitialDomainDefinition());
                     var initial = await store.CreateDomainModelAsync("D1");
 
-                    await schema.LoadSchemaExtension( new ExtensionsDomainDefinition());
-                    var extended = await initial.LoadExtensionAsync("Ex1", ExtendedMode.Updatable);
-
                     store.GetSchemaEntity<Category>().AddImplicitConstraint<Category>(c => c.Value < 10, "Invalid value");
 
                     Category cat;
@@ -144,6 +141,9 @@ namespace Hyperstore.Tests.Extension
                         cat.Value = 1;
                         s.AcceptChanges();
                     }
+
+                    await schema.LoadSchemaExtension(new ExtensionsDomainDefinition());
+                    var extended = await initial.LoadExtensionAsync("Ex1", ExtendedMode.Updatable);
 
                     CategoryEx catx;
                     using (var s = store.BeginSession())
@@ -333,7 +333,7 @@ namespace Hyperstore.Tests.Extension
             // Load a schema extension
             await initialSchema.LoadSchemaExtension( new ExtensionsDomainDefinition());
 
-            // Iterate to make hot load an unload of the extension
+            // Iterate to make hot load and unload of the extension
             for (int i = 1; i < 3; i++)
             {
                 Sleep(100);

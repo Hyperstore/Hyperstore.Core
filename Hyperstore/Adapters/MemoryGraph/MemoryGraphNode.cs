@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -43,16 +43,12 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
             get { return String.Format("Id={0}, Start={1}, End={2}, Value={3}", Id, StartId, EndId, Value); }
         }
 
-        private IHyperstore _store;
         private readonly object _sync = new object();
 
         /// -------------------------------------------------------------------------------------------------
         ///  <summary>
         ///   Constructor.
         ///  </summary>
-        ///  <param name="store">
-        ///   The store.
-        ///  </param>
         ///  <param name="id">
         ///   The identifier.
         ///  </param>
@@ -81,16 +77,14 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
         ///   (Optional) The version.
         ///  </param>
         /// -------------------------------------------------------------------------------------------------
-        public MemoryGraphNode(IHyperstore store, Identity id, Identity metaClassId, NodeType nodetype, Identity start = null, Identity startMetaclass = null, Identity end = null, Identity endMetaclass = null, object value = null, long version = 1)
+        public MemoryGraphNode(Identity id, Identity metaClassId, NodeType nodetype, Identity start = null, Identity startMetaclass = null, Identity end = null, Identity endMetaclass = null, object value = null, long version = 1)
         {
-            DebugContract.Requires(store, "store");
             DebugContract.Requires(id, "id");
             DebugContract.Requires(metaClassId, "metaClassId");
             DebugContract.Requires(start == null || startMetaclass != null, "start");
             DebugContract.Requires(end == null || endMetaclass != null, "end");
             DebugContract.Requires(start == null || end != null, "start/end");
 
-            _store = store;
             StartId = start;
             EndId = end;
             StartSchemaId = startMetaclass;
@@ -108,7 +102,6 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
         {
             DebugContract.Requires(copy, "copy");
 
-            _store = copy._store;
             Id = copy.Id;
             SchemaId = copy.SchemaId;
             Incomings = copy.Incomings;
@@ -166,7 +159,6 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
         ///-------------------------------------------------------------------------------------------------
         public void Dispose()
         {
-            _store = null;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -259,12 +251,14 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
         ///  The direction.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void AddEdge(Identity id, Identity metadataId, Direction direction)
+        public void AddEdge(Identity id, Identity metadataId, Direction direction, Identity endId, Identity endSchemaId)
         {
             DebugContract.Requires(id, "id");
             DebugContract.Requires(metadataId, "metadataId");
+            DebugContract.Requires(endId, "endId");
+            DebugContract.Requires(endSchemaId, "endSchemaId");
 
-            var edge = new EdgeInfo(id, metadataId);
+            var edge = new EdgeInfo(id, metadataId, endId, endSchemaId);
             lock (_sync)
             {
                 if ((direction & Direction.Outgoing) == Direction.Outgoing)
@@ -304,28 +298,18 @@ namespace Hyperstore.Modeling.HyperGraph.Adapters
         /// <param name="direction">
         ///  The direction.
         /// </param>
-        /// <param name="metadata">
-        ///  (Optional) the metadata.
-        /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the edges in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<EdgeInfo> GetEdges(Direction direction, ISchemaRelationship metadata = null)
+        public IEnumerable<EdgeInfo> GetEdges(Direction direction)
         {
             IEnumerable<EdgeInfo> list;
             lock (_sync)
             {
                 list = direction == Direction.Outgoing ? Outgoings : Incomings;
             }
-            if (metadata != null)
-            {
-                list = list.Where(e =>
-                {
-                    var m = _store.GetSchemaRelationship(e.SchemaId);
-                    return m.IsA(metadata);
-                });
-            }
+
             return list;
         }
 

@@ -15,7 +15,6 @@
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
  
-using Hyperstore.Modeling.HyperGraph.Adapters;
 namespace Hyperstore.Modeling.HyperGraph.Index
 {
     internal class IndexDefinition
@@ -40,7 +39,7 @@ namespace Hyperstore.Modeling.HyperGraph.Index
         ///  A list of names of the properties.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public IndexDefinition(MemoryGraphAdapter graph, string name, ISchemaElement metaClass, bool unique, params string[] propertyNames)
+        public IndexDefinition(IHyperGraph graph, string name, ISchemaElement metaClass, bool unique, params string[] propertyNames)
         {
             DebugContract.Requires(graph);
             DebugContract.RequiresNotEmpty(name);

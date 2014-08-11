@@ -133,6 +133,8 @@ namespace Hyperstore.Modeling.Commands
             using (CodeMarker.MarkBlock("ChangeAttributeCommand.Handler"))
             {
                 var pv = dm.SetPropertyValue(Element, SchemaProperty, Value, this.Version);
+                if (pv == null)
+                    return null;
                 OldValue = pv.OldValue;
                 Version = pv.CurrentVersion;
             }

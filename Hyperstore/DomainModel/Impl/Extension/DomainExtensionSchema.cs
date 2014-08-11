@@ -278,16 +278,13 @@ namespace Hyperstore.Modeling.DomainExtension
         /// <param name="metaclass">
         ///  The metaclass.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  The element.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public override IModelElement GetElement(Identity id, ISchemaElement metaclass, bool localOnly = true)
+        public override IModelElement GetElement(Identity id, ISchemaElement metaclass)
         {
-            return base.GetElement(id, metaclass, localOnly) ?? _extendedMetaModel.GetElement(id, metaclass, localOnly);
+            return base.GetElement(id, metaclass) ?? _extendedMetaModel.GetElement(id, metaclass);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -300,16 +297,13 @@ namespace Hyperstore.Modeling.DomainExtension
         /// <param name="metaclass">
         ///  The metaclass.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  The entity.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public override IModelEntity GetEntity(Identity id, ISchemaEntity metaclass, bool localOnly = true)
+        public override IModelEntity GetEntity(Identity id, ISchemaEntity metaclass)
         {
-            return base.GetEntity(id, metaclass, localOnly) ?? _extendedMetaModel.GetEntity(id, metaclass, localOnly);
+            return base.GetEntity(id, metaclass) ?? _extendedMetaModel.GetEntity(id, metaclass);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -322,16 +316,13 @@ namespace Hyperstore.Modeling.DomainExtension
         /// <param name="metaclass">
         ///  the metadata.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  The relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public override IModelRelationship GetRelationship(Identity id, ISchemaRelationship metaclass, bool localOnly = true)
+        public override IModelRelationship GetRelationship(Identity id, ISchemaRelationship metaclass)
         {
-            return base.GetRelationship(id, metaclass, localOnly) ?? _extendedMetaModel.GetRelationship(id, metaclass, localOnly);
+            return base.GetRelationship(id, metaclass) ?? _extendedMetaModel.GetRelationship(id, metaclass);
         }
 
         IEnumerable<IModelElement> IDomainModelExtension.GetExtensionElements(ISchemaElement schemaElement)
@@ -339,19 +330,9 @@ namespace Hyperstore.Modeling.DomainExtension
             return base.GetElements(schemaElement);
         }
 
-        IEnumerable<IModelEntity> IDomainModelExtension.GetExtensionEntities(ISchemaEntity schemaEntity)
-        {
-            return base.GetEntities(schemaEntity);
-        }
-
-        IEnumerable<IModelElement> IDomainModelExtension.GetDeletedElements()
+        IEnumerable<Hyperstore.Modeling.HyperGraph.INodeInfo> IDomainModelExtension.GetDeletedElements()
         {
             yield break;
-        }
-
-        IEnumerable<IModelRelationship> IDomainModelExtension.GetExtensionRelationships(ISchemaRelationship schemaRelationship, IModelElement start, IModelElement end)
-        {
-            return base.GetRelationships(schemaRelationship, start, end);
         }
     }
 }

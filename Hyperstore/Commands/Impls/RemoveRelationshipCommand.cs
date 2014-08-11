@@ -131,7 +131,7 @@ namespace Hyperstore.Modeling.Commands
 
             using (CodeMarker.MarkBlock("RemoveRelationshipCommand.Handle"))
             {
-                if (!dm.RemoveRelationship(Relationship.Id, Relationship.SchemaInfo as ISchemaRelationship, _throwExceptionIfNotExists, false))
+                if (!dm.RemoveRelationship(Relationship.Id, Relationship.SchemaInfo as ISchemaRelationship, _throwExceptionIfNotExists))
                     return null;
             }
             return @event;

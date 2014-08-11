@@ -24,8 +24,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.Statistics;
-using Hyperstore.Modeling.HyperGraph.Adapters;
 using Hyperstore.Modeling.Platform;
+using Hyperstore.Modeling.HyperGraph.Index;
 
 #endregion
 
@@ -45,7 +45,7 @@ namespace Hyperstore.Modeling.HyperGraph
         /// </summary>
         private interface IPendingAction
         {
-            void Execute(MemoryGraphAdapter graph);
+            void Execute(MemoryIndexManager indexManager);
         }
 
         private class UpdateProfilerAction : IPendingAction
@@ -70,15 +70,15 @@ namespace Hyperstore.Modeling.HyperGraph
             /// <summary>
             ///  Executes the given graph.
             /// </summary>
-            /// <param name="graph">
+            /// <param name="indexManager">
             ///  The graph.
             /// </param>
             ///-------------------------------------------------------------------------------------------------
-            public void Execute(MemoryGraphAdapter graph)
+            public void Execute(MemoryIndexManager indexManager)
             {
-                DebugContract.Requires(graph);
+                DebugContract.Requires(indexManager);
 
-                _action(graph.DomainModel.Statistics);
+                _action(indexManager.DomainModel.Statistics);
             }
         }
 
@@ -107,7 +107,7 @@ namespace Hyperstore.Modeling.HyperGraph
                 DebugContract.Requires(id);
                 DebugContract.RequiresNotEmpty(indexName);
 
-                Metaclass = metaclass;
+                SchemaElement = metaclass;
                 Id = id;
                 Key = key;
                 IndexName = indexName;
@@ -151,17 +151,17 @@ namespace Hyperstore.Modeling.HyperGraph
             ///  The metaclass.
             /// </value>
             ///-------------------------------------------------------------------------------------------------
-            protected ISchemaElement Metaclass { get; private set; }
+            protected ISchemaElement SchemaElement { get; private set; }
 
             ///-------------------------------------------------------------------------------------------------
             /// <summary>
             ///  Executes the given graph.
             /// </summary>
-            /// <param name="graph">
+            /// <param name="indexManager">
             ///  The graph.
             /// </param>
             ///-------------------------------------------------------------------------------------------------
-            public abstract void Execute(MemoryGraphAdapter graph);
+            public abstract void Execute(MemoryIndexManager indexManager);
         }
 
         private class AddToIndexAction : IndexAction
@@ -195,11 +195,11 @@ namespace Hyperstore.Modeling.HyperGraph
             ///  The graph.
             /// </param>
             ///-------------------------------------------------------------------------------------------------
-            public override void Execute(MemoryGraphAdapter graph)
+            public override void Execute(MemoryIndexManager indexManager)
             {
-                DebugContract.Requires(graph);
+                DebugContract.Requires(indexManager);
 
-                graph.IndexManager.AddToIndex(Metaclass, IndexName, Id, Key);
+                indexManager.AddToIndex(SchemaElement, IndexName, Id, Key);
             }
         }
 
@@ -230,20 +230,20 @@ namespace Hyperstore.Modeling.HyperGraph
             /// <summary>
             ///  Executes the given graph.
             /// </summary>
-            /// <param name="graph">
+            /// <param name="indexManager">
             ///  The graph.
             /// </param>
             ///-------------------------------------------------------------------------------------------------
-            public override void Execute(MemoryGraphAdapter graph)
+            public override void Execute(MemoryIndexManager indexManager)
             {
-                DebugContract.Requires(graph);
+                DebugContract.Requires(indexManager);
 
-                graph.IndexManager.RemoveFromIndex(Metaclass, IndexName, Id, Key);
+                indexManager.RemoveFromIndex(SchemaElement, IndexName, Id, Key);
             }
         }
 
         private List<IPendingAction> _pendingActions;
-        private readonly MemoryGraphAdapter _graph;
+        private readonly Hyperstore.Modeling.HyperGraph.Index.MemoryIndexManager _indexManager;
         private List<IndexAction> _indexActions;
         private readonly Stack<TransactionStatus> _nestedStatus = new Stack<TransactionStatus>();
 
@@ -259,15 +259,15 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <param name="graph">
+        /// <param name="indexManager">
         ///  The graph.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public HypergraphTransaction(MemoryGraphAdapter graph)
+        public HypergraphTransaction(MemoryIndexManager indexManager)
         {
-            Contract.Requires(graph, "graph");
+            Contract.Requires(indexManager, "indexManager");
 
-            _graph = graph;
+            _indexManager = indexManager;
 
             _pendingActions = new List<IPendingAction>();
             Session.Current.Enlist(this);
@@ -337,14 +337,12 @@ namespace Hyperstore.Modeling.HyperGraph
             _currentStatus = TransactionStatus.Committed;
             UpdateProfiler(s => s.NumberOfTransactions.Incr());
             ExecutePendinActions();
-            _graph.OnTransactionTerminated(this);
         }
 
         void ISessionEnlistmentNotification.NotifyRollback()
         {
             _currentStatus = TransactionStatus.Aborted;
             Aborted = true;
-            _graph.OnTransactionTerminated(this);
         }
 
         /// <summary>
@@ -360,7 +358,7 @@ namespace Hyperstore.Modeling.HyperGraph
 
             if (actions.Any())
             {
-                PlatformServices.Current.Parallel_ForEach(actions, i => i.Execute(_graph));
+                PlatformServices.Current.Parallel_ForEach(actions, i => i.Execute(_indexManager));
             }
             _indexActions = null;
             _pendingActions = null;
@@ -374,8 +372,7 @@ namespace Hyperstore.Modeling.HyperGraph
             if (_indexActions == null)
                 _indexActions = new List<IndexAction>();
 
-            var indexManager = _graph.IndexManager;
-            var indexes = indexManager.GetIndexDefinitionsFor(metaclass);
+            var indexes = _indexManager.GetIndexDefinitionsFor(metaclass);
             if (indexes == null)
                 return;
 
@@ -404,8 +401,7 @@ namespace Hyperstore.Modeling.HyperGraph
             if (_indexActions == null)
                 _indexActions = new List<IndexAction>();
 
-            var indexManager = _graph.IndexManager;
-            var indexes = indexManager.GetIndexDefinitionsFor(metaclass);
+            var indexes = _indexManager.GetIndexDefinitionsFor(metaclass);
             if (indexes == null)
                 return;
 

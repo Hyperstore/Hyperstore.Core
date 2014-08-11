@@ -82,19 +82,6 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Useses the query adapter.
-        /// </summary>
-        /// <param name="factory">
-        ///  The factory.
-        /// </param>
-        /// <returns>
-        ///  An ISchemaDefinition.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        ISchemaDefinition UsesGraphAdapter(Func<IDependencyResolver, IGraphAdapter> factory);
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
         ///  Registers the in event bus.
         /// </summary>
         /// <param name="outputProperty">
@@ -158,19 +145,6 @@ namespace Hyperstore.Modeling
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
         IDomainConfiguration UsesIdGenerator(Func<IDependencyResolver, IIdGenerator> factory);
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Useses the query adapter.
-        /// </summary>
-        /// <param name="factory">
-        ///  The factory.
-        /// </param>
-        /// <returns>
-        ///  An ISchemaDefinition.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        IDomainConfiguration UsesGraphAdapter(Func<IDependencyResolver, IGraphAdapter> factory);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

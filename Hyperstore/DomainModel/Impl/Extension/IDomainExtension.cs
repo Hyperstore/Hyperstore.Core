@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hyperstore.Modeling.HyperGraph;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,14 +10,10 @@ namespace Hyperstore.Modeling
     {
     }
 
-    public interface IDomainModelExtension : IDomainModel 
+    public interface IDomainModelExtension : IDomainModel
     {
         IEnumerable<IModelElement> GetExtensionElements(ISchemaElement schemaElement = null);
-     
-        IEnumerable<IModelEntity> GetExtensionEntities(ISchemaEntity schemaEntity = null);
-        IEnumerable<IModelElement> GetDeletedElements();
-     
-        IEnumerable<IModelRelationship> GetExtensionRelationships(ISchemaRelationship schemaRelationship = null, IModelElement start = null, IModelElement end = null);
 
+        IEnumerable<INodeInfo> GetDeletedElements();
     }
 }

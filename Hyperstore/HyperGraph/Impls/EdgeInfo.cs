@@ -29,7 +29,7 @@ namespace Hyperstore.Modeling.HyperGraph
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     [DebuggerDisplay("Id={Id}, SchemaId={SchemaId}")]
-    public class EdgeInfo
+    public class EdgeInfo : Hyperstore.Modeling.HyperGraph.INodeInfo 
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -42,16 +42,17 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  The identifier of the meta class.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public EdgeInfo(Identity id, Identity metaClassId)//, Identity endId, Identity endMetadataId)
+        public EdgeInfo(Identity id, Identity metaClassId, Identity endId, Identity endSchemaId)
         {
             Contract.Requires(id, "id");
             Contract.Requires(metaClassId, "metaClassId");
-            //Contract.Requires(endId, "outId");
+            Contract.Requires(endId, "endId");
+            Contract.Requires(endSchemaId, "endSchemaId");
 
             Id = id;
             SchemaId = metaClassId;
-            //EndId = endId;
-            //EndSchemaId = endMetadataId;
+            EndId = endId;
+            EndSchemaId = endSchemaId;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -83,7 +84,7 @@ namespace Hyperstore.Modeling.HyperGraph
         /////  The identifier of the end.
         ///// </value>
         /////-------------------------------------------------------------------------------------------------
-        //public Identity EndId { get; private set; }
+        public Identity EndId { get; private set; }
 
         /////-------------------------------------------------------------------------------------------------
         ///// <summary>
@@ -93,6 +94,6 @@ namespace Hyperstore.Modeling.HyperGraph
         /////  The identifier of the end schema.
         ///// </value>
         /////-------------------------------------------------------------------------------------------------
-        //public Identity EndSchemaId { get; private set; }
+        public Identity EndSchemaId { get; private set; }
     }
 }

@@ -40,7 +40,7 @@ namespace Hyperstore.Modeling.Domain
     /// <seealso cref="T:Hyperstore.Modeling.IUpdatableDomainModel"/>
     ///-------------------------------------------------------------------------------------------------
     [DebuggerDisplay("Domain {Name}")]
-    public class DomainModel : IUpdatableDomainModel
+    public class DomainModel : IUpdatableDomainModel, IHyperGraphProvider
     {
         private readonly IDependencyResolver _dependencyResolver;
         private readonly object _resolversLock = new object();
@@ -51,8 +51,11 @@ namespace Hyperstore.Modeling.Domain
         ///  The inner graph.
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
+        IHyperGraph IHyperGraphProvider.InnerGraph { get { return ((DomainModel)this).InnerGraph; } }
         protected IHyperGraph InnerGraph;
-        private Level1Cache _cache;
+
+        protected Level1Cache L1Cache { get; private set; }
+
         private ICommandManager _commandManager;
         private IEventManager _eventManager;
         private bool _initialized;
@@ -128,8 +131,13 @@ namespace Hyperstore.Modeling.Domain
 
         void IDomainModel.Configure()
         {
+            ConfigureCore();
+        }
+
+        protected virtual bool ConfigureCore()
+        {
             if (_initialized)
-                return;
+                return true;
 
             _initialized = true;
             Statistics = new DomainStatistics();
@@ -141,9 +149,11 @@ namespace Hyperstore.Modeling.Domain
             _modelElementFactory = Resolve(ResolveModelElementFactory);
             _commandManager = Resolve(ResolveCommandManager);
             InnerGraph = Resolve(ResolveHyperGraph);
-            CreateCache();
+            L1Cache = new Level1Cache(this);
 
             OnInitialized();
+
+            return false;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -313,7 +323,7 @@ namespace Hyperstore.Modeling.Domain
         ///  The extension.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public async Task<IDomainModelExtension> LoadExtensionAsync(string extensionName, ExtendedMode mode, IDomainConfiguration configuration = null)
+        public virtual async Task<IDomainModelExtension> LoadExtensionAsync(string extensionName, ExtendedMode mode, IDomainConfiguration configuration = null)
         {
             Contract.RequiresNotEmpty(extensionName, "extensionName");
             CheckInitialized();
@@ -359,17 +369,12 @@ namespace Hyperstore.Modeling.Domain
             }
         }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Configures this instance.
-        /// </summary>
-        ///-------------------------------------------------------------------------------------------------
-        protected virtual void CreateCache()
+        IModelElement IUpdatableDomainModel.CreateEntity(Identity id, ISchemaEntity metaClass, IModelEntity instance)
         {
-            _cache = new Level1Cache(InnerGraph);
+            return CreateEntityCore(id, metaClass, instance);
         }
 
-        IModelElement IUpdatableDomainModel.CreateEntity(Identity id, ISchemaEntity metaClass, IModelEntity instance)
+        protected virtual IModelElement CreateEntityCore(Identity id, ISchemaEntity metaClass, IModelEntity instance)
         {
             Contract.Requires(id, "id");
             Contract.Requires(metaClass, "metaClass");
@@ -379,26 +384,14 @@ namespace Hyperstore.Modeling.Domain
 
             using (var session = EnsuresRunInSession())
             {
-                var r = InnerGraph.CreateEntity(id, metaClass);
-                if (instance != null)
-                {
-                    if (_cache != null)
-                        _cache.AddElement(instance);
-                }
-                else
-                {
-                    result = (IModelElement)metaClass.Deserialize(new SerializationContext(this, metaClass, r));
-                    if (_cache != null)
-                        _cache.AddElement(result);
-                }
-
+                result = L1Cache.CreateEntity(id, metaClass, instance);
                 if (session != null)
                     session.AcceptChanges();
                 return result;
             }
         }
 
-        private void CheckInitialized()
+        protected void CheckInitialized()
         {
             if (!_initialized)
                 throw new Exception("Domain model must be loaded in a store");
@@ -551,9 +544,9 @@ namespace Hyperstore.Modeling.Domain
                 }
             }
 
-            if (_cache != null)
+            if (L1Cache != null)
             {
-                _cache.Dispose();
+                L1Cache.Dispose();
             }
 
             var disposable = InnerGraph as IDisposable;
@@ -729,7 +722,12 @@ namespace Hyperstore.Modeling.Domain
             private set;
         }
 
-        bool IUpdatableDomainModel.RemoveEntity(Identity id, ISchemaEntity metadata, bool throwExceptionIfNotExists, bool localOnly)
+        bool IUpdatableDomainModel.RemoveEntity(Identity id, ISchemaEntity metadata, bool throwExceptionIfNotExists)
+        {
+            return RemoveEntityCore(id, metadata, throwExceptionIfNotExists);
+        }
+
+        protected virtual bool RemoveEntityCore(Identity id, ISchemaEntity metadata, bool throwExceptionIfNotExists)
         {
             Contract.Requires(id, "id");
             Contract.Requires(metadata, "metadata");
@@ -737,7 +735,7 @@ namespace Hyperstore.Modeling.Domain
 
             using (var session = EnsuresRunInSession())
             {
-                var r = InnerGraph.RemoveEntity(id, metadata, throwExceptionIfNotExists, localOnly);
+                var r = InnerGraph.RemoveEntity(id, metadata, throwExceptionIfNotExists);
                 if (session != null)
                     session.AcceptChanges();
                 return r;
@@ -754,20 +752,12 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="metaclass">
         ///  The metaclass.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  The element.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual IModelElement GetElement(Identity id, ISchemaElement metaclass, bool localOnly = true)
+        public virtual IModelElement GetElement(Identity id, ISchemaElement metaclass)
         {
-            if (!localOnly && Session.Current == null)
-            {
-                throw new NotInTransactionException("You must be in a transaction when localOnly is false.");
-            }
-
             CheckInitialized();
 
             if (id == null)
@@ -775,21 +765,8 @@ namespace Hyperstore.Modeling.Domain
 
             // Dans le cas d'une extension de de domaine, il faut s'assurer de ne conserver dans le cache que les instances
             // d'un type du domaine sous peine d'avoir des casts invalides si le domaine est déchargé
-            IModelElement elem;
-            if (_cache == null)
-            {
-                elem = InnerGraph.GetElement(id, metaclass, localOnly);
-                if (elem != null)
-                    return elem;
-            }
-            else
-            {
-                elem = _cache.GetElement(id, metaclass, localOnly);
-                if (elem != null)
-                    return elem;
-            }
-
-            return null;
+            IModelElement elem = L1Cache.GetElement(id, metaclass);
+            return elem;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -802,16 +779,13 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  The element.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public TElement GetElement<TElement>(Identity id, bool localOnly = true) where TElement : IModelElement
+        public TElement GetElement<TElement>(Identity id) where TElement : IModelElement
         {
-            return (TElement)GetElement(id, Store.GetSchemaElement<TElement>(), localOnly);
+            return (TElement)GetElement(id, Store.GetSchemaElement<TElement>());
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -824,16 +798,13 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="metaclass">
         ///  The metaclass.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  The entity.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual IModelEntity GetEntity(Identity id, ISchemaEntity metaclass, bool localOnly = true)
+        public virtual IModelEntity GetEntity(Identity id, ISchemaEntity metaclass)
         {
-            return GetElement(id, metaclass, localOnly) as IModelEntity;
+            return GetElement(id, metaclass) as IModelEntity;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -846,16 +817,13 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  The entity.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public TElement GetEntity<TElement>(Identity id, bool localOnly = true) where TElement : IModelEntity
+        public TElement GetEntity<TElement>(Identity id) where TElement : IModelEntity
         {
-            return (TElement)GetEntity(id, Store.GetSchemaEntity<TElement>(), localOnly);
+            return (TElement)GetEntity(id, Store.GetSchemaEntity<TElement>());
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -875,14 +843,14 @@ namespace Hyperstore.Modeling.Domain
         ///  The element with graph provider asynchronous.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public async Task<int> LoadElementWithGraphProviderAsync(Query query, MergeOption option = MergeOption.PreserveChanges)
-        {
-            CheckInitialized();
-            if (Session.Current != null)
-                throw new Exception(ExceptionMessages.AwaitInSessionIsNotAllowed);
+        //public async Task<int> LoadElementWithGraphProviderAsync(Query query, MergeOption option = MergeOption.PreserveChanges)
+        //{
+        //    CheckInitialized();
+        //    if (Session.Current != null)
+        //        throw new Exception(ExceptionMessages.AwaitInSessionIsNotAllowed);
 
-            return await InnerGraph.LoadElementWithGraphProviderAsync(query, option).ConfigureAwait(false);
-        }
+        //    return await InnerGraph.LoadElementWithGraphProviderAsync(query, option).ConfigureAwait(false);
+        //}
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -894,16 +862,13 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="skip">
         ///  (Optional) the skip.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the entities in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<TElement> GetEntities<TElement>(int skip = 0, bool localOnly = true) where TElement : IModelEntity
+        public IEnumerable<TElement> GetEntities<TElement>(int skip = 0) where TElement : IModelEntity
         {
-            return GetEntities(Store.GetSchemaEntity<TElement>(), skip, localOnly)
+            return GetEntities(Store.GetSchemaEntity<TElement>(), skip)
                     .Select(e => (TElement)e);
         }
 
@@ -917,31 +882,14 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="skip">
         ///  (Optional) the skip.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the elements in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual IEnumerable<IModelElement> GetElements(ISchemaElement metaClass = null, int skip = 0, bool localOnly = true)
+        public virtual IEnumerable<IModelElement> GetElements(ISchemaElement metaClass = null, int skip = 0)
         {
-            if (!localOnly && Session.Current == null)
-            {
-                throw new NotInTransactionException("You must be in a transaction when localOnly is false.");
-            }
-
             CheckInitialized();
-
-            foreach (var e in InnerGraph.GetElements(metaClass, skip, localOnly))
-            {
-                // Dans le cas d'une extension de de domaine, il faut s'assurer de ne conserver dans le cache que les instances
-                // d'un type du domaine sous peine d'avoir des casts invalides si le domaine est déchargé
-                if (_cache == null)
-                    yield return e;
-                else
-                    yield return _cache.AddElement(e);
-            }
+            return L1Cache.GetElements(metaClass, skip);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -954,31 +902,14 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="skip">
         ///  (Optional) the skip.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the entities in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual IEnumerable<IModelEntity> GetEntities(ISchemaEntity metaClass = null, int skip = 0, bool localOnly = true)
+        public virtual IEnumerable<IModelEntity> GetEntities(ISchemaEntity metaClass = null, int skip = 0)
         {
-            if (!localOnly && Session.Current == null)
-            {
-                throw new NotInTransactionException("You must be in a transaction when localOnly is false.");
-            }
-
             CheckInitialized();
-            foreach (var e in InnerGraph.GetEntities(metaClass, skip, localOnly))
-            {
-                // TODO voir commentaire dans DomainModelExtension.CreateCache
-                // Dans le cas d'une extension de de domaine, il faut s'assurer de ne conserver dans le cache que les instances
-                // d'un type du domaine sous peine d'avoir des casts invalides si le domaine est déchargé
-                if (_cache == null)
-                    yield return e;
-                else
-                    yield return _cache.AddElement(e) as IModelEntity;
-            }
+            return L1Cache.GetEntities(metaClass, skip);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -988,9 +919,6 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="ownerId">
         ///  The identifier that owns this item.
         /// </param>
-        /// <param name="ownerMetadata">
-        ///  The metadata that owns this item.
-        /// </param>
         /// <param name="property">
         ///  The property.
         /// </param>
@@ -998,14 +926,13 @@ namespace Hyperstore.Modeling.Domain
         ///  The property value.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public PropertyValue GetPropertyValue(Identity ownerId, ISchemaElement ownerMetadata, ISchemaProperty property)
+        public virtual PropertyValue GetPropertyValue(Identity ownerId, ISchemaProperty property)
         {
             Contract.Requires(ownerId, "ownerId");
-            Contract.Requires(ownerMetadata, "ownerMetadata");
             Contract.Requires(property, "property");
             CheckInitialized();
 
-            var prop = InnerGraph.GetPropertyValue(ownerId, ownerMetadata, property);
+            var prop = InnerGraph.GetPropertyValue(ownerId, property);
             if (prop == null || prop.CurrentVersion == 0)
             {
                 prop = new PropertyValue { Value = property.DefaultValue, CurrentVersion = 0 };
@@ -1015,6 +942,11 @@ namespace Hyperstore.Modeling.Domain
         }
 
         PropertyValue IUpdatableDomainModel.SetPropertyValue(IModelElement owner, ISchemaProperty propertyMetadata, object value, long? version)
+        {
+            return SetPropertyValueCore(owner, propertyMetadata, value, version);
+        }
+
+        protected virtual PropertyValue SetPropertyValueCore(IModelElement owner, ISchemaProperty propertyMetadata, object value, long? version)
         {
             Contract.Requires(owner, "owner");
             Contract.Requires(propertyMetadata, "propertyMetadata");
@@ -1030,6 +962,11 @@ namespace Hyperstore.Modeling.Domain
 
         IModelRelationship IUpdatableDomainModel.CreateRelationship(Identity id, ISchemaRelationship relationshipSchema, IModelElement start, Identity endId, ISchemaElement endSchema, IModelRelationship relationship)
         {
+            return CreateRelationshipCore(id, relationshipSchema, start, endId, endSchema, relationship);
+        }
+
+        protected virtual IModelRelationship CreateRelationshipCore(Identity id, ISchemaRelationship relationshipSchema, IModelElement start, Identity endId, ISchemaElement endSchema, IModelRelationship relationship)
+        {
             Contract.Requires(id, "id");
             Contract.Requires(relationshipSchema, "relationshipSchema");
             Contract.Requires(start, "start");
@@ -1039,17 +976,7 @@ namespace Hyperstore.Modeling.Domain
             CheckInitialized();
             using (var session = EnsuresRunInSession())
             {
-                var r = InnerGraph.CreateRelationship(id, relationshipSchema, start.Id, start.SchemaInfo, endId, endSchema);
-
-                if (relationship != null)
-                {
-                    if (_cache != null)
-                        _cache.AddElement(relationship);
-                }
-                else
-                {
-                    relationship = (IModelRelationship)relationshipSchema.Deserialize(new SerializationContext(this, relationshipSchema, r));
-                }
+                relationship = L1Cache.CreateRelationship(id, relationshipSchema, start, endId, endSchema, relationship);
 
                 if (session != null)
                     session.AcceptChanges();
@@ -1057,7 +984,12 @@ namespace Hyperstore.Modeling.Domain
             }
         }
 
-        bool IUpdatableDomainModel.RemoveRelationship(Identity id, ISchemaRelationship metadata, bool throwExceptionIfNotExists, bool localOnly)
+        bool IUpdatableDomainModel.RemoveRelationship(Identity id, ISchemaRelationship metadata, bool throwExceptionIfNotExists)
+        {
+            return RemoveRelationshipCore(id, metadata, throwExceptionIfNotExists);
+        }
+
+        protected virtual bool RemoveRelationshipCore(Identity id, ISchemaRelationship metadata, bool throwExceptionIfNotExists)
         {
             Contract.Requires(id, "id");
             Contract.Requires(metadata, "metadata");
@@ -1065,7 +997,7 @@ namespace Hyperstore.Modeling.Domain
             CheckInitialized();
             using (var session = EnsuresRunInSession())
             {
-                var r = InnerGraph.RemoveRelationship(id, metadata, throwExceptionIfNotExists, localOnly);
+                var r = InnerGraph.RemoveRelationship(id, metadata, throwExceptionIfNotExists);
                 if (session != null)
                     session.AcceptChanges();
                 return r;
@@ -1082,26 +1014,17 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="metadata">
         ///  the metadata.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  The relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual IModelRelationship GetRelationship(Identity id, ISchemaRelationship metadata, bool localOnly = true)
+        public virtual IModelRelationship GetRelationship(Identity id, ISchemaRelationship metadata)
         {
             Contract.Requires(id, "id");
             Contract.Requires(metadata, "metadata");
 
-            if (!localOnly && Session.Current == null)
-            {
-                throw new NotInTransactionException("You must be in a transaction when localOnly is false.");
-            }
-
             CheckInitialized();
-
-            return InnerGraph.GetRelationship(id, metadata, localOnly);
+            return L1Cache.GetElement(id, metadata) as IModelRelationship;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -1114,16 +1037,13 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  The relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public TRelationship GetRelationship<TRelationship>(Identity id, bool localOnly = true) where TRelationship : IModelRelationship
+        public TRelationship GetRelationship<TRelationship>(Identity id) where TRelationship : IModelRelationship
         {
-            return (TRelationship)GetRelationship(id, Store.GetSchemaRelationship<TRelationship>(), localOnly);
+            return (TRelationship)GetRelationship(id, Store.GetSchemaRelationship<TRelationship>());
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -1142,16 +1062,13 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="skip">
         ///  (Optional) the skip.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the relationships in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<TRelationship> GetRelationships<TRelationship>(IModelElement start = null, IModelElement end = null, int skip = 0, bool localOnly = true) where TRelationship : IModelRelationship
+        public IEnumerable<TRelationship> GetRelationships<TRelationship>(IModelElement start = null, IModelElement end = null, int skip = 0) where TRelationship : IModelRelationship
         {
-            return GetRelationships(Store.GetSchemaRelationship<TRelationship>(), start, end, skip, localOnly)
+            return GetRelationships(Store.GetSchemaRelationship<TRelationship>(), start, end, skip)
                     .Select(r => (TRelationship)r);
         }
 
@@ -1171,26 +1088,15 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="skip">
         ///  (Optional) the skip.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the relationships in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual IEnumerable<IModelRelationship> GetRelationships(ISchemaRelationship metadata = null, IModelElement start = null, IModelElement end = null, int skip = 0, bool localOnly = true)
+        public virtual IEnumerable<IModelRelationship> GetRelationships(ISchemaRelationship metadata = null, IModelElement start = null, IModelElement end = null, int skip = 0)
         {
-            if (!localOnly && Session.Current == null)
-            {
-                throw new NotInTransactionException("You must be in a transaction when localOnly is false.");
-            }
-
             CheckInitialized();
 
-            foreach (var e in InnerGraph.GetRelationships(metadata, start, end, skip, localOnly))
-            {
-                yield return e;
-            }
+            return L1Cache.GetRelationships(metadata, start, end, skip);
         }
 
         #endregion

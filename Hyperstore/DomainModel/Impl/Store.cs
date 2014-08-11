@@ -314,14 +314,11 @@ namespace Hyperstore.Modeling
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  The element.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public T GetElement<T>(Identity id, bool localOnly = true) where T : IModelElement
+        public T GetElement<T>(Identity id) where T : IModelElement
         {
             Contract.Requires(id, "id");
 
@@ -329,7 +326,7 @@ namespace Hyperstore.Modeling
             if (metaclass == null)
                 return default(T);
 
-            var mel = GetElement(id, metaclass, localOnly);
+            var mel = GetElement(id, metaclass);
             return (T)mel;
         }
 
@@ -343,14 +340,11 @@ namespace Hyperstore.Modeling
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  The entity.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public T GetEntity<T>(Identity id, bool localOnly = true) where T : IModelEntity
+        public T GetEntity<T>(Identity id) where T : IModelEntity
         {
             Contract.Requires(id, "id");
 
@@ -358,7 +352,7 @@ namespace Hyperstore.Modeling
             if (metaclass == null)
                 return default(T);
 
-            var mel = GetEntity(id, metaclass, localOnly);
+            var mel = GetEntity(id, metaclass);
             return (T)mel;
         }
 
@@ -372,14 +366,11 @@ namespace Hyperstore.Modeling
         /// <param name="metaclass">
         ///  the metaclass.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  The entity.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IModelEntity GetEntity(Identity id, ISchemaEntity metaclass, bool localOnly = true)
+        public IModelEntity GetEntity(Identity id, ISchemaEntity metaclass)
         {
             Contract.Requires(id, "id");
             Contract.Requires(metaclass, "metaclass");
@@ -387,7 +378,7 @@ namespace Hyperstore.Modeling
             var domainModel = GetDomainModel(id.DomainModelName);
             if (domainModel == null)
                 return null;
-            return domainModel.GetEntity(id, metaclass, localOnly);
+            return domainModel.GetEntity(id, metaclass);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -397,25 +388,22 @@ namespace Hyperstore.Modeling
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="metaclass">
+        /// <param name="schemaElement">
         ///  the metaclass.
-        /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
         /// </param>
         /// <returns>
         ///  The element.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IModelElement GetElement(Identity id, ISchemaElement metaclass, bool localOnly = true)
+        public IModelElement GetElement(Identity id, ISchemaElement schemaElement)
         {
             Contract.Requires(id, "id");
-            Contract.Requires(metaclass, "metaclass");
+            Contract.Requires(schemaElement, "schemaElement");
 
             var domainModel = GetDomainModel(id.DomainModelName);
             if (domainModel == null)
                 return null;
-            return domainModel.GetElement(id, metaclass, localOnly);
+            return domainModel.GetElement(id, schemaElement);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -428,21 +416,18 @@ namespace Hyperstore.Modeling
         /// <param name="skip">
         ///  (Optional) the skip.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the elements in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<T> GetElements<T>(int skip = 0, bool localOnly = true) where T : IModelElement
+        public IEnumerable<T> GetElements<T>(int skip = 0) where T : IModelElement
         {
             var metaclass = GetSchemaElement<T>(false);
             if (metaclass != null)
             {
                 foreach (var dm in DomainModels)
                 {
-                    foreach (var mel in dm.GetElements(metaclass, skip, localOnly))
+                    foreach (var mel in dm.GetElements(metaclass, skip))
                     {
                         yield return (T)mel;
                     }
@@ -454,24 +439,21 @@ namespace Hyperstore.Modeling
         /// <summary>
         ///  Gets the elements.
         /// </summary>
-        /// <param name="metaclass">
-        ///  (Optional) the metaclass.
+        /// <param name="schemaElement">
+        ///  (Optional) the schemaElement.
         /// </param>
         /// <param name="skip">
         ///  (Optional) the skip.
-        /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
         /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the elements in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<IModelElement> GetElements(ISchemaElement metaclass = null, int skip = 0, bool localOnly = true)
+        public IEnumerable<IModelElement> GetElements(ISchemaElement schemaElement = null, int skip = 0)
         {
             foreach (var dm in DomainModels)
             {
-                foreach (var mel in dm.GetElements(metaclass, skip, localOnly))
+                foreach (var mel in dm.GetElements(schemaElement, skip))
                 {
                     yield return mel;
                 }
@@ -488,21 +470,18 @@ namespace Hyperstore.Modeling
         /// <param name="skip">
         ///  (Optional) the skip.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the entities in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<T> GetEntities<T>(int skip = 0, bool localOnly = true) where T : IModelEntity
+        public IEnumerable<T> GetEntities<T>(int skip = 0) where T : IModelEntity
         {
             var metaclass = GetSchemaEntity<T>(false);
             if (metaclass != null)
             {
                 foreach (var dm in DomainModels)
                 {
-                    foreach (var mel in dm.GetEntities(metaclass, skip, localOnly))
+                    foreach (var mel in dm.GetEntities(metaclass, skip))
                     {
                         yield return (T)mel;
                     }
@@ -520,18 +499,15 @@ namespace Hyperstore.Modeling
         /// <param name="skip">
         ///  (Optional) the skip.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the entities in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<IModelEntity> GetEntities(ISchemaEntity metaclass = null, int skip = 0, bool localOnly = true)
+        public IEnumerable<IModelEntity> GetEntities(ISchemaEntity metaclass = null, int skip = 0)
         {
             foreach (var dm in DomainModels)
             {
-                foreach (var mel in dm.GetEntities(metaclass, skip, localOnly))
+                foreach (var mel in dm.GetEntities(metaclass, skip))
                 {
                     yield return mel;
                 }
@@ -1079,20 +1055,17 @@ namespace Hyperstore.Modeling
         /// <param name="metaRelationship">
         ///  The meta relationship.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  The relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IModelRelationship GetRelationship(Identity id, ISchemaRelationship metaRelationship, bool localOnly = true)
+        public IModelRelationship GetRelationship(Identity id, ISchemaRelationship metaRelationship)
         {
             Contract.Requires(id, "id");
             Contract.Requires(metaRelationship, "metaRelationship");
 
             var domainModel = GetDomainModel(id.DomainModelName);
-            return domainModel == null ? null : domainModel.GetRelationship(id, metaRelationship, localOnly);
+            return domainModel == null ? null : domainModel.GetRelationship(id, metaRelationship);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -1105,14 +1078,11 @@ namespace Hyperstore.Modeling
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  The relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public T GetRelationship<T>(Identity id, bool localOnly = true) where T : IModelRelationship
+        public T GetRelationship<T>(Identity id) where T : IModelRelationship
         {
             Contract.Requires(id, "id");
 
@@ -1120,7 +1090,7 @@ namespace Hyperstore.Modeling
             if (metaclass == null)
                 return default(T);
 
-            return (T)GetRelationship(id, metaclass, localOnly);
+            return (T)GetRelationship(id, metaclass);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -1133,16 +1103,13 @@ namespace Hyperstore.Modeling
         /// <param name="skip">
         ///  (Optional) the skip.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the relationships in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<IModelRelationship> GetRelationships(ISchemaRelationship metaclass = null, int skip = 0, bool localOnly = true)
+        public IEnumerable<IModelRelationship> GetRelationships(ISchemaRelationship metaclass = null, int skip = 0)
         {
-            return DomainModels.SelectMany(dm => dm.GetRelationships(metaclass, skip: skip, localOnly: localOnly));
+            return DomainModels.SelectMany(dm => dm.GetRelationships(metaclass, skip: skip));
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -1155,18 +1122,15 @@ namespace Hyperstore.Modeling
         /// <param name="skip">
         ///  (Optional) the skip.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the relationships in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<T> GetRelationships<T>(int skip = 0, bool localOnly = true) where T : IModelRelationship
+        public IEnumerable<T> GetRelationships<T>(int skip = 0) where T : IModelRelationship
         {
             var metaclass = GetSchemaRelationship<T>(false);
             if (metaclass != null)
-                return from dm in DomainModels from rel in dm.GetRelationships(metaclass, skip: skip, localOnly: localOnly) select (T)rel;
+                return from dm in DomainModels from rel in dm.GetRelationships(metaclass, skip: skip) select (T)rel;
 
             return default(IEnumerable<T>);
         }

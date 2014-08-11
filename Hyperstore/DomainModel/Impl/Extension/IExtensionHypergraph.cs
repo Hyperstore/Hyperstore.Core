@@ -15,6 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
 
+using Hyperstore.Modeling.HyperGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,12 +25,7 @@ namespace Hyperstore.Modeling
 {
     internal interface IExtensionHyperGraph
     {
-        IEnumerable<IModelElement> GetExtensionElements(ISchemaElement schemaElement);
-
-        IEnumerable<Tuple<Identity, Identity>> GetDeletedElements();
-
-        IEnumerable<IModelRelationship> GetExtensionRelationships(ISchemaRelationship schemaRelationship, IModelElement start, IModelElement end);
-
-        IEnumerable<IModelEntity> GetExtensionEntities(ISchemaEntity schemaEntity);
+        IEnumerable<IModelElement> GetExtensionElements(ISchemaElement schemaElement = null);
+        IEnumerable<INodeInfo> GetDeletedElements();
     }
 }

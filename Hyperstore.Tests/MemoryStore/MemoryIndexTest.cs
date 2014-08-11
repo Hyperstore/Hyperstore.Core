@@ -43,8 +43,9 @@ namespace Hyperstore.Tests.Memory
             var store = new Store();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
+            var graph = ((Hyperstore.Modeling.Domain.IHyperGraphProvider)domain).InnerGraph;
 
-            var def = new IndexDefinition(new MemoryGraphAdapter(), "Index1", TestDomainDefinition.XExtendsBaseClass, true, "Name");
+            var def = new IndexDefinition(graph, "Index1", TestDomainDefinition.XExtendsBaseClass, true, "Name");
             Assert.AreEqual(1, def.PropertyNames.Length);
             Assert.AreEqual("Name", def.PropertyNames[0]);
         }
@@ -56,8 +57,8 @@ namespace Hyperstore.Tests.Memory
             var store = new Store();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
-
-            var def = new IndexDefinition(new MemoryGraphAdapter(), "Index1", TestDomainDefinition.XExtendsBaseClass, true, "Name");
+            var graph = ((Hyperstore.Modeling.Domain.IHyperGraphProvider)domain).InnerGraph;
+            var def = new IndexDefinition(graph, "Index1", TestDomainDefinition.XExtendsBaseClass, true, "Name");
             Assert.IsTrue(def.IsImpactedBy(TestDomainDefinition.XExtendsBaseClass, "Name"));
             Assert.IsFalse(def.IsImpactedBy(TestDomainDefinition.XExtendsBaseClass, "Name2"));
             Assert.IsTrue(def.IsImpactedBy(TestDomainDefinition.XExtendsBaseClass, null));

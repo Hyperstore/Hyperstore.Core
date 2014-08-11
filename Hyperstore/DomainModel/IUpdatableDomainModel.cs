@@ -97,14 +97,11 @@ namespace Hyperstore.Modeling
         /// <param name="throwExceptionIfNotExists">
         ///  if set to <c>true</c> [throw exception if not exists].
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional)
-        /// </param>
         /// <returns>
         ///  true if it succeeds, false if it fails.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        bool RemoveRelationship(Identity id, ISchemaRelationship relationshipSchema, bool throwExceptionIfNotExists, bool localOnly = true);
+        bool RemoveRelationship(Identity id, ISchemaRelationship relationshipSchema, bool throwExceptionIfNotExists);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -119,14 +116,11 @@ namespace Hyperstore.Modeling
         /// <param name="throwExceptionIfNotExists">
         ///  if set to <c>true</c> [throw exception if not exists].
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) if set to <c>true</c> [local only].
-        /// </param>
         /// <returns>
         ///  true if it succeeds, false if it fails.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        bool RemoveEntity(Identity id, ISchemaEntity entitySchema, bool throwExceptionIfNotExists, bool localOnly = true);
+        bool RemoveEntity(Identity id, ISchemaEntity entitySchema, bool throwExceptionIfNotExists);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

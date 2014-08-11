@@ -17,7 +17,6 @@
  
 #region Imports
 
-using Hyperstore.Modeling.HyperGraph.Adapters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,7 +52,7 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  true to unique.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public BTreeIndex(MemoryGraphAdapter graph, string name, bool unique)
+        public BTreeIndex(IHyperGraph graph, string name, bool unique)
         {
             DebugContract.Requires(graph);
             DebugContract.RequiresNotEmpty(name);
@@ -105,7 +104,7 @@ namespace Hyperstore.Modeling.HyperGraph
             using (var session = EnsuresRunInSession())
             {
                 HypergraphTransaction tx = null;
-                var graph = _graph.Target as MemoryGraphAdapter;
+                var graph = _graph.Target as HyperGraph;
                 if (graph != null)
                     tx = graph.CurrentTransaction;
 
@@ -157,7 +156,7 @@ namespace Hyperstore.Modeling.HyperGraph
 
             using (var session = EnsuresRunInSession())
             {
-                var graph = _graph.Target as MemoryGraphAdapter;
+                var graph = _graph.Target as HyperGraph;
                 if (graph != null)
                     tx = graph.CurrentTransaction;
 
@@ -223,7 +222,7 @@ namespace Hyperstore.Modeling.HyperGraph
             using (var session = EnsuresRunInSession())
             {
                 HypergraphTransaction tx = null;
-                var graph = _graph.Target as MemoryGraphAdapter;
+                var graph = _graph.Target as HyperGraph;
                 if (graph != null)
                     tx = graph.CurrentTransaction;
 
@@ -343,7 +342,7 @@ namespace Hyperstore.Modeling.HyperGraph
             if (Session.Current != null)
                 return null;
 
-            return (_graph.Target as MemoryGraphAdapter).DomainModel.Store.BeginSession(new SessionConfiguration
+            return (_graph.Target as IHyperGraph).DomainModel.Store.BeginSession(new SessionConfiguration
                                                                                         {
                                                                                                 Readonly = true
                                                                                         });

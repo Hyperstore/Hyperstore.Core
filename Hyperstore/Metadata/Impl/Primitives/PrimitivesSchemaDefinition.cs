@@ -179,19 +179,6 @@ namespace Hyperstore.Modeling.Metadata
         }
 
         ///-------------------------------------------------------------------------------------------------
-        /// <summary>   Uses graph adapter. </summary>
-        /// <exception cref="NotImplementedException">
-        ///     Thrown when the requested operation is unimplemented.
-        /// </exception>
-        /// <param name="factory">  The factory. </param>
-        /// <returns>   An ISchemaDefinition. </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public ISchemaDefinition UsesGraphAdapter(Func<IDependencyResolver, IGraphAdapter> factory)
-        {
-            throw new NotImplementedException();
-        }
-
-        ///-------------------------------------------------------------------------------------------------
         /// <summary>   Creates a schema. </summary>
         /// <param name="domainResolver">   The domain resolver. </param>
         /// <returns>   The new schema. </returns>

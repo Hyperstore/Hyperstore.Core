@@ -631,22 +631,17 @@ namespace Hyperstore.Modeling.Metadata
             get { throw new NotSupportedException(); }
         }
 
-        IEnumerable<TElement> IDomainModel.GetEntities<TElement>(int skip, bool localOnly)
+        IEnumerable<TElement> IDomainModel.GetEntities<TElement>(int skip)
         {
             yield break;
         }
 
-        IEnumerable<TRelationship> IDomainModel.GetRelationships<TRelationship>(IModelElement start, IModelElement end, int skip, bool localOnly)
+        IEnumerable<TRelationship> IDomainModel.GetRelationships<TRelationship>(IModelElement start, IModelElement end, int skip)
         {
             yield break;
         }
 
-        TRelationship IDomainModel.GetRelationship<TRelationship>(Identity id, bool localOnly)
-        {
-            throw new NotSupportedException();
-        }
-
-        System.Threading.Tasks.Task<int> IDomainModel.LoadElementWithGraphProviderAsync(Query query, MergeOption option)
+        TRelationship IDomainModel.GetRelationship<TRelationship>(Identity id)
         {
             throw new NotSupportedException();
         }
@@ -655,48 +650,48 @@ namespace Hyperstore.Modeling.Metadata
         {
             get { throw new NotSupportedException(); }
         }
-        IModelElement IDomainModel.GetElement(Identity id, ISchemaElement metaclass, bool localOnly)
+        IModelElement IDomainModel.GetElement(Identity id, ISchemaElement metaclass)
         {
             DebugContract.Requires(id);
             return ((ISchema)this).GetSchemaInfo(id);
         }
 
-        IModelEntity IDomainModel.GetEntity(Identity id, ISchemaEntity metaclass, bool localOnly)
+        IModelEntity IDomainModel.GetEntity(Identity id, ISchemaEntity metaclass)
         {
             throw new NotSupportedException();
         }
 
-        TElement IDomainModel.GetElement<TElement>(Identity id, bool localOnly)
+        TElement IDomainModel.GetElement<TElement>(Identity id)
         {
             throw new NotSupportedException();
         }
 
-        TElement IDomainModel.GetEntity<TElement>(Identity id, bool localOnly)
+        TElement IDomainModel.GetEntity<TElement>(Identity id)
         {
             throw new NotSupportedException();
         }
 
-        IEnumerable<IModelElement> IDomainModel.GetElements(ISchemaElement metadata, int skip, bool localOnly)
+        IEnumerable<IModelElement> IDomainModel.GetElements(ISchemaElement metadata, int skip)
         {
             yield break;
         }
 
-        IEnumerable<IModelEntity> IDomainModel.GetEntities(ISchemaEntity metadata, int skip, bool localOnly)
+        IEnumerable<IModelEntity> IDomainModel.GetEntities(ISchemaEntity metadata, int skip)
         {
             yield break;
         }
 
-        IEnumerable<IModelRelationship> IDomainModel.GetRelationships(ISchemaRelationship metadata, IModelElement start, IModelElement end, int skip, bool localOnly)
+        IEnumerable<IModelRelationship> IDomainModel.GetRelationships(ISchemaRelationship metadata, IModelElement start, IModelElement end, int skip)
         {
             yield break;
         }
 
-        PropertyValue IDomainModel.GetPropertyValue(Identity ownerId, ISchemaElement ownerMetadata, ISchemaProperty propertyMetadata)
+        PropertyValue IDomainModel.GetPropertyValue(Identity ownerId, ISchemaProperty propertyMetadata)
         {
             throw new NotSupportedException();
         }
 
-        IModelRelationship IDomainModel.GetRelationship(Identity id, ISchemaRelationship metaclass, bool localOnly)
+        IModelRelationship IDomainModel.GetRelationship(Identity id, ISchemaRelationship metaclass)
         {
             throw new NotSupportedException();
         }

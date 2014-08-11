@@ -20,6 +20,7 @@
 using Hyperstore.Modeling.Domain;
 using Hyperstore.Modeling.HyperGraph;
 using Hyperstore.Modeling.Validations;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 #endregion
@@ -28,6 +29,57 @@ namespace Hyperstore.Modeling.DomainExtension
 {
     internal class DomainModelExtension : DomainModel, IExtension, IDomainModelExtension
     {
+        #region deleted node info
+        class DeletedNodeInfo : IGraphNode
+        {
+            public DeletedNodeInfo(Identity id, ISchemaElement schemaElement)
+            {
+                Id = id;
+                SchemaId = schemaElement.Id;
+            }
+
+            public Identity StartId
+            {
+                get { throw new NotImplementedException(); }
+            }
+
+            public Identity StartSchemaId
+            {
+                get { throw new NotImplementedException(); }
+            }
+
+            public Identity EndId
+            {
+                get { throw new NotImplementedException(); }
+            }
+
+            public Identity EndSchemaId
+            {
+                get { throw new NotImplementedException(); }
+            }
+
+            public NodeType NodeType
+            {
+                get { return Modeling.NodeType.Node; }
+            }
+
+            public Identity Id
+            {
+                get;
+                private set;
+            }
+
+            public Identity SchemaId
+            {
+                get;
+                private set;
+            }
+        }
+
+        #endregion
+
+        private IKeyValueStore _deletedElements;
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Constructor.
@@ -61,12 +113,28 @@ namespace Hyperstore.Modeling.DomainExtension
             ExtensionMode = extensionMode;
         }
 
-        //protected override void CreateCache()
-        //{
-        //    // TODO suppression du cache pour éviter les problèmes de cast quand on lit un elément avec un type defini dans l'extension
-        //    // et qu'il existe dèjà sous un autre type dans le domaine étendu
-        //    // Pour tester, mettre cette méthode en commentaire et relancer un des tests de ExtensionTest
-        //}
+        protected override bool ConfigureCore()
+        {
+            if (!base.ConfigureCore())
+            {
+                _deletedElements = new Hyperstore.Modeling.MemoryStore.TransactionalMemoryStore(
+                            String.Format("{0}-{1}-deleted", ExtendedDomainModel.Name, ExtensionName),
+                            5,
+                            DependencyResolver.Resolve<Hyperstore.Modeling.MemoryStore.ITransactionManager>()
+                            );
+                return true;
+            }
+
+            return false;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            if (_deletedElements is IDisposable)
+                ((IDisposable)_deletedElements).Dispose();
+            _deletedElements = null;
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -103,33 +171,27 @@ namespace Hyperstore.Modeling.DomainExtension
 
         public IEnumerable<IModelElement> GetExtensionElements(ISchemaElement schemaElement = null)
         {
-            var adapter = InnerGraph as IExtensionHyperGraph;
-            Debug.Assert(adapter != null);
-            return adapter.GetExtensionElements(schemaElement);
+            var graph = InnerGraph as IExtensionHyperGraph;
+            Debug.Assert(graph != null);
+            return graph.GetExtensionElements(schemaElement);
         }
 
-        public IEnumerable<IModelEntity> GetExtensionEntities(ISchemaEntity schemaEntity = null)
+        public IEnumerable<INodeInfo> GetDeletedElements()
         {
-            var adapter = InnerGraph as IExtensionHyperGraph;
-            Debug.Assert(adapter != null);
-            return adapter.GetExtensionEntities(schemaEntity);
-        }
-
-        public IEnumerable<IModelElement> GetDeletedElements()
-        {
-            var adapter = InnerGraph as IExtensionHyperGraph;
-            Debug.Assert(adapter != null);
-            foreach(var tuple in adapter.GetDeletedElements())
+            foreach (var tuple in _deletedElements.GetAllNodes(NodeType.Edge))
             {
-                yield return ExtendedDomainModel.GetElement(tuple.Item1, ExtendedDomainModel.Store.GetSchemaElement(tuple.Item2));
+                yield return tuple;
             }
         }
 
         public IEnumerable<IModelRelationship> GetExtensionRelationships(ISchemaRelationship schemaRelationship = null, IModelElement start = null, IModelElement end = null)
         {
-            var adapter = InnerGraph as IExtensionHyperGraph;
-            Debug.Assert(adapter != null);
-            return adapter.GetExtensionRelationships(schemaRelationship, start, end);
+            return base.GetRelationships(schemaRelationship, start, end);
+        }
+
+        public override System.Threading.Tasks.Task<IDomainModelExtension> LoadExtensionAsync(string extensionName, ExtendedMode mode, IDomainConfiguration configuration = null)
+        {
+            throw new NotImplementedException();
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -142,7 +204,7 @@ namespace Hyperstore.Modeling.DomainExtension
         ///-------------------------------------------------------------------------------------------------
         protected override IHyperGraph ResolveHyperGraph()
         {
-            return new DomainExtensionHyperGraph(DependencyResolver, ExtendedDomainModel, ExtensionMode);
+            return new DomainExtensionHyperGraph(DependencyResolver, ExtendedDomainModel as IHyperGraphProvider, ExtensionMode);
         }
     }
 }

@@ -17,7 +17,6 @@
  
 #region Imports
 
-using Hyperstore.Modeling.HyperGraph.Adapters;
 using Hyperstore.Modeling.Platform;
 using System;
 using System.Collections.Generic;
@@ -32,7 +31,9 @@ namespace Hyperstore.Modeling.HyperGraph.Index
         private readonly Dictionary<Identity, List<IndexDefinition>> _indexByMetaClass = new Dictionary<Identity, List<IndexDefinition>>();
         private readonly IConcurrentDictionary<string, IndexDefinition> _indexByNames;
         private readonly ReaderWriterLockSlim _sync = new ReaderWriterLockSlim();
-        private MemoryGraphAdapter _graph;
+        private IHyperGraph _graph;
+
+        public IDomainModel DomainModel { get { return _graph.DomainModel; } }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -42,7 +43,7 @@ namespace Hyperstore.Modeling.HyperGraph.Index
         ///  The adapter.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public MemoryIndexManager(MemoryGraphAdapter adapter)
+        public MemoryIndexManager(IHyperGraph adapter)
         {
             Contract.Requires(adapter, "adapter");
 
@@ -129,7 +130,7 @@ namespace Hyperstore.Modeling.HyperGraph.Index
             // Build index
             if (_graph.DomainModel != null)
             {
-                foreach (var mel in _graph.DomainModel.GetElements(metaclass))
+                foreach (var mel in _graph.GetElements(metaclass))
                 {
                     def.Index.Add(mel.Id, mel.GetPropertyValue(property).Value);
                 }

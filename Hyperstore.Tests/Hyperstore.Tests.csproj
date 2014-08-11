@@ -96,7 +96,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MemoryStore\MemoryStoreTest.cs" />
-    <Compile Include="MemoryStore\MockMemoryGraphAdapter.cs" />
     <Compile Include="MemoryStore\MockTransactionManager.cs" />
     <Compile Include="MemoryStore\SlotListTest.cs" />
     <Compile Include="Metadata\MetaModelTest.cs" />

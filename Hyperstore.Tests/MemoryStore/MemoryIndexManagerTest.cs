@@ -46,8 +46,7 @@ namespace Hyperstore.Tests.Memory
                 await store.LoadSchemaAsync(new TestDomainDefinition());
                 var domain = await store.CreateDomainModelAsync("Test");
                 var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
-                var adapter = graph.Adapter as MemoryGraphAdapter;
-                MemoryIndexManager manager = adapter.IndexManager as MemoryIndexManager;
+                MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
                 manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
                 manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
             });
@@ -61,8 +60,7 @@ namespace Hyperstore.Tests.Memory
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
             var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
-            var adapter = graph.Adapter as MemoryGraphAdapter;
-            MemoryIndexManager manager = adapter.IndexManager as MemoryIndexManager;
+            MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
             manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
 
             Assert.IsTrue(manager.IndexExists("index1"));
@@ -76,8 +74,7 @@ namespace Hyperstore.Tests.Memory
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
             var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
-            var adapter = graph.Adapter as MemoryGraphAdapter;
-            MemoryIndexManager manager = adapter.IndexManager as MemoryIndexManager;
+            MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
             manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
 
             Assert.IsNotNull(manager.GetIndex("index1"));
@@ -91,8 +88,7 @@ namespace Hyperstore.Tests.Memory
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
             var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
-            var adapter = graph.Adapter as MemoryGraphAdapter;
-            MemoryIndexManager manager = adapter.IndexManager as MemoryIndexManager;
+            MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
             manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
             Assert.IsTrue(manager.IndexExists("index1"));
             manager.DropIndex("index1");
@@ -109,8 +105,7 @@ namespace Hyperstore.Tests.Memory
                 await store.LoadSchemaAsync(new TestDomainDefinition());
                 var domain = await store.CreateDomainModelAsync("Test");
                 var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
-                var adapter = graph.Adapter as MemoryGraphAdapter;
-                MemoryIndexManager manager = adapter.IndexManager as MemoryIndexManager;
+                MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
                 manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index:1", true, "Name");
             });
         }
@@ -123,8 +118,7 @@ namespace Hyperstore.Tests.Memory
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
             var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
-            var adapter = graph.Adapter as MemoryGraphAdapter;
-            MemoryIndexManager manager = adapter.IndexManager as MemoryIndexManager;
+            MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
             using (var s = store.BeginSession(new SessionConfiguration { Readonly = true }))
             {
                 manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
@@ -149,8 +143,7 @@ namespace Hyperstore.Tests.Memory
                 await store.LoadSchemaAsync(new TestDomainDefinition());
                 var domain = await store.CreateDomainModelAsync("Test");
                 var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
-                var adapter = graph.Adapter as MemoryGraphAdapter;
-                MemoryIndexManager manager = adapter.IndexManager as MemoryIndexManager;
+                MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
                 using (var s = store.BeginSession(new SessionConfiguration { Readonly = true }))
                 {
                     manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
@@ -169,8 +162,7 @@ namespace Hyperstore.Tests.Memory
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
             var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
-            var adapter = graph.Adapter as MemoryGraphAdapter;
-            MemoryIndexManager manager = adapter.IndexManager as MemoryIndexManager;
+            MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
 
             manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", false, "Name");
 
@@ -192,8 +184,7 @@ namespace Hyperstore.Tests.Memory
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
             var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
-            var adapter = graph.Adapter as MemoryGraphAdapter;
-            MemoryIndexManager manager = adapter.IndexManager as MemoryIndexManager;
+            MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
 
             manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
 

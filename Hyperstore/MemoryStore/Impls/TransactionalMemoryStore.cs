@@ -331,14 +331,11 @@ namespace Hyperstore.Modeling.MemoryStore
         /// <param name="node">
         ///  .
         /// </param>
-        /// <param name="schema">
-        ///  .
-        /// </param>
         /// <param name="ownerKey">
         ///  (Optional)
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void AddNode(IGraphNode node, ISchemaInfo schema, object ownerKey = null)
+        public void AddNode(IGraphNode node, Identity ownerKey = null)
         {
             DebugContract.Requires(node, "node");
 
@@ -465,14 +462,11 @@ namespace Hyperstore.Modeling.MemoryStore
         /// <param name="key">
         ///  The key.
         /// </param>
-        /// <param name="schema">
-        ///  .
-        /// </param>
         /// <returns>
         ///  The value.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IGraphNode GetNode(Identity key, ISchemaInfo schema)
+        public IGraphNode GetNode(Identity key)
         {
             DebugContract.Requires(key);
 
@@ -486,6 +480,28 @@ namespace Hyperstore.Modeling.MemoryStore
                         return ((ICloneable<IGraphNode>)result.Value).Clone();
 
                     return default(IGraphNode);
+                }
+                finally
+                {
+                    ctx.Complete();
+                    //                NotifyVacuum();
+                    _valuesLock.ExitReadLock();
+                    _statGeIGraphNode.Incr();
+                }
+            }
+        }
+
+        public bool Exists(Identity id)
+        {
+            DebugContract.Requires(id);
+
+            using (var ctx = CreateCommandContext())
+            {
+                _valuesLock.EnterReadLock();
+                try
+                {
+                    var result = SelectSlot(id, ctx);
+                    return result != null;
                 }
                 finally
                 {
@@ -521,11 +537,8 @@ namespace Hyperstore.Modeling.MemoryStore
         /// <param name="node">
         ///  .
         /// </param>
-        /// <param name="schema">
-        ///  .
-        /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void UpdateNode(IGraphNode node, ISchemaInfo schema)
+        public void UpdateNode(IGraphNode node)
         {
             DebugContract.Requires(node);
 

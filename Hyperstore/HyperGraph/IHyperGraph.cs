@@ -33,16 +33,6 @@ namespace Hyperstore.Modeling.HyperGraph
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the adapter.
-        /// </summary>
-        /// <value>
-        ///  The adapter.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        ICacheAdapter Adapter { get; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
         ///  Gets the domain model.
         /// </summary>
         /// <value>
@@ -80,14 +70,11 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="throwExceptionIfNotExists">
         ///  if set to <c>true</c> [throw exception if not exists].
         /// </param>
-        /// <param name="localOnly">
-        ///  .
-        /// </param>
         /// <returns>
         ///  true if it succeeds, false if it fails.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        bool RemoveEntity(Identity id, ISchemaEntity schemaEntity, bool throwExceptionIfNotExists, bool localOnly);
+        bool RemoveEntity(Identity id, ISchemaEntity schemaEntity, bool throwExceptionIfNotExists);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -99,14 +86,11 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="schemaEntity">
         ///  The schema Container.
         /// </param>
-        /// <param name="localOnly">
-        ///  .
-        /// </param>
         /// <returns>
         ///  The entity.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IModelEntity GetEntity(Identity id, ISchemaEntity schemaEntity, bool localOnly);
+        IModelEntity GetEntity(Identity id, ISchemaEntity schemaEntity);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -146,14 +130,11 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="schemaRelationship">
         ///  The schema relationship.
         /// </param>
-        /// <param name="localOnly">
-        ///  if set to <c>true</c> [local only].
-        /// </param>
         /// <returns>
         ///  The relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IModelRelationship GetRelationship(Identity id, ISchemaRelationship schemaRelationship, bool localOnly);
+        IModelRelationship GetRelationship(Identity id, ISchemaRelationship schemaRelationship);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -168,14 +149,11 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="throwExceptionIfNotExists">
         ///  if set to <c>true</c> [throw exception if not exists].
         /// </param>
-        /// <param name="localOnly">
-        ///  if set to <c>true</c> [local only].
-        /// </param>
         /// <returns>
         ///  true if it succeeds, false if it fails.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        bool RemoveRelationship(Identity id, ISchemaRelationship schemaRelationship, bool throwExceptionIfNotExists, bool localOnly);
+        bool RemoveRelationship(Identity id, ISchemaRelationship schemaRelationship, bool throwExceptionIfNotExists);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -184,9 +162,6 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="ownerId">
         ///  The owner id.
         /// </param>
-        /// <param name="schemaElement">
-        ///  The schema container.
-        /// </param>
         /// <param name="schemaProperty">
         ///  The schema property.
         /// </param>
@@ -194,7 +169,7 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  The property value.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        PropertyValue GetPropertyValue(Identity ownerId, ISchemaElement schemaElement, ISchemaProperty schemaProperty);
+        PropertyValue GetPropertyValue(Identity ownerId, ISchemaProperty schemaProperty);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -206,14 +181,11 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="schemaElement">
         ///  The schema container.
         /// </param>
-        /// <param name="localOnly">
-        ///  if set to <c>true</c> [local only].
-        /// </param>
         /// <returns>
         ///  The element.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IModelElement GetElement(Identity id, ISchemaElement schemaElement, bool localOnly);
+        IModelElement GetElement(Identity id, ISchemaElement schemaElement);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -253,14 +225,11 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="skip">
         ///  The skip.
         /// </param>
-        /// <param name="localOnly">
-        ///  if set to <c>true</c> [local only].
-        /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the relationships in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<IModelRelationship> GetRelationships(ISchemaRelationship schemaRelationship, IModelElement start, IModelElement end, int skip, bool localOnly);
+        IEnumerable<IModelRelationship> GetRelationships(ISchemaRelationship schemaRelationship, IModelElement start, IModelElement end, int skip=0);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -281,14 +250,11 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="skip">
         ///  The skip.
         /// </param>
-        /// <param name="localOnly">
-        ///  if set to <c>true</c> [local only].
-        /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the relationships in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<T> GetRelationships<T>(ISchemaRelationship schemaRelationship, IModelElement start, IModelElement end, int skip, bool localOnly) where T : IModelRelationship;
+        IEnumerable<T> GetRelationships<T>(ISchemaRelationship schemaRelationship, IModelElement start, IModelElement end, int skip=0) where T : IModelRelationship;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -300,14 +266,11 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="skip">
         ///  The skip.
         /// </param>
-        /// <param name="localOnly">
-        ///  if set to <c>true</c> [local only].
-        /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the entities in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<IModelEntity> GetEntities(ISchemaEntity schemaEntity, int skip, bool localOnly);
+        IEnumerable<IModelEntity> GetEntities(ISchemaEntity schemaEntity, int skip=0);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -319,14 +282,11 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="skip">
         ///  The skip.
         /// </param>
-        /// <param name="localOnly">
-        ///  if set to <c>true</c> [local only].
-        /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the elements in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<IModelElement> GetElements(ISchemaElement schemaElement, int skip, bool localOnly);
+        IEnumerable<IModelElement> GetElements(ISchemaElement schemaElement, int skip=0);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -341,14 +301,11 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="skip">
         ///  The skip.
         /// </param>
-        /// <param name="localOnly">
-        ///  if set to <c>true</c> [local only].
-        /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the entities in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<T> GetEntities<T>(ISchemaEntity schemaEntity, int skip, bool localOnly) where T : IModelEntity;
+        IEnumerable<T> GetEntities<T>(ISchemaEntity schemaEntity, int skip=0) where T : IModelEntity;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -364,6 +321,8 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  The element with graph provider asynchronous.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        Task<int> LoadElementWithGraphProviderAsync(Query query, MergeOption option);
+        //Task<int> LoadElementWithGraphProviderAsync(Query query, MergeOption option);
+
+        bool IsDeleted(Identity id);
     }
 }

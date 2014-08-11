@@ -131,7 +131,7 @@ namespace Hyperstore.Modeling.Commands
 
             using (CodeMarker.MarkBlock("RemovePropertyCommand.Handle"))
             {
-                var pv = DomainModel.GetPropertyValue(ElementId, SchemaElement, SchemaProperty);
+                var pv = DomainModel.GetPropertyValue(ElementId, SchemaProperty);
                 if (pv != null)
                 {
                     OldValue = pv.OldValue;

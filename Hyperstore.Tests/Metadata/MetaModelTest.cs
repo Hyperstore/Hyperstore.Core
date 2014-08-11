@@ -184,12 +184,12 @@ namespace Hyperstore.Tests.MemoryStore
 
                 var a = new XExtendsBaseClass( domain );
 
-                var pv = domain.GetPropertyValue(((IModelElement)a).Id, TestDomainDefinition.XExtendsBaseClass, prop);
+                var pv = domain.GetPropertyValue(((IModelElement)a).Id,  prop);
                 Assert.AreEqual(0, pv.CurrentVersion);
                 Assert.AreEqual( ETest.A, pv.Value );
                 
                 domain.SetPropertyValue( a, prop, ETest.B );
-                pv = domain.GetPropertyValue(((IModelElement)a).Id, TestDomainDefinition.XExtendsBaseClass, prop);
+                pv = domain.GetPropertyValue(((IModelElement)a).Id, prop);
                 Assert.AreNotEqual(0, pv.CurrentVersion);
                 Assert.AreEqual(ETest.B, pv.Value);
                 s.AcceptChanges();
@@ -211,12 +211,12 @@ namespace Hyperstore.Tests.MemoryStore
 
                 var a = new XExtendsBaseClass(domain);
 
-                var pv = domain.GetPropertyValue(((IModelElement)a).Id, TestDomainDefinition.XExtendsBaseClass, prop);
+                var pv = domain.GetPropertyValue(((IModelElement)a).Id, prop);
                 Assert.AreEqual(0, pv.CurrentVersion);
                 Assert.AreEqual(ETest.A, pv.Value);
 
                 domain.SetPropertyValue(a, prop, ETest.B);
-                pv = domain.GetPropertyValue(((IModelElement)a).Id, TestDomainDefinition.XExtendsBaseClass, prop);
+                pv = domain.GetPropertyValue(((IModelElement)a).Id, prop);
                 Assert.AreNotEqual(0, pv.CurrentVersion);
                 Assert.AreEqual(ETest.B, pv.Value);
                 s.AcceptChanges();

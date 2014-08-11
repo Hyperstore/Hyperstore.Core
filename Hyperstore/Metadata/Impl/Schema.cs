@@ -144,11 +144,6 @@ namespace Hyperstore.Modeling.Metadata
             return (ISchemaExtension)schema;
         }
 
-        protected override void CreateCache()
-        {
-            // No cache
-        }
-
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
@@ -206,7 +201,7 @@ namespace Hyperstore.Modeling.Metadata
         {
             Contract.Requires(id, "id");
 
-            var mel = GetElement(id, null, true) as ISchemaInfo;
+            var mel = GetElement(id, null) as ISchemaInfo;
             if (mel == null && throwErrorIfNotExists)
                 throw new MetadataNotFoundException(id.ToString());
             return mel;
@@ -256,7 +251,7 @@ namespace Hyperstore.Modeling.Metadata
             Contract.Requires(id, "id");
 
 
-            var mel = GetElement(id, null, true) as ISchemaEntity;
+            var mel = GetElement(id, null) as ISchemaEntity;
             if (mel == null && throwErrorIfNotExists)
                 throw new MetadataNotFoundException(id.ToString());
             return mel;
@@ -348,7 +343,7 @@ namespace Hyperstore.Modeling.Metadata
             Contract.Requires(id, "id");
 
 
-            var mel = GetElement(id, null, true) as ISchemaElement;
+            var mel = GetElement(id, null) as ISchemaElement;
             if (mel == null && throwErrorIfNotExists)
                 throw new MetadataNotFoundException(id.ToString());
             return mel;
@@ -440,7 +435,7 @@ namespace Hyperstore.Modeling.Metadata
         {
             Contract.Requires(id, "id");
 
-            var rel = GetRelationship(id, null, true) as ISchemaRelationship;
+            var rel = GetRelationship(id, null) as ISchemaRelationship;
             if (rel == null && throwErrorIfNotExists)
                 throw new MetadataNotFoundException(id.ToString());
             return rel;
@@ -493,14 +488,11 @@ namespace Hyperstore.Modeling.Metadata
         /// <param name="metaclass">
         ///  The metaclass.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  The element.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public override IModelElement GetElement(Identity id, ISchemaElement metaclass, bool localOnly = true)
+        public override IModelElement GetElement(Identity id, ISchemaElement metaclass)
         {
             Contract.Requires(id, "id");
 
@@ -508,7 +500,7 @@ namespace Hyperstore.Modeling.Metadata
             if (_elements.TryGetValue(id, out mel))
                 return mel;
 
-            mel = InnerGraph.GetElement(id, metaclass, localOnly);
+            mel = InnerGraph.GetElement(id, metaclass);
             if (mel != null)
                 _elements.TryAdd(id, mel);
 
@@ -525,14 +517,11 @@ namespace Hyperstore.Modeling.Metadata
         /// <param name="metaclass">
         ///  the metadata.
         /// </param>
-        /// <param name="localOnly">
-        ///  (Optional) true to local only.
-        /// </param>
         /// <returns>
         ///  The relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public override IModelRelationship GetRelationship(Identity id, ISchemaRelationship metaclass, bool localOnly = true)
+        public override IModelRelationship GetRelationship(Identity id, ISchemaRelationship metaclass)
         {
             Contract.Requires(id, "id");
 
@@ -540,7 +529,7 @@ namespace Hyperstore.Modeling.Metadata
             if (_relationships.TryGetValue(id, out mel))
                 return mel;
 
-            mel = InnerGraph.GetRelationship(id, metaclass, localOnly);
+            mel = InnerGraph.GetRelationship(id, metaclass);
             if (mel != null)
                 _relationships.TryAdd(id, mel);
 

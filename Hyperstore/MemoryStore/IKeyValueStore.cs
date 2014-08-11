@@ -55,14 +55,11 @@ namespace Hyperstore.Modeling
         /// <param name="key">
         ///  .
         /// </param>
-        /// <param name="schema">
-        ///  The schema.
-        /// </param>
         /// <returns>
         ///  The value.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IGraphNode GetNode(Identity key, ISchemaInfo schema);
+        IGraphNode GetNode(Identity key);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -71,14 +68,11 @@ namespace Hyperstore.Modeling
         /// <param name="value">
         ///  The value.
         /// </param>
-        /// <param name="schema">
-        ///  The schema.
-        /// </param>
         /// <param name="ownerKey">
         ///  (Optional) The owner key.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        void AddNode(IGraphNode value, ISchemaInfo schema, object ownerKey = null);
+        void AddNode(IGraphNode value, Identity ownerKey = null);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -100,11 +94,8 @@ namespace Hyperstore.Modeling
         /// <param name="value">
         ///  .
         /// </param>
-        /// <param name="schema">
-        ///  The schema.
-        /// </param>
         ///-------------------------------------------------------------------------------------------------
-        void UpdateNode(IGraphNode value, ISchemaInfo schema);
+        void UpdateNode(IGraphNode value);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -125,5 +116,7 @@ namespace Hyperstore.Modeling
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
         IEnumerable<IGraphNode> GetAllNodes(NodeType elementType);
+
+        bool Exists(Identity id);
     }
 }
