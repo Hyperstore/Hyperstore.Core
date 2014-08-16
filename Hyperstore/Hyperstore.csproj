@@ -64,10 +64,13 @@
     <Compile Include="Adapters\AbstractGraphAdapter.cs" />
     <Compile Include="Adapters\IGraphAdapter.cs" />
     <Compile Include="Adapters\QueryNodeResult.cs" />
-    <Compile Include="Container\ICommandHandlerMetadata.cs" />
-    <Compile Include="Container\ICommandInterceptorMetadata.cs" />
+    <Compile Include="Container\Composition\CommandHandlerAttribute.cs" />
+    <Compile Include="Container\Composition\CommandInterceptorAttribute.cs" />
+    <Compile Include="Container\Composition\EventHandlerAttribute.cs" />
+    <Compile Include="Container\Composition\ICommandHandlerMetadata.cs" />
+    <Compile Include="Container\Composition\ICommandInterceptorMetadata.cs" />
+    <Compile Include="Container\Composition\HyperstoreAttribute.cs" />
     <Compile Include="Container\IEventHandlerMetadata.cs" />
-    <Compile Include="Container\IMefContainer.cs" />
     <Compile Include="DomainModel\IHyperGraphProvider.cs" />
     <Compile Include="DomainModel\Impl\CalculatedProperty.cs" />
     <Compile Include="DomainModel\IDataErrorNotifier.cs" />
@@ -106,7 +109,7 @@
     <Compile Include="Container\IHyperstoreTrace.cs" />
     <Compile Include="Container\ISubjectFactory.cs" />
     <Compile Include="Container\ISubjectWrapper.cs" />
-    <Compile Include="Container\MefContainer.cs" />
+    <Compile Include="Container\Composition\CompositionService.cs" />
     <Compile Include="Container\TraceCategory.cs" />
     <Compile Include="DomainModel\IDomainConfiguration.cs" />
     <Compile Include="DomainModel\IModelEntity.cs" />
@@ -443,9 +446,7 @@
       <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Container\DependencyInjection\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <PropertyGroup>

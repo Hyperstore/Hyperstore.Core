@@ -14,50 +14,36 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
 
 #region Imports
-using System.ComponentModel.Composition;
 using System;
+using Hyperstore.Modeling.Events;
+
 #endregion
 
-namespace Hyperstore.Modeling.Commands
+namespace Hyperstore.Modeling.Events
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  Attribute for command handler.
+    ///  Attribute for event handler.
     /// </summary>
-    /// <seealso cref="T:System.ComponentModel.Composition.ExportAttribute"/>
     ///-------------------------------------------------------------------------------------------------
     [PublicAPI]
-    [MetadataAttribute]
-    [AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
-    public sealed class CommandHandlerAttribute : ExportAttribute
+    [AttributeUsage(AttributeTargets.Class, Inherited = true)]
+    public sealed class EventHandlerAttribute : Hyperstore.Modeling.Container.Composition.HyperstoreAttribute, IEventHandlerMetadata
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Constructor.
         /// </summary>
         /// <param name="domainModel">
-        ///  The domain model.
+        ///  (Optional) The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public CommandHandlerAttribute(string domainModel)
-            : base(typeof(ICommandHandler))
+        public EventHandlerAttribute(string domainModel = null)
+            : base(domainModel)
         {
-            Contract.RequiresNotEmpty(domainModel, "domainModel");
-            DomainModel = domainModel;
         }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the domain model.
-        /// </summary>
-        /// <value>
-        ///  The domain model.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public string DomainModel { get; private set; }
     }
 }
 

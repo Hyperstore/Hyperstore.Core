@@ -209,17 +209,5 @@ namespace Hyperstore.Modeling.Platform
             return new Hyperstore.Modeling.Domain.ModelElementFactory();
         }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the MEF container.
-        /// </summary>
-        /// <value>
-        ///  The MEF container.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public virtual IMefContainer MefContainer
-        {
-            get { return new MefContainer(); }
-        }
     }
 }

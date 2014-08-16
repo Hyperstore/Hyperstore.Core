@@ -15,37 +15,17 @@
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
 
-
-#region Imports
-using System.ComponentModel.Composition;
 using System;
-using Hyperstore.Modeling.Events;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-#endregion
-
-namespace Hyperstore.Modeling.Events
+namespace Hyperstore.Modeling.Container.Composition
 {
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary>
-    ///  Attribute for event handler.
-    /// </summary>
-    /// <seealso cref="T:System.ComponentModel.Composition.ExportAttribute"/>
-    ///-------------------------------------------------------------------------------------------------
-    [PublicAPI]
-    [MetadataAttribute]
-    [AttributeUsage(AttributeTargets.Class, Inherited = true)]
-    public sealed class EventHandlerAttribute : ExportAttribute
+    public abstract class HyperstoreAttribute : Attribute
     {
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Constructor.
-        /// </summary>
-        /// <param name="domainModel">
-        ///  (Optional) The domain model.
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
-        public EventHandlerAttribute(string domainModel = null)
-            : base(typeof(IEventHandler))
+        protected HyperstoreAttribute(string domainModel)
         {
             DomainModel = domainModel;
         }
@@ -61,4 +41,3 @@ namespace Hyperstore.Modeling.Events
         public string DomainModel { get; private set; }
     }
 }
-

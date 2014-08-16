@@ -14,10 +14,8 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
 
 #region Imports
-using System.ComponentModel.Composition;
 using System;
 #endregion
 
@@ -25,49 +23,26 @@ namespace Hyperstore.Modeling.Commands
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  Attribute for command interceptor.
+    ///  Attribute for command handler.
     /// </summary>
-    /// <seealso cref="T:System.ComponentModel.Composition.ExportAttribute"/>
     ///-------------------------------------------------------------------------------------------------
     [PublicAPI]
-    [MetadataAttribute]
-    [AttributeUsage(AttributeTargets.Class, Inherited = true)]
-    public sealed class CommandInterceptorAttribute : ExportAttribute
+    [AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
+    public sealed class CommandHandlerAttribute : Hyperstore.Modeling.Container.Composition.HyperstoreAttribute, ICommandHandlerMetadata
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Constructor.
         /// </summary>
         /// <param name="domainModel">
-        ///  (Optional) The domain model.
+        ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public CommandInterceptorAttribute(string domainModel = null)
-            : base(typeof(ICommandInterceptor))
+        public CommandHandlerAttribute(string domainModel)
+            : base(domainModel)
         {
-            DomainModel = domainModel;
-            Priority = 0;
+            Contract.RequiresNotEmpty(domainModel, "domainModel");
         }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the domain model.
-        /// </summary>
-        /// <value>
-        ///  The domain model.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public string DomainModel { get; private set; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets or sets the priority.
-        /// </summary>
-        /// <value>
-        ///  The priority.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public int Priority { get; set; }
     }
 }
 

@@ -15,25 +15,43 @@
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
  
+#region Imports
 using System;
-namespace Hyperstore.Modeling
+#endregion
+
+namespace Hyperstore.Modeling.Commands
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  Interface for MEF container.
+    ///  Attribute for command interceptor.
     /// </summary>
-    /// <seealso cref="T:ICompositionService"/>
     ///-------------------------------------------------------------------------------------------------
-    public interface IMefContainer : ICompositionService 
+    [PublicAPI]
+    [AttributeUsage(AttributeTargets.Class, Inherited = true)]
+    public sealed class CommandInterceptorAttribute : Hyperstore.Modeling.Container.Composition.HyperstoreAttribute, ICommandInterceptorMetadata
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Composes the given assemblies.
+        ///  Constructor.
         /// </summary>
-        /// <param name="assemblies">
-        ///  The assemblies.
+        /// <param name="domainModel">
+        ///  (Optional) The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        void Compose(params global::System.Reflection.Assembly[] assemblies);
+        public CommandInterceptorAttribute(string domainModel = null) : base(domainModel)
+        {
+            Priority = 0;
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the priority.
+        /// </summary>
+        /// <value>
+        ///  The priority.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public int Priority { get; set; }
     }
 }
+

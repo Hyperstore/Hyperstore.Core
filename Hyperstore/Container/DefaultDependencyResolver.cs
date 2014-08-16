@@ -83,7 +83,7 @@ namespace Hyperstore.Modeling.Ioc
             if (Resolve<ICompositionService>() != null)
                 throw new Exception(ExceptionMessages.CompositionAlreadyDone);
 
-            var container = Platform.PlatformServices.Current.MefContainer;
+            var container = new Hyperstore.Modeling.Container.Composition.CompositionContainer();
             await Task.Run(() => container.Compose(assemblies)).ConfigureAwait(false);
             Register<ICompositionService>(container);
         }
