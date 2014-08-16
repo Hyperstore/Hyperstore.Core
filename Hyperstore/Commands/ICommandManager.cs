@@ -45,6 +45,19 @@ namespace Hyperstore.Modeling.Commands
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
+        ///  Processes the command.
+        /// </summary>
+        /// <param name="command">
+        ///  The command.
+        /// </param>
+        /// <returns>
+        ///  An IExecutionResult.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        IExecutionResult ProcessCommands(IDomainCommand command);
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
         ///  Registers a command interceptor.
         /// </summary>
         /// <typeparam name="TCommand">

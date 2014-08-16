@@ -526,7 +526,7 @@ namespace Hyperstore.Modeling.Metadata
             get { return null; }
         }
 
-        Task<IDomainModelExtension> IDomainModel.LoadExtensionAsync(string extensionName, ExtendedMode mode, IDomainConfiguration config)
+        Task<IDomainModelExtension> IDomainModel.LoadExtensionAsync(string extensionName, IDomainConfiguration config)
         {
             throw new NotSupportedException();
         }
@@ -702,6 +702,22 @@ namespace Hyperstore.Modeling.Metadata
         IModelRelationship IDomainModel.GetRelationship(Identity id, ISchemaRelationship metaclass)
         {
             throw new NotSupportedException();
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Query if 'domainModel' is same.
+        /// </summary>
+        /// <param name="domainModel">
+        ///  The domain model.
+        /// </param>
+        /// <returns>
+        ///  true if same, false if not.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        public bool IsSame(IDomainModel domainModel)
+        {
+            return domainModel == this;
         }
     }
 }

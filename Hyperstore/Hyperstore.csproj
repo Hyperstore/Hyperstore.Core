@@ -61,6 +61,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adapters\AbstractGraphAdapter.cs" />
+    <Compile Include="Adapters\IGraphAdapter.cs" />
+    <Compile Include="Adapters\QueryNodeResult.cs" />
     <Compile Include="Container\ICommandHandlerMetadata.cs" />
     <Compile Include="Container\ICommandInterceptorMetadata.cs" />
     <Compile Include="Container\IEventHandlerMetadata.cs" />
@@ -86,7 +89,7 @@
     <Compile Include="..\AssemblyVersion.cs">
       <Link>Properties\AssemblyVersion.cs</Link>
     </Compile>
-    <Compile Include="Adapters\MemoryGraph\ConflictException.cs" />
+    <Compile Include="HyperGraph\Impls\MemoryGraph\ConflictException.cs" />
     <Compile Include="Commands\Constraints\Impls\MessageHelper.cs" />
     <Compile Include="Commands\ErrorContinuationStatus.cs" />
     <Compile Include="Commands\IExecutionResultInternal.cs" />
@@ -133,8 +136,6 @@
     <Compile Include="Commands\BeforeContinuationStatus.cs" />
     <Compile Include="Commands\Constraints\IImplicitDomainModelConstraints.cs" />
     <Compile Include="Commands\Constraints\Impls\ConstraintsCategory.cs" />
-    <Compile Include="Commands\Constraints\Impls\RelayBeforeRule.cs" />
-    <Compile Include="Commands\Constraints\Impls\RelayBeforeRuleOptions.cs" />
     <Compile Include="Commands\ICommandHandler.cs" />
     <Compile Include="Commands\ICommandHandlerOf.cs" />
     <Compile Include="Commands\Impls\AddSchemaEntityCommand.cs" />
@@ -185,7 +186,6 @@
     <Compile Include="DomainModel\Impl\Extension\DomainExtensionDomainModelDefinition.cs" />
     <Compile Include="DomainModel\Impl\Extension\DomainExtensionHyperGraph.cs" />
     <Compile Include="DomainModel\Impl\Extension\DomainExtensionSchema.cs" />
-    <Compile Include="DomainModel\Impl\Extension\ExtensionMode.cs" />
     <Compile Include="DomainModel\Impl\IdGenerators\LongIdGenerator.cs" />
     <Compile Include="DomainModel\Impl\ObservableModelElementCollection.cs" />
     <Compile Include="DomainModel\IPropertyChangedNotifier.cs" />
@@ -203,20 +203,19 @@
     <Compile Include="Events\Impls\EventHandler\AddMetadataEventHandler.cs" />
     <Compile Include="Events\Impls\EventHandler\AddRelationshipMetadataEventHandler.cs" />
     <Compile Include="Events\Impls\EventHandler\AddPropertyMetadataEventHandler.cs" />
-    <Compile Include="Events\Impls\PropagateEventDispatcher.cs" />
     <Compile Include="Events\IUndoableEvent.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="HyperGraph\GraphElementType.cs" />
     <Compile Include="HyperGraph\IEdgeList.cs" />
     <Compile Include="HyperGraph\IIndex.cs" />
     <Compile Include="HyperGraph\DuplicateIndexException.cs" />
-    <Compile Include="Adapters\MemoryGraph\Index\IndexWrapper.cs" />
+    <Compile Include="HyperGraph\Impls\MemoryGraph\Index\IndexWrapper.cs" />
     <Compile Include="HyperGraph\ITransactionalGraphAdapter.cs" />
     <Compile Include="Adapters\MergeOption.cs" />
     <Compile Include="HyperGraph\PropertyValue.cs" />
     <Compile Include="HyperGraph\Query.cs" />
     <Compile Include="HyperGraph\UniqueConstraintException.cs" />
-    <Compile Include="Adapters\MemoryGraph\MemoryGraphNode.cs" />
+    <Compile Include="HyperGraph\Impls\MemoryGraph\MemoryGraphNode.cs" />
     <Compile Include="Adapters\EntityUpdaters\IPersistenceGraphAdapter.cs" />
     <Compile Include="HyperGraph\Traversal\GraphPath.cs" />
     <Compile Include="HyperGraph\Traversal\GraphPosition.cs" />
@@ -240,7 +239,7 @@
     <Compile Include="MemoryStore\ICloneable.cs" />
     <Compile Include="MemoryStore\Impls\MaxElementsEvictionPolicy.cs" />
     <Compile Include="MemoryStore\IEvictionPolicy.cs" />
-    <Compile Include="Adapters\MemoryGraph\Index\IndexDefinition.cs" />
+    <Compile Include="HyperGraph\Impls\MemoryGraph\Index\IndexDefinition.cs" />
     <Compile Include="MemoryStore\Impls\ILockInfo.cs" />
     <Compile Include="MemoryStore\Impls\ILockManager.cs" />
     <Compile Include="MemoryStore\Impls\ISlot.cs" />
@@ -367,9 +366,9 @@
     <Compile Include="HyperGraph\Impls\HypergraphTransaction.cs" />
     <Compile Include="HyperGraph\IIdGenerator.cs" />
     <Compile Include="DomainModel\Impl\IdGenerators\GuidIdGenerator.cs" />
-    <Compile Include="Adapters\MemoryGraph\Index\BTreeIndex.cs" />
+    <Compile Include="HyperGraph\Impls\MemoryGraph\Index\BTreeIndex.cs" />
     <Compile Include="HyperGraph\IIndexManager.cs" />
-    <Compile Include="Adapters\MemoryGraph\Index\MemoryIndexManager.cs" />
+    <Compile Include="HyperGraph\Impls\MemoryGraph\Index\MemoryIndexManager.cs" />
     <Compile Include="HyperGraph\IGraphNode.cs" />
     <Compile Include="Container\IDependencyResolver.cs" />
     <Compile Include="MemoryStore\DeadLockException.cs" />
@@ -429,7 +428,6 @@
     <Compile Include="Utils\BaseHyperstoreTrace.cs" />
     <Compile Include="Utils\Timer.cs" />
     <Compile Include="Utils\Types.cs" />
-    <Compile Include="Events\Impls\Extensions\WeakSubscription.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Metadata\ClassDiagram1.cd" />
@@ -445,7 +443,9 @@
       <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Container\DependencyInjection\" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <PropertyGroup>

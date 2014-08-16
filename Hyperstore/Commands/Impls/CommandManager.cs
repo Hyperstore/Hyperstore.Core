@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -119,6 +119,23 @@ namespace Hyperstore.Modeling.Commands
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
+        ///  Processes the command.
+        /// </summary>
+        /// <param name="command">
+        ///  The command.
+        /// </param>
+        /// <returns>
+        ///  An IExecutionResult.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        IExecutionResult ICommandManager.ProcessCommands(IDomainCommand command)
+        {
+            Contract.Requires(command, "command");
+            return ((ICommandManager)this).ProcessCommands(new[] { command });
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
         ///  Execution des commandes atomiquement. Une exception est générée en cas d'erreur.
         /// </summary>
         /// <exception cref="SessionRequiredException">
@@ -146,7 +163,7 @@ namespace Hyperstore.Modeling.Commands
             Debug.Assert(log != null, "log != null");
 
             // Execution des commandes
-            foreach (var cmd in commands)
+            foreach (var cmd in commands.Where(c => c != null))
             {
                 if (Session.Current.CancellationToken.IsCancellationRequested)
                     break;

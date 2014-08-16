@@ -15,33 +15,16 @@
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
  
-#region Imports
-
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-#endregion
-
-namespace Hyperstore.Modeling
+namespace Hyperstore.Modeling.Adapters
 {
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary>
-    ///  Bitfield of flags for specifying RelayBeforeRuleOptions.
-    /// </summary>
-    ///-------------------------------------------------------------------------------------------------
-    [Flags]
-    public enum RelayBeforeRuleOptions
+    public interface IGraphAdapter
     {
-        /// <summary>
-        ///  Specifies the none option.
-        /// </summary>
-        None = 0,
-        /// <summary>
-        ///  Specifies the ignore undo redo option.
-        /// </summary>
-        IgnoreUndoRedo = 1,
-        /// <summary>
-        ///  Specifies the ignore if false option.
-        /// </summary>
-        IgnoreIfFalse = 2,
+        IEnumerable<QueryNodeResult> LoadNodes(Query query);
     }
 }

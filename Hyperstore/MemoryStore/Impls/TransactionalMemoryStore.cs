@@ -125,7 +125,7 @@ namespace Hyperstore.Modeling.MemoryStore
             _involvedSlots = PlatformServices.Current.CreateConcurrentQueue<ISlot>();
 
             if (stat == null)
-                stat = new EmptyStatistics();
+                stat = EmptyStatistics.DefaultInstance;
 
             _statAddValue = stat.RegisterCounter("MemoryStore", String.Format("#AddValue {0}", domainModelName), domainModelName, StatisticCounterType.Value);
             _statGeIGraphNode = stat.RegisterCounter("MemoryStore", String.Format("#GeIGraphNode {0}", domainModelName), domainModelName, StatisticCounterType.Value);

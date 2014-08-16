@@ -117,43 +117,43 @@ namespace Hyperstore.Tests.Extension
             }
 
             await schema.LoadSchemaExtension(new ExtensionsDomainDefinition());
-            var extended = await initial.LoadExtensionAsync("Ex1", ExtendedMode.ReadOnly);
+            var extended = await initial.LoadExtensionAsync("Ex1");
 
             Assert.IsNotNull(store.GetElement<CategoryEx>(((IModelElement)cat).Id));
         }
 
-        [TestMethod]
-        public async Task Extension_constraint_in_updatable_mode()
-        {
-            // En mode updatable, les contraintes du domaine étendu s'appliquent
-            await AssertHelper.ThrowsException<SessionException>(async () =>
-                {
-                    var store = new Hyperstore.Modeling.Store(StoreOptions.EnableExtensions);
-                    var schema = await store.LoadSchemaAsync(new InitialDomainDefinition());
-                    var initial = await store.CreateDomainModelAsync("D1");
+        //[TestMethod]
+        //public async Task Extension_constraint_in_updatable_mode()
+        //{
+        //    // En mode updatable, les contraintes du domaine étendu s'appliquent
+        //    await AssertHelper.ThrowsException<SessionException>(async () =>
+        //        {
+        //            var store = new Hyperstore.Modeling.Store(StoreOptions.EnableExtensions);
+        //            var schema = await store.LoadSchemaAsync(new InitialDomainDefinition());
+        //            var initial = await store.CreateDomainModelAsync("D1");
 
-                    store.GetSchemaEntity<Category>().AddImplicitConstraint<Category>(c => c.Value < 10, "Invalid value");
+        //            store.GetSchemaEntity<Category>().AddImplicitConstraint<Category>(c => c.Value < 10, "Invalid value");
 
-                    Category cat;
-                    using (var s = store.BeginSession())
-                    {
-                        cat = new Category(initial);
-                        cat.Value = 1;
-                        s.AcceptChanges();
-                    }
+        //            Category cat;
+        //            using (var s = store.BeginSession())
+        //            {
+        //                cat = new Category(initial);
+        //                cat.Value = 1;
+        //                s.AcceptChanges();
+        //            }
 
-                    await schema.LoadSchemaExtension(new ExtensionsDomainDefinition());
-                    var extended = await initial.LoadExtensionAsync("Ex1", ExtendedMode.Updatable);
+        //            await schema.LoadSchemaExtension(new ExtensionsDomainDefinition());
+        //            var extended = await initial.LoadExtensionAsync("Ex1", ExtendedMode.Updatable);
 
-                    CategoryEx catx;
-                    using (var s = store.BeginSession())
-                    {
-                        catx = store.GetElement<CategoryEx>(((IModelElement)cat).Id);
-                        catx.Value = 10; // Doit planter
-                        s.AcceptChanges();
-                    }
-                });
-        }
+        //            CategoryEx catx;
+        //            using (var s = store.BeginSession())
+        //            {
+        //                catx = store.GetElement<CategoryEx>(((IModelElement)cat).Id);
+        //                catx.Value = 10; // Doit planter
+        //                s.AcceptChanges();
+        //            }
+        //        });
+        //}
 
         [TestMethod]
         public async Task Extension_constraint()
@@ -164,7 +164,7 @@ namespace Hyperstore.Tests.Extension
                     var schema = await store.LoadSchemaAsync(new InitialDomainDefinition());
                     var initial = await store.CreateDomainModelAsync("D1");
                     await schema.LoadSchemaExtension( new ExtensionsDomainDefinition());
-                    var extended = await initial.LoadExtensionAsync("Ex1", ExtendedMode.Updatable);
+                    var extended = await initial.LoadExtensionAsync("Ex1");
 
                     store.GetSchemaEntity<Category>().AddImplicitConstraint<Category>(c => c.Value < 10, "Invalid value");
 
@@ -196,7 +196,7 @@ namespace Hyperstore.Tests.Extension
             }
 
             await schema.LoadSchemaExtension( new ExtensionsDomainDefinition(), SchemaConstraintExtensionMode.Replace);
-            var extended = await initial.LoadExtensionAsync("Ex1", ExtendedMode.Updatable);
+            var extended = await initial.LoadExtensionAsync("Ex1");
 
             CategoryEx catx;
             using (var s = store.BeginSession())
@@ -338,7 +338,7 @@ namespace Hyperstore.Tests.Extension
             {
                 Sleep(100);
 
-                var xDomain = await initial.LoadExtensionAsync("Ex1", ExtendedMode.ReadOnly);
+                var xDomain = await initial.LoadExtensionAsync("Ex1");
 
                 store.GetSchemaEntity<CategoryEx>().AddImplicitConstraint<CategoryEx>(ca => ca.Value < 10, "Value == 10");
                 using (var tx = store.BeginSession())
@@ -387,7 +387,7 @@ namespace Hyperstore.Tests.Extension
                 Assert.Inconclusive();
             }
 
-            var xDomain = await initial.LoadExtensionAsync("Ex1", ExtendedMode.ReadOnly);
+            var xDomain = await initial.LoadExtensionAsync("Ex1");
             var id = ((IModelElement)a).Id;
             using (var tx = store.BeginSession())
             {

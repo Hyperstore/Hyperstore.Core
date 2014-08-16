@@ -85,6 +85,10 @@ namespace Hyperstore.Modeling
             {
                 var index = IndexOfCore(elementId);
                 var item = (T)DomainModel.Store.GetElement(elementId, schema);
+
+                if ( item == null || (Source != null && !item.DomainModel.IsSame(Source.DomainModel)) || (End != null && !item.DomainModel.IsSame(End.DomainModel)))
+                    return;
+
                 if (index >= 0)
                 {
                     // Already in the list: check if the query is always valid else remove item from list
@@ -132,6 +136,9 @@ namespace Hyperstore.Modeling
 
             var schema = DomainModel.Store.GetSchemaElement(schemaId);
             var item = (T)DomainModel.Store.GetElement(elementId, schema);
+
+            if (item == null || (Source != null && !item.DomainModel.IsSame(Source.DomainModel)) || (End != null && !item.DomainModel.IsSame(End.DomainModel)))
+                return;
 
             if (item != null)
             {

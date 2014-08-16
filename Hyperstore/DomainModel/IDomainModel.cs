@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -406,11 +406,10 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Loads an extension. </summary>
         /// <param name="extensionName">    The extension name or null if it's not an extension. </param>
-        /// <param name="extendedMode">     The extended mode. </param>
         /// <param name="configuration">    (Optional) the configuration. </param>
         /// <returns>   The extension. </returns>
         ///-------------------------------------------------------------------------------------------------
-        Task<IDomainModelExtension> LoadExtensionAsync(string extensionName, ExtendedMode extendedMode, IDomainConfiguration configuration=null);
+        Task<IDomainModelExtension> LoadExtensionAsync(string extensionName, IDomainConfiguration configuration = null);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -453,5 +452,18 @@ namespace Hyperstore.Modeling
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         bool IsDisposed { get; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Query if 'domainModel' is same.
+        /// </summary>
+        /// <param name="domainModel">
+        ///  The domain model.
+        /// </param>
+        /// <returns>
+        ///  true if same, false if not.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        bool IsSame(IDomainModel domainModel);
     }
 }

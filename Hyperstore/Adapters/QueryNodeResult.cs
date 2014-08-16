@@ -1,4 +1,4 @@
-// Copyright 2014 Zenasoft.  All rights reserved.
+﻿// Copyright 2014 Zenasoft.  All rights reserved.
 //
 // This file is part of Hyperstore.
 //
@@ -17,149 +17,152 @@
 
 #region Imports
 
-using System;
+using System.Collections.Generic;
+using Hyperstore.Modeling.HyperGraph;
 
 #endregion
 
-namespace Hyperstore.Modeling
+namespace Hyperstore.Modeling.Adapters
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  A diagnostic message.
+    ///  Encapsulates the result of a query node.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     [PublicAPI]
-    public class DiagnosticMessage
+    public class QueryNodeResult : IGraphNode
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Initializes a new instance of the <see cref="DiagnosticMessage"/> class.
+        ///  Constructor.
         /// </summary>
-        /// <param name="messageType">
-        ///  Type of the message.
+        /// <param name="nodeType">
+        ///  The type of the node.
         /// </param>
-        /// <param name="message">
-        ///  The message.
+        /// <param name="id">
+        ///  The identifier.
         /// </param>
-        /// <param name="category">
-        ///  The category.
+        /// <param name="startId">
+        ///  The identifier of the start.
         /// </param>
-        /// <param name="modelElement">
-        ///  (Optional) The model element.
+        /// <param name="startSchemaId">
+        ///  The identifier of the start schema.
         /// </param>
-        /// <param name="ex">
-        ///  (Optional) The ex.
+        /// <param name="endId">
+        ///  The identifier of the end.
         /// </param>
-        /// <param name="propertyName">
-        ///  (Optional) The name of the property.
+        /// <param name="endSchemaId">
+        ///  The identifier of the end schema.
+        /// </param>
+        /// <param name="schema">
+        ///  The schema.
+        /// </param>
+        /// <param name="props">
+        ///  The properties.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public DiagnosticMessage(MessageType messageType, string message, string category, IModelElement modelElement = null, Exception ex = null, string propertyName = null)
+        public QueryNodeResult(NodeType nodeType, Identity id, Identity startId, Identity startSchemaId, Identity endId, Identity endSchemaId, ISchemaElement schema, Dictionary<ISchemaProperty, PropertyValue> props)
         {
-            DebugContract.RequiresNotEmpty(message);
-
-            MessageType = messageType;
-            Message = message;
-            Category = category;
-            Element = modelElement;
-            Exception = ex;
-            PropertyName = propertyName;
-        }
-
-        internal DiagnosticMessage(MessageType messageType, string message, string category, bool isConstraintMessage, IModelElement modelElement = null, Exception ex = null, string propertyName = null)
-            : this(messageType, message, category, modelElement, ex, propertyName)
-        {
-            DebugContract.RequiresNotEmpty(message);
-            IsConstraintMessage = isConstraintMessage;
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Message type.
-        /// </summary>
-        /// <value>
-        ///  The type of the message.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public MessageType MessageType { get; private set; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Text of the message.
-        /// </summary>
-        /// <value>
-        ///  The message.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public string Message
-        {
-            get;
-            private set;
+            Contract.Requires(id != null, "id");
+            Contract.Requires(schema != null, "schema");
+            NodeType = nodeType;
+            Id = id;
+            StartId = startId;
+            StartSchemaId = startSchemaId;
+            EndId = endId;
+            EndSchemaId = endSchemaId;
+            SchemaInfo = schema;
+            Properties = props;
         }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Message category like Rules or Validations.
+        ///  Gets or sets the type of the node.
         /// </summary>
         /// <value>
-        ///  The category.
+        ///  The type of the node.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public string Category { get; private set; }
+        public NodeType NodeType { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets a value indicating whether the message has been generated by a constraint.
+        ///  Gets information describing the schema.
         /// </summary>
         /// <value>
-        ///  <c>true</c> if [is constraint message]; otherwise, <c>false</c>.
+        ///  Information describing the schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public bool IsConstraintMessage { get; private set; }
+        public ISchemaElement SchemaInfo { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  The exception is any.
+        ///  Gets the id.
         /// </summary>
         /// <value>
-        ///  The exception.
+        ///  The identifier.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Exception Exception { get; private set; }
+        public Identity Id { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets or sets the element.
+        ///  Gets the meta class id.
         /// </summary>
         /// <value>
-        ///  The element.
+        ///  The identifier of the schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IModelElement Element { get; private set; }
+        public Identity SchemaId { get { return SchemaInfo.Id; } }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets or sets the name of the property.
+        ///  Gets the start meta class id.
         /// </summary>
         /// <value>
-        ///  The name of the property.
+        ///  The identifier of the start schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public string PropertyName { get; private set; }
+        public Identity StartSchemaId { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Returns a string that represents the current object.
+        ///  Gets the end meta class id.
         /// </summary>
-        /// <returns>
-        ///  A string that represents the current object.
-        /// </returns>
+        /// <value>
+        ///  The identifier of the end schema.
+        /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public override string ToString()
-        {
-            return String.Format("[{0}] - {1} {2}", MessageType, Message,
-                Exception != null ? String.Format("{0} : {1}", Exception.GetType().Name, Exception.Message) : String.Empty
-                );
-        }
+        public Identity EndSchemaId { get; private set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the start.
+        /// </summary>
+        /// <value>
+        ///  The identifier of the start.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public Identity StartId { get; private set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the end.
+        /// </summary>
+        /// <value>
+        ///  The identifier of the end.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public Identity EndId { get; private set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Associated properties of the current node. Can be null.
+        /// </summary>
+        /// <value>
+        ///  The properties or null.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public IDictionary<ISchemaProperty, PropertyValue> Properties { get; private set; }
     }
 }

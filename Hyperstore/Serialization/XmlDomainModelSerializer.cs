@@ -76,7 +76,7 @@ namespace Hyperstore.Modeling.Serialization
 
                 try
                 {
-                    _serializeDomainPropertiesOnly = model is DomainModelExtension && ((DomainModelExtension)model).ExtensionMode == ExtendedMode.Updatable;
+                    _serializeDomainPropertiesOnly = false;
 
                     var root = new XElement("domain", new XAttribute("name", model.Name),
                             //(option & SerializationOption.Metadatas) == SerializationOption.Metadatas

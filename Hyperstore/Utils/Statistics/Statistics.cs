@@ -17,6 +17,7 @@
  
 #region Imports
 
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -26,6 +27,14 @@ namespace Hyperstore.Modeling.Statistics
 {
     internal class EmptyStatistics : IStatistics
     {
+        private static Lazy<IStatistics> _instance = new Lazy<IStatistics>(() => new EmptyStatistics());
+
+        public static IStatistics DefaultInstance { get { return _instance.Value; } }
+
+        private EmptyStatistics()
+        {
+        }
+
         class EmptyCounter : IStatisticCounter
         {
             public static IStatisticCounter Empty = new EmptyCounter();

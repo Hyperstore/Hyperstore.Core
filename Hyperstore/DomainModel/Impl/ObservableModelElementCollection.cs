@@ -150,6 +150,9 @@ namespace Hyperstore.Modeling
 
         private void LoadItems()
         {
+            if (this.DomainModel.IsDisposed)
+                throw new Exception("You can not used element from unloaded domain.");
+
             if (_loaded)
                 return;
 
@@ -524,7 +527,7 @@ namespace Hyperstore.Modeling
                     return -1;
 
                 item = DomainModel.Store.GetElement(id, SchemaRelationship.End);
-                if (item == null)
+                if (item == null || !item.DomainModel.IsSame(Source.DomainModel))
                     return -1;
             }
             else // Opposite
@@ -537,7 +540,7 @@ namespace Hyperstore.Modeling
                     return -1;
 
                 item = DomainModel.Store.GetElement(id, SchemaRelationship.Start);
-                if (item == null)
+                if (item == null || !item.DomainModel.IsSame(End.DomainModel))
                     return -1;
             }
 
@@ -592,7 +595,7 @@ namespace Hyperstore.Modeling
             }
             else
             {
-                if (evt.SchemaRelationshipId != SchemaRelationship.Id || evt.End != End.Id)
+                if (evt.SchemaRelationshipId != SchemaRelationship.Id || evt.End != End.Id )
                     return false;
 
                 id = evt.Start;
@@ -614,6 +617,9 @@ namespace Hyperstore.Modeling
                 item = _items[pos];
                 if (item != null)
                 {
+                    if( (Source != null && !item.DomainModel.IsSame(Source.DomainModel)) || (End != null && !item.DomainModel.IsSame(End.DomainModel)))
+                        return false;
+
                     if (End != null && item.DomainModel != End.DomainModel && SchemaRelationship.Cardinality == Cardinality.ManyToMany)
                         throw new Exception("Many to many obervableCollection doesn't work on inter domain relationship.");
                     _items.Remove(item);

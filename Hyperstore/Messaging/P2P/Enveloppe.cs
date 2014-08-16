@@ -48,12 +48,12 @@ namespace Hyperstore.Modeling.Messaging
             Contract.Requires(@event, "@event");
             if (@event is ICustomEventSerializer)
             {
-                Body = ((ICustomEventSerializer)@event).Serialize();
+                Data = ((ICustomEventSerializer)@event).Serialize();
                 Flags |= 0x01;
             }
             else
             {
-                Body = PlatformServices.Current.ObjectSerializer.Serialize(@event);
+                Data = PlatformServices.Current.ObjectSerializer.Serialize(@event);
             }
             EventType = Hyperstore.Modeling.Utils.ReflectionHelper.GetNameWithSimpleAssemblyName(@event.GetType());
         }
@@ -87,7 +87,7 @@ namespace Hyperstore.Modeling.Messaging
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         [DataMember]
-        public string Body { get; set; }
+        public string Data { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -99,17 +99,6 @@ namespace Hyperstore.Modeling.Messaging
         ///-------------------------------------------------------------------------------------------------
         [DataMember]
         public string MessageId { get; set; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets or sets the identifier of the correlation.
-        /// </summary>
-        /// <value>
-        ///  The identifier of the correlation.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        [DataMember]
-        public Guid CorrelationId { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -141,12 +130,12 @@ namespace Hyperstore.Modeling.Messaging
                 var evt = Activator.CreateInstance(eventType) as ICustomEventSerializer;
                 if (evt != null)
                 {
-                    evt.Deserialize(Body);
+                    evt.Deserialize(Data);
                     return evt;
                 }
             }
 
-            return (IEvent) PlatformServices.Current.ObjectSerializer.Deserialize(eventType, Body, null);
+            return (IEvent) PlatformServices.Current.ObjectSerializer.Deserialize(eventType, Data, null);
         }
     }
 }

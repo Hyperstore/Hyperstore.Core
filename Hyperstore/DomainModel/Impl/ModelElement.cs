@@ -719,6 +719,7 @@ namespace Hyperstore.Modeling
                 // Domain already disposed
             }
 
+
             if (_calculatedProperties != null && _calculatedProperties.IsValueCreated)
             {
                 foreach (var p in _calculatedProperties.Value.Values)

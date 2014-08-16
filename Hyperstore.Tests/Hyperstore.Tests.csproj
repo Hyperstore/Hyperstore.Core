@@ -78,6 +78,7 @@
     <Compile Include="Commands\CommandsTest.cs" />
     <Compile Include="Commands\CommandEventTest.cs" />
     <Compile Include="Commands\InterceptorsTest.cs" />
+    <Compile Include="DomainExtension\ExtensionScopeTest.cs" />
     <Compile Include="DomainModel\RelationshipTest.cs" />
     <Compile Include="DomainModel\DynamicDomainTest.cs" />
     <Compile Include="Events\EventBusTest.cs" />

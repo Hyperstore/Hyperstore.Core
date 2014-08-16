@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -69,6 +69,6 @@ namespace Hyperstore.Modeling.Messaging
         ///  The identifier of the session.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Guid SessionId { get; set; }
+        public Guid CorrelationId { get; set; }
     }
 }

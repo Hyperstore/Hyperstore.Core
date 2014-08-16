@@ -45,11 +45,8 @@ namespace Hyperstore.Modeling.DomainExtension
         /// <param name="extendeDomainModel">
         ///  The extende domain model.
         /// </param>
-        /// <param name="extensionMode">
-        ///  The extension mode.
-        /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public DomainModelExtension(IDependencyResolver resolver, string name, string extensionName, IDomainModel extendeDomainModel, ExtendedMode extensionMode)
+        public DomainModelExtension(IDependencyResolver resolver, string name, string extensionName, IDomainModel extendeDomainModel)
             : base(resolver, name)
         {
             DebugContract.Requires(resolver);
@@ -59,18 +56,7 @@ namespace Hyperstore.Modeling.DomainExtension
 
             ExtensionName = extensionName;
             ExtendedDomainModel = extendeDomainModel;
-            ExtensionMode = extensionMode;
         }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the extension mode.
-        /// </summary>
-        /// <value>
-        ///  The extension mode.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public ExtendedMode ExtensionMode { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -114,7 +100,7 @@ namespace Hyperstore.Modeling.DomainExtension
             return base.GetRelationships(schemaRelationship, start, end);
         }
 
-        public override System.Threading.Tasks.Task<IDomainModelExtension> LoadExtensionAsync(string extensionName, ExtendedMode mode, IDomainConfiguration configuration = null)
+        public override System.Threading.Tasks.Task<IDomainModelExtension> LoadExtensionAsync(string extensionName, IDomainConfiguration configuration = null)
         {
             throw new NotImplementedException();
         }
@@ -129,7 +115,7 @@ namespace Hyperstore.Modeling.DomainExtension
         ///-------------------------------------------------------------------------------------------------
         protected override IHyperGraph ResolveHyperGraph()
         {
-            return new DomainExtensionHyperGraph(DependencyResolver, ExtendedDomainModel as IHyperGraphProvider, ExtensionMode);
+            return new DomainExtensionHyperGraph(DependencyResolver, ExtendedDomainModel as IHyperGraphProvider);
         }
     }
 }

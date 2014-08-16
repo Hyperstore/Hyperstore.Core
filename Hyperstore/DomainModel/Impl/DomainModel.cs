@@ -39,7 +39,7 @@ namespace Hyperstore.Modeling.Domain
     /// </summary>
     /// <seealso cref="T:Hyperstore.Modeling.IUpdatableDomainModel"/>
     ///-------------------------------------------------------------------------------------------------
-    [DebuggerDisplay("Domain {Name}")]
+    [DebuggerDisplay("Domain {Name} {ExtensionName}")]
     public class DomainModel : IUpdatableDomainModel, IHyperGraphProvider
     {
         private readonly IDependencyResolver _dependencyResolver;
@@ -91,6 +91,22 @@ namespace Hyperstore.Modeling.Domain
             Name = name.ToLower();
             _dependencyResolver = dependencyResolver;
             Store = DependencyResolver.Resolve<IHyperstore>();
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Query if 'domain' is same.
+        /// </summary>
+        /// <param name="domain">
+        ///  The domain.
+        /// </param>
+        /// <returns>
+        ///  true if same, false if not.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        public bool IsSame(IDomainModel domain)
+        {
+            return domain != null && String.Compare(Name, domain.Name, StringComparison.OrdinalIgnoreCase) == 0 && String.Compare(ExtensionName, domain.ExtensionName, StringComparison.OrdinalIgnoreCase) == 0;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -330,9 +346,6 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="extensionName">
         ///  The name of the extension.
         /// </param>
-        /// <param name="mode">
-        ///  The mode.
-        /// </param>
         /// <param name="configuration">
         ///  (Optional) the configuration.
         /// </param>
@@ -340,7 +353,7 @@ namespace Hyperstore.Modeling.Domain
         ///  The extension.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual async Task<IDomainModelExtension> LoadExtensionAsync(string extensionName, ExtendedMode mode, IDomainConfiguration configuration = null)
+        public virtual async Task<IDomainModelExtension> LoadExtensionAsync(string extensionName, IDomainConfiguration configuration = null)
         {
             Contract.RequiresNotEmpty(extensionName, "extensionName");
             CheckInitialized();
@@ -352,7 +365,7 @@ namespace Hyperstore.Modeling.Domain
             if ((Store.Options & StoreOptions.EnableExtensions) != StoreOptions.EnableExtensions)
                 throw new Exception("Extensions are not enabled. Use StoreOptions.EnableExtensions when instancing the store.");
 
-            var domain = await Store.CreateDomainModelAsync(extensionName, configuration, (resolver, name) => new DomainExtension.DomainModelExtension(resolver, ((IDomainModel)this).Name, extensionName, this, mode));
+            var domain = await Store.CreateDomainModelAsync(extensionName, configuration, (resolver, name) => new DomainExtension.DomainModelExtension(resolver, ((IDomainModel)this).Name, extensionName, this));
             return (IDomainModelExtension)domain;
         }
 
@@ -884,7 +897,7 @@ namespace Hyperstore.Modeling.Domain
         {
             return (TElement)GetEntity(id, Store.GetSchemaEntity<TElement>());
         }
-      
+
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

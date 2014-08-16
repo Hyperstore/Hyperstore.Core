@@ -30,7 +30,6 @@ namespace Hyperstore.Modeling.DomainExtension
     internal class DomainExtensionHyperGraph : HyperGraph.HyperGraph, IExtensionHyperGraph
     {
         private readonly IDomainModel _extendedDomain;
-        private readonly ExtendedMode _extensionMode;
         private readonly HyperGraph.HyperGraph _extendedGraph;
         private IKeyValueStore _deletedElements;
 
@@ -44,17 +43,13 @@ namespace Hyperstore.Modeling.DomainExtension
         /// <param name="extendedDomain">
         ///  The extended domain.
         /// </param>
-        /// <param name="mode">
-        ///  The mode.
-        /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public DomainExtensionHyperGraph(IDependencyResolver resolver, IHyperGraphProvider extendedDomain, ExtendedMode mode) : base(resolver)
+        public DomainExtensionHyperGraph(IDependencyResolver resolver, IHyperGraphProvider extendedDomain) : base(resolver)
         {
             DebugContract.Requires(resolver);
             DebugContract.Requires(extendedDomain);
 
             _extendedDomain = extendedDomain;
-            _extensionMode = mode;
 
             _extendedGraph = extendedDomain.InnerGraph as HyperGraph.HyperGraph;
             System.Diagnostics.Debug.Assert(_extendedGraph != null);
@@ -63,11 +58,6 @@ namespace Hyperstore.Modeling.DomainExtension
                             5,
                             _extendedDomain.DependencyResolver.Resolve<Hyperstore.Modeling.MemoryStore.ITransactionManager>()
                             );
-        }
-
-        private bool IsInMode(ExtendedMode mode)
-        {
-            return (_extensionMode & mode) == mode;
         }
 
         public override bool IsDeleted(Identity id)
@@ -111,42 +101,101 @@ namespace Hyperstore.Modeling.DomainExtension
             }
         }
 
+        protected override Tuple<MemoryGraphNode, MemoryGraphNode> GetTerminalNodes(Identity startId, ISchemaInfo startSchema, Identity endId, ISchemaInfo endSchema)
+        {
+            IGraphNode start = null;
+            IGraphNode end = null;
+
+            if (!IsDeleted(startId))
+            {
+                base.GetGraphNode(startId, out start);
+                if (start == null)
+                {
+                    IGraphNode extendedStart;
+                    _extendedGraph.GetGraphNode(startId, out extendedStart);
+                    if (extendedStart != null)
+                    {
+                        var rel = extendedStart as IModelRelationship;
+                        if (rel == null)
+                            start = CreateEntity(startId, (ISchemaEntity)startSchema);
+                        else
+                            start = CreateRelationship(startId, (ISchemaRelationship)startSchema, rel.Start.Id, rel.Start.SchemaInfo, rel.End.Id, rel.End.SchemaInfo);
+                    }
+                }
+            }
+
+            if (startId.DomainModelName == endId.DomainModelName && !IsDeleted(endId))
+            {
+                base.GetGraphNode(endId, out end);
+                if (end == null)
+                {
+                    IGraphNode extendedEnd;
+                    _extendedGraph.GetGraphNode(endId, out extendedEnd);
+                    if (extendedEnd != null)
+                    {
+                        var rel = extendedEnd as IModelRelationship;
+                        if (rel == null)
+                            end = CreateEntity(endId, (ISchemaEntity)startSchema);
+                        else
+                            end = CreateRelationship(endId, (ISchemaRelationship)startSchema, rel.Start.Id, rel.Start.SchemaInfo, rel.End.Id, rel.End.SchemaInfo);
+                    }
+                }
+            }
+
+            return Tuple.Create(start as MemoryGraphNode, end as MemoryGraphNode);
+        }
+
+        protected override IEnumerable<EdgeInfo> GetEdges(Identity id, Direction direction, ISchemaRelationship metadata, Identity oppositeId = null)
+        {
+            HashSet<Identity> set = new HashSet<Identity>();
+            IGraphNode node;
+            if (base.GetGraphNode(id, out node) && node != null)
+            {
+                foreach (var edge in base.GetEdgesCore(node as MemoryGraphNode, direction, metadata, oppositeId))
+                {
+                    set.Add(edge.Id);
+                    if( !IsDeleted(edge.Id))
+                        yield return edge;
+                }
+            }
+
+            if (_extendedGraph.GetGraphNode(id, out node) && node != null)
+            {
+                foreach (var edge in base.GetEdgesCore(node as MemoryGraphNode, direction, metadata, oppositeId))
+                {
+                    if( set.Add(edge.Id) && !IsDeleted(edge.Id ))
+                        yield return edge;
+                }
+            }
+        }
+
         public override IGraphNode CreateEntity(Identity id, ISchemaEntity schemaEntity)
         {
+            var flag = base.CreateEntity(id, schemaEntity);
             _deletedElements.RemoveNode(id);
-//            if (IsInMode(ExtendedMode.ReadOnly))
-                return base.CreateEntity(id, schemaEntity);
-//            return _extendedGraph.CreateEntity(id, schemaEntity);
+            return flag;
         }
 
         public override bool RemoveEntity(Identity id, ISchemaEntity schemaEntity, bool throwExceptionIfNotExists)
         {
-            _deletedElements.AddNode(new MemoryGraphNode(id, schemaEntity.Id, NodeType.Node));
-
             var flag = base.RemoveEntity(id, schemaEntity, false);
-
-            if (IsInMode(ExtendedMode.ReadOnly))
-                return flag;
-
-            return _extendedGraph.RemoveEntity(id, schemaEntity, throwExceptionIfNotExists);
+            _deletedElements.AddNode(new MemoryGraphNode(id, schemaEntity.Id, NodeType.Node));
+            return flag;
         }
 
 
         public override IGraphNode CreateRelationship(Identity id, ISchemaRelationship metaRelationship, Identity startId, ISchemaElement startSchema, Identity endId, ISchemaElement endSchema)
         {
+            var flag = base.CreateRelationship(id, metaRelationship, startId, startSchema, endId, endSchema);
             _deletedElements.RemoveNode(id);
-//            if (IsInMode(ExtendedMode.ReadOnly))
-                return base.CreateRelationship(id, metaRelationship, startId, startSchema, endId, endSchema);
-//            return _extendedGraph.CreateRelationship(id, metaRelationship, startId, startSchema, endId, endSchema);
+            return flag;
         }
 
         public override bool RemoveRelationship(Identity id, ISchemaRelationship schemaRelationship, bool throwExceptionIfNotExists)
         {
+            var flag = base.RemoveRelationship(id, schemaRelationship, false);
             _deletedElements.AddNode(new MemoryGraphNode(id, schemaRelationship.Id, NodeType.Node));
-            var flag = base.RemoveRelationship(id, schemaRelationship, throwExceptionIfNotExists);
-            if (IsInMode(ExtendedMode.ReadOnly))
-                return flag; 
-            return _extendedGraph.RemoveRelationship(id, schemaRelationship, throwExceptionIfNotExists);
+            return flag;
         }
 
         IEnumerable<IModelElement> IExtensionHyperGraph.GetExtensionElements(ISchemaElement schemaElement)
@@ -162,31 +211,23 @@ namespace Hyperstore.Modeling.DomainExtension
 
         public override PropertyValue SetPropertyValue(IModelElement owner, ISchemaProperty property, object value, long? version)
         {
-            if (_deletedElements.GetNode(owner.Id) != null)
+            if (!GraphExists(owner.Id))
                 throw new InvalidElementException(owner.Id);
 
             var pid = owner.Id.CreateAttributeIdentity(property.Name);
-
-            // If we are in Read only mode OR if the property node doesn't exist in the extended domain then the
-            // property will be set in the extension.
             IGraphNode propertyNode;
-            // Don't change the sequence order of the following expression
-            if (!_extendedGraph.GetGraphNode(pid, out propertyNode) || IsInMode(ExtendedMode.ReadOnly))
-            {
-                IGraphNode ownerNode;
-                if (!base.GetGraphNode(owner.Id, out ownerNode))
-                {
-                    var rel = owner as IModelRelationship;
-                    if (rel == null)
-                        base.CreateEntity(owner.Id, (ISchemaEntity)owner.SchemaInfo);
-                    else
-                        base.CreateRelationship(rel.Id, (ISchemaRelationship)rel.SchemaInfo, rel.Start.Id, rel.Start.SchemaInfo, rel.End.Id, rel.End.SchemaInfo);
-                }
+            _extendedGraph.GetGraphNode(pid, out propertyNode); // Potential old value
 
-                return base.SetPropertyValueCore(owner, property, value, version, propertyNode);
+            if (!GraphExists(owner.Id))
+            {
+                var rel = owner as IModelRelationship;
+                if (rel == null)
+                    CreateEntity(owner.Id, (ISchemaEntity)owner.SchemaInfo);
+                else
+                    CreateRelationship(rel.Id, (ISchemaRelationship)rel.SchemaInfo, rel.Start.Id, rel.Start.SchemaInfo, rel.End.Id, rel.End.SchemaInfo);
             }
 
-            return _extendedGraph.SetPropertyValue(owner, property, value, version);
+            return base.SetPropertyValueCore(owner, property, value, version, propertyNode);
         }
     }
 }

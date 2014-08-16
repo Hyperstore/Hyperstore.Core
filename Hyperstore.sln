@@ -155,4 +155,7 @@ Global
 	GlobalSection(CodealikeProperties) = postSolution
 		SolutionGuid = 40702718-6f8f-4d73-b37c-5670671837a1
 	EndGlobalSection
+	GlobalSection(NDepend) = preSolution
+		Project = "..\..\..\Hyperstore\src\V1\Core\Hyperstore.ndproj"
+	EndGlobalSection
 EndGlobal

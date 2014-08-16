@@ -183,8 +183,8 @@ namespace Hyperstore.Modeling.Messaging
         {
             var msg = new Message { Mode = mode, Events = new List<Enveloppe>() };
             msg.OriginStoreId = originStoreId;
-            msg.SessionId = sessionId;
-            msg.Events = events.Select(e => new Enveloppe(e) { CorrelationId = sessionId }).ToList();
+            msg.CorrelationId = sessionId;
+            msg.Events = events.Select(e => new Enveloppe(e)).ToList();
             return msg;
         }
 

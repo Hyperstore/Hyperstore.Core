@@ -25,6 +25,7 @@ using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.Ioc;
 using System.Linq;
 using Hyperstore.Modeling.HyperGraph.Adapters;
+using Hyperstore.Modeling.Adapters;
 
 #endregion
 
@@ -254,13 +255,12 @@ namespace Hyperstore.Modeling.HyperGraph
                 var node = new MemoryGraphNode(id, metaRelationship.Id, NodeType.Edge, startId, startSchema.Id, endId, endSchema.Id);
                 _storage.AddNode(node);
 
-                var start = _storage.GetNode(startId) as MemoryGraphNode;
+                var terminals = GetTerminalNodes(startId, startSchema, endId, endSchema);
+                var start = terminals.Item1;
+                var end = terminals.Item2;
+
                 if (start == null)
                     throw new InvalidElementException(startId);
-
-                // Si le noeud opposé se trouve dans un autre domaine, end sera null et le domaine cible ne sera pas
-                // mis à jour. Seul le noeud source est impacté
-                var end = _storage.GetNode(endId) as MemoryGraphNode;
 
                 // Mise à jour des infos sur les relations propres à un noeud
                 if (startId == endId)
@@ -293,6 +293,17 @@ namespace Hyperstore.Modeling.HyperGraph
                 tx.Commit();
                 return node;
             }
+        }
+
+        protected virtual Tuple<MemoryGraphNode, MemoryGraphNode> GetTerminalNodes(Identity startId, ISchemaInfo startSchema, Identity endId, ISchemaInfo endSchema)
+        {
+            var start = _storage.GetNode(startId) as MemoryGraphNode;
+
+            // Si le noeud opposé se trouve dans un autre domaine, end sera null et le domaine cible ne sera pas
+            // mis à jour. Seul le noeud source est impacté
+            var end = startId.DomainModelName == endId.DomainModelName ? _storage.GetNode(endId) as MemoryGraphNode : null;
+
+            return Tuple.Create(start, end);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -499,14 +510,19 @@ namespace Hyperstore.Modeling.HyperGraph
             return GetRelationships<IModelRelationship>(metadata, start, end, skip);
         }
 
-        private IEnumerable<EdgeInfo> GetEdges(Identity id, Direction direction, ISchemaRelationship metadata, Identity oppositeId = null)
+        protected virtual IEnumerable<EdgeInfo> GetEdges(Identity id, Direction direction, ISchemaRelationship metadata, Identity oppositeId = null)
         {
             DebugContract.Requires(id);
 
             IGraphNode v;
             if (!GetGraphNode(id, out v) || v == null)
-                yield break;
-            var source = v as MemoryGraphNode;
+                return Enumerable.Empty<EdgeInfo>();
+
+            return GetEdgesCore(v as MemoryGraphNode, direction, metadata, oppositeId);
+        }
+
+        protected IEnumerable<EdgeInfo> GetEdgesCore(MemoryGraphNode source, Direction direction, ISchemaRelationship metadata, Identity oppositeId = null)
+        {
             if (source == null)
                 yield break;
 
@@ -724,30 +740,37 @@ namespace Hyperstore.Modeling.HyperGraph
             {
                 if (_storage.RemoveNode(id))
                 {
-                    var start = _storage.GetNode(edge.StartId) as MemoryGraphNode;
-                    if (start == null)
+                    var terminals = GetTerminalNodes(edge.StartId, DomainModel.Store.GetSchemaInfo(edge.StartSchemaId), edge.EndId, DomainModel.Store.GetSchemaInfo(edge.EndSchemaId));
+                    var start = terminals.Item1;
+                    var end = terminals.Item2;
+
+                    if (start == null && throwExceptionIfNotExists)
                         throw new InvalidElementException(edge.StartId);
 
                     // Si le noeud opposé se trouve dans un autre domaine, on ne le met pas à jour
                     // Seul le noeud source est impacté
-                    MemoryGraphNode end = null;
                     if (edge.StartId.DomainModelName == edge.EndId.DomainModelName)
                     {
-                        end = _storage.GetNode(edge.EndId) as MemoryGraphNode;
-                        if (end == null)
+                        if (end == null && throwExceptionIfNotExists)
                             throw new InvalidElementException(edge.EndId);
                     }
 
                     // Mise à jour des infos sur les relations propres à un noeud
                     if (edge.StartId == edge.EndId)
                     {
-                        start.RemoveEdge(edge.Id, Direction.Both);
-                        _storage.UpdateNode(start);
+                        if (start != null)
+                        {
+                            start.RemoveEdge(edge.Id, Direction.Both);
+                            _storage.UpdateNode(start);
+                        }
                     }
                     else
                     {
-                        start.RemoveEdge(edge.Id, Direction.Outgoing);
-                        _storage.UpdateNode(start);
+                        if (start != null)
+                        {
+                            start.RemoveEdge(edge.Id, Direction.Outgoing);
+                            _storage.UpdateNode(start);
+                        }
 
                         // Relation uni-directionnelle entre domaine.
                         if (end != null)
@@ -757,10 +780,10 @@ namespace Hyperstore.Modeling.HyperGraph
                         }
                     }
 
-                    foreach (var prop in schemaRelationship.GetProperties(true))
-                    {
-                        _storage.RemoveNode(edge.Id.CreateAttributeIdentity(prop.Name));
-                    }
+                    //foreach (var prop in schemaRelationship.GetProperties(true))
+                    //{
+                    //    _storage.RemoveNode(edge.Id.CreateAttributeIdentity(prop.Name));
+                    //}
 
                     DeferRemoveIndex(schemaRelationship, edge.Id);
 
@@ -771,6 +794,7 @@ namespace Hyperstore.Modeling.HyperGraph
             }
             return true;
         }
+
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -795,7 +819,7 @@ namespace Hyperstore.Modeling.HyperGraph
             DebugContract.Requires(property);
 
             IGraphNode v;
-            if (!GetGraphNode(ownerId, out v) || v == null)
+            if (!GraphExists(ownerId))
                 throw new InvalidElementException(ownerId);
 
             var pid = ownerId.CreateAttributeIdentity(property.Name);
@@ -1071,6 +1095,84 @@ namespace Hyperstore.Modeling.HyperGraph
                 tx.AddToIndex(metaclass, id, propertyName, key);
         }
 
+        public Task<int> LoadNodes(IGraphAdapter adapter, Query query, MergeOption option)
+        {
+            Contract.Requires(adapter, "adapter");
+
+            var tcs = new TaskCompletionSource<int>();
+            var cx = 0;
+            try
+            {
+                var q = adapter.LoadNodes(query);
+                using (var session = this.Store.BeginSession(new SessionConfiguration { Mode = SessionMode.Loading | SessionMode.SkipConstraints }))
+                {
+                    foreach (var result in q)
+                    {
+                        if (Session.Current != null && Session.Current.TrackingData.GetTrackingElementState(result.Id) == TrackingState.Removed)
+                            continue;
+                        cx++;
+                        var newInCache = false;
+                        var nodeMetaclass = result.SchemaInfo;
+
+                        // Si ce noeud n'existe pas dans le cache, on le met
+                        var node = _storage.GetNode(result.Id) as MemoryGraphNode;
+                        if (node == null)
+                        {
+                            if (result.NodeType == NodeType.Edge)
+                            {
+                                node =
+                                        CreateRelationship(result.Id, nodeMetaclass as ISchemaRelationship, result.StartId, DomainModel.Store.GetSchemaElement(result.StartSchemaId), result.EndId,
+                                                DomainModel.Store.GetSchemaElement(result.EndSchemaId)) as MemoryGraphNode;
+                            }
+                            else
+                                node = CreateEntity(result.Id, nodeMetaclass as ISchemaEntity) as MemoryGraphNode;
+                            newInCache = true;
+                        }
+
+                        // TODO
+                        //if (option == MergeOption.AppendOnly && newInCache || option == MergeOption.OverwriteChanges)
+                        //{
+                        //    foreach (var edge in this._graphAdapter.GetEdges(node, Direction.Outgoing, null))
+                        //    {
+                        //        node.AddEdge(edge.Id, edge.MetaClassId, edge.End, edge.EndMetadata, Direction.Outgoing);
+                        //    }
+
+                        //    foreach (var edge in this._adapter.GetEdges(node, Direction.Incoming))
+                        //    {
+                        //        node.AddEdge(edge.Id, edge.MetaClassId, edge.End, edge.EndMetadata, Direction.Incoming);
+                        //    }
+                        //}
+
+                        var ctx = new SerializationContext(_domainModel, result.SchemaInfo, result);
+                        var mel = (IModelElement)result.SchemaInfo.Deserialize(ctx);
+                        if (mel != null)
+                        {
+                            if (result.Properties != null)
+                            {
+                                foreach (var property in result.Properties)
+                                {
+                                    // Mise à jour des propriétés lues
+                                    if (option == MergeOption.AppendOnly && newInCache || option == MergeOption.OverwriteChanges)
+                                        SetPropertyValue(mel, property.Key, property.Value.Value, property.Value.CurrentVersion);
+                                    else if (option == MergeOption.PreserveChanges)
+                                    {
+                                        if (GetPropertyValue(node.Id, property.Key) == null)
+                                            SetPropertyValue(mel, property.Key, property.Value.Value, property.Value.CurrentVersion);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    session.AcceptChanges();
+                }
+                tcs.TrySetResult(cx);
+            }
+            catch (Exception ex)
+            {
+                tcs.SetException(ex);
+            }
+            return tcs.Task;
+        }
         #endregion Methods of HyperGraph (21)
     }
 }
