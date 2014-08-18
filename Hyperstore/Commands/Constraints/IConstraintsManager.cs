@@ -58,7 +58,7 @@ namespace Hyperstore.Modeling.Validations
         ///  A constraint builder.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IConstraintBuilder<T> On<T>(ISchemaElement schemaElement=null, string propertyName = null) where T : IModelElement;
+        IConstraintBuilder<T> On<T>(ISchemaElement schemaElement=null, string propertyName = null);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

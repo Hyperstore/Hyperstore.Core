@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,9 +27,8 @@ namespace Hyperstore.Modeling
     ///  Interface for schema extension.
     /// </summary>
     /// <seealso cref="T:ISchema"/>
-    /// <seealso cref="T:IDomainModelExtension"/>
     ///-------------------------------------------------------------------------------------------------
-    public interface ISchemaExtension : ISchema, IDomainModelExtension
+    public interface ISchemaExtension : ISchema
     {
     }
 }

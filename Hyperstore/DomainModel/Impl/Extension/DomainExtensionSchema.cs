@@ -21,11 +21,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Hyperstore.Modeling.Metadata;
 using Hyperstore.Modeling.Validations;
+using Hyperstore.Modeling.HyperGraph;
+using Hyperstore.Modeling.Domain;
 #endregion
 
 namespace Hyperstore.Modeling.DomainExtension
 {
-    internal class DomainExtensionSchema : DomainSchema, IExtension, ISchemaExtension
+    internal class DomainSchemaExtension : DomainSchema, IExtension, ISchemaExtension
     {
         private readonly ISchema _extendedMetaModel;
 
@@ -47,7 +49,7 @@ namespace Hyperstore.Modeling.DomainExtension
         ///  The constraints.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public DomainExtensionSchema(ISchema extendedMetaModel, IDependencyResolver dependencyResolver, DomainBehavior behavior = DomainBehavior.Standard, IConstraintsManager constraints = null)
+        public DomainSchemaExtension(ISchema extendedMetaModel, IDependencyResolver dependencyResolver, DomainBehavior behavior = DomainBehavior.Standard, IConstraintsManager constraints = null)
             : base(extendedMetaModel.Name, dependencyResolver, behavior, constraints)
         {
             DebugContract.Requires(extendedMetaModel);
@@ -57,282 +59,9 @@ namespace Hyperstore.Modeling.DomainExtension
             _extendedMetaModel = extendedMetaModel;
         }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets schema element.
-        /// </summary>
-        /// <param name="id">
-        ///  The identifier.
-        /// </param>
-        /// <param name="throwErrorIfNotExists">
-        ///  (Optional) true to throw error if not exists.
-        /// </param>
-        /// <returns>
-        ///  The schema element.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override ISchemaElement GetSchemaElement(Identity id, bool throwErrorIfNotExists = true)
+        protected override IHyperGraph ResolveHyperGraph()
         {
-            return base.GetSchemaElement(id, false) ?? _extendedMetaModel.GetSchemaElement(id, throwErrorIfNotExists);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets schema element.
-        /// </summary>
-        /// <param name="name">
-        ///  The name.
-        /// </param>
-        /// <param name="throwErrorIfNotExists">
-        ///  (Optional) true to throw error if not exists.
-        /// </param>
-        /// <returns>
-        ///  The schema element.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override ISchemaElement GetSchemaElement(string name, bool throwErrorIfNotExists = true)
-        {
-            return base.GetSchemaElement(name, false) ?? _extendedMetaModel.GetSchemaElement(name, throwErrorIfNotExists);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets schema entity.
-        /// </summary>
-        /// <param name="id">
-        ///  The identifier.
-        /// </param>
-        /// <param name="throwErrorIfNotExists">
-        ///  (Optional) true to throw error if not exists.
-        /// </param>
-        /// <returns>
-        ///  The schema entity.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override ISchemaEntity GetSchemaEntity(Identity id, bool throwErrorIfNotExists = true)
-        {
-            return base.GetSchemaEntity(id, false) ?? _extendedMetaModel.GetSchemaEntity(id, throwErrorIfNotExists);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets schema entity.
-        /// </summary>
-        /// <param name="name">
-        ///  The name.
-        /// </param>
-        /// <param name="throwErrorIfNotExists">
-        ///  (Optional) true to throw error if not exists.
-        /// </param>
-        /// <returns>
-        ///  The schema entity.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override ISchemaEntity GetSchemaEntity(string name, bool throwErrorIfNotExists = true)
-        {
-            return base.GetSchemaEntity(name, false) ?? _extendedMetaModel.GetSchemaEntity(name, throwErrorIfNotExists);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the metadata.
-        /// </summary>
-        /// <param name="id">
-        ///  The identifier.
-        /// </param>
-        /// <param name="throwErrorIfNotExists">
-        ///  (Optional) true to throw error if not exists.
-        /// </param>
-        /// <returns>
-        ///  The schema information.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override ISchemaInfo GetSchemaInfo(Identity id, bool throwErrorIfNotExists = true)
-        {
-            return base.GetSchemaInfo(id, false) ?? _extendedMetaModel.GetSchemaInfo(id, throwErrorIfNotExists);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the metadata.
-        /// </summary>
-        /// <param name="name">
-        ///  The name.
-        /// </param>
-        /// <param name="throwErrorIfNotExists">
-        ///  (Optional) true to throw error if not exists.
-        /// </param>
-        /// <returns>
-        ///  The schema information.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override ISchemaInfo GetSchemaInfo(string name, bool throwErrorIfNotExists = true)
-        {
-            return base.GetSchemaInfo(name, false) ?? _extendedMetaModel.GetSchemaInfo(name, throwErrorIfNotExists);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the schema elements in this collection.
-        /// </summary>
-        /// <returns>
-        ///  An enumerator that allows foreach to be used to process the schema elements in this
-        ///  collection.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override IEnumerable<ISchemaElement> GetSchemaElements()
-        {
-            return base.GetSchemaElements()
-                    .Union(_extendedMetaModel.GetSchemaElements());
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the schema entities in this collection.
-        /// </summary>
-        /// <returns>
-        ///  An enumerator that allows foreach to be used to process the schema entities in this
-        ///  collection.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override IEnumerable<ISchemaEntity> GetSchemaEntities()
-        {
-            return base.GetSchemaEntities()
-                    .Union(_extendedMetaModel.GetSchemaEntities());
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the metadatas.
-        /// </summary>
-        /// <returns>
-        ///  An enumerator that allows foreach to be used to process the schema infos in this collection.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override IEnumerable<ISchemaInfo> GetSchemaInfos()
-        {
-            return base.GetSchemaInfos()
-                    .Union(_extendedMetaModel.GetSchemaInfos());
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the meta relationship.
-        /// </summary>
-        /// <param name="id">
-        ///  The identifier.
-        /// </param>
-        /// <param name="throwErrorIfNotExists">
-        ///  (Optional) true to throw error if not exists.
-        /// </param>
-        /// <returns>
-        ///  The schema relationship.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override ISchemaRelationship GetSchemaRelationship(Identity id, bool throwErrorIfNotExists = true)
-        {
-            return base.GetSchemaRelationship(id, false) ?? _extendedMetaModel.GetSchemaRelationship(id, throwErrorIfNotExists);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the meta relationship.
-        /// </summary>
-        /// <param name="name">
-        ///  The name.
-        /// </param>
-        /// <param name="throwErrorIfNotExists">
-        ///  (Optional) true to throw error if not exists.
-        /// </param>
-        /// <returns>
-        ///  The schema relationship.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override ISchemaRelationship GetSchemaRelationship(string name, bool throwErrorIfNotExists = true)
-        {
-            return base.GetSchemaRelationship(name, false) ?? _extendedMetaModel.GetSchemaRelationship(name, throwErrorIfNotExists);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the meta relationships.
-        /// </summary>
-        /// <returns>
-        ///  An enumerator that allows foreach to be used to process the schema relationships in this
-        ///  collection.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override IEnumerable<ISchemaRelationship> GetSchemaRelationships()
-        {
-            return base.GetSchemaRelationships()
-                    .Union(_extendedMetaModel.GetSchemaRelationships());
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets an element.
-        /// </summary>
-        /// <param name="id">
-        ///  The identifier.
-        /// </param>
-        /// <param name="metaclass">
-        ///  The metaclass.
-        /// </param>
-        /// <returns>
-        ///  The element.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override IModelElement GetElement(Identity id, ISchemaElement metaclass)
-        {
-            return base.GetElement(id, metaclass) ?? _extendedMetaModel.GetElement(id, metaclass);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets an entity.
-        /// </summary>
-        /// <param name="id">
-        ///  The identifier.
-        /// </param>
-        /// <param name="metaclass">
-        ///  The metaclass.
-        /// </param>
-        /// <returns>
-        ///  The entity.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override IModelEntity GetEntity(Identity id, ISchemaEntity metaclass)
-        {
-            return base.GetEntity(id, metaclass) ?? _extendedMetaModel.GetEntity(id, metaclass);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets a relationship.
-        /// </summary>
-        /// <param name="id">
-        ///  The identifier.
-        /// </param>
-        /// <param name="metaclass">
-        ///  the metadata.
-        /// </param>
-        /// <returns>
-        ///  The relationship.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override IModelRelationship GetRelationship(Identity id, ISchemaRelationship metaclass)
-        {
-            return base.GetRelationship(id, metaclass) ?? _extendedMetaModel.GetRelationship(id, metaclass);
-        }
-
-        IEnumerable<IModelElement> IDomainModelExtension.GetExtensionElements(ISchemaElement schemaElement)
-        {
-            return base.GetElements(schemaElement);
-        }
-
-        IEnumerable<Hyperstore.Modeling.HyperGraph.INodeInfo> IDomainModelExtension.GetDeletedElements()
-        {
-            yield break;
+            return new DomainExtensionHyperGraph(DependencyResolver, _extendedMetaModel as IHyperGraphProvider);
         }
     }
 }

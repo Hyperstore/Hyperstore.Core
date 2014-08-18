@@ -35,7 +35,7 @@ using Hyperstore.Modeling.Platform;
 
 #endregion
 
-namespace Hyperstore.Modeling.Ioc
+namespace Hyperstore.Modeling.Container
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>

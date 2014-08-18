@@ -26,7 +26,7 @@ namespace Hyperstore.Tests.MemoryStore
 {
     class MockTransactionManager : TransactionManager
     {
-        public MockTransactionManager() : base(new Hyperstore.Modeling.Ioc.DefaultDependencyResolver())
+        public MockTransactionManager() : base(new Hyperstore.Modeling.Container.DefaultDependencyResolver())
         {
 
         }

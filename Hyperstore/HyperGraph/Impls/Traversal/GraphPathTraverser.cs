@@ -18,7 +18,7 @@
 #region Imports
 
 using System.Collections.Generic;
-using Hyperstore.Modeling.Ioc;
+using Hyperstore.Modeling.Container;
 
 #endregion
 

@@ -25,7 +25,7 @@ using Hyperstore.Modeling.MemoryStore;
 
 #endregion
 
-namespace Hyperstore.Modeling.HyperGraph.Adapters
+namespace Hyperstore.Modeling.HyperGraph
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>

@@ -22,9 +22,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Hyperstore.Modeling.Commands;
-using Hyperstore.Modeling.Ioc;
+using Hyperstore.Modeling.Container;
 using System.Linq;
-using Hyperstore.Modeling.HyperGraph.Adapters;
 using Hyperstore.Modeling.Adapters;
 
 #endregion

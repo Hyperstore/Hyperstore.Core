@@ -32,12 +32,15 @@ namespace Hyperstore.Modeling.Platform
             if (data is string)
                 return (string)data;
 
-            using (MemoryStream _Stream = new MemoryStream())
+            if (data is IModelElement)
+                return Hyperstore.Modeling.Serialization.JSonDomainModelSerializer.Serialize(data as IModelElement);
+
+            using (MemoryStream stream = new MemoryStream())
             {
-                var _Serializer = new DataContractJsonSerializer(data.GetType());
-                _Serializer.WriteObject(_Stream, data);
-                _Stream.Position = 0;
-                using (StreamReader _Reader = new StreamReader(_Stream))
+                var serializer = new DataContractJsonSerializer(data.GetType());
+                serializer.WriteObject(stream, data);
+                stream.Position = 0;
+                using (StreamReader _Reader = new StreamReader(stream))
                 { return _Reader.ReadToEnd(); }
             }
         }

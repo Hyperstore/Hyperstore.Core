@@ -173,7 +173,7 @@ namespace Hyperstore.Modeling.DomainExtension
         ///  An IConstraintBuilder&lt;T&gt;
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IConstraintBuilder<T> On<T>(ISchemaElement metadata = null, string propertyName = null) where T : IModelElement
+        public IConstraintBuilder<T> On<T>(ISchemaElement metadata = null, string propertyName = null) 
         {
             return _domainConstraints.On<T>(metadata, propertyName);
         }

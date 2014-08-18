@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.Domain;
 using Hyperstore.Modeling.DomainExtension;
-using Hyperstore.Modeling.Ioc;
+using Hyperstore.Modeling.Container;
 using Hyperstore.Modeling.MemoryStore;
 using Hyperstore.Modeling.Messaging;
 using Hyperstore.Modeling.Metadata;

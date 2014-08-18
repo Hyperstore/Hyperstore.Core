@@ -131,7 +131,7 @@ namespace Hyperstore.Modeling.Validations
         ///  An IConstraintBuilder&lt;T&gt;
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IConstraintBuilder<T> On<T>(ISchemaElement metadata = null, string propertyName = null) where T : IModelElement
+        public IConstraintBuilder<T> On<T>(ISchemaElement metadata = null, string propertyName = null) 
         {
             if (metadata == null)
                 metadata = _store.GetSchemaInfo<T>() as ISchemaElement;
@@ -272,7 +272,7 @@ namespace Hyperstore.Modeling.Validations
         /// </typeparam>
         /// <seealso cref="T:Hyperstore.Modeling.Validations.IConstraint"/>
         ///-------------------------------------------------------------------------------------------------
-        public class ConstraintProxy<T> : IConstraint where T : IModelElement
+        public class ConstraintProxy<T> : IConstraint 
         {
             private readonly ISchemaInfo _metadata;
             private IConstraint<T> _constraint;

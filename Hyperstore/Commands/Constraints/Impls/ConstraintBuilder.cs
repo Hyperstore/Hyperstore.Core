@@ -26,7 +26,7 @@ namespace Hyperstore.Modeling.Validations
     // RuleFor<T>.CheckProperty<string>(e=>e.Name).Required().LengthGreaterThan(5).Custom(v=>v=="qq");
     // RuleFor<T>.CheckProperty(e=>e.Name).If(v=>v.startsWith("a").LengthGreaterThan(5).Custom(v=>v=="qq");
     // RuleFor<T>.CheckProperty(e=>e.Name).If(v=>v.startsWith("a")).LengthGreaterThan(5).Custom(v=>v=="qq");
-    internal class ConstraintBuilder<T> : IConstraintBuilder<T> where T : IModelElement
+    internal class ConstraintBuilder<T> : IConstraintBuilder<T> 
     {
         private readonly ConstraintsManager.ConstraintProxy<T> _proxy;
         private readonly string _propertyName;

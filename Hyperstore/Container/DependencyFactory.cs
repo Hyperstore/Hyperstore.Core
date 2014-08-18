@@ -21,7 +21,7 @@ using System;
 
 #endregion
 
-namespace Hyperstore.Modeling.Ioc
+namespace Hyperstore.Modeling.Container
 {
     internal sealed class DependencyFactory
     {

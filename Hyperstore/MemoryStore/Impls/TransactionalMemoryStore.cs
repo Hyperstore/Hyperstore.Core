@@ -22,7 +22,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using Hyperstore.Modeling.Ioc;
+using Hyperstore.Modeling.Container;
 using Hyperstore.Modeling.Statistics;
 using Hyperstore.Modeling.Utils;
 using Hyperstore.Modeling.HyperGraph;

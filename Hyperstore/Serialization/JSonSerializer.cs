@@ -102,6 +102,16 @@ namespace Hyperstore.Modeling.Serialization
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
+        ///  Gets or sets a specific schema used to serialize elements.
+        /// </summary>
+        /// <value>
+        ///  The schema.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public ISchema Schema { get; set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
         ///  Default constructor.
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
@@ -126,6 +136,7 @@ namespace Hyperstore.Modeling.Serialization
         private readonly JSonSerializationOption _options;
         private int _depth;
         private Queue<IModelElement> _elements;
+        private readonly ISchema _schema;
 
         #region static
 
@@ -292,6 +303,7 @@ namespace Hyperstore.Modeling.Serialization
             {
                 _options = settings.Options;
                 _serializer = settings.Serializer;
+                _schema = settings.Schema;
             }
 
             if (((int)_options & 32) != 0) // Hyperstore guard
@@ -405,6 +417,10 @@ namespace Hyperstore.Modeling.Serialization
             }
         }
 
+        private ISchemaElement GetSchemaInfo(IModelElement mel)
+        {
+            return _schema == null ? mel.SchemaInfo : _schema.GetSchemaElement(mel.SchemaInfo.Id);
+        }
 
         private void SerializeElement(IModelElement element, bool insertComma)
         {
@@ -415,7 +431,9 @@ namespace Hyperstore.Modeling.Serialization
                 return;
 
             insertComma = WriteStartElement(element, insertComma);
-            foreach (var prop in element.SchemaInfo.GetProperties(true))
+
+            var schemaInfo = GetSchemaInfo(element);
+            foreach (var prop in schemaInfo.GetProperties(true))
             {
                 var value = element.GetPropertyValue(prop);
                 if (value.HasValue)
@@ -425,8 +443,8 @@ namespace Hyperstore.Modeling.Serialization
                 }
             }
 
-            var schema = element.SchemaInfo.Schema;
-            foreach (var relationship in schema.GetRelationships(start:element.SchemaInfo))
+            var schema = schemaInfo.Schema;
+            foreach (var relationship in schema.GetRelationships(start:schemaInfo))
             {
                 var relationshipSchema = relationship as ISchemaRelationship;
                 if (relationshipSchema != null && relationshipSchema.StartPropertyName != null)
@@ -435,7 +453,7 @@ namespace Hyperstore.Modeling.Serialization
                 }
             }
 
-            foreach (var relationship in schema.GetRelationships(end: element.SchemaInfo))
+            foreach (var relationship in schema.GetRelationships(end: schemaInfo))
             {
                 var relationshipSchema = relationship as ISchemaRelationship;
                 if (relationshipSchema != null && relationshipSchema.EndPropertyName != null)
@@ -499,8 +517,8 @@ namespace Hyperstore.Modeling.Serialization
                     }
                     if (HasOption(JSonSerializationOption.SerializeSchemaIdentity))
                     {
-                        WriteKeyValue("_eshid", GetSchemaIndex(terminal.SchemaInfo.Id));
-                        WriteKeyValue("_rshid", GetSchemaIndex(rel.SchemaInfo.Id));
+                        WriteKeyValue("_eshid", GetSchemaIndex(GetSchemaInfo(terminal).Id));
+                        WriteKeyValue("_rshid", GetSchemaIndex(GetSchemaInfo(rel).Id));
                     }
                     _depth--;
                     Write('}', true);
@@ -547,7 +565,7 @@ namespace Hyperstore.Modeling.Serialization
 
             if (HasOption(JSonSerializationOption.SerializeSchemaIdentity))
             {
-                WriteKeyValue("_shid", GetSchemaIndex(mel.SchemaInfo.Id), insertComma);
+                WriteKeyValue("_shid", GetSchemaIndex(GetSchemaInfo(mel).Id), insertComma);
                 insertComma = true;
             }
 
@@ -562,8 +580,8 @@ namespace Hyperstore.Modeling.Serialization
 
                 if (HasOption(JSonSerializationOption.SerializeSchemaIdentity))
                 {
-                    WriteKeyValue("_sshid", GetSchemaIndex(rel.Start.SchemaInfo.Id));
-                    WriteKeyValue("_eshid", GetSchemaIndex(rel.End.SchemaInfo.Id));
+                    WriteKeyValue("_sshid", GetSchemaIndex(GetSchemaInfo(rel.Start).Id));
+                    WriteKeyValue("_eshid", GetSchemaIndex(GetSchemaInfo(rel.End).Id));
                 }
             }
             return insertComma;

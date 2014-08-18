@@ -31,7 +31,7 @@ namespace Hyperstore.Modeling.Validations
     ///  .
     /// </typeparam>
     ///-------------------------------------------------------------------------------------------------
-    public interface IConstraintBuilder<out T> where T : IModelElement
+    public interface IConstraintBuilder<out T> 
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

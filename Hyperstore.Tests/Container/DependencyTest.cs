@@ -19,7 +19,7 @@ using System;
 using Hyperstore.Modeling;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
-using Hyperstore.Modeling.Ioc;
+using Hyperstore.Modeling.Container;
 using System.Threading.Tasks;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;

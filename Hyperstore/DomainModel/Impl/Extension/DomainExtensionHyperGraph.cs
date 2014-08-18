@@ -21,7 +21,6 @@ using System;
 using Hyperstore.Modeling.HyperGraph;
 using System.Collections.Generic;
 using System.Linq;
-using Hyperstore.Modeling.HyperGraph.Adapters;
 using Hyperstore.Modeling.Domain;
 #endregion
 

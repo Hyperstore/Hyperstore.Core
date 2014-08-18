@@ -33,7 +33,7 @@ namespace Hyperstore.Modeling.Validations
     /// </typeparam>
     /// <seealso cref="T:Hyperstore.Modeling.Validations.IConstraint{T}"/>
     ///-------------------------------------------------------------------------------------------------
-    public class CustomConstraint<T> : IConstraint<T> where T : IModelElement
+    public class CustomConstraint<T> : IConstraint<T> 
     {
         private readonly Func<T, bool> _expression;
         private readonly DiagnosticMessage _validationMessage;
@@ -121,7 +121,7 @@ namespace Hyperstore.Modeling.Validations
                 message = message.Trim() + " for element {Name} ({Id}).";
             }
     
-            return new DiagnosticMessage(_validationMessage.MessageType, MessageHelper.CreateMessage(message, value), _validationMessage.Category ?? "Validation", true, value, null, _validationMessage.PropertyName);
+            return new DiagnosticMessage(_validationMessage.MessageType, MessageHelper.CreateMessage(message, value as IModelElement), _validationMessage.Category ?? "Validation", true, value as IModelElement, null, _validationMessage.PropertyName);
         }
     }
 }

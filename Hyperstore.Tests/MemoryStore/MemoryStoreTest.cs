@@ -25,7 +25,6 @@ using System.Linq;
 using Hyperstore.Tests.Model;
 using Hyperstore.Modeling.HyperGraph;
 using Hyperstore.Modeling.Metadata;
-using Hyperstore.Modeling.HyperGraph.Adapters;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 #endif

@@ -38,13 +38,13 @@ namespace Hyperstore.Modeling
         /// </summary>
         Standard,
         /// <summary>
-        ///  Specifies the disable L1 cache
+        ///  Disable L1 cache
         /// </summary>
-        DisableL1Cache=1,
+        DisableL1Cache = 1,
         /// <summary>
-        ///  Specifies the observable= 3 option.
+        ///  Element form this schema are observables (Raises Notification when a property or a collection change)
         /// </summary>
-        Observable=2 
+        Observable = 2
     }
 
     ///-------------------------------------------------------------------------------------------------
@@ -118,7 +118,7 @@ namespace Hyperstore.Modeling
     ///  Interface for domain configuration.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
-    public interface IDomainConfiguration 
+    public interface IDomainConfiguration
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

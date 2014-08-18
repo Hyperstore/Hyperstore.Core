@@ -89,7 +89,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         protected override ISchema CreateSchema(IDependencyResolver resolver)
         {
-            return new Hyperstore.Modeling.DomainExtension.DomainExtensionSchema(_extendedSchema,
+            return new Hyperstore.Modeling.DomainExtension.DomainSchemaExtension(_extendedSchema,
                                                                               resolver,
                                                                               Behavior,
                                                                               new Hyperstore.Modeling.DomainExtension.DomainExtensionConstraintsManager(resolver, _extendedSchema, _mode));

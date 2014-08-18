@@ -22,7 +22,7 @@ using System.Linq;
 
 #endregion
 
-namespace Hyperstore.Modeling.Ioc
+namespace Hyperstore.Modeling.Container
 {
     internal sealed class EmptyHyperstoreTrace : IHyperstoreTrace
     {
