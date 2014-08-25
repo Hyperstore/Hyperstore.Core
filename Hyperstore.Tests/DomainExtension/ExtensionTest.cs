@@ -334,7 +334,7 @@ namespace Hyperstore.Tests.Extension
             await initialSchema.LoadSchemaExtension( new ExtensionsDomainDefinition());
 
             // Iterate to make hot load and unload of the extension
-            for (int i = 1; i < 3; i++)
+            for (int i = 1; i < 30; i++)
             {
                 Sleep(100);
 

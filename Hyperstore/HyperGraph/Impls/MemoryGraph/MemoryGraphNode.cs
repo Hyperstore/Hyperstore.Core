@@ -22,6 +22,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Hyperstore.Modeling.MemoryStore;
+using System.Collections.Immutable;
+using Hyperstore.Modeling.Utils;
 
 #endregion
 
@@ -36,14 +38,15 @@ namespace Hyperstore.Modeling.HyperGraph
     /// <seealso cref="T:Hyperstore.Modeling.MemoryStore.ICloneable{Hyperstore.Modeling.HyperGraph.IGraphNode}"/>
     ///-------------------------------------------------------------------------------------------------
     [DebuggerDisplay("{DebuggerDisplayString,nq}")]
-    public class MemoryGraphNode : IGraphNode, IDisposable, ICloneable<IGraphNode>
+    public class MemoryGraphNode : IGraphNode, IDisposable
     {
+        private readonly ImmutableDictionary<Identity, EdgeInfo> _incomings = ImmutableDictionary<Identity, EdgeInfo>.Empty;
+        private readonly ImmutableDictionary<Identity, EdgeInfo> _outgoings = ImmutableDictionary<Identity, EdgeInfo>.Empty;
+
         private string DebuggerDisplayString
         {
             get { return String.Format("Id={0}, Start={1}, End={2}, Value={3}", Id, StartId, EndId, Value); }
         }
-
-        private readonly object _sync = new object();
 
         /// -------------------------------------------------------------------------------------------------
         ///  <summary>
@@ -52,7 +55,7 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  <param name="id">
         ///   The identifier.
         ///  </param>
-        ///  <param name="metaClassId">
+        ///  <param name="schemaId">
         ///   Identifier for the meta class.
         ///  </param>
         ///  <param name="nodetype">
@@ -77,10 +80,10 @@ namespace Hyperstore.Modeling.HyperGraph
         ///   (Optional) The version.
         ///  </param>
         /// -------------------------------------------------------------------------------------------------
-        public MemoryGraphNode(Identity id, Identity metaClassId, NodeType nodetype, Identity start = null, Identity startMetaclass = null, Identity end = null, Identity endMetaclass = null, object value = null, long version = 1)
+        public MemoryGraphNode(Identity id, Identity schemaId, NodeType nodetype, Identity start = null, Identity startMetaclass = null, Identity end = null, Identity endMetaclass = null, object value = null, long? version = null)
         {
             DebugContract.Requires(id, "id");
-            DebugContract.Requires(metaClassId, "metaClassId");
+            DebugContract.Requires(schemaId, "schemaId");
             DebugContract.Requires(start == null || startMetaclass != null, "start");
             DebugContract.Requires(end == null || endMetaclass != null, "end");
             DebugContract.Requires(start == null || end != null, "start/end");
@@ -90,56 +93,53 @@ namespace Hyperstore.Modeling.HyperGraph
             StartSchemaId = startMetaclass;
             EndSchemaId = endMetaclass;
             Id = id;
-            SchemaId = metaClassId;
-            Incomings = new EdgeList();
-            Outgoings = new EdgeList();
+            SchemaId = schemaId;
             Value = value;
-            Version = version;
+            Version = version ?? DateTime.UtcNow.Ticks;
             NodeType = nodetype;
         }
 
-        internal MemoryGraphNode(MemoryGraphNode copy, long version)
+        private MemoryGraphNode(MemoryGraphNode copy)
         {
             DebugContract.Requires(copy, "copy");
 
             Id = copy.Id;
             SchemaId = copy.SchemaId;
-            Incomings = copy.Incomings;
-            Outgoings = copy.Outgoings;
-
+            _outgoings = copy._outgoings;
+            _incomings = copy._incomings;
             Value = copy.Value;
             StartId = copy.StartId;
             StartSchemaId = copy.StartSchemaId;
             EndId = copy.EndId;
             EndSchemaId = copy.EndSchemaId;
-            Version = version;
+            Version = DateTime.UtcNow.Ticks;
             NodeType = copy.NodeType;
         }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Default constructor.
-        /// </summary>
-        ///-------------------------------------------------------------------------------------------------
-        public MemoryGraphNode()
+        private MemoryGraphNode(MemoryGraphNode copy, ImmutableDictionary<Identity, EdgeInfo> outgoings, ImmutableDictionary<Identity, EdgeInfo> incomings) : this(copy)
         {
+            _outgoings = outgoings;
+            _incomings = incomings;
         }
 
-        private EdgeList Incomings { get; set; }
-        private EdgeList Outgoings { get; set; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the domain model.
-        /// </summary>
-        /// <value>
-        ///  The domain model.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public string DomainModel
+        private MemoryGraphNode(MemoryGraphNode copy, object value) : this(copy)
         {
-            get { return Id.DomainModelName; }
+            DebugContract.Requires(copy, "copy");
+            Value = value;
         }
+
+        /////-------------------------------------------------------------------------------------------------
+        ///// <summary>
+        /////  Default constructor.
+        ///// </summary>
+        /////-------------------------------------------------------------------------------------------------
+        //public MemoryGraphNode()
+        //{
+        //}
+
+        private IEnumerable<EdgeInfo> Incomings { get { return _incomings.Values; } }
+        private IEnumerable<EdgeInfo> Outgoings { get { return _outgoings.Values; } }
+
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -149,7 +149,7 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  The value.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public object Value { get; set; }
+        public object Value { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -232,9 +232,9 @@ namespace Hyperstore.Modeling.HyperGraph
         ///-------------------------------------------------------------------------------------------------
         public Identity EndId { get; private set; }
 
-        IGraphNode ICloneable<IGraphNode>.Clone()
+        public MemoryGraphNode SetValue(object value)
         {
-            return new MemoryGraphNode(this, Version);
+            return new MemoryGraphNode(this, value);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -257,7 +257,7 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  The identifier of the end schema.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void AddEdge(Identity id, Identity metadataId, Direction direction, Identity endId, Identity endSchemaId)
+        public MemoryGraphNode AddEdge(Identity id, Identity metadataId, Direction direction, Identity endId, Identity endSchemaId)
         {
             DebugContract.Requires(id, "id");
             DebugContract.Requires(metadataId, "metadataId");
@@ -265,13 +265,11 @@ namespace Hyperstore.Modeling.HyperGraph
             DebugContract.Requires(endSchemaId, "endSchemaId");
 
             var edge = new EdgeInfo(id, metadataId, endId, endSchemaId);
-            lock (_sync)
-            {
-                if ((direction & Direction.Outgoing) == Direction.Outgoing)
-                    Outgoings = Outgoings.Add(edge);
-                else
-                    Incomings = Incomings.Add(edge);
-            }
+
+            return new MemoryGraphNode(this, 
+                    (direction & Direction.Outgoing) == Direction.Outgoing ? _outgoings.Add(id, edge) : _outgoings,  
+                    (direction & Direction.Incoming) == Direction.Incoming ? _incomings.Add(id, edge) : _incomings
+                );  
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -285,16 +283,14 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  The direction.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void RemoveEdge(Identity id, Direction direction)
+        public MemoryGraphNode RemoveEdge(Identity id, Direction direction)
         {
             DebugContract.Requires(id, "id");
-            lock (_sync)
-            {
-                if ((direction & Direction.Outgoing) == Direction.Outgoing)
-                    Outgoings = Outgoings.RemoveByKey(id);
-                if ((direction & Direction.Incoming) == Direction.Incoming)
-                    Incomings = Incomings.RemoveByKey(id);
-            }
+
+            return new MemoryGraphNode(this, 
+                    (direction & Direction.Outgoing) == Direction.Outgoing ? _outgoings.Remove(id) : _outgoings,  
+                    (direction & Direction.Incoming) == Direction.Incoming ? _incomings.Remove(id) : _incomings
+                );  
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -310,13 +306,7 @@ namespace Hyperstore.Modeling.HyperGraph
         ///-------------------------------------------------------------------------------------------------
         public IEnumerable<EdgeInfo> GetEdges(Direction direction)
         {
-            IEnumerable<EdgeInfo> list;
-            lock (_sync)
-            {
-                list = direction == Direction.Outgoing ? Outgoings : Incomings;
-            }
-
-            return list;
+            return direction == Direction.Outgoing ? Outgoings : Incomings;
         }
 
         ///-------------------------------------------------------------------------------------------------

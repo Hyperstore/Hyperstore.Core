@@ -75,7 +75,7 @@ namespace Hyperstore.Modeling.HyperGraph
         {
             if (!_edges.ContainsKey(info.Id))
                 return new EdgeList(_edges.Add(info.Id, info));
-            return new EdgeList(_edges);
+            return this;
         }
 
         ///-------------------------------------------------------------------------------------------------

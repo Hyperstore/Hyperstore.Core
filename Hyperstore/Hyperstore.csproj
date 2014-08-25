@@ -239,7 +239,6 @@
     <Compile Include="HyperGraph\Traversal\IGraphTraversalUnicityPolicy.cs" />
     <Compile Include="MemoryStore\ElementEvictedEventArgs.cs" />
     <Compile Include="MemoryStore\EvictionProcess.cs" />
-    <Compile Include="MemoryStore\ICloneable.cs" />
     <Compile Include="MemoryStore\Impls\MaxElementsEvictionPolicy.cs" />
     <Compile Include="MemoryStore\IEvictionPolicy.cs" />
     <Compile Include="HyperGraph\Impls\MemoryGraph\Index\IndexDefinition.cs" />
@@ -429,6 +428,7 @@
     <Compile Include="Utils\Subject.cs" />
     <Compile Include="Utils\ThreadHelper.cs" />
     <Compile Include="Utils\BaseHyperstoreTrace.cs" />
+    <Compile Include="Utils\ThreadSafeLazyRef.cs" />
     <Compile Include="Utils\Timer.cs" />
     <Compile Include="Utils\Types.cs" />
   </ItemGroup>

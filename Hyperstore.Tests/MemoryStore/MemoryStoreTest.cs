@@ -39,7 +39,7 @@ namespace Hyperstore.Tests.MemoryStore
     [TestClass]
     public class MemoryStoreTest : HyperstoreTestBase
     {
-        class Data : IGraphNode, ICloneable<IGraphNode>
+        class Data : IGraphNode
         {
             public Data(string key, int v)
             {
@@ -116,11 +116,6 @@ namespace Hyperstore.Tests.MemoryStore
             public void RemoveEdge(Identity edgeId, Modeling.HyperGraph.Direction direction)
             {
                 throw new NotImplementedException();
-            }
-
-            public IGraphNode Clone()
-            {
-                return new Data(Id.Key, (int)Value);
             }
         }
 

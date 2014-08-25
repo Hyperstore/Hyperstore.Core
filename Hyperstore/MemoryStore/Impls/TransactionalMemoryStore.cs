@@ -477,7 +477,7 @@ namespace Hyperstore.Modeling.MemoryStore
                 {
                     var result = SelectSlot(key, ctx);
                     if (result != null)
-                        return ((ICloneable<IGraphNode>)result.Value).Clone();
+                        return result.Value;
 
                     return default(IGraphNode);
                 }
@@ -644,7 +644,7 @@ namespace Hyperstore.Modeling.MemoryStore
                     {
                         var slot = slots.GetInSnapshot(ctx) as Slot<IGraphNode>;
                         if (slot != null)
-                            result.Add(((ICloneable<IGraphNode>)slot.Value).Clone());
+                            result.Add(slot.Value);
                     }
                 }
                 finally

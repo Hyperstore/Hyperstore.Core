@@ -264,18 +264,18 @@ namespace Hyperstore.Modeling.HyperGraph
                 // Mise à jour des infos sur les relations propres à un noeud
                 if (startId == endId)
                 {
-                    start.AddEdge(id, metaRelationship.Id, Direction.Both, startId, startSchema.Id);
+                    start = start.AddEdge(id, metaRelationship.Id, Direction.Both, startId, startSchema.Id);
                     _storage.UpdateNode(start);
                 }
                 else
                 {
-                    start.AddEdge(id, metaRelationship.Id, Direction.Outgoing, endId, endSchema.Id);
+                    start = start.AddEdge(id, metaRelationship.Id, Direction.Outgoing, endId, endSchema.Id);
                     _storage.UpdateNode(start);
 
                     // Relation uni-directionnelle entre domaine.
                     if (end != null)
                     {
-                        end.AddEdge(id, metaRelationship.Id, Direction.Incoming, startId, startSchema.Id);
+                        end = end.AddEdge(id, metaRelationship.Id, Direction.Incoming, startId, startSchema.Id);
                         _storage.UpdateNode(end);
                     }
                 }
@@ -759,7 +759,7 @@ namespace Hyperstore.Modeling.HyperGraph
                     {
                         if (start != null)
                         {
-                            start.RemoveEdge(edge.Id, Direction.Both);
+                            start = start.RemoveEdge(edge.Id, Direction.Both);
                             _storage.UpdateNode(start);
                         }
                     }
@@ -767,14 +767,14 @@ namespace Hyperstore.Modeling.HyperGraph
                     {
                         if (start != null)
                         {
-                            start.RemoveEdge(edge.Id, Direction.Outgoing);
+                            start = start.RemoveEdge(edge.Id, Direction.Outgoing);
                             _storage.UpdateNode(start);
                         }
 
                         // Relation uni-directionnelle entre domaine.
                         if (end != null)
                         {
-                            end.RemoveEdge(edge.Id, Direction.Incoming);
+                            end = end.RemoveEdge(edge.Id, Direction.Incoming);
                             _storage.UpdateNode(end);
                         }
                     }
@@ -881,7 +881,7 @@ namespace Hyperstore.Modeling.HyperGraph
                 if (pnode == null)
                 {
                     // N'existe pas encore. On crée l'attribut et une relation avec son owner
-                    pnode = new MemoryGraphNode(pid, property.Id, NodeType.Property, value: value, version: version ?? DateTime.UtcNow.Ticks);
+                    pnode = new MemoryGraphNode(pid, property.Id, NodeType.Property, value: value, version: version);
                     _storage.AddNode(pnode, owner.Id);
                     DeferAddIndex(owner.SchemaInfo, owner.Id, property.Name, value);
                     tx.Commit();
@@ -905,8 +905,7 @@ namespace Hyperstore.Modeling.HyperGraph
 
                 DeferRemoveIndex(owner.SchemaInfo, owner.Id, property.Name, oldValue);
 
-                pnode = new MemoryGraphNode(pnode, version ?? (DateTime.UtcNow.Ticks));
-                pnode.Value = value;
+                pnode = pnode.SetValue(value);
                 _storage.UpdateNode(pnode);
                 DeferAddIndex(owner.SchemaInfo, owner.Id, property.Name, value);
 
