@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -303,48 +303,6 @@ namespace Hyperstore.Modeling
         ISchema GetSchema(string name);
 
         ///-------------------------------------------------------------------------------------------------
-        /// <summary>   Loads a schema. </summary>
-        /// <param name="definition">       The schema definition. </param>
-        /// <returns>   The schema. </returns>
-        ///-------------------------------------------------------------------------------------------------
-        Task<ISchema> LoadSchemaAsync(ISchemaDefinition definition);
-
-         ///-------------------------------------------------------------------------------------------------
-         /// <summary>
-         ///  Creates domain model.
-         /// </summary>
-         /// <param name="name">
-         ///  Domain model name.
-         /// </param>
-         /// <param name="config">
-         ///  (Optional) the configuration.
-         /// </param>
-         /// <param name="domainFactory">
-         ///  (Optional) the domain factory.
-         /// </param>
-         /// <returns>
-         ///  The new domain model.
-         /// </returns>
-         ///-------------------------------------------------------------------------------------------------
-         Task<IDomainModel> CreateDomainModelAsync(string name, IDomainConfiguration config = null, Func<IDependencyResolver, string, IDomainModel> domainFactory = null);
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Unloads the domain extension.
-        /// </summary>
-        /// <param name="domainOrExtension">
-        ///  The domain or extension.
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
-        void UnloadDomainOrExtension(IDomainModel domainOrExtension);
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>   Unload schema or extension. </summary>
-        /// <param name="schemaOrExtension">    The schema or extension. </param>
-        ///-------------------------------------------------------------------------------------------------
-        void UnloadSchemaOrExtension(ISchema schemaOrExtension);
-
-        ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Gets the element.
         /// </summary>
@@ -619,8 +577,8 @@ namespace Hyperstore.Modeling
     ///  Interface for extension manager.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
-    public interface IExtensionManager
-    {
+    public interface IDomainManager 
+    { 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Gets events notifiers.
@@ -631,5 +589,58 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         List<IEventNotifier> GetEventsNotifiers();
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Loads a schema.
+        /// </summary>
+        /// <param name="definition">
+        ///  The schema definition.
+        /// </param>
+        /// <param name="parentResolver">
+        ///  (Optional) the resolver.
+        /// </param>
+        /// <returns>
+        ///  The schema.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        Task<ISchema> LoadSchemaAsync(ISchemaDefinition definition, IDependencyResolver parentResolver = null);
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Creates domain model.
+        /// </summary>
+        /// <param name="name">
+        ///  Domain model name.
+        /// </param>
+        /// <param name="config">
+        ///  (Optional) the configuration.
+        /// </param>
+        /// <param name="parentResolver">
+        ///  (Optional) the resolver.
+        /// </param>
+        /// <param name="domainFactory">
+        ///  (Optional) the domain factory.
+        /// </param>
+        /// <returns>
+        ///  The new domain model.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        Task<IDomainModel> CreateDomainModelAsync(string name, IDomainConfiguration config = null, IDependencyResolver parentResolver = null, Func<IDependencyResolver, string, IDomainModel> domainFactory = null);
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Unloads the domain extension.
+        /// </summary>
+        /// <param name="domainOrExtension">
+        ///  The domain or extension.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
+        void UnloadDomainOrExtension(IDomainModel domainOrExtension);
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Unload schema or extension. </summary>
+        /// <param name="schemaOrExtension">    The schema or extension. </param>
+        ///-------------------------------------------------------------------------------------------------
+        void UnloadSchemaOrExtension(ISchema schemaOrExtension);
     }
 }

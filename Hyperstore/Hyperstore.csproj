@@ -63,7 +63,7 @@
   <ItemGroup>
     <Compile Include="Adapters\AbstractGraphAdapter.cs" />
     <Compile Include="Adapters\IGraphAdapter.cs" />
-    <Compile Include="Adapters\QueryNodeResult.cs" />
+    <Compile Include="Adapters\GraphPropertiesNode.cs" />
     <Compile Include="Container\Composition\CommandHandlerAttribute.cs" />
     <Compile Include="Container\Composition\CommandInterceptorAttribute.cs" />
     <Compile Include="Container\Composition\EventHandlerAttribute.cs" />
@@ -80,7 +80,7 @@
     <Compile Include="DomainModel\Impl\ModelElementEqualityComparer.cs" />
     <Compile Include="Extensions\StoreBuilder.cs" />
     <Compile Include="Extensions\StoreExtensions.cs" />
-    <Compile Include="HyperGraph\Impls\INodeInfo.cs" />
+    <Compile Include="HyperGraph\Impls\NodeInfo.cs" />
     <Compile Include="Metadata\Impl\Primitives\EnumPrimitiveInternal.cs" />
     <Compile Include="Metadata\PropertyKind.cs" />
     <Compile Include="Platform\IConcurrentDictionary.cs" />
@@ -217,7 +217,7 @@
     <Compile Include="HyperGraph\PropertyValue.cs" />
     <Compile Include="Adapters\Query.cs" />
     <Compile Include="HyperGraph\UniqueConstraintException.cs" />
-    <Compile Include="HyperGraph\Impls\MemoryGraph\MemoryGraphNode.cs" />
+    <Compile Include="HyperGraph\Impls\MemoryGraph\GraphNode.cs" />
     <Compile Include="Adapters\EntityUpdaters\IPersistenceGraphAdapter.cs" />
     <Compile Include="HyperGraph\Traversal\GraphPath.cs" />
     <Compile Include="HyperGraph\Traversal\GraphPosition.cs" />
@@ -369,7 +369,6 @@
     <Compile Include="HyperGraph\Impls\MemoryGraph\Index\BTreeIndex.cs" />
     <Compile Include="HyperGraph\IIndexManager.cs" />
     <Compile Include="HyperGraph\Impls\MemoryGraph\Index\MemoryIndexManager.cs" />
-    <Compile Include="HyperGraph\IGraphNode.cs" />
     <Compile Include="Container\IDependencyResolver.cs" />
     <Compile Include="MemoryStore\DeadLockException.cs" />
     <Compile Include="MemoryStore\IKeyValueStore.cs" />

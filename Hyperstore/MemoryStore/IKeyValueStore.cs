@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System.Collections.Generic;
@@ -59,7 +59,7 @@ namespace Hyperstore.Modeling
         ///  The value.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IGraphNode GetNode(Identity key);
+        GraphNode GetNode(Identity key);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -72,7 +72,7 @@ namespace Hyperstore.Modeling
         ///  (Optional) The owner key.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        void AddNode(IGraphNode value, Identity ownerKey = null);
+        void AddNode(GraphNode value, Identity ownerKey = null);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -95,7 +95,7 @@ namespace Hyperstore.Modeling
         ///  .
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        void UpdateNode(IGraphNode value);
+        void UpdateNode(GraphNode value);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -115,7 +115,7 @@ namespace Hyperstore.Modeling
         ///  An enumerator that allows foreach to be used to process all items in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<IGraphNode> GetAllNodes(NodeType elementType);
+        IEnumerable<GraphNode> GetAllNodes(NodeType elementType);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

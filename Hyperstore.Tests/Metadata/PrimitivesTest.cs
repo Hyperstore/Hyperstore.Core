@@ -36,7 +36,7 @@ namespace Hyperstore.Tests.Metadata
         public async Task BooleanTest()
         {
             var store = StoreBuilder.New().Create();
-            IDomainModel dm = await store.CreateDomainModelAsync("Test");
+            IDomainModel dm = await store.DomainModels.New().CreateAsync("Test");
             Assert.IsTrue((bool)PrimitivesSchema.BooleanSchema.Deserialize(new SerializationContext(PrimitivesSchema.BooleanSchema, PrimitivesSchema.BooleanSchema.Serialize(true))));
             Assert.IsFalse((bool)PrimitivesSchema.BooleanSchema.Deserialize(new SerializationContext(PrimitivesSchema.BooleanSchema, PrimitivesSchema.BooleanSchema.Serialize(false))));
             Assert.IsFalse((bool)PrimitivesSchema.BooleanSchema.Deserialize(new SerializationContext(PrimitivesSchema.BooleanSchema, null)));
@@ -48,7 +48,7 @@ namespace Hyperstore.Tests.Metadata
         {
             var store = StoreBuilder.New().Create();
             var dt = DateTime.Today;
-            IDomainModel dm = await store.CreateDomainModelAsync("Test");
+            IDomainModel dm = await store.DomainModels.New().CreateAsync("Test");
             Assert.AreEqual(dt, (DateTime)PrimitivesSchema.DateTimeSchema.Deserialize(new SerializationContext(PrimitivesSchema.DateTimeSchema, PrimitivesSchema.DateTimeSchema.Serialize(dt))));
             Assert.IsNull(PrimitivesSchema.DateTimeSchema.Serialize(null));
         }
@@ -58,7 +58,7 @@ namespace Hyperstore.Tests.Metadata
         {
             var store = StoreBuilder.New().Create();
             var dt = 10.2;
-            IDomainModel dm = await store.CreateDomainModelAsync("Test");
+            IDomainModel dm = await store.DomainModels.New().CreateAsync("Test");
             Assert.AreEqual(dt, (Double)PrimitivesSchema.DoubleSchema.Deserialize(new SerializationContext( PrimitivesSchema.DoubleSchema, PrimitivesSchema.DoubleSchema.Serialize(dt))));
             Assert.IsNull(PrimitivesSchema.DoubleSchema.Serialize(null));
         }
@@ -68,7 +68,7 @@ namespace Hyperstore.Tests.Metadata
         {
             var store = StoreBuilder.New().Create();
             var dt = DateTime.Now.TimeOfDay;
-            IDomainModel dm = await store.CreateDomainModelAsync("Test");
+            IDomainModel dm = await store.DomainModels.New().CreateAsync("Test");
             Assert.AreEqual((TimeSpan)PrimitivesSchema.TimeSpanSchema.Deserialize(new SerializationContext( PrimitivesSchema.TimeSpanSchema, PrimitivesSchema.TimeSpanSchema.Serialize(dt))), dt);
             Assert.IsNull(PrimitivesSchema.TimeSpanSchema.Serialize(null));
         }
@@ -78,7 +78,7 @@ namespace Hyperstore.Tests.Metadata
         {
             var store = StoreBuilder.New().Create();
             var dt = 10.2;
-            IDomainModel dm = await store.CreateDomainModelAsync("Test");
+            IDomainModel dm = await store.DomainModels.New().CreateAsync("Test");
             Assert.IsTrue((float)PrimitivesSchema.SingleSchema.Deserialize(new SerializationContext(PrimitivesSchema.SingleSchema, PrimitivesSchema.SingleSchema.Serialize(dt))) - dt < 0.01);
             Assert.IsNull(PrimitivesSchema.SingleSchema.Serialize(null));
         }

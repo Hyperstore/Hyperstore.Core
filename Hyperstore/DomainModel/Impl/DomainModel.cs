@@ -366,7 +366,7 @@ namespace Hyperstore.Modeling.Domain
             if ((Store.Options & StoreOptions.EnableExtensions) != StoreOptions.EnableExtensions)
                 throw new Exception("Extensions are not enabled. Use StoreOptions.EnableExtensions when instancing the store.");
 
-            var domain = await Store.CreateDomainModelAsync(extensionName, configuration, (resolver, name) => new Scopes.DomainScope(resolver, ((IDomainModel)this).Name, extensionName, this));
+            var domain = await ((IDomainManager)Store).CreateDomainModelAsync(extensionName, configuration, DependencyResolver, (resolver, name) => new Scopes.DomainScope(resolver, ((IDomainModel)this).Name, extensionName, this));
             return (IDomainScope)domain;
         }
 
@@ -389,7 +389,7 @@ namespace Hyperstore.Modeling.Domain
         ///-------------------------------------------------------------------------------------------------
         public Task<int> LoadAsync(Query query = null, MergeOption option = MergeOption.OverwriteChanges, IGraphAdapter adapter=null)
         {
-            return InnerGraph.LoadNodes(query ?? new Query { DomainModel = this.Name }, option, adapter);
+            return InnerGraph.LoadNodes(query ?? new Query { DomainModel = this.Name }, option, adapter, false);
         }
 
         ///-------------------------------------------------------------------------------------------------

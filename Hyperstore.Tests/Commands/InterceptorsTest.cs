@@ -100,8 +100,8 @@ namespace Hyperstore.Tests.Commands
         public async Task InterceptorOrdersEvents()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test"); 
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test"); 
 
             int cx=0;
 
@@ -121,8 +121,8 @@ namespace Hyperstore.Tests.Commands
         public async Task SharedInterceptorTest()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test"); 
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test"); 
 
             int cx = 0;
 
@@ -141,8 +141,8 @@ namespace Hyperstore.Tests.Commands
         public async Task AddInterceptorTest()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test"); 
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test"); 
 
             int cx = 0;
 

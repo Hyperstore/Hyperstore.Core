@@ -30,7 +30,7 @@ namespace Hyperstore.Modeling
     ///  Interface for schema definition.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
-    public interface ISchemaDefinition : ISchemaConfiguration
+    public interface ISchemaDefinition : IDomainConfiguration
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

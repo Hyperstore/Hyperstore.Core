@@ -37,10 +37,17 @@ namespace Hyperstore.Modeling.Commands
         private readonly IModelElement _start;
         private IModelRelationship _element;
 
+        ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Initializes a new instance of the <see cref="AddRelationshipCommand" /> class.
+        ///  Initializes a new instance of the <see cref="AddRelationshipCommand" /> class.
         /// </summary>
-        /// <param name="relationship">The relationship.</param>
+        /// <param name="relationship">
+        ///  The relationship.
+        /// </param>
+        /// <param name="version">
+        ///  (Optional) the version.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         internal AddRelationshipCommand(IModelRelationship relationship, long? version = null)
             : this(relationship.SchemaInfo as ISchemaRelationship, relationship.Start, relationship.End, relationship.Id, version)
         {
@@ -76,6 +83,9 @@ namespace Hyperstore.Modeling.Commands
         /// </param>
         /// <param name="id">
         ///  (Optional) The identifier.
+        /// </param>
+        /// <param name="version">
+        ///  (Optional) the version.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         public AddRelationshipCommand(IDomainModel domainModel, ISchemaRelationship relationshipSchema, Identity startId, ISchemaElement startSchema, Identity endId, ISchemaElement endSchema, Identity id = null, long? version = null)
@@ -122,6 +132,9 @@ namespace Hyperstore.Modeling.Commands
         /// </param>
         /// <param name="id">
         ///  (Optional) The identifier.
+        /// </param>
+        /// <param name="version">
+        ///  (Optional) the version.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         public AddRelationshipCommand(ISchemaRelationship relationshipSchema, IModelElement start, IModelElement end, Identity id = null, long? version = null)

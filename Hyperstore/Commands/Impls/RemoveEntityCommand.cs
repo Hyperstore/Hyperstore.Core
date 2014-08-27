@@ -45,6 +45,9 @@ namespace Hyperstore.Modeling.Commands
         /// <param name="throwExceptionIfNotExists">
         ///  (Optional) if set to <c>true</c> [throw exception if not exists].
         /// </param>
+        /// <param name="version">
+        ///  (Optional) the version.
+        /// </param>
         ///-------------------------------------------------------------------------------------------------
         public RemoveEntityCommand(IModelEntity entity, bool throwExceptionIfNotExists = true, long? version = null)
             : base(entity.DomainModel, version)
@@ -72,6 +75,9 @@ namespace Hyperstore.Modeling.Commands
         /// </param>
         /// <param name="throwExceptionIfNotExists">
         ///  (Optional) if set to <c>true</c> [throw exception if not exists].
+        /// </param>
+        /// <param name="version">
+        ///  (Optional) the version.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         public RemoveEntityCommand(IDomainModel domainModel, Identity id, Identity schemaEntityId, bool throwExceptionIfNotExists = true, long? version = null)

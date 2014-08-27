@@ -97,7 +97,7 @@ namespace Hyperstore.Modeling
         }
 
         [DebuggerStepThrough]
-        internal SerializationContext(IDomainModel domainModel, ISchemaInfo schemaElement, IGraphNode v)
+        internal SerializationContext(IDomainModel domainModel, ISchemaInfo schemaElement, GraphNode v)
         {
             Contract.Requires(domainModel, "domainModel");
             Contract.Requires(v, "v");

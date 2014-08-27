@@ -53,6 +53,9 @@ namespace Hyperstore.Modeling.Commands
         /// <param name="end">
         ///  The end.
         /// </param>
+        /// <param name="version">
+        ///  (Optional) the version.
+        /// </param>
         ///-------------------------------------------------------------------------------------------------
         public AddSchemaRelationshipCommand(ISchema domainModel, Identity id, ISchemaRelationship schemaRelationship, ISchemaElement start, ISchemaElement end, long? version = null)
             : base(domainModel, version)

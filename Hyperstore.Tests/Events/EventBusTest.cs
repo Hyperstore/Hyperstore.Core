@@ -46,15 +46,15 @@ namespace Hyperstore.Tests.Commands
             // Load source doman
             var store = StoreBuilder.New().Create();
             
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test");
             // Configure an output channel
             store.EventBus.RegisterDomainPolicies(domain, new ChannelPolicy { PropagationStrategy = EventPropagationStrategy.All });
 
             // Load target domain
             var store2 = StoreBuilder.New().Create();
-            await store2.LoadSchemaAsync(new TestDomainDefinition());
-            var domain2 = await store2.CreateDomainModelAsync("Test");
+            await store2.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain2 = await store2.DomainModels.New().CreateAsync("Test");
             // Configure an input channel
             store2.EventBus.RegisterDomainPolicies(domain2, null, new ChannelPolicy { PropagationStrategy = EventPropagationStrategy.All });
 
@@ -88,8 +88,8 @@ namespace Hyperstore.Tests.Commands
         //{
         //    // Initial store
         //    var store = StoreBuilder.Init().CreateStore();
-        //    await store.LoadSchemaAsync(new TestDomainDefinition());
-        //    var domain = await store.CreateDomainModelAsync("Test");
+        //    await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+        //    var domain = await store.DomainModels.New().CreateAsync("Test");
         //    store.EventBus.RegisterDomainPolicies(domain, new ChannelPolicy { PropagationStrategy = EventPropagationStrategy.All });
         //    await store.EventBus.OpenAsync(new InProcChannel());
 

@@ -21,6 +21,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 using Hyperstore.Modeling.Container;
 using System.Threading.Tasks;
+using Hyperstore.Tests.Model;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 #endif
@@ -233,7 +234,7 @@ namespace Hyperstore.Tests.Container
             Assert.AreEqual(1, store.DependencyResolver.ResolveAll<Setting>().Where(s => s.Name == "X").First().Value);
             Assert.AreEqual(1, store.DependencyResolver.ResolveAll<Setting>().Where(s => s.Name == "Y").First().Value);
 
-            var schema = await store.LoadSchemaAsync(new Hyperstore.Tests.Model.TestDomainDefinition(resolver => resolver.Register<Setting>(new Setting("X", 2))));
+            var schema = await store.Schemas.New<TestDomainDefinition>().Set("X", 2).CreateAsync();
             Assert.AreEqual(2, schema.DependencyResolver.ResolveAll<Setting>().Where(s => s.Name == "X").First().Value);
             Assert.AreEqual(1, schema.DependencyResolver.ResolveAll<Setting>().Where(s => s.Name == "Y").First().Value);
 

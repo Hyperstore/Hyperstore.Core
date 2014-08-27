@@ -41,6 +41,6 @@ namespace Hyperstore.Modeling
         ///  collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<INodeInfo> GetDeletedElements();
+        IEnumerable<GraphNode> GetDeletedElements();
     }
 }

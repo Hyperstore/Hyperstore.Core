@@ -41,8 +41,8 @@ namespace Hyperstore.Tests.Commands
         public async Task Undo()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test");
             var undoManager = new UndoManager(store);
             CreateGraph(domain);
             undoManager.RegisterDomain(domain);
@@ -68,8 +68,9 @@ namespace Hyperstore.Tests.Commands
         public async Task UndoWithEnum()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+
+            var domain = await store.DomainModels.New().CreateAsync("Test");
             var undoManager = new UndoManager(store);
             
             undoManager.RegisterDomain(domain);
@@ -100,8 +101,8 @@ namespace Hyperstore.Tests.Commands
         public async Task UndoWithMultipleDelete()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test");
             var undoManager = new UndoManager(store);
             undoManager.RegisterDomain(domain);
 
@@ -136,8 +137,8 @@ namespace Hyperstore.Tests.Commands
         public async Task UndoInEmbeddedSessions()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test");
             var undoManager = new UndoManager(store);
             undoManager.RegisterDomain(domain);
 

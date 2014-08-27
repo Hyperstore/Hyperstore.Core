@@ -41,12 +41,12 @@ namespace Hyperstore.Modeling.Adapters
         ///  An enumerator that allows foreach to be used to process load nodes in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<QueryNodeResult> LoadNodes(Query query);
+        IEnumerable<GraphPropertiesNode> LoadNodes(Query query);
     }
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  Interface for supports lazy loading.
+    ///  Interface for adpater implementing a lazy loading mechanism
     /// </summary>
     /// <seealso cref="T:IGraphAdapter"/>
     ///-------------------------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ namespace Hyperstore.Modeling.Adapters
         ///  An enumerator that allows foreach to be used to process lazy loading nodes in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<QueryNodeResult> LazyLoadingNodes(Query query);
+        IEnumerable<GraphPropertiesNode> LazyLoadingNodes(Query query);
 
     }
 }

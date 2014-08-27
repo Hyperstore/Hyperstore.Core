@@ -47,6 +47,9 @@ namespace Hyperstore.Modeling.Commands
         /// <param name="entitySchema">
         ///  The entity schema.
         /// </param>
+        /// <param name="version">
+        ///  (Optional) the version.
+        /// </param>
         ///-------------------------------------------------------------------------------------------------
         public AddSchemaEntityCommand(ISchema domainModel, Identity id, ISchemaEntity entitySchema, long? version = null)
             : base(domainModel, version)

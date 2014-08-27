@@ -15,7 +15,7 @@
     <projectUrl>http://www.zenasoft.com</projectUrl>
     <dependencies>
       <group targetFramework=".NETPortable0.0-net45+wp8+win8">
-        <dependency id="Microsoft.Bcl.Immutable" version="1.0.30" />
+        <dependency id="Microsoft.Bcl.Immutable" version="1.0.34" />
       </group>
     </dependencies>
   </metadata>

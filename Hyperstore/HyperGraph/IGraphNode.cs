@@ -29,16 +29,16 @@ namespace Hyperstore.Modeling.HyperGraph
     /// </summary>
     /// <seealso cref="T:IRelationshipInfo"/>
     ///-------------------------------------------------------------------------------------------------
-    public interface IGraphNode : IRelationshipInfo
-    {
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the type of the node.
-        /// </summary>
-        /// <value>
-        ///  The type of the node.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        NodeType NodeType { get; }
-    }
+    //public interface GraphNode : IRelationshipInfo
+    //{
+    //    ///-------------------------------------------------------------------------------------------------
+    //    /// <summary>
+    //    ///  Gets the type of the node.
+    //    /// </summary>
+    //    /// <value>
+    //    ///  The type of the node.
+    //    /// </value>
+    //    ///-------------------------------------------------------------------------------------------------
+    //    NodeType NodeType { get; }
+    //}
 }

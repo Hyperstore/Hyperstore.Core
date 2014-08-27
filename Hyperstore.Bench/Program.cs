@@ -30,53 +30,54 @@ namespace Hyperstore.Bench
 
         public async Task BenchWithConstraints(int cx)
         {
-                long nb = 0;
-                store = StoreBuilder.New().Create();
-                await store.LoadSchemaAsync(new TestDomainDefinition("Hyperstore.Tests.Model"));
+            long nb = 0;
+            store = StoreBuilder.New().Create();
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
 
-                var config = new DomainConfiguration()
-                                    .UsingIdGenerator(resolver => new Hyperstore.Modeling.Domain.LongIdGenerator());
-                var domain = await store.CreateDomainModelAsync("Test", config);
+            var domain = await store.DomainModels
+                                    .New()
+                                        .UsingIdGenerator(resolver => new Hyperstore.Modeling.Domain.LongIdGenerator())
+                                    .CreateAsync("Test");
 
-                var sw = new Stopwatch();
+            var sw = new Stopwatch();
 
-                var mx = 10000;
-                Console.WriteLine("Benchmark manipulating {0} elements...", mx);
+            var mx = 10000;
+            Console.WriteLine("Benchmark manipulating {0} elements...", mx);
 
-                // Adding 100 constraints on each element
-                var nbc = 100;
-                if (cx % 2 == 1)
-                {
-                    Console.WriteLine("Adding 100 implicit constraints on each element.");
+            // Adding 100 constraints on each element
+            var nbc = 100;
+            if (cx % 2 == 1)
+            {
+                Console.WriteLine("Adding 100 implicit constraints on each element.");
 
-                    for (int i = 0; i < nbc; i++)
-                        TestDomainDefinition.XExtendsBaseClass.AddImplicitConstraint(self => 
-                            System.Threading.Interlocked.Increment(ref nb) > 0,
-                            "OK");
-                }
+                for (int i = 0; i < nbc; i++)
+                    TestDomainDefinition.XExtendsBaseClass.AddImplicitConstraint(self =>
+                        System.Threading.Interlocked.Increment(ref nb) > 0,
+                        "OK");
+            }
 
-                Console.WriteLine("Running...");
-                sw.Start();
-                AddElement(domain, mx);
-                Console.WriteLine("Added in {0}ms ",  sw.ElapsedMilliseconds);
-                sw.Restart();
-                UpdateElement(mx);
-                Console.WriteLine("Updated in {0}ms ", sw.ElapsedMilliseconds);
-                sw.Restart();
-                ReadElement(mx);
-                Console.WriteLine("Read in {0}ms ", sw.ElapsedMilliseconds);
-                sw.Restart();
-                RemoveElement(mx);
-                Console.WriteLine("Removed in {0}ms ", sw.ElapsedMilliseconds);
-                sw.Restart();
-                sw.Stop();
-               
-                Console.WriteLine("Expected {0} Value {1}", mx * nbc * 2, nb);
-                domain = null;
-                store.Dispose();
+            Console.WriteLine("Running...");
+            sw.Start();
+            AddElement(domain, mx);
+            Console.WriteLine("Added in {0}ms ", sw.ElapsedMilliseconds);
+            sw.Restart();
+            UpdateElement(mx);
+            Console.WriteLine("Updated in {0}ms ", sw.ElapsedMilliseconds);
+            sw.Restart();
+            ReadElement(mx);
+            Console.WriteLine("Read in {0}ms ", sw.ElapsedMilliseconds);
+            sw.Restart();
+            RemoveElement(mx);
+            Console.WriteLine("Removed in {0}ms ", sw.ElapsedMilliseconds);
+            sw.Restart();
+            sw.Stop();
 
-                //Console.WriteLine();
-            
+            Console.WriteLine("Expected {0} Value {1}", mx * nbc * 2, nb);
+            domain = null;
+            store.Dispose();
+
+            //Console.WriteLine();
+
 
             //Assert.AreEqual(mx * nbc * 2, nb); // Nbre de fois la contrainte est appelée (sur le add et le update)
             //Assert.IsTrue(sw.ElapsedMilliseconds < 3000, String.Format("ElapsedTime = {0}", sw.ElapsedMilliseconds));
@@ -117,11 +118,11 @@ namespace Hyperstore.Bench
             //Parallel.For(0, max, i =>
             for (int i = 0; i < max; i++)
             {
-                using (var tx = store.BeginSession(new SessionConfiguration { Mode = SessionMode.SkipConstraints | SessionMode.SkipNotifications, Readonly=true }))
+                using (var tx = store.BeginSession(new SessionConfiguration { Mode = SessionMode.SkipConstraints | SessionMode.SkipNotifications, Readonly = true }))
                 {
                     var a = store.GetElement(ids[i], schema) as XExtendsBaseClass;
-                   // var x = a.Name;
-                  //  tx.AcceptChanges();
+                    // var x = a.Name;
+                    //  tx.AcceptChanges();
                 }
             }
             //);

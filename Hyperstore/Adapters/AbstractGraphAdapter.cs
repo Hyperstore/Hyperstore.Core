@@ -254,7 +254,11 @@ namespace Hyperstore.Modeling.Adapters
             DebugContract.Requires(session);
 
             var originId = session.OriginStoreId;
-            if (session.IsAborted || !session.Events.Any() || _disposed || (originId != Guid.Empty && originId != Store.Id))
+            if (session.IsAborted || !session.Events.Any() || _disposed || (originId != Guid.Empty && originId != Store.Id) || (session.Mode & SessionMode.Loading) == SessionMode.Loading || (session.Mode & SessionMode.LoadingSchema) == SessionMode.LoadingSchema)
+                return;
+            
+            var elements = session.TrackingData.InvolvedTrackedElements.Where( e => e.ModelElement.DomainModel.SameAs(DomainModel));
+            if (!elements.Any())
                 return;
 
             var observer = this as IPersistenceGraphAdapter;
@@ -262,7 +266,7 @@ namespace Hyperstore.Modeling.Adapters
 
             try
             {
-                observer.PersistElements(session);
+                observer.PersistElements(session, elements);
             }
             catch (Exception ex)
             {
@@ -291,9 +295,9 @@ namespace Hyperstore.Modeling.Adapters
         ///  An enumerator that allows foreach to be used to process load nodes in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected abstract IEnumerable<QueryNodeResult> LoadNodes(Query query);
+        protected abstract IEnumerable<GraphPropertiesNode> LoadNodes(Query query);
 
-        IEnumerable<QueryNodeResult> IGraphAdapter.LoadNodes(Query query)
+        IEnumerable<GraphPropertiesNode> IGraphAdapter.LoadNodes(Query query)
         {
             Contract.Requires(query, "query");
             return LoadNodes(query);
@@ -326,7 +330,19 @@ namespace Hyperstore.Modeling.Adapters
                 _sessionSubscription.Dispose();
                 _sessionSubscription = null;
             }
+
+            OnClosed();
+
             DomainModel = null;
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Executed when the adapter is closed
+        /// </summary>
+        ///-------------------------------------------------------------------------------------------------
+        protected void OnClosed()
+        {
         }
     }
 }

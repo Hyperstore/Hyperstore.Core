@@ -41,8 +41,8 @@ namespace Hyperstore.Tests.Commands
         public async Task CreationEvents()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test", new DomainConfiguration().UsingIdGenerator(r=>new LongIdGenerator())); 
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().UsingIdGenerator(r=>new LongIdGenerator()).CreateAsync("Test"); 
 
             int cx = 0;
             // Abonnements aux events
@@ -94,8 +94,8 @@ namespace Hyperstore.Tests.Commands
         public async Task DeletionEvents()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test"); 
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test"); 
 
             int cx = 0;
             // Abonnements aux events

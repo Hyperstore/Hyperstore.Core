@@ -36,55 +36,8 @@ namespace Hyperstore.Modeling
         private readonly List<Action<IDependencyResolver>> _factories = new List<Action<IDependencyResolver>>();
         internal const string PreloadActionKey = "{A8D153D6-EEED-4841-9106-A508CAAB2BCF}";
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Uses the id generator.
-        /// </summary>
-        /// <param name="factory">
-        ///  The factory.
-        /// </param>
-        /// <returns>
-        ///  An ISchemaDefinition.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public IDomainConfiguration UsingIdGenerator(Func<IDependencyResolver, IIdGenerator> factory)
+        internal DomainConfiguration()
         {
-            Using(factory);
-            return this;
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Uses the model element resolver.
-        /// </summary>
-        /// <param name="factory">
-        ///  The factory.
-        /// </param>
-        /// <returns>
-        ///  An ISchemaDefinition.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public IDomainConfiguration UsingModelElementFactory(Func<IDependencyResolver, IModelElementFactory> factory)
-        {
-            Using(factory);
-            return this;
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Uses the command manager.
-        /// </summary>
-        /// <param name="factory">
-        ///  The factory.
-        /// </param>
-        /// <returns>
-        ///  An ISchemaDefinition.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public IDomainConfiguration UsingCommandManager(Func<IDependencyResolver, ICommandManager> factory)
-        {
-            Using(factory);
-            return this;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -97,17 +50,13 @@ namespace Hyperstore.Modeling
         /// <param name="factory">
         ///  The factory.
         /// </param>
-        /// <returns>
-        ///  An ISchemaDefinition.
-        /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IDomainConfiguration Using<TService>(Func<IDependencyResolver, TService> factory) where TService : class
+        public void Using<TService>(Func<IDependencyResolver, TService> factory) where TService : class
         {
             Contract.Requires(factory, "factory");
 
             var f = new Action<IDependencyResolver>(r => r.Register<TService>(factory));
             _factories.Add(f);
-            return this;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -151,29 +100,6 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Uses.
-        /// </summary>
-        /// <typeparam name="TService">
-        ///  Type of the service.
-        /// </typeparam>
-        /// <param name="service">
-        ///  The service.
-        /// </param>
-        /// <returns>
-        ///  An ISchemaDefinition.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public IDomainConfiguration Uses<TService>(TService service) where TService : class
-        {
-            Contract.Requires(service, "service");
-
-            var f = new Action<IDependencyResolver>(r => r.Register(service));
-            _factories.Add(f);
-            return this;
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
         ///  Registers the in event bus.
         /// </summary>
         /// <param name="outputProperty">
@@ -182,33 +108,42 @@ namespace Hyperstore.Modeling
         /// <param name="inputProperty">
         ///  (Optional) the input property.
         /// </param>
-        /// <returns>
-        ///  An ISchemaDefinition.
-        /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IDomainConfiguration SubscribeToEventBus(Messaging.ChannelPolicy outputProperty, Messaging.ChannelPolicy inputProperty = null)
+        public void SubscribeToEventBus(Messaging.ChannelPolicy outputProperty, Messaging.ChannelPolicy inputProperty = null)
         {
             _factories.Add(new Action<IDependencyResolver>(r => r.Register(new Hyperstore.Modeling.RegistrationEventBusSetting { OutputProperty = outputProperty, InputProperty = inputProperty })));
-            return this;
         }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Preload elements with.
+        ///  Sets a property.
+        /// </summary>
+        /// <param name="key">
+        ///  The key.
+        /// </param>
+        /// <param name="value">
+        ///  The value.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
+        public void SetProperty(string key, object value)
+        {
+            Contract.RequiresNotEmpty(key, "key");
+            _factories.Add(new Action<IDependencyResolver>(r => r.RegisterSetting(key, value)));
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Executes the preload action.
         /// </summary>
         /// <param name="preloadAction">
         ///  The preload action.
         /// </param>
-        /// <returns>
-        ///  An IDomainConfiguration.
-        /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IDomainConfiguration PreloadElementsWith(Action<IDomainModel> preloadAction)
+        public void ExecutePreloadAction(Action<IDomainModel> preloadAction)
         {
             Contract.Requires(preloadAction, "preloadAction");
             var f = new Action<IDependencyResolver>(r => r.RegisterSetting(PreloadActionKey, preloadAction));
             _factories.Add(f);
-            return this;
         }
     }
 }

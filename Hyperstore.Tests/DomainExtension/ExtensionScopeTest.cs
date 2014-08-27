@@ -98,7 +98,7 @@ namespace Hyperstore.Tests.DomainExtension
                 session.AcceptChanges();
             }
 
-            store.UnloadDomainOrExtension(extension);
+            store.DomainModels.Unload(extension);
 
             Assert.AreEqual("My Library", lib.Name);
             AssertHelper.ThrowsException<Exception>(() => { var x = xLib.Books.Count; });

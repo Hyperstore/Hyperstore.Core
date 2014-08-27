@@ -88,7 +88,7 @@ namespace Hyperstore.Modeling.Scopes
             return graph.GetExtensionElements(schemaElement);
         }
 
-        public IEnumerable<INodeInfo> GetDeletedElements()
+        public IEnumerable<GraphNode> GetDeletedElements()
         {
             var graph = InnerGraph as IScopeHyperGraph;
             Debug.Assert(graph != null);

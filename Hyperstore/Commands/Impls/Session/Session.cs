@@ -1033,7 +1033,7 @@ namespace Hyperstore.Modeling
 
         private List<IEventNotifier> GetNotifiers()
         {
-            var extensions = Store as IExtensionManager;
+            var extensions = Store as IDomainManager;
             if (extensions == null)
                 throw new Exception("Store must implement IExtensionManager");
             return extensions.GetEventsNotifiers();

@@ -42,8 +42,8 @@ namespace Hyperstore.Tests.Memory
             {
                 // Création concurrente -> Une seule création
                 var store = StoreBuilder.New().Create();
-                await store.LoadSchemaAsync(new TestDomainDefinition());
-                var domain = await store.CreateDomainModelAsync("Test");
+                await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+                var domain = await store.DomainModels.New().CreateAsync("Test");
                 var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
                 MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
                 manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
@@ -56,8 +56,8 @@ namespace Hyperstore.Tests.Memory
         public async Task IndexExists()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test");
             var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
             MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
             manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
@@ -70,8 +70,8 @@ namespace Hyperstore.Tests.Memory
         public async Task GetIndex()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test");
             var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
             MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
             manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
@@ -84,8 +84,8 @@ namespace Hyperstore.Tests.Memory
         public async Task DropIndex()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test");
             var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
             MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
             manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
@@ -101,8 +101,8 @@ namespace Hyperstore.Tests.Memory
             await AssertHelper.ThrowsException<InvalidNameException>(async () =>
             {
                 var store = StoreBuilder.New().Create();
-                await store.LoadSchemaAsync(new TestDomainDefinition());
-                var domain = await store.CreateDomainModelAsync("Test");
+                await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+                var domain = await store.DomainModels.New().CreateAsync("Test");
                 var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
                 MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
                 manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index:1", true, "Name");
@@ -114,8 +114,8 @@ namespace Hyperstore.Tests.Memory
         public async Task AddToIndex()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test");
             var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
             MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
             using (var s = store.BeginSession(new SessionConfiguration { Readonly = true }))
@@ -139,8 +139,8 @@ namespace Hyperstore.Tests.Memory
             await AssertHelper.ThrowsException<UniqueConstraintException>(async () =>
             {
                 var store = StoreBuilder.New().Create();
-                await store.LoadSchemaAsync(new TestDomainDefinition());
-                var domain = await store.CreateDomainModelAsync("Test");
+                await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+                var domain = await store.DomainModels.New().CreateAsync("Test");
                 var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
                 MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
                 using (var s = store.BeginSession(new SessionConfiguration { Readonly = true }))
@@ -158,8 +158,8 @@ namespace Hyperstore.Tests.Memory
         public async Task NotUniqueConstraintIndex()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test");
             var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
             MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
 
@@ -180,8 +180,8 @@ namespace Hyperstore.Tests.Memory
         public async Task RemoveFromIndex()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test");
             var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
             MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
 

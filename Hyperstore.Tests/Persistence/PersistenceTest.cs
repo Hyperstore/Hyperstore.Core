@@ -41,8 +41,8 @@ namespace Hyperstore.Tests.Commands
         public async Task SerializationWithMetadatas()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test");
             CreateGraph(domain);
 
             using (var writer = new FileStream("test.xml", FileMode.Create))
@@ -71,8 +71,8 @@ namespace Hyperstore.Tests.Commands
         public async Task Serialization()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test");
             CreateGraph(domain);
 
             using (var writer = new FileStream("test.xml", FileMode.Create))
@@ -84,8 +84,8 @@ namespace Hyperstore.Tests.Commands
             Assert.AreEqual(8, domain.GetRelationships().Count());
 
             store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            domain = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            domain = await store.DomainModels.New().CreateAsync("Test");
             using (var reader = new FileStream("test.xml", FileMode.Open))
             {
                 var ser = new Hyperstore.Modeling.Serialization.XmlDomainModelSerializer();

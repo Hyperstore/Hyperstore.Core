@@ -53,8 +53,8 @@ namespace Hyperstore.Tests
         public async Task CalculatedPropertyTest()
         {
             var store = StoreBuilder.New().Create();
-            var schema = await store.LoadSchemaAsync(new TestDomainDefinition());
-            var dm = await store.CreateDomainModelAsync("Test");
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var dm = await store.DomainModels.New().CreateAsync("Test");
 
             XExtendsBaseClass start = null;
             using( var s = store.BeginSession() )

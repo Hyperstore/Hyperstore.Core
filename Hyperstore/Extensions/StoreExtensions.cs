@@ -30,7 +30,7 @@ namespace Hyperstore.Modeling
     public class SchemaBuilder
     {
         private ISchemaDefinition _definition;
-        private readonly IHyperstore _store;
+        private readonly IDomainManager _store;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -43,10 +43,47 @@ namespace Hyperstore.Modeling
         ///  The definition.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public SchemaBuilder(IHyperstore store, ISchemaDefinition definition)
+        public SchemaBuilder(IDomainManager store, ISchemaDefinition definition)
         {
             _store = store;
             _definition = definition;
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Set or override a configuration property
+        /// </summary>
+        /// <param name="key">
+        ///  The key.
+        /// </param>
+        /// <param name="value">
+        ///  The value.
+        /// </param>
+        /// <returns>
+        ///  A SchemaBuilder.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        public SchemaBuilder Set(string key, object value)
+        {
+            _definition.SetProperty(key, value);
+            return this;
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Preload action.
+        /// </summary>
+        /// <param name="action">
+        ///  The action.
+        /// </param>
+        /// <returns>
+        ///  A SchemaBuilder.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        public SchemaBuilder PreloadAction(Action<IDomainModel> action)
+        {
+            _definition.ExecutePreloadAction(action);
+            return this;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -131,7 +168,7 @@ namespace Hyperstore.Modeling
     ///-------------------------------------------------------------------------------------------------
     public class DomainBuilder
     {
-        private readonly IHyperstore _store;
+        private readonly IDomainManager _store;
         private readonly IDomainConfiguration _definition;
 
         ///-------------------------------------------------------------------------------------------------
@@ -145,10 +182,47 @@ namespace Hyperstore.Modeling
         ///  The definition.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public DomainBuilder(IHyperstore store, IDomainConfiguration definition)
+        public DomainBuilder(IDomainManager store, IDomainConfiguration definition)
         {
             _store = store;
             _definition = definition;
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Set or override a configuration property
+        /// </summary>
+        /// <param name="key">
+        ///  The key.
+        /// </param>
+        /// <param name="value">
+        ///  The value.
+        /// </param>
+        /// <returns>
+        ///  A SchemaBuilder.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        public DomainBuilder Set(string key, object value)
+        {
+            _definition.SetProperty(key, value);
+            return this;
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Preload action.
+        /// </summary>
+        /// <param name="action">
+        ///  The action.
+        /// </param>
+        /// <returns>
+        ///  A DomainBuilder.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        public DomainBuilder PreloadAction(Action<IDomainModel> action)
+        {
+            _definition.ExecutePreloadAction(action);
+            return this;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -269,7 +343,7 @@ namespace Hyperstore.Modeling
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  An IModelList&lt;ISchema&gt; extension method that news the given schemas.
+        ///  Prepare a new schema builder using a definition
         /// </summary>
         /// <typeparam name="T">
         ///  Generic type parameter.
@@ -283,12 +357,13 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public static SchemaBuilder New<T>(this IModelList<ISchema> schemas) where T : ISchemaDefinition, new()
         {
-            return new SchemaBuilder(schemas.Store, new T());
+            var store = schemas.Store as IDomainManager;
+            return new SchemaBuilder(store, new T());
         }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  An IModelList&lt;ISchema&gt; extension method that news.
+        ///  Prepare a new schema builder from an existing definition
         /// </summary>
         /// <param name="schemas">
         ///  The schemas to act on.
@@ -302,7 +377,27 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public static SchemaBuilder New(this IModelList<ISchema> schemas, ISchemaDefinition definition)
         {
-            return new SchemaBuilder(schemas.Store, definition);
+            Contract.Requires(definition, "definition");
+            var store = schemas.Store as IDomainManager;
+            return new SchemaBuilder(store, definition);
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Unload a schema
+        /// </summary>
+        /// <param name="models">
+        ///  The models to act on.
+        /// </param>
+        /// <param name="scope">
+        ///  The scope.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
+        public static void Unload(this IModelList<ISchema> models, ISchema scope)
+        {
+            Contract.Requires(scope, "scope");
+            var store = models.Store as IDomainManager;
+            store.UnloadSchemaOrExtension(scope);
         }
     }
 
@@ -315,7 +410,7 @@ namespace Hyperstore.Modeling
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  An IModelList&lt;IDomainModel&gt; extension method that news.
+        ///  Prepare a new domain builder
         /// </summary>
         /// <param name="models">
         ///  The models to act on.
@@ -329,7 +424,26 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public static DomainBuilder New(this IModelList<IDomainModel> models, IDomainConfiguration definition = null)
         {
-            return new DomainBuilder(models.Store, definition ?? new DomainConfiguration());
+            var store = models.Store as IDomainManager;
+            return new DomainBuilder(store, definition ?? new DomainConfiguration());
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Unload a domain or an extension
+        /// </summary>
+        /// <param name="models">
+        ///  The models to act on.
+        /// </param>
+        /// <param name="scope">
+        ///  domain or extension to unload
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
+        public static void Unload(this IModelList<IDomainModel> models, IDomainModel scope)
+        {
+            Contract.Requires(scope, "scope");
+            var store = models.Store as IDomainManager;
+            store.UnloadDomainOrExtension(scope);
         }
     }
 

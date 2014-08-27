@@ -36,8 +36,8 @@ namespace Hyperstore.Tests.Relationships
     // Définition d'un modèle avec de relations many to many
     public class RelationshipTestModel : SchemaDefinition
     {
-        public RelationshipTestModel(DomainBehavior behavior = DomainBehavior.Observable)
-            : base("Hyperstore.Tests.Relationships", behavior)
+        public RelationshipTestModel()
+            : base("Hyperstore.Tests.Relationships", DomainBehavior.Observable)
         {
         }
 
@@ -121,8 +121,8 @@ namespace Hyperstore.Tests.Relationships
         public async Task ManyToManyTest()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new RelationshipTestModel());
-            var dm = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<RelationshipTestModel>().CreateAsync();
+            var dm = await store.DomainModels.New().CreateAsync("Test");
             store.DefaultSessionConfiguration.DefaultDomainModel = dm;
             int size = 10;
 
@@ -188,8 +188,8 @@ namespace Hyperstore.Tests.Relationships
         public async Task ObservableManyToManyTest()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new RelationshipTestModel());
-            var dm = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<RelationshipTestModel>().CreateAsync();
+            var dm = await store.DomainModels.New().CreateAsync("Test");
             store.DefaultSessionConfiguration.DefaultDomainModel = dm;
             int size = 10;
 

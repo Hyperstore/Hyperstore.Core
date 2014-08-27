@@ -55,7 +55,7 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  The new entity.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IGraphNode CreateEntity(Identity id, ISchemaEntity schemaEntity);
+        GraphNode CreateEntity(Identity id, ISchemaEntity schemaEntity);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -118,7 +118,7 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  The new relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IGraphNode CreateRelationship(Identity id, ISchemaRelationship schemaRelationship, Identity startId, ISchemaElement startSchema, Identity endId, ISchemaElement endSchema);
+        GraphNode CreateRelationship(Identity id, ISchemaRelationship schemaRelationship, Identity startId, ISchemaElement startSchema, Identity endId, ISchemaElement endSchema);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -336,10 +336,13 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="adapter">
         ///  The adapter.
         /// </param>
+        /// <param name="lazyLoading">
+        ///  true to lazy loading.
+        /// </param>
         /// <returns>
         ///  The nodes.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        Task<int> LoadNodes(Query query, MergeOption option, Hyperstore.Modeling.Adapters.IGraphAdapter adapter);
+        Task<int> LoadNodes(Query query, MergeOption option, Hyperstore.Modeling.Adapters.IGraphAdapter adapter, bool lazyLoading);
     }
 }

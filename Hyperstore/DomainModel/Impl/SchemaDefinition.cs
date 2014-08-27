@@ -33,9 +33,8 @@ namespace Hyperstore.Modeling
     /// </summary>
     /// <seealso cref="T:Hyperstore.Modeling.ISchemaDefinition"/>
     ///-------------------------------------------------------------------------------------------------
-    public abstract class SchemaDefinition : ISchemaDefinition
+    public abstract class SchemaDefinition : DomainConfiguration, ISchemaDefinition
     {
-        private readonly List<Action<IDependencyResolver>> _factories = new List<Action<IDependencyResolver>>();
         private readonly string _name;
         private readonly DomainBehavior _behavior;
 
@@ -82,46 +81,6 @@ namespace Hyperstore.Modeling
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         string ISchemaDefinition.SchemaName { get { return _name; } }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Useses the id generator.
-        /// </summary>
-        /// <param name="factory">
-        ///  The factory.
-        /// </param>
-        /// <returns>
-        ///  An ISchemaDefinition.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public ISchemaDefinition UsingIdGenerator(Func<IDependencyResolver, IIdGenerator> factory)
-        {
-            Using(factory);
-            return this;
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Useses the specified factory.
-        /// </summary>
-        /// <typeparam name="TService">
-        ///  Type of the service.
-        /// </typeparam>
-        /// <param name="factory">
-        ///  The factory.
-        /// </param>
-        /// <returns>
-        ///  An ISchemaDefinition.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public ISchemaDefinition Using<TService>(Func<IDependencyResolver, TService> factory) where TService : class
-        {
-            Contract.Requires(factory, "factory");
-
-            var f = new Action<IDependencyResolver>(r => r.Register<TService>(factory));
-            _factories.Add(f);
-            return this;
-        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -172,88 +131,6 @@ namespace Hyperstore.Modeling
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         protected abstract void DefineSchema(ISchema schema);
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Prepare dependency resolver.
-        /// </summary>
-        /// <param name="parentResolver">
-        ///  The default dependency resolver.
-        /// </param>
-        /// <returns>
-        ///  An IDependencyResolver.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        IDependencyResolver ISchemaConfiguration.PrepareDependencyResolver(IDependencyResolver parentResolver)
-        {
-            return PrepareDependencyResolver(parentResolver);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Prepare dependency resolver.
-        /// </summary>
-        /// <param name="parentResolver">
-        ///  The default dependency resolver.
-        /// </param>
-        /// <returns>
-        ///  An IDependencyResolver.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        protected virtual IDependencyResolver PrepareDependencyResolver(IDependencyResolver parentResolver)
-        {
-            Contract.Requires(parentResolver, "parentResolver");
-
-            foreach (var action in _factories)
-            {
-                action(parentResolver);
-            }
-
-            return parentResolver;
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Uses.
-        /// </summary>
-        /// <typeparam name="TService">
-        ///  Type of the service.
-        /// </typeparam>
-        /// <param name="service">
-        ///  The service.
-        /// </param>
-        /// <returns>
-        ///  An ISchemaDefinition.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public ISchemaDefinition Uses<TService>(TService service) where TService : class
-        {
-            Contract.Requires(service, "service");
-
-            var f = new Action<IDependencyResolver>(r => r.Register(service));
-            _factories.Add(f);
-            return this;
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Registers the in event bus.
-        /// </summary>
-        /// <param name="outputProperty">
-        ///  The output property.
-        /// </param>
-        /// <param name="inputProperty">
-        ///  (Optional) the input property.
-        /// </param>
-        /// <returns>
-        ///  An ISchemaDefinition.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public ISchemaDefinition SubscribeToEventBus(Messaging.ChannelPolicy outputProperty, Messaging.ChannelPolicy inputProperty = null)
-        {
-            _factories.Add(new Action<IDependencyResolver>(r => r.Register(new Hyperstore.Modeling.RegistrationEventBusSetting { OutputProperty = outputProperty, InputProperty = inputProperty })));
-            return this;
-        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

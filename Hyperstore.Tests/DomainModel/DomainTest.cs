@@ -40,8 +40,8 @@ namespace Hyperstore.Tests
         public async Task ReferenceInRelationshipTest()
         {
             var store = StoreBuilder.New().Create();
-            var schema = await store.LoadSchemaAsync(new TestDomainDefinition());
-            var dm = await store.CreateDomainModelAsync("Test"); 
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var dm = await store.DomainModels.New().CreateAsync("Test"); 
 
             XReferencesY rel = null;
             using( var s = store.BeginSession() )
@@ -62,8 +62,8 @@ namespace Hyperstore.Tests
         public async Task SetReferenceTest()
         {
             var store = StoreBuilder.New().Create();
-            var schema = await store.LoadSchemaAsync(new TestDomainDefinition());
-            var dm = await store.CreateDomainModelAsync("Test"); 
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var dm = await store.DomainModels.New().CreateAsync("Test"); 
             XExtendsBaseClass x = null;
             YClass y = null;
             using( var s = store.BeginSession() )
@@ -101,8 +101,8 @@ namespace Hyperstore.Tests
         public async Task SetReferenceFromOppositeTest()
         {
             var store = StoreBuilder.New().Create();
-            var schema = await store.LoadSchemaAsync(new TestDomainDefinition());
-            var dm = await store.CreateDomainModelAsync("Test"); 
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var dm = await store.DomainModels.New().CreateAsync("Test"); 
             XExtendsBaseClass x = null;
             YClass y = null;
             using( var s = store.BeginSession() )
@@ -140,8 +140,8 @@ namespace Hyperstore.Tests
         public async Task PropertyChangedOnSetReferenceTest()
         {
             var store = StoreBuilder.New().Create();
-            var schema = await store.LoadSchemaAsync(new TestDomainDefinition((Action<IDependencyResolver>)null));
-            var dm = await store.CreateDomainModelAsync("Test", new DomainConfiguration().UsingIdGenerator(r=>new LongIdGenerator()));
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var dm = await store.DomainModels.New().UsingIdGenerator(r => new LongIdGenerator()).CreateAsync("Test");
             XExtendsBaseClass x = null;
             YClass y = null;
             
@@ -189,8 +189,8 @@ namespace Hyperstore.Tests
         public async Task SetReferenceToNullTest()
         {
             var store = StoreBuilder.New().Create();
-            var schema = await store.LoadSchemaAsync(new TestDomainDefinition());
-            var dm = await store.CreateDomainModelAsync("Test"); 
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var dm = await store.DomainModels.New().CreateAsync("Test"); 
             XExtendsBaseClass x = null;
             YClass y = null;
             using( var s = store.BeginSession() )
@@ -217,8 +217,8 @@ namespace Hyperstore.Tests
         public async Task SetReferenceToNullFromOppositeTest()
         {
             var store = StoreBuilder.New().Create();
-            var schema = await store.LoadSchemaAsync(new TestDomainDefinition());
-            var dm = await store.CreateDomainModelAsync("Test"); 
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var dm = await store.DomainModels.New().CreateAsync("Test"); 
             XExtendsBaseClass x = null;
             YClass y = null;
             using( var s = store.BeginSession() )
@@ -246,8 +246,8 @@ namespace Hyperstore.Tests
         public async Task SetReferenceToNullFromOpposite2Test()
         {
             var store = StoreBuilder.New().Create();
-            var schema = await store.LoadSchemaAsync(new TestDomainDefinition());
-            var dm = await store.CreateDomainModelAsync("Test"); 
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var dm = await store.DomainModels.New().CreateAsync("Test"); 
             XExtendsBaseClass x = null;
             YClass y = null;
             using( var s = store.BeginSession() )

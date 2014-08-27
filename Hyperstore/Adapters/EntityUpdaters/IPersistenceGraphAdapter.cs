@@ -19,6 +19,7 @@
 
 using System;
 using Hyperstore.Modeling.Commands;
+using System.Collections.Generic;
 
 #endregion
 
@@ -39,7 +40,10 @@ namespace Hyperstore.Modeling.Adapters
         /// <param name="session">
         ///  The session.
         /// </param>
+        /// <param name="elementsToPersist">
+        ///  The elements to persist.
+        /// </param>
         ///-------------------------------------------------------------------------------------------------
-        void PersistElements(ISessionInformation session);
+        void PersistElements(ISessionInformation session, IEnumerable<TrackedElement> elementsToPersist);
     }
 }

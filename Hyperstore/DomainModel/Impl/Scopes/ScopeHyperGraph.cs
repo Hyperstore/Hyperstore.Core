@@ -69,7 +69,7 @@ namespace Hyperstore.Modeling.Scopes
             return !IsDeleted(id) && (base.GraphNodeExists(id, schemaElement) || _extendedGraph.GraphNodeExists(id, schemaElement));
         }
 
-        internal override bool GetGraphNode(Identity id, NodeType nodeType, ISchemaInfo schemaInfo, out IGraphNode node)
+        internal override bool GetGraphNode(Identity id, NodeType nodeType, ISchemaInfo schemaInfo, out GraphNode node)
         {
             node = null;
             if (IsDeleted(id))
@@ -81,7 +81,7 @@ namespace Hyperstore.Modeling.Scopes
             return _extendedGraph.GetGraphNode(id, nodeType, schemaInfo, out node);
         }
 
-        internal override IEnumerable<IGraphNode> GetGraphNodes(NodeType nodetype)
+        internal override IEnumerable<GraphNode> GetGraphNodes(NodeType nodetype)
         {
             HashSet<Identity> set = new HashSet<Identity>();
             foreach(var node in base.GetGraphNodes(nodetype))
@@ -100,10 +100,10 @@ namespace Hyperstore.Modeling.Scopes
             }
         }
 
-        internal override IEnumerable<EdgeInfo> GetGraphEdges(IGraphNode source, ISchemaElement sourceSchema, Direction direction)
+        internal override IEnumerable<EdgeInfo> GetGraphEdges(GraphNode source, ISchemaElement sourceSchema, Direction direction)
         {
             HashSet<Identity> set = new HashSet<Identity>();
-            IGraphNode node = source;
+            GraphNode node = source;
             if (node != null)
             {
                 foreach (var edge in base.GetGraphEdges(node, sourceSchema, direction))
@@ -124,17 +124,17 @@ namespace Hyperstore.Modeling.Scopes
             }
         }
 
-        protected override Tuple<MemoryGraphNode, MemoryGraphNode> GetTerminalNodes(Identity startId, ISchemaInfo startSchema, Identity endId, ISchemaInfo endSchema)
+        protected override Tuple<GraphNode, GraphNode> GetTerminalNodes(Identity startId, ISchemaInfo startSchema, Identity endId, ISchemaInfo endSchema)
         {
-            IGraphNode start = null;
-            IGraphNode end = null;
+            GraphNode start = null;
+            GraphNode end = null;
 
             if (!IsDeleted(startId))
             {
                 base.GetGraphNode(startId, NodeType.EdgeOrNode, startSchema, out start);
                 if (start == null)
                 {
-                    IGraphNode extendedStart;
+                    GraphNode extendedStart;
                     _extendedGraph.GetGraphNode(startId, NodeType.EdgeOrNode, startSchema, out extendedStart);
                     if (extendedStart != null)
                     {
@@ -152,7 +152,7 @@ namespace Hyperstore.Modeling.Scopes
                 base.GetGraphNode(endId, NodeType.EdgeOrNode, endSchema, out end);
                 if (end == null)
                 {
-                    IGraphNode extendedEnd;
+                    GraphNode extendedEnd;
                     _extendedGraph.GetGraphNode(endId, NodeType.EdgeOrNode, endSchema, out extendedEnd);
                     if (extendedEnd != null)
                     {
@@ -165,10 +165,10 @@ namespace Hyperstore.Modeling.Scopes
                 }
             }
 
-            return Tuple.Create(start as MemoryGraphNode, end as MemoryGraphNode);
+            return Tuple.Create(start as GraphNode, end as GraphNode);
         }
 
-        public override IGraphNode CreateEntity(Identity id, ISchemaEntity schemaEntity)
+        public override GraphNode CreateEntity(Identity id, ISchemaEntity schemaEntity)
         {
             var flag = base.CreateEntity(id, schemaEntity);
             _deletedElements.RemoveNode(id);
@@ -178,12 +178,12 @@ namespace Hyperstore.Modeling.Scopes
         public override bool RemoveEntity(Identity id, ISchemaEntity schemaEntity, bool throwExceptionIfNotExists)
         {
             var flag = base.RemoveEntity(id, schemaEntity, false);
-            _deletedElements.AddNode(new MemoryGraphNode(id, schemaEntity.Id, NodeType.Node));
+            _deletedElements.AddNode(new GraphNode(id, schemaEntity.Id, NodeType.Node));
             return flag;
         }
 
 
-        public override IGraphNode CreateRelationship(Identity id, ISchemaRelationship metaRelationship, Identity startId, ISchemaElement startSchema, Identity endId, ISchemaElement endSchema)
+        public override GraphNode CreateRelationship(Identity id, ISchemaRelationship metaRelationship, Identity startId, ISchemaElement startSchema, Identity endId, ISchemaElement endSchema)
         {
             var flag = base.CreateRelationship(id, metaRelationship, startId, startSchema, endId, endSchema);
             _deletedElements.RemoveNode(id);
@@ -193,7 +193,7 @@ namespace Hyperstore.Modeling.Scopes
         public override bool RemoveRelationship(Identity id, ISchemaRelationship schemaRelationship, bool throwExceptionIfNotExists)
         {
             var flag = base.RemoveRelationship(id, schemaRelationship, false);
-            _deletedElements.AddNode(new MemoryGraphNode(id, schemaRelationship.Id, NodeType.Node));
+            _deletedElements.AddNode(new GraphNode(id, schemaRelationship.Id, NodeType.Node));
             return flag;
         }
 
@@ -203,7 +203,7 @@ namespace Hyperstore.Modeling.Scopes
             return base.GetElementsCore<IModelElement>(query, schemaElement, 0);
         }
 
-        System.Collections.Generic.IEnumerable<INodeInfo> IScopeHyperGraph.GetDeletedElements()
+        System.Collections.Generic.IEnumerable<GraphNode> IScopeHyperGraph.GetDeletedElements()
         {
             return _deletedElements.GetAllNodes(NodeType.EdgeOrNode);
         }
@@ -214,7 +214,7 @@ namespace Hyperstore.Modeling.Scopes
                 throw new InvalidElementException(owner.Id);
 
             var pid = owner.Id.CreateAttributeIdentity(property.Name);
-            IGraphNode propertyNode;
+            GraphNode propertyNode;
             _extendedGraph.GetGraphNode(pid, NodeType.Property, property, out propertyNode); // Potential old value
 
             if (!base.GraphNodeExists(owner.Id, owner.SchemaInfo))

@@ -35,10 +35,17 @@ namespace Hyperstore.Modeling.Commands
     {
         private IModelEntity _element;
 
+        ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Initializes a new instance of the <see cref="AddEntityCommand" /> class.
+        ///  Initializes a new instance of the <see cref="AddEntityCommand" /> class.
         /// </summary>
-        /// <param name="mel">The mel.</param>
+        /// <param name="mel">
+        ///  The mel.
+        /// </param>
+        /// <param name="version">
+        ///  (Optional) the version.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         internal AddEntityCommand(IModelEntity mel, long? version = null)
             : this(mel.DomainModel, mel.SchemaInfo as ISchemaEntity, mel.Id, version)
         {
@@ -60,6 +67,9 @@ namespace Hyperstore.Modeling.Commands
         /// </param>
         /// <param name="id">
         ///  (Optional) The identifier.
+        /// </param>
+        /// <param name="version">
+        ///  (Optional) the version.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         public AddEntityCommand(IDomainModel domainModel, ISchemaEntity schemaEntity, Identity id = null, long? version = null)

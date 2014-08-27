@@ -47,6 +47,9 @@ namespace Hyperstore.Modeling.Commands
         /// <param name="propertySchema">
         ///  The property schema.
         /// </param>
+        /// <param name="version">
+        ///  (Optional) the version.
+        /// </param>
         ///-------------------------------------------------------------------------------------------------
         public RemovePropertyCommand(IDomainModel domainModel, Identity ownerId, ISchemaElement schemaElement, ISchemaProperty propertySchema, long? version = null)
             : base(domainModel, version)

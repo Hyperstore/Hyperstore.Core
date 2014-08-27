@@ -54,7 +54,7 @@ namespace Hyperstore.Tests.Extension
             public ExtensionsDomainDefinition()
                 : base("Hyperstore.Tests")
             {
-                UsingIdGenerator(r => new Hyperstore.Modeling.Domain.LongIdGenerator());
+                Using<Hyperstore.Modeling.HyperGraph.IIdGenerator>(r => new Hyperstore.Modeling.Domain.LongIdGenerator());
             }
 
             protected override void DefineSchema(ISchema domainModel)
@@ -91,7 +91,7 @@ namespace Hyperstore.Tests.Extension
             public InitialDomainDefinition()
                 : base("Hyperstore.Tests")
             {
-                UsingIdGenerator(r => new Hyperstore.Modeling.Domain.LongIdGenerator());
+                Using<Hyperstore.Modeling.HyperGraph.IIdGenerator>(r => new Hyperstore.Modeling.Domain.LongIdGenerator());
             }
             protected override void DefineSchema(ISchema domainModel)
             {
@@ -105,8 +105,8 @@ namespace Hyperstore.Tests.Extension
         public async Task ExtensionGetExisting()
         {
             var store = StoreBuilder.New().EnableExtensions().Create();
-            var schema = await store.LoadSchemaAsync(new InitialDomainDefinition());
-            var initial = await store.CreateDomainModelAsync("D1");
+            var schema = await store.Schemas.New<InitialDomainDefinition>().CreateAsync();
+            var initial = await store.DomainModels.New().CreateAsync("D1");
 
             Category cat;
             using (var s = store.BeginSession())
@@ -129,8 +129,8 @@ namespace Hyperstore.Tests.Extension
         //    await AssertHelper.ThrowsException<SessionException>(async () =>
         //        {
         //            var store = StoreBuilder.Init().EnableExtensions().CreateStore();
-        //            var schema = await store.LoadSchemaAsync(new InitialDomainDefinition());
-        //            var initial = await store.CreateDomainModelAsync("D1");
+        //            var schema = await store.Schemas.New<InitialDomainDefinition>().CreateAsync();
+        //            var initial = await store.DomainModels.New().CreateAsync("D1");
 
         //            store.GetSchemaEntity<Category>().AddImplicitConstraint<Category>(c => c.Value < 10, "Invalid value");
 
@@ -161,8 +161,8 @@ namespace Hyperstore.Tests.Extension
             await AssertHelper.ThrowsException<SessionException>(async () =>
                 {
                     var store = StoreBuilder.New().EnableExtensions().Create();
-                    var schema = await store.LoadSchemaAsync(new InitialDomainDefinition());
-                    var initial = await store.CreateDomainModelAsync("D1");
+                    var schema = await store.Schemas.New<InitialDomainDefinition>().CreateAsync();
+                    var initial = await store.DomainModels.New().CreateAsync("D1");
                     await schema.LoadSchemaExtension( new ExtensionsDomainDefinition());
                     var extended = await initial.CreateScopeAsync("Ex1");
 
@@ -182,8 +182,8 @@ namespace Hyperstore.Tests.Extension
         public async Task Extension_constraint_in_readonly_mode()
         {
             var store = StoreBuilder.New().EnableExtensions().Create();
-            var schema = await store.LoadSchemaAsync(new InitialDomainDefinition());
-            var initial = await store.CreateDomainModelAsync("D1");
+            var schema = await store.Schemas.New<InitialDomainDefinition>().CreateAsync();
+            var initial = await store.DomainModels.New().CreateAsync("D1");
 
             store.GetSchemaEntity<Category>().AddImplicitConstraint<Category>(c => c.Value < 10, "Invalid value");
 
@@ -214,8 +214,8 @@ namespace Hyperstore.Tests.Extension
         //    var extensionResult = @"<?xml version=""1.0"" encoding=""utf-8""?><domain name=""d1""><model><elements><element id=""d1:1"" metadata=""hyperstore.tests:extension.extensionstest+categoryex""><attributes><attribute name=""XValue"">20</attribute></attributes></element></elements><relationships /></model></domain>";
 
         //    var store = StoreBuilder.Init().EnableExtensions().CreateStore();
-        //    var schema = await store.LoadSchemaAsync(new InitialDomainDefinition());
-        //    var initial = await store.CreateDomainModelAsync("D1", new DomainConfiguration().UsesIdGenerator(r => new Hyperstore.Modeling.Domain.LongIdGenerator()));
+        //    var schema = await store.Schemas.New<InitialDomainDefinition>().CreateAsync();
+        //    var initial = await store.DomainModels.New().CreateAsync("D1", new DomainConfiguration().UsesIdGenerator(r => new Hyperstore.Modeling.Domain.LongIdGenerator()));
         //    await schema.LoadSchemaExtension(new ExtensionsDomainDefinition());
         //    var extended = await initial.LoadExtensionAsync("Ex1", ExtendedMode.Updatable, new DomainConfiguration().UsesIdGenerator(r => new Hyperstore.Modeling.Domain.LongIdGenerator()));
 
@@ -269,8 +269,8 @@ namespace Hyperstore.Tests.Extension
         public async Task ExtendedUnloadTest()
         {
             var store = StoreBuilder.New().EnableExtensions().Create();
-            var initialSchema = await store.LoadSchemaAsync(new InitialDomainDefinition());
-            var initial = await store.CreateDomainModelAsync("D1");
+            var initialSchema = await store.Schemas.New<InitialDomainDefinition>().CreateAsync();
+            var initial = await store.DomainModels.New().CreateAsync("D1");
 
             // Create a category in the initial domain
             Category a = null;
@@ -355,7 +355,7 @@ namespace Hyperstore.Tests.Extension
                 Assert.AreEqual(9, xx);
 
                 Sleep(100);
-                store.UnloadDomainOrExtension(xDomain);
+                store.DomainModels.Unload(xDomain);
             }
 
             cancel.Cancel(false);
@@ -366,8 +366,8 @@ namespace Hyperstore.Tests.Extension
         public async Task ExtendedDeleteElementTest()
         {
             var store = StoreBuilder.New().EnableExtensions().Create();
-            var initialSchema = await store.LoadSchemaAsync(new InitialDomainDefinition());
-            var initial = await store.CreateDomainModelAsync("D1");
+            var initialSchema = await store.Schemas.New<InitialDomainDefinition>().CreateAsync();
+            var initial = await store.DomainModels.New().CreateAsync("D1");
 
             // Create a category in the initial domain
             Category a = null;

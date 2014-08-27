@@ -335,13 +335,13 @@ namespace Hyperstore.Modeling.MemoryStore
         ///  (Optional)
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void AddNode(IGraphNode node, Identity ownerKey = null)
+        public void AddNode(GraphNode node, Identity ownerKey = null)
         {
             DebugContract.Requires(node, "node");
 
             using (var ctx = CreateCommandContext())
             {
-                var currentSlot = new Slot<IGraphNode>(node);
+                var currentSlot = new Slot<GraphNode>(node);
 
                 _valuesLock.EnterUpgradeableReadLock();
                 try
@@ -443,7 +443,7 @@ namespace Hyperstore.Modeling.MemoryStore
             return false;
         }
 
-        private void AddSlot(CommandContext ctx, SlotList slots, Slot<IGraphNode> v)
+        private void AddSlot(CommandContext ctx, SlotList slots, Slot<GraphNode> v)
         {
             DebugContract.Requires(ctx, "ctx");
             DebugContract.Requires(slots, "slots");
@@ -466,7 +466,7 @@ namespace Hyperstore.Modeling.MemoryStore
         ///  The value.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IGraphNode GetNode(Identity key)
+        public GraphNode GetNode(Identity key)
         {
             DebugContract.Requires(key);
 
@@ -479,7 +479,7 @@ namespace Hyperstore.Modeling.MemoryStore
                     if (result != null)
                         return result.Value;
 
-                    return default(IGraphNode);
+                    return default(GraphNode);
                 }
                 finally
                 {
@@ -513,7 +513,7 @@ namespace Hyperstore.Modeling.MemoryStore
             }
         }
 
-        private Slot<IGraphNode> SelectSlot(Identity id, CommandContext ctx)
+        private Slot<GraphNode> SelectSlot(Identity id, CommandContext ctx)
         {
             DebugContract.Requires(id);
 
@@ -521,7 +521,7 @@ namespace Hyperstore.Modeling.MemoryStore
             if (_values.TryGetValue(id, out slots))
             {
                 slots.Mark();
-                return slots.GetInSnapshot(ctx) as Slot<IGraphNode>;
+                return slots.GetInSnapshot(ctx) as Slot<GraphNode>;
             }
 
             return null;
@@ -538,7 +538,7 @@ namespace Hyperstore.Modeling.MemoryStore
         ///  .
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void UpdateNode(IGraphNode node)
+        public void UpdateNode(GraphNode node)
         {
             DebugContract.Requires(node);
 
@@ -562,7 +562,7 @@ namespace Hyperstore.Modeling.MemoryStore
                     {
                         tuples.Mark();
                         var currentSlot = tuples.GetActiveSlot();
-                        var newSlot = new Slot<IGraphNode>(node);
+                        var newSlot = new Slot<GraphNode>(node);
                         AddSlot(ctx, tuples, newSlot);
                         if (currentSlot != null)
                         {
@@ -597,7 +597,7 @@ namespace Hyperstore.Modeling.MemoryStore
         ///  An enumerator that allows foreach to be used to process all items in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<IGraphNode> GetAllNodes(NodeType elementType)
+        public IEnumerable<GraphNode> GetAllNodes(NodeType elementType)
         {
             //// Sauvegarde du pointeur sur les valeurs qui sera protégé du vaccum (Le vaccum ne supprime pas mais recré un
             //// tableau pour remplacer l'ancien)
@@ -608,11 +608,11 @@ namespace Hyperstore.Modeling.MemoryStore
 
             //foreach (var item in iter)
             //{
-            //    Slot<IGraphNode> slot;
+            //    Slot<GraphNode> slot;
             //    this._valuesLock.EnterReadLock();
             //    try
             //    {
-            //        slot = item.Value.GetInSnapshot(ctx) as Slot<IGraphNode>;
+            //        slot = item.Value.GetInSnapshot(ctx) as Slot<GraphNode>;
             //    }
             //    finally
             //    {
@@ -634,7 +634,7 @@ namespace Hyperstore.Modeling.MemoryStore
                 // avec le _valuesLock (impossible de passer en write car on est en read).
                 // Pour éviter cela, on va lire toutes les valeurs et les renvoyer d"un coup.
                 // TODO voir si on peut pas faire mieux
-                var result = new List<IGraphNode>(); // Stockage des résultats de l'itération
+                var result = new List<GraphNode>(); // Stockage des résultats de l'itération
                 _valuesLock.EnterReadLock();
                 try
                 {
@@ -642,7 +642,7 @@ namespace Hyperstore.Modeling.MemoryStore
 
                     foreach (var slots in iter)
                     {
-                        var slot = slots.GetInSnapshot(ctx) as Slot<IGraphNode>;
+                        var slot = slots.GetInSnapshot(ctx) as Slot<GraphNode>;
                         if (slot != null)
                             result.Add(slot.Value);
                     }

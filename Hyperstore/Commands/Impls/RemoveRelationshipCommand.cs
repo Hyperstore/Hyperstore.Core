@@ -54,6 +54,9 @@ namespace Hyperstore.Modeling.Commands
         /// <param name="throwExceptionIfNotExists">
         ///  (Optional) if set to <c>true</c> [throw exception if not exists].
         /// </param>
+        /// <param name="version">
+        ///  (Optional) the version.
+        /// </param>
         ///-------------------------------------------------------------------------------------------------
         public RemoveRelationshipCommand(IDomainModel domainModel, Identity id, Identity schemaRelationshipId, bool throwExceptionIfNotExists = true, long? version = null)
             : base(domainModel, version)
@@ -75,6 +78,9 @@ namespace Hyperstore.Modeling.Commands
         /// </summary>
         /// <param name="relationship">
         ///  The relationship.
+        /// </param>
+        /// <param name="version">
+        ///  (Optional) the version.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         public RemoveRelationshipCommand(IModelRelationship relationship, long? version = null)

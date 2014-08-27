@@ -40,8 +40,8 @@ namespace Hyperstore.Tests.Memory
         public async Task CreateIndexDefinition()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test");
             var graph = ((Hyperstore.Modeling.Domain.IHyperGraphProvider)domain).InnerGraph;
 
             var def = new IndexDefinition(graph, "Index1", TestDomainDefinition.XExtendsBaseClass, true, "Name");
@@ -54,8 +54,8 @@ namespace Hyperstore.Tests.Memory
         public async Task IsImpactedIndexDefinition()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test");
             var graph = ((Hyperstore.Modeling.Domain.IHyperGraphProvider)domain).InnerGraph;
             var def = new IndexDefinition(graph, "Index1", TestDomainDefinition.XExtendsBaseClass, true, "Name");
             Assert.IsTrue(def.IsImpactedBy(TestDomainDefinition.XExtendsBaseClass, "Name"));
@@ -68,8 +68,8 @@ namespace Hyperstore.Tests.Memory
         public async Task AddInTransaction()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test");
 
             domain.Indexes.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
             var index = domain.Indexes.GetIndex("index1");
@@ -94,8 +94,8 @@ namespace Hyperstore.Tests.Memory
         public async Task UpdateIndexedProperty()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test");
 
             domain.Indexes.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
             var index = domain.Indexes.GetIndex("index1");
@@ -131,8 +131,8 @@ namespace Hyperstore.Tests.Memory
         public async Task RemoveIndexElement()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test");
 
             domain.Indexes.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
             domain.Indexes.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index2", true, "Value");

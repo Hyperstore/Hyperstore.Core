@@ -26,7 +26,7 @@ using Hyperstore.Modeling.Metadata.Primitives;
 
 namespace Hyperstore.Modeling.Metadata
 {
-    internal class PrimitivesSchemaDefinition : ISchemaDefinition
+    internal class PrimitivesSchemaDefinition : DomainConfiguration, ISchemaDefinition
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Gets the name of the schema. </summary>
@@ -117,30 +117,6 @@ namespace Hyperstore.Modeling.Metadata
         }
 
         ///-------------------------------------------------------------------------------------------------
-        /// <summary>   Useses the specified factory. </summary>
-        /// <exception cref="NotImplementedException">
-        ///     Thrown when the requested operation is unimplemented.
-        /// </exception>
-        /// <typeparam name="TService"> Type of the service. </typeparam>
-        /// <param name="factory">  The factory. </param>
-        /// <returns>   An ISchemaDefinition. </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public ISchemaDefinition Using<TService>(Func<IDependencyResolver, TService> factory) where TService : class
-        {
-            throw new NotImplementedException();
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>   Prepare dependency resolver. </summary>
-        /// <param name="defaultDependencyResolver">    The default dependency resolver. </param>
-        /// <returns>   An IDependencyResolver. </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public IDependencyResolver PrepareDependencyResolver(IDependencyResolver defaultDependencyResolver)
-        {
-            return defaultDependencyResolver;
-        }
-
-        ///-------------------------------------------------------------------------------------------------
         /// <summary>   Called when [schema loaded]. </summary>
         /// <param name="domainModel">  The domain model. </param>
         /// ### <exception cref="NotImplementedException">
@@ -149,33 +125,6 @@ namespace Hyperstore.Modeling.Metadata
         ///-------------------------------------------------------------------------------------------------
         public void OnSchemaLoaded(ISchema domainModel)
         {
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>   Registers the in event bus. </summary>
-        /// <exception cref="NotImplementedException">
-        ///     Thrown when the requested operation is unimplemented.
-        /// </exception>
-        /// <param name="outputProperty">   The output property. </param>
-        /// <param name="inputProperty">    (Optional) the input property. </param>
-        /// <returns>   An ISchemaDefinition. </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public ISchemaDefinition SubscribeToEventBus( Messaging.ChannelPolicy outputProperty, Messaging.ChannelPolicy inputProperty = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>   Uses identifier generator. </summary>
-        /// <exception cref="NotImplementedException">
-        ///     Thrown when the requested operation is unimplemented.
-        /// </exception>
-        /// <param name="factory">  The factory. </param>
-        /// <returns>   An ISchemaDefinition. </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public ISchemaDefinition UsingIdGenerator(Func<IDependencyResolver, IIdGenerator> factory)
-        {
-            throw new NotImplementedException();
         }
 
         ///-------------------------------------------------------------------------------------------------

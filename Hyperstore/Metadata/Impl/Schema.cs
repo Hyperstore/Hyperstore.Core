@@ -140,7 +140,7 @@ namespace Hyperstore.Modeling.Metadata
                 throw new Exception("Extension schema must have the same name that the extended schema.");
 
             var desc = new ExtensionSchemaDefinition(definition, this, mode);
-            var schema = await Store.LoadSchemaAsync(desc);
+            var schema = await ((IDomainManager)Store).LoadSchemaAsync(desc, DependencyResolver);
             return (ISchemaExtension)schema;
         }
 

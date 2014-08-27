@@ -105,7 +105,7 @@ namespace Hyperstore.Tests.Model
 
         protected override IDependencyResolver PrepareDependencyResolver(IDependencyResolver defaultDependencyResolver)
         {
-            UsingIdGenerator(r => new LongIdGenerator());
+            Using<Hyperstore.Modeling.HyperGraph.IIdGenerator>(r => new LongIdGenerator());
 
             var resolver = base.PrepareDependencyResolver(defaultDependencyResolver);
             if (_prepareDependency != null)

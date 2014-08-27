@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Hyperstore.Modeling.MemoryStore;
@@ -41,8 +41,8 @@ namespace Hyperstore.Tests
         public async Task Bench()
         {
             store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition("Hyperstore.Tests.Model"));
-            var domain = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test");
             var sw = new Stopwatch();
 
             sw.Start();
@@ -56,13 +56,13 @@ namespace Hyperstore.Tests
             Assert.IsTrue(sw.ElapsedMilliseconds < 2000);
         }
 
-       // [TestMethod]
+        // [TestMethod]
         public async Task BenchWithConstraints()
         {
             long nb = 0;
             store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new TestDomainDefinition("Hyperstore.Tests.Model"));
-            var domain = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test");
             var sw = new Stopwatch();
 
             // Ajout de 100 contraintes

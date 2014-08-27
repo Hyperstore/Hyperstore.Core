@@ -49,72 +49,6 @@ namespace Hyperstore.Modeling
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  Interface for schema configuration.
-    /// </summary>
-    ///-------------------------------------------------------------------------------------------------
-    public interface ISchemaConfiguration
-    {
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Prepare dependency resolver.
-        /// </summary>
-        /// <param name="defaultDependencyResolver">
-        ///  The default dependency resolver.
-        /// </param>
-        /// <returns>
-        ///  An IDependencyResolver.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        IDependencyResolver PrepareDependencyResolver(IDependencyResolver defaultDependencyResolver);
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Useses the id generator.
-        /// </summary>
-        /// <param name="factory">
-        ///  The factory.
-        /// </param>
-        /// <returns>
-        ///  An ISchemaDefinition.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        ISchemaDefinition UsingIdGenerator(Func<IDependencyResolver, IIdGenerator> factory);
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Registers the in event bus.
-        /// </summary>
-        /// <param name="outputProperty">
-        ///  The output property.
-        /// </param>
-        /// <param name="inputProperty">
-        ///  (Optional) the input property.
-        /// </param>
-        /// <returns>
-        ///  An ISchemaDefinition.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        ISchemaDefinition SubscribeToEventBus(Modeling.Messaging.ChannelPolicy outputProperty, Hyperstore.Modeling.Messaging.ChannelPolicy inputProperty = null);
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Useses the specified factory.
-        /// </summary>
-        /// <typeparam name="TService">
-        ///  The type of the service.
-        /// </typeparam>
-        /// <param name="factory">
-        ///  The factory.
-        /// </param>
-        /// <returns>
-        ///  An ISchemaDefinition.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        ISchemaDefinition Using<TService>(Func<IDependencyResolver, TService> factory) where TService : class;
-    }
-
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary>
     ///  Interface for domain configuration.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
@@ -135,19 +69,6 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Useses the id generator.
-        /// </summary>
-        /// <param name="factory">
-        ///  The factory.
-        /// </param>
-        /// <returns>
-        ///  An ISchemaDefinition.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        IDomainConfiguration UsingIdGenerator(Func<IDependencyResolver, IIdGenerator> factory);
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
         ///  Registers the in event bus.
         /// </summary>
         /// <param name="outputProperty">
@@ -160,7 +81,7 @@ namespace Hyperstore.Modeling
         ///  An ISchemaDefinition.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IDomainConfiguration SubscribeToEventBus(Modeling.Messaging.ChannelPolicy outputProperty, Hyperstore.Modeling.Messaging.ChannelPolicy inputProperty = null);
+        void SubscribeToEventBus(Modeling.Messaging.ChannelPolicy outputProperty, Hyperstore.Modeling.Messaging.ChannelPolicy inputProperty = null);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -176,45 +97,29 @@ namespace Hyperstore.Modeling
         ///  An ISchemaDefinition.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IDomainConfiguration Using<TService>(Func<IDependencyResolver, TService> factory) where TService : class;
+        void Using<TService>(Func<IDependencyResolver, TService> factory) where TService : class;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Useses the model element resolver.
+        ///  Sets a property.
         /// </summary>
-        /// <param name="factory">
-        ///  The factory.
+        /// <param name="key">
+        ///  The key.
         /// </param>
-        /// <returns>
-        ///  An ISchemaDefinition.
-        /// </returns>
+        /// <param name="value">
+        ///  The value.
+        /// </param>
         ///-------------------------------------------------------------------------------------------------
-        IDomainConfiguration UsingModelElementFactory(Func<IDependencyResolver, IModelElementFactory> factory);
+        void SetProperty(string key, object value);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Useses the command manager.
-        /// </summary>
-        /// <param name="factory">
-        ///  The factory.
-        /// </param>
-        /// <returns>
-        ///  An ISchemaDefinition.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        IDomainConfiguration UsingCommandManager(Func<IDependencyResolver, ICommandManager> factory);
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Preload elements with.
+        ///  Executes the preload action.
         /// </summary>
         /// <param name="preloadAction">
         ///  The preload action.
         /// </param>
-        /// <returns>
-        ///  An IDomainConfiguration.
-        /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IDomainConfiguration PreloadElementsWith(Action<IDomainModel> preloadAction);
+        void ExecutePreloadAction(Action<IDomainModel> preloadAction);
     }
 }

@@ -42,7 +42,7 @@ namespace Hyperstore.Modeling
     /// <seealso cref="T:Hyperstore.Modeling.IHyperstore"/>
     /// <seealso cref="T:Hyperstore.Modeling.IExtensionManager"/>
     ///-------------------------------------------------------------------------------------------------
-    public class Store : IHyperstore, IExtensionManager
+    public class Store : IHyperstore, IDomainManager
     {
         #region Events
 
@@ -825,7 +825,7 @@ namespace Hyperstore.Modeling
         ///  The extension.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void UnloadDomainOrExtension(IDomainModel domainOrExtension)
+        void IDomainManager.UnloadDomainOrExtension(IDomainModel domainOrExtension)
         {
             Contract.Requires(domainOrExtension, "domainOrExtension");
             _domainControler.UnloadScope(domainOrExtension);
@@ -848,7 +848,7 @@ namespace Hyperstore.Modeling
         ///  The schema or extension.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void UnloadSchemaOrExtension(ISchema schemaOrExtension)
+        void IDomainManager.UnloadSchemaOrExtension(ISchema schemaOrExtension)
         {
             Contract.Requires(schemaOrExtension, "schemaOrExtension");
             if (schemaOrExtension is PrimitivesSchema)
@@ -891,7 +891,7 @@ namespace Hyperstore.Modeling
             }
         }
 
-        List<IEventNotifier> IExtensionManager.GetEventsNotifiers()
+        List<IEventNotifier> IDomainManager.GetEventsNotifiers()
         {
             if (_notifiersCache != null)
                 return _notifiersCache;
@@ -1145,7 +1145,7 @@ namespace Hyperstore.Modeling
         ///  The new domain model.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public async Task<IDomainModel> CreateDomainModelAsync(string name, IDomainConfiguration config = null, Func<IDependencyResolver, string, IDomainModel> domainFactory = null)
+        async Task<IDomainModel> IDomainManager.CreateDomainModelAsync(string name, IDomainConfiguration config, IDependencyResolver parentResolver, Func<IDependencyResolver, string, IDomainModel> domainFactory)
         {
             Conventions.CheckValidDomainName(name);
 
@@ -1155,7 +1155,7 @@ namespace Hyperstore.Modeling
             // On s'assure que le domaine primitif est bien chargé
             await Initialize();
 
-            var resolver = DependencyResolver as IDependencyResolverInternal;
+            var resolver = (parentResolver ?? DependencyResolver) as IDependencyResolverInternal;
             if (resolver == null)
                 throw new Exception(ExceptionMessages.DependencyResolverMustInheritFromDefaultDependencyResolver);
 
@@ -1201,21 +1201,7 @@ namespace Hyperstore.Modeling
             return domainModel;
         }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Loads a schema.
-        /// </summary>
-        /// <exception cref="Exception">
-        ///  Thrown when an exception error condition occurs.
-        /// </exception>
-        /// <param name="desc">
-        ///  The description.
-        /// </param>
-        /// <returns>
-        ///  The schema.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public async Task<ISchema> LoadSchemaAsync(ISchemaDefinition desc)
+        async Task<ISchema> IDomainManager.LoadSchemaAsync(ISchemaDefinition desc, IDependencyResolver parentResolver)
         {
             Contract.Requires(desc, "desc");
             Conventions.CheckValidName(desc.SchemaName, true);
@@ -1235,7 +1221,7 @@ namespace Hyperstore.Modeling
                 desc.LoadDependentSchemas(this);
 
                 // Création du resolver du domaine à partir du resolver maitre (du store)
-                var resolver = DependencyResolver as IDependencyResolverInternal;
+                var resolver = (parentResolver ?? DependencyResolver) as IDependencyResolverInternal;
                 if (resolver == null)
                     throw new Exception(ExceptionMessages.DependencyResolverMustInheritFromDefaultDependencyResolver);
 
@@ -1395,9 +1381,13 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         protected virtual async Task Initialize()
         {
+            var manager = this as IDomainManager;
+            if (manager == null)
+                throw new Exception("Current store must implement IDomainManager");
+
             if( System.Threading.Interlocked.CompareExchange( ref _initialized, 1, 0) == 0)
             {
-                await LoadSchemaAsync(new PrimitivesSchemaDefinition());
+                await manager.LoadSchemaAsync(new PrimitivesSchemaDefinition());
             }
         }
 

@@ -3,10 +3,9 @@
   <Class Name="Hyperstore.Modeling.Adapters.QueryNodeResult">
     <Position X="8.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>MAACACAQAAAAAAAAAEAAAAAAAAIgQAAAAAAAAAACQAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAACAAA=</HashCode>
       <FileName>Adapters\QueryNodeResult.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
   </Class>
   <Class Name="Hyperstore.Modeling.Commands.TrackedRelationship">
     <Position X="11.25" Y="0.5" Width="1.5" />
@@ -29,34 +28,13 @@
       <FileName>DomainModel\Impl\SerializationContext.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Hyperstore.Modeling.HyperGraph.MemoryGraphNode">
-    <Position X="10.5" Y="3" Width="3" />
+  <Class Name="Hyperstore.Modeling.HyperGraph.GraphNode">
+    <Position X="10.5" Y="3.5" Width="3" />
     <TypeIdentifier>
-      <HashCode>MAAGACIQACAAAgAACAAgAAAAAAIgQAAgAAAgABAAQAA=</HashCode>
+      <HashCode>IAAEACIAACAAAgAACAAgAAAAAAAgQAAgAAAgABAAAAA=</HashCode>
       <FileName>HyperGraph\Impls\MemoryGraph\MemoryGraphNode.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Interface Name="Hyperstore.Modeling.HyperGraph.IGraphNode">
-    <Position X="19" Y="4.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>HyperGraph\IGraphNode.cs</FileName>
-    </TypeIdentifier>
-  </Interface>
-  <Interface Name="Hyperstore.Modeling.HyperGraph.INodeInfo">
-    <Position X="19" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>IAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>HyperGraph\Impls\INodeInfo.cs</FileName>
-    </TypeIdentifier>
-  </Interface>
-  <Interface Name="Hyperstore.Modeling.HyperGraph.IRelationshipInfo">
-    <Position X="19" Y="2.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>EAAAAAAQAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAQAA=</HashCode>
-      <FileName>HyperGraph\Impls\INodeInfo.cs</FileName>
-    </TypeIdentifier>
-  </Interface>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

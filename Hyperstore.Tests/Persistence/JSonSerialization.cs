@@ -41,8 +41,8 @@ namespace Hyperstore.Tests.Commands
         public async Task SerializeElement()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new LibraryDefinition());
-            var domain = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<LibraryDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test");
 
             Library lib;
             using (var session = store.BeginSession())

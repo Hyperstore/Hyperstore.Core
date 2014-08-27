@@ -25,7 +25,7 @@ namespace Hyperstore.Modeling
     //    /// <param name="id">The id.</param>
     //    /// <param name="schemaEntity">The schema entity.</param>
     //    /// <returns></returns>
-    //    IGraphNode CreateNode(Identity id, ISchemaEntity schemaEntity);
+    //    GraphNode CreateNode(Identity id, ISchemaEntity schemaEntity);
 
     //    /// <summary>
     //    /// Creates the relationship.
@@ -37,21 +37,21 @@ namespace Hyperstore.Modeling
     //    /// <param name="endId">The end id.</param>
     //    /// <param name="endSchema">The end schema.</param>
     //    /// <returns></returns>
-    //    IGraphNode CreateRelationship(Identity id, ISchemaRelationship schemaRelationship, Identity startId, ISchemaEntity startSchema, Identity endId, ISchemaEntity endSchema);
+    //    GraphNode CreateRelationship(Identity id, ISchemaRelationship schemaRelationship, Identity startId, ISchemaEntity startSchema, Identity endId, ISchemaEntity endSchema);
 
     //    /// <summary>
     //    /// Removes the node.
     //    /// </summary>
     //    /// <param name="node">The node.</param>
     //    /// <param name="schemaEntity">The schema entity.</param>
-    //    void RemoveNode(IGraphNode node, ISchemaEntity schemaEntity);
+    //    void RemoveNode(GraphNode node, ISchemaEntity schemaEntity);
 
     //    /// <summary>
     //    /// Removes the relationship.
     //    /// </summary>
     //    /// <param name="node">The node.</param>
     //    /// <param name="schemaRelationship">The schema relationship.</param>
-    //    void RemoveRelationship(IGraphNode node, ISchemaRelationship schemaRelationship);
+    //    void RemoveRelationship(GraphNode node, ISchemaRelationship schemaRelationship);
 
     //    /// <summary>
     //    ///     Sets the property.

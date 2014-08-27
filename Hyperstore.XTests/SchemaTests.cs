@@ -68,8 +68,8 @@ namespace Hyperstore.XTests
         public async void SchemaEvents()
         {
             var store = StoreBuilder.New().Create();
-            var def = new MySchemaDefinition();            
-            var schema = await store.LoadSchemaAsync(def);
+            var def = new MySchemaDefinition();
+            var schema = await store.Schemas.New(def).CreateAsync();
             Assert.True(def.IsSchemaLoaded);
         }
 
@@ -78,7 +78,7 @@ namespace Hyperstore.XTests
         {
             var store = StoreBuilder.New().Create();
             var def = new MySchemaDefinition();
-            var schema = await store.LoadSchemaAsync(def);
+            var schema = await store.Schemas.New(def).CreateAsync();
             Assert.NotNull(schema);
             Assert.Equal(1, schema.GetSchemaInfos().Count());
             Assert.Equal(2, store.Schemas.Count());
@@ -89,9 +89,9 @@ namespace Hyperstore.XTests
         {
             var store = StoreBuilder.New().Create();
             var def = new MySchemaDefinition();
-            var schema = await store.LoadSchemaAsync(def);
+            var schema = await store.Schemas.New(def).CreateAsync();
             Assert.NotNull(schema);
-            store.UnloadSchemaOrExtension(schema);
+            store.Schemas.Unload(schema);
             Assert.Equal(1, store.Schemas.Count());
         }
 
@@ -102,7 +102,7 @@ namespace Hyperstore.XTests
             var schema = store.Schemas.First();
             Assert.NotNull(schema);
             Assert.IsType<PrimitivesSchema>(schema);
-            Assert.Throws<Exception>( ()=> store.UnloadSchemaOrExtension(schema));
+            Assert.Throws<Exception>( ()=> store.Schemas.Unload(schema));
         }
     }
 }

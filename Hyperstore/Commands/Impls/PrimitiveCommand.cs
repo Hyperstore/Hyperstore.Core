@@ -33,6 +33,9 @@ namespace Hyperstore.Modeling.Commands
         /// <param name="domainModel">
         ///  The domain model.
         /// </param>
+        /// <param name="version">
+        ///  The version.
+        /// </param>
         ///-------------------------------------------------------------------------------------------------
         protected PrimitiveCommand(IDomainModel domainModel, long? version)
         {

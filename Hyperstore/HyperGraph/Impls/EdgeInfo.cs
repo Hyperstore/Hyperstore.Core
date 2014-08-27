@@ -29,7 +29,7 @@ namespace Hyperstore.Modeling.HyperGraph
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     [DebuggerDisplay("Id={Id}, SchemaId={SchemaId}")]
-    public class EdgeInfo : Hyperstore.Modeling.HyperGraph.INodeInfo 
+    public class EdgeInfo : Hyperstore.Modeling.HyperGraph.NodeInfo 
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -38,7 +38,7 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="metaClassId">
+        /// <param name="schemaId">
         ///  The identifier of the meta class.
         /// </param>
         /// <param name="endId">
@@ -48,38 +48,16 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  The end schema identifier.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public EdgeInfo(Identity id, Identity metaClassId, Identity endId, Identity endSchemaId)
+        public EdgeInfo(Identity id, Identity schemaId, Identity endId, Identity endSchemaId) : base(id, schemaId)
         {
             Contract.Requires(id, "id");
-            Contract.Requires(metaClassId, "metaClassId");
+            Contract.Requires(schemaId, "schemaId");
             Contract.Requires(endId, "endId");
             Contract.Requires(endSchemaId, "endSchemaId");
 
-            Id = id;
-            SchemaId = metaClassId;
             EndId = endId;
             EndSchemaId = endSchemaId;
         }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the identifier of the schema.
-        /// </summary>
-        /// <value>
-        ///  The identifier of the schema.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public Identity SchemaId { get; private set; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Identifiant de la relation.
-        /// </summary>
-        /// <value>
-        ///  The identifier.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public Identity Id { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

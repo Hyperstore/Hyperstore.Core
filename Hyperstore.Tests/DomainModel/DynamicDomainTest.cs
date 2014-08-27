@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading.Tasks;
@@ -85,8 +85,8 @@ namespace Hyperstore.Tests
         private async Task<IDomainModel> LoadDynamicDomain()
         {
             var store = StoreBuilder.New().Create();
-            await store.LoadSchemaAsync(new DynamicModelDefinition());
-            var domain = await store.CreateDomainModelAsync("Test");
+            await store.Schemas.New<DynamicModelDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test");
             return domain;
         }
 
@@ -97,7 +97,7 @@ namespace Hyperstore.Tests
             var schema = dm.Store.Schemas.Last();
 
             Assert.AreEqual(13, schema.GetSchemaInfos().Count());
-            Assert.AreEqual(10, schema.GetSchemaElements().Count()); 
+            Assert.AreEqual(10, schema.GetSchemaElements().Count());
             Assert.AreEqual(5, schema.GetSchemaEntities().Count());
             Assert.AreEqual(5, schema.GetSchemaRelationships().Count());
         }
