@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -48,8 +48,8 @@ namespace Hyperstore.Modeling.Commands
         ///  The property schema.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public AddSchemaPropertyCommand(ISchema domainModel, Identity propertyId, ISchemaEntity propertySchema)
-            : base(domainModel)
+        public AddSchemaPropertyCommand(ISchema domainModel, Identity propertyId, ISchemaEntity propertySchema, long? version = null)
+            : base(domainModel, version)
         {
             Contract.Requires(propertyId, "propertyId");
             Contract.Requires(propertySchema, "propertySchema");
@@ -104,7 +104,7 @@ namespace Hyperstore.Modeling.Commands
                 updatableMetaModel.AddPropertySchema(PropertyId, PropertySchema);
             }
 
-            return new AddSchemaPropertyEvent(DomainModel.Name, DomainModel.ExtensionName, PropertyId, PropertySchema.Id, context.CurrentSession.SessionId, 1);
+            return new AddSchemaPropertyEvent(DomainModel.Name, DomainModel.ExtensionName, PropertyId, PropertySchema.Id, context.CurrentSession.SessionId, Version.Value);
         }
 
         ///-------------------------------------------------------------------------------------------------

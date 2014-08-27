@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -46,8 +46,8 @@ namespace Hyperstore.Modeling.Commands
         ///  (Optional) if set to <c>true</c> [throw exception if not exists].
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public RemoveEntityCommand(IModelEntity entity, bool throwExceptionIfNotExists = true)
-            : base(entity.DomainModel)
+        public RemoveEntityCommand(IModelEntity entity, bool throwExceptionIfNotExists = true, long? version = null)
+            : base(entity.DomainModel, version)
         {
             Contract.Requires(entity, "entity");
             Entity = entity;
@@ -74,8 +74,8 @@ namespace Hyperstore.Modeling.Commands
         ///  (Optional) if set to <c>true</c> [throw exception if not exists].
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public RemoveEntityCommand(IDomainModel domainModel, Identity id, Identity schemaEntityId, bool throwExceptionIfNotExists = true)
-            : base(domainModel)
+        public RemoveEntityCommand(IDomainModel domainModel, Identity id, Identity schemaEntityId, bool throwExceptionIfNotExists = true, long? version = null)
+            : base(domainModel, version)
         {
             Contract.Requires(id, "id");
             Contract.Requires(domainModel, "domainModel");
@@ -121,7 +121,7 @@ namespace Hyperstore.Modeling.Commands
                 if (!dm.RemoveEntity(Entity.Id, (ISchemaEntity)Entity.SchemaInfo, _throwExceptionIfNotExists))
                     return null;
             }
-            return new RemoveEntityEvent(DomainModel.Name, DomainModel.ExtensionName, Entity.Id, Entity.SchemaInfo.Id, context.CurrentSession.SessionId, 1);
+            return new RemoveEntityEvent(DomainModel.Name, DomainModel.ExtensionName, Entity.Id, Entity.SchemaInfo.Id, context.CurrentSession.SessionId, Version.Value);
         }
 
         ///-------------------------------------------------------------------------------------------------

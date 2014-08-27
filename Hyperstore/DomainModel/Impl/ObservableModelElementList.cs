@@ -86,7 +86,7 @@ namespace Hyperstore.Modeling
                 var index = IndexOfCore(elementId);
                 var item = (T)DomainModel.Store.GetElement(elementId, schema);
 
-                if ( item == null || (Source != null && !item.DomainModel.IsSame(Source.DomainModel)) || (End != null && !item.DomainModel.IsSame(End.DomainModel)))
+                if ( item == null || (Source != null && !item.DomainModel.SameAs(Source.DomainModel)) || (End != null && !item.DomainModel.SameAs(End.DomainModel)))
                     return;
 
                 if (index >= 0)
@@ -137,7 +137,7 @@ namespace Hyperstore.Modeling
             var schema = DomainModel.Store.GetSchemaElement(schemaId);
             var item = (T)DomainModel.Store.GetElement(elementId, schema);
 
-            if (item == null || (Source != null && !item.DomainModel.IsSame(Source.DomainModel)) || (End != null && !item.DomainModel.IsSame(End.DomainModel)))
+            if (item == null || (Source != null && !item.DomainModel.SameAs(Source.DomainModel)) || (End != null && !item.DomainModel.SameAs(End.DomainModel)))
                 return;
 
             if (item != null)

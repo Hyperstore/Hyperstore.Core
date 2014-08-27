@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Hyperstore.Modeling
 {
-    internal interface IExtension
+    internal interface IScope
     {
     }
 
@@ -16,7 +16,7 @@ namespace Hyperstore.Modeling
     /// </summary>
     /// <seealso cref="T:IDomainModel"/>
     ///-------------------------------------------------------------------------------------------------
-    public interface IDomainModelExtension : IDomainModel
+    public interface IDomainScope : IDomainModel
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

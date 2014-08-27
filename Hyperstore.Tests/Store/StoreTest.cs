@@ -33,9 +33,9 @@ namespace Hyperstore.Tests
         [TestMethod]
         public async Task DisposedTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
-            var domain = await store.CreateDomainModelAsync("Test", new DomainConfiguration().UsesIdGenerator(r=>new Hyperstore.Modeling.Domain.LongIdGenerator()));
+            var domain = await store.CreateDomainModelAsync("Test", new DomainConfiguration().UsingIdGenerator(r=>new Hyperstore.Modeling.Domain.LongIdGenerator()));
 
             XReferencesY rel = null;
 

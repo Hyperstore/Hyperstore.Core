@@ -40,7 +40,7 @@ namespace Hyperstore.Tests
         [TestMethod]
         public async Task Bench()
         {
-            store = new Store();
+            store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition("Hyperstore.Tests.Model"));
             var domain = await store.CreateDomainModelAsync("Test");
             var sw = new Stopwatch();
@@ -60,7 +60,7 @@ namespace Hyperstore.Tests
         public async Task BenchWithConstraints()
         {
             long nb = 0;
-            store = new Store();
+            store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition("Hyperstore.Tests.Model"));
             var domain = await store.CreateDomainModelAsync("Test");
             var sw = new Stopwatch();

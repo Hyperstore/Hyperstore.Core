@@ -32,7 +32,7 @@ namespace Hyperstore.Modeling.Commands
     /// </summary>
     internal class SessionTrackingData : ISessionTrackingData
     {
-        private readonly Dictionary<Identity, TrackingElement> _elements;
+        private readonly Dictionary<Identity, TrackedElement> _elements;
         private readonly ISession _session;
         private bool _modelElementsPrepared;
 
@@ -48,7 +48,7 @@ namespace Hyperstore.Modeling.Commands
         {
             DebugContract.Requires(session);
             _session = session;
-            _elements = new Dictionary<Identity, TrackingElement>();
+            _elements = new Dictionary<Identity, TrackedElement>();
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -59,7 +59,7 @@ namespace Hyperstore.Modeling.Commands
         ///  The involved elements.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<TrackingElement> InvolvedTrackingElements
+        public IEnumerable<TrackedElement> InvolvedTrackedElements
         {
             get { return _elements.Values; }
         }
@@ -99,7 +99,7 @@ namespace Hyperstore.Modeling.Commands
         ///  this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<TrackingElement> GetTrackingElementsByState(TrackingState state)
+        public IEnumerable<TrackedElement> GetTrackedElementsByState(TrackingState state)
         {
             return _elements.Values.Where(elem => elem.State == state);
         }
@@ -115,9 +115,9 @@ namespace Hyperstore.Modeling.Commands
         ///  The tracking element state.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public TrackingState GetTrackingElementState(Identity id)
+        public TrackingState GetTrackedElementState(Identity id)
         {
-            TrackingElement elem;
+            TrackedElement elem;
             if (_elements.TryGetValue(id, out elem))
                 return elem.State;
             return TrackingState.Unknown;
@@ -133,11 +133,12 @@ namespace Hyperstore.Modeling.Commands
             var addEvent = @event as AddEntityEvent;
             if (addEvent != null)
             {
-                var entity = new TrackingElement
+                var entity = new TrackedElement
                              {
                                  State = TrackingState.Added,
                                  Id = addEvent.Id,
-                                 SchemaId = addEvent.SchemaEntityId
+                                 SchemaId = addEvent.SchemaEntityId,
+                                 Version = @event.Version
                              };
                 _elements.Add(entity.Id, entity);
                 return;
@@ -149,10 +150,10 @@ namespace Hyperstore.Modeling.Commands
             var removeEvent = @event as RemoveEntityEvent;
             if (removeEvent != null)
             {
-                TrackingElement entity;
+                TrackedElement entity;
                 if (!_elements.TryGetValue(removeEvent.Id, out entity))
                 {
-                    entity = new TrackingElement
+                    entity = new TrackedElement
                              {
                                  State = TrackingState.Removed,
                                  Id = removeEvent.Id,
@@ -172,12 +173,13 @@ namespace Hyperstore.Modeling.Commands
             var addMetadataEvent = @event as AddSchemaEntityEvent;
             if (addMetadataEvent != null)
             {
-                var entity = new TrackingElement
+                var entity = new TrackedElement
                              {
                                  State = TrackingState.Added,
                                  Id = addMetadataEvent.Id,
                                  SchemaId = addMetadataEvent.SchemaEntityId,
-                                 IsSchema = true
+                                 IsSchema = true,
+                                 Version = @event.Version
                              };
                 _elements.Add(entity.Id, entity);
                 return;
@@ -189,10 +191,10 @@ namespace Hyperstore.Modeling.Commands
             var changeEvent = @event as ChangePropertyValueEvent;
             if (changeEvent != null)
             {
-                TrackingElement entity;
+                TrackedElement entity;
                 if (!_elements.TryGetValue(changeEvent.ElementId, out entity))
                 {
-                    entity = new TrackingElement
+                    entity = new TrackedElement
                              {
                                  State = TrackingState.Updated,
                                  Id = changeEvent.ElementId,
@@ -218,7 +220,7 @@ namespace Hyperstore.Modeling.Commands
             var addRelationEvent = @event as AddRelationshipEvent;
             if (addRelationEvent != null)
             {
-                var entity = new TrackingRelationship
+                var entity = new TrackedRelationship
                              {
                                  State = TrackingState.Added,
                                  Id = addRelationEvent.RelationshipId,
@@ -226,7 +228,8 @@ namespace Hyperstore.Modeling.Commands
                                  StartId = addRelationEvent.Start,
                                  StartSchemaId = addRelationEvent.StartSchema,
                                  EndId = addRelationEvent.End,
-                                 EndSchemaId = addRelationEvent.EndSchema
+                                 EndSchemaId = addRelationEvent.EndSchema,
+                                 Version = @event.Version
                              };
                 _elements.Add(entity.Id, entity);
                 return;
@@ -238,10 +241,10 @@ namespace Hyperstore.Modeling.Commands
             var removeRelationshipEvent = @event as RemoveRelationshipEvent;
             if (removeRelationshipEvent != null)
             {
-                TrackingElement entity;
+                TrackedElement entity;
                 if (!_elements.TryGetValue(removeRelationshipEvent.RelationshipId, out entity))
                 {
-                    entity = new TrackingRelationship
+                    entity = new TrackedRelationship
                              {
                                  State = TrackingState.Removed,
                                  Id = removeRelationshipEvent.RelationshipId,
@@ -264,7 +267,7 @@ namespace Hyperstore.Modeling.Commands
             var addRelationMetadataEvent = @event as AddSchemaRelationshipEvent;
             if (addRelationMetadataEvent != null)
             {
-                var entity = new TrackingRelationship
+                var entity = new TrackedRelationship
                              {
                                  State = TrackingState.Added,
                                  Id = addRelationMetadataEvent.Id,
@@ -273,7 +276,8 @@ namespace Hyperstore.Modeling.Commands
                                  StartSchemaId = addRelationMetadataEvent.StartSchema,
                                  EndId = addRelationMetadataEvent.End,
                                  EndSchemaId = addRelationMetadataEvent.EndSchema,
-                                 IsSchema = true
+                                 IsSchema = true,
+                                 Version = @event.Version
                              };
                 _elements.Add(entity.Id, entity);
             }
@@ -301,9 +305,9 @@ namespace Hyperstore.Modeling.Commands
             var list = _elements.Values.ToList();
             foreach (var element in list)
             {
-                if (element is TrackingRelationship)
+                if (element is TrackedRelationship)
                 {
-                    var relationship = element as TrackingRelationship;
+                    var relationship = element as TrackedRelationship;
                     if (relationship.IsSchema)
                     {
                         //element.ModelElement = session.Store.GetMetaRelationship(element.Id);
@@ -326,15 +330,15 @@ namespace Hyperstore.Modeling.Commands
                             }
                         }
 
-                        if (set.Add(relationship.StartId) && GetTrackingElementState(relationship.StartId) != TrackingState.Removed)
+                        if (set.Add(relationship.StartId) && GetTrackedElementState(relationship.StartId) != TrackingState.Removed)
                         {
                             var mel = _session.Store.GetElement(relationship.StartId, _session.Store.GetSchemaElement(relationship.StartSchemaId));
                             if (mel != null) // Au cas ou il a été supprimé
                             {
-                                TrackingElement data;
+                                TrackedElement data;
                                 if( !_elements.TryGetValue(mel.Id, out data))
                                 {
-                                    data = new TrackingElement
+                                    data = new TrackedElement
                                     {
                                         State = TrackingState.Unknown,
                                         Id = mel.Id,
@@ -346,15 +350,15 @@ namespace Hyperstore.Modeling.Commands
                             }
                         }
 
-                        if (set.Add(relationship.EndId) && GetTrackingElementState(relationship.EndId) != TrackingState.Removed)
+                        if (set.Add(relationship.EndId) && GetTrackedElementState(relationship.EndId) != TrackingState.Removed)
                         {
                             var mel = _session.Store.GetElement(relationship.EndId, _session.Store.GetSchemaElement(relationship.EndSchemaId));
                             if (mel != null) // Au cas ou il a été supprimé
                             {
-                                TrackingElement data;
+                                TrackedElement data;
                                 if (!_elements.TryGetValue(mel.Id, out data))
                                 {
-                                    data = new TrackingElement
+                                    data = new TrackedElement
                                     {
                                         State = TrackingState.Unknown, // N'a pas de conséquense sur la mise à jour de l'entité
                                         Id = mel.Id,

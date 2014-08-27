@@ -17,7 +17,7 @@
  
 #region Imports
 
-using Hyperstore.Modeling.DomainExtension;
+using Hyperstore.Modeling.Scopes;
 
 #endregion
 
@@ -89,10 +89,10 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         protected override ISchema CreateSchema(IDependencyResolver resolver)
         {
-            return new Hyperstore.Modeling.DomainExtension.DomainSchemaExtension(_extendedSchema,
+            return new Hyperstore.Modeling.Scopes.DomainSchemaExtension(_extendedSchema,
                                                                               resolver,
                                                                               Behavior,
-                                                                              new Hyperstore.Modeling.DomainExtension.DomainExtensionConstraintsManager(resolver, _extendedSchema, _mode));
+                                                                              new Hyperstore.Modeling.Scopes.DomainExtensionConstraintsManager(resolver, _extendedSchema, _mode));
         }
     }
 }

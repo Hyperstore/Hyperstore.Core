@@ -35,7 +35,7 @@ namespace Hyperstore.Tests.Metadata
         [TestMethod]
         public async Task BooleanTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             IDomainModel dm = await store.CreateDomainModelAsync("Test");
             Assert.IsTrue((bool)PrimitivesSchema.BooleanSchema.Deserialize(new SerializationContext(PrimitivesSchema.BooleanSchema, PrimitivesSchema.BooleanSchema.Serialize(true))));
             Assert.IsFalse((bool)PrimitivesSchema.BooleanSchema.Deserialize(new SerializationContext(PrimitivesSchema.BooleanSchema, PrimitivesSchema.BooleanSchema.Serialize(false))));
@@ -46,7 +46,7 @@ namespace Hyperstore.Tests.Metadata
         [TestMethod]
         public async Task DateTimeTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             var dt = DateTime.Today;
             IDomainModel dm = await store.CreateDomainModelAsync("Test");
             Assert.AreEqual(dt, (DateTime)PrimitivesSchema.DateTimeSchema.Deserialize(new SerializationContext(PrimitivesSchema.DateTimeSchema, PrimitivesSchema.DateTimeSchema.Serialize(dt))));
@@ -56,7 +56,7 @@ namespace Hyperstore.Tests.Metadata
         [TestMethod]
         public async Task DoubleTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             var dt = 10.2;
             IDomainModel dm = await store.CreateDomainModelAsync("Test");
             Assert.AreEqual(dt, (Double)PrimitivesSchema.DoubleSchema.Deserialize(new SerializationContext( PrimitivesSchema.DoubleSchema, PrimitivesSchema.DoubleSchema.Serialize(dt))));
@@ -66,7 +66,7 @@ namespace Hyperstore.Tests.Metadata
         [TestMethod]
         public async Task TimeSpanTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             var dt = DateTime.Now.TimeOfDay;
             IDomainModel dm = await store.CreateDomainModelAsync("Test");
             Assert.AreEqual((TimeSpan)PrimitivesSchema.TimeSpanSchema.Deserialize(new SerializationContext( PrimitivesSchema.TimeSpanSchema, PrimitivesSchema.TimeSpanSchema.Serialize(dt))), dt);
@@ -76,7 +76,7 @@ namespace Hyperstore.Tests.Metadata
         [TestMethod]
         public async Task FloatTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             var dt = 10.2;
             IDomainModel dm = await store.CreateDomainModelAsync("Test");
             Assert.IsTrue((float)PrimitivesSchema.SingleSchema.Deserialize(new SerializationContext(PrimitivesSchema.SingleSchema, PrimitivesSchema.SingleSchema.Serialize(dt))) - dt < 0.01);
@@ -87,7 +87,7 @@ namespace Hyperstore.Tests.Metadata
         //[TestMethod]
         //public void EnumTest()
         //{
-        //    var store = new Store();
+        //    var store = StoreBuilder.Init().CreateStore();
         //    IDomainModel dm = store.GetDomainModels(ModelType.Model).First();
         //    using (var s = store.BeginSession())
         //    {

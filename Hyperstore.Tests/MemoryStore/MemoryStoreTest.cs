@@ -125,7 +125,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod]
         public async Task DeadlockTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition(resolver => resolver.RegisterSetting(Setting.MaxTimeBeforeDeadlockInMs, 300)));
             var domain = await store.CreateDomainModelAsync("Test");
 
@@ -167,7 +167,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod]
         public async Task DeadlockTest2()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition(resolver => resolver.RegisterSetting(Setting.MaxTimeBeforeDeadlockInMs, 300)));
             var domain = await store.CreateDomainModelAsync("Test");
 
@@ -205,7 +205,7 @@ namespace Hyperstore.Tests.MemoryStore
         public async Task SerializeTransactionExceptionTest()
         {
             // Accéder à une même donnée ds une session Serializable génere une SerializeTransactionException
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition(resolver => resolver.RegisterSetting(Setting.MaxTimeBeforeDeadlockInMs, 100)));
             var domain = await store.CreateDomainModelAsync("Test");
 
@@ -251,7 +251,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod]
         public async Task AcquireExclusive2Test()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
 
@@ -282,7 +282,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod]
         public async Task AcquireExclusiveWaitTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
             var factory = new TaskFactory();
@@ -329,7 +329,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod]
         public async Task NestedSession()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             store.DependencyResolver.Register<ITransactionManager>(new MockTransactionManager());
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
@@ -352,7 +352,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod]
         public async Task RollbackNestedSession()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
 
@@ -376,7 +376,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod]
         public async Task NestedSessionRollback()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
             var provider = new TransactionalMemoryStore(domain);
@@ -400,7 +400,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod]
         public async Task CommitTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
 
@@ -420,7 +420,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod]
         public async Task RollbackTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
 
@@ -440,7 +440,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod]
         public async Task RollbackUpdateTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
             var provider = new TransactionalMemoryStore(domain);
@@ -464,7 +464,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod]
         public async Task DeleteTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
             var provider = new TransactionalMemoryStore(domain);
@@ -500,7 +500,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod]
         public async Task SerializableTransactionTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
 
@@ -551,7 +551,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod]
         public async Task ReadPhantomTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
 

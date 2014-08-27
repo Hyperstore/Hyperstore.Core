@@ -285,6 +285,9 @@ namespace Hyperstore.Modeling
         /// <param name="ownerId">
         ///  The identifier that owns this item.
         /// </param>
+        /// <param name="ownerSchema">
+        ///  The schema that owns this item.
+        /// </param>
         /// <param name="propertySchema">
         ///  The property schema.
         /// </param>
@@ -292,7 +295,7 @@ namespace Hyperstore.Modeling
         ///  The property value.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        PropertyValue GetPropertyValue(Identity ownerId, ISchemaProperty propertySchema);
+        PropertyValue GetPropertyValue(Identity ownerId, ISchemaElement ownerSchema, ISchemaProperty propertySchema);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -405,11 +408,11 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Loads an extension. </summary>
-        /// <param name="extensionName">    The extension name or null if it's not an extension. </param>
+        /// <param name="scopeName">    The scope name or null if it's not an extension. </param>
         /// <param name="configuration">    (Optional) the configuration. </param>
-        /// <returns>   The extension. </returns>
+        /// <returns>   The new scope. </returns>
         ///-------------------------------------------------------------------------------------------------
-        Task<IDomainModelExtension> LoadExtensionAsync(string extensionName, IDomainConfiguration configuration = null);
+        Task<IDomainScope> CreateScopeAsync(string scopeName, IDomainConfiguration configuration = null);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -464,6 +467,25 @@ namespace Hyperstore.Modeling
         ///  true if same, false if not.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        bool IsSame(IDomainModel domainModel);
+        bool SameAs(IDomainModel domainModel);
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Loads.
+        /// </summary>
+        /// <param name="query">
+        ///  The query.
+        /// </param>
+        /// <param name="option">
+        ///  The option.
+        /// </param>
+        /// <param name="adapter">
+        ///  The adapter.
+        /// </param>
+        /// <returns>
+        ///  Number of nodes loaded
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        Task<int> LoadAsync(Query query = null, MergeOption option = MergeOption.OverwriteChanges, Hyperstore.Modeling.Adapters.IGraphAdapter adapter = null);
     }
 }

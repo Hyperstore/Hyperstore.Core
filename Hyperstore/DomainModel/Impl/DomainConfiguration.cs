@@ -38,23 +38,6 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Uses the memory eviction policy.
-        /// </summary>
-        /// <param name="factory">
-        ///  The factory.
-        /// </param>
-        /// <returns>
-        ///  An ISchemaDefinition.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public IDomainConfiguration UsesMemoryEvictionPolicy(Func<IDependencyResolver, IEvictionPolicy> factory)
-        {
-            Uses(factory);
-            return this;
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
         ///  Uses the id generator.
         /// </summary>
         /// <param name="factory">
@@ -64,9 +47,9 @@ namespace Hyperstore.Modeling
         ///  An ISchemaDefinition.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IDomainConfiguration UsesIdGenerator(Func<IDependencyResolver, IIdGenerator> factory)
+        public IDomainConfiguration UsingIdGenerator(Func<IDependencyResolver, IIdGenerator> factory)
         {
-            Uses(factory);
+            Using(factory);
             return this;
         }
 
@@ -81,9 +64,9 @@ namespace Hyperstore.Modeling
         ///  An ISchemaDefinition.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IDomainConfiguration UsesModelElementFactory(Func<IDependencyResolver, IModelElementFactory> factory)
+        public IDomainConfiguration UsingModelElementFactory(Func<IDependencyResolver, IModelElementFactory> factory)
         {
-            Uses(factory);
+            Using(factory);
             return this;
         }
 
@@ -98,9 +81,9 @@ namespace Hyperstore.Modeling
         ///  An ISchemaDefinition.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IDomainConfiguration UsesCommandManager(Func<IDependencyResolver, ICommandManager> factory)
+        public IDomainConfiguration UsingCommandManager(Func<IDependencyResolver, ICommandManager> factory)
         {
-            Uses(factory);
+            Using(factory);
             return this;
         }
 
@@ -118,7 +101,7 @@ namespace Hyperstore.Modeling
         ///  An ISchemaDefinition.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IDomainConfiguration Uses<TService>(Func<IDependencyResolver, TService> factory) where TService : class
+        public IDomainConfiguration Using<TService>(Func<IDependencyResolver, TService> factory) where TService : class
         {
             Contract.Requires(factory, "factory");
 
@@ -203,7 +186,7 @@ namespace Hyperstore.Modeling
         ///  An ISchemaDefinition.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IDomainConfiguration RegisterInEventBus(Messaging.ChannelPolicy outputProperty, Messaging.ChannelPolicy inputProperty = null)
+        public IDomainConfiguration SubscribeToEventBus(Messaging.ChannelPolicy outputProperty, Messaging.ChannelPolicy inputProperty = null)
         {
             _factories.Add(new Action<IDependencyResolver>(r => r.Register(new Hyperstore.Modeling.RegistrationEventBusSetting { OutputProperty = outputProperty, InputProperty = inputProperty })));
             return this;

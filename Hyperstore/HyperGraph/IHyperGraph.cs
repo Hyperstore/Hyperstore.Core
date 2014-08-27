@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System.Collections.Generic;
@@ -162,6 +162,9 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="ownerId">
         ///  The owner id.
         /// </param>
+        /// <param name="ownerSchema">
+        ///  The schema that owns this item.
+        /// </param>
         /// <param name="schemaProperty">
         ///  The schema property.
         /// </param>
@@ -169,7 +172,7 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  The property value.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        PropertyValue GetPropertyValue(Identity ownerId, ISchemaProperty schemaProperty);
+        PropertyValue GetPropertyValue(Identity ownerId, ISchemaElement ownerSchema, ISchemaProperty schemaProperty);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -229,7 +232,7 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  An enumerator that allows foreach to be used to process the relationships in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<IModelRelationship> GetRelationships(ISchemaRelationship schemaRelationship, IModelElement start, IModelElement end, int skip=0);
+        IEnumerable<IModelRelationship> GetRelationships(ISchemaRelationship schemaRelationship, IModelElement start, IModelElement end, int skip = 0);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -254,7 +257,7 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  An enumerator that allows foreach to be used to process the relationships in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<T> GetRelationships<T>(ISchemaRelationship schemaRelationship, IModelElement start, IModelElement end, int skip=0) where T : IModelRelationship;
+        IEnumerable<T> GetRelationships<T>(ISchemaRelationship schemaRelationship, IModelElement start, IModelElement end, int skip = 0) where T : IModelRelationship;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -270,7 +273,7 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  An enumerator that allows foreach to be used to process the entities in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<IModelEntity> GetEntities(ISchemaEntity schemaEntity, int skip=0);
+        IEnumerable<IModelEntity> GetEntities(ISchemaEntity schemaEntity, int skip = 0);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -286,7 +289,7 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  An enumerator that allows foreach to be used to process the elements in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<IModelElement> GetElements(ISchemaElement schemaElement, int skip=0);
+        IEnumerable<IModelElement> GetElements(ISchemaElement schemaElement, int skip = 0);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -305,7 +308,7 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  An enumerator that allows foreach to be used to process the entities in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<T> GetEntities<T>(ISchemaEntity schemaEntity, int skip=0) where T : IModelEntity;
+        IEnumerable<T> GetEntities<T>(ISchemaEntity schemaEntity, int skip = 0) where T : IModelEntity;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -319,5 +322,24 @@ namespace Hyperstore.Modeling.HyperGraph
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
         bool IsDeleted(Identity id);
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Loads the nodes.
+        /// </summary>
+        /// <param name="query">
+        ///  The query.
+        /// </param>
+        /// <param name="option">
+        ///  The option.
+        /// </param>
+        /// <param name="adapter">
+        ///  The adapter.
+        /// </param>
+        /// <returns>
+        ///  The nodes.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        Task<int> LoadNodes(Query query, MergeOption option, Hyperstore.Modeling.Adapters.IGraphAdapter adapter);
     }
 }

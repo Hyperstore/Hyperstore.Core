@@ -26,6 +26,14 @@ using System.Threading.Tasks;
 // from https://github.com/aspnet/EntityFramework/blob/dev/src/EntityFramework/Utilities/ThreadSafeLazyRef.cs
 namespace Hyperstore.Modeling.Utils
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  A thread safe lazy reference.
+    /// </summary>
+    /// <typeparam name="T">
+    ///  Generic type parameter.
+    /// </typeparam>
+    ///-------------------------------------------------------------------------------------------------
     [DebuggerStepThrough]
     public sealed class ThreadSafeLazyRef<T>
     where T : class
@@ -33,11 +41,29 @@ namespace Hyperstore.Modeling.Utils
         private Func<T> _initializer;
         private object _syncLock;
         private T _value;
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Constructor.
+        /// </summary>
+        /// <param name="initializer">
+        ///  The initializer.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         public ThreadSafeLazyRef(Func<T> initializer)
         {
             Contract.Requires(initializer, "initializer");
             _initializer = initializer;
         }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the value.
+        /// </summary>
+        /// <value>
+        ///  The value.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public T Value
         {
             get
@@ -61,6 +87,15 @@ namespace Hyperstore.Modeling.Utils
                 return _value;
             }
         }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Exchange value.
+        /// </summary>
+        /// <param name="newValueCreator">
+        ///  The new value creator.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         public void ExchangeValue(Func<T, T> newValueCreator)
         {
             Contract.Requires(newValueCreator, "newValueCreator");
@@ -76,6 +111,15 @@ namespace Hyperstore.Modeling.Utils
             }
             while (Interlocked.CompareExchange(ref _value, newValue, originalValue) != originalValue);
         }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets a value indicating whether this instance has value.
+        /// </summary>
+        /// <value>
+        ///  true if this instance has value, false if not.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public bool HasValue
         {
             get { return _value != null; }

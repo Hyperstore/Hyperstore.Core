@@ -21,12 +21,12 @@ using System;
 
 #endregion
 
-namespace Hyperstore.Modeling.DomainExtension
+namespace Hyperstore.Modeling.Scopes
 {
     /// <summary>
     ///     Information sur un domaine et ses extensions
     /// </summary>
-    internal class DomainInfos<T> : InfosBase<T>, IDomainInfos<T> where T:class, IDomainModel
+    internal class DomainInfo<T> : ScopeInfo<T>, IDomainInfos<T> where T:class, IDomainModel
     {
         private readonly bool _isSchema;
 
@@ -38,7 +38,7 @@ namespace Hyperstore.Modeling.DomainExtension
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public DomainInfos(T domainModel) : base(domainModel)
+        public DomainInfo(T domainModel) : base(domainModel)
         {
             _isSchema = domainModel is ISchema;
         }
@@ -55,8 +55,8 @@ namespace Hyperstore.Modeling.DomainExtension
         {
             if (DomainModel.InstanceId == domain.InstanceId)
             {
-                if (Status == DomainExtensionStatus.Disabled)
-                    Status = DomainExtensionStatus.Enabled;
+                if (Status == ScopeStatus.Disabled)
+                    Status = ScopeStatus.Enabled;
             }
         }
 
@@ -74,7 +74,7 @@ namespace Hyperstore.Modeling.DomainExtension
         public T GetDomainModel(Guid? sessionId)
         {
             // Un schema est tjs actif
-            if ((_isSchema || Status != DomainExtensionStatus.Disabled) && (PendingUnloadSessions == null || sessionId == null || PendingUnloadSessions.Contains(sessionId.Value)))
+            if ((_isSchema || Status != ScopeStatus.Disabled) && (PendingUnloadSessions == null || sessionId == null || PendingUnloadSessions.Contains(sessionId.Value)))
             {
                 return DomainModel;
             }
@@ -89,9 +89,9 @@ namespace Hyperstore.Modeling.DomainExtension
         ///  The status after unload.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected override DomainExtensionStatus GetStatusAfterUnload()
+        protected override ScopeStatus GetStatusAfterUnload()
         {
-            return DomainExtensionStatus.Disabled;
+            return ScopeStatus.Disabled;
         }
 
 

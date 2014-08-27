@@ -489,11 +489,11 @@ namespace Hyperstore.Modeling
                     if (metaclass == null)
                         throw new Exception(ExceptionMessages.InvalidMetaclassForReference);
 
-                    //var mel = _store.GetElement(opposite.Id, metaclass);
-                    //if (mel == null)
-                    //    throw new Exception(ExceptionMessages.InvalidReference);
+                    var mel = _store.GetElement(opposite.Id, metaclass);
+                    if (mel == null)
+                        throw new Exception(ExceptionMessages.InvalidReference);
 
-                    //return mel;
+                    return mel;
                 }
                 return opposite;
             }
@@ -911,7 +911,7 @@ namespace Hyperstore.Modeling
         {
             Contract.Requires(property, "property");
 
-            var pv = DomainModel.GetPropertyValue(_id, property);
+            var pv = DomainModel.GetPropertyValue(_id, _schema, property);
             SetCalculatedPropertySource(property.Name);
             return pv;
         }

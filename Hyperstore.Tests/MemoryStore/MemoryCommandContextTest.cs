@@ -31,7 +31,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod]
         public void Create_CommandContext_inside_a_current_transaction()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             using (var session = store.BeginSession())
             {
                 TransactionManager tm = new Hyperstore.Tests.MemoryStore.MockTransactionManager();
@@ -48,7 +48,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod]
         public void CommandId_must_be_incremented()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             using (var session = store.BeginSession())
             {
                 TransactionManager tm = new Hyperstore.Tests.MemoryStore.MockTransactionManager();

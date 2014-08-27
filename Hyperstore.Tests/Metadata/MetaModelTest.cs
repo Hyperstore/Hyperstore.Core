@@ -39,7 +39,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestCategory("Meta")]
         public async Task PrimitivesIsATest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.CreateDomainModelAsync("test");
 
             var metaClass = PrimitivesSchema.SchemaEntitySchema;
@@ -56,7 +56,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestCategory("Meta")]
         public async Task IsAMetaTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var dm = await store.CreateDomainModelAsync("Test");
 
@@ -69,7 +69,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestCategory("Meta")]
         public async Task IsATest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var dm = await store.CreateDomainModelAsync("Test");
 
@@ -90,7 +90,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestCategory("Meta")]
         public async Task IsAInheritTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var dm = await store.CreateDomainModelAsync("Test");
 
@@ -111,7 +111,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestCategory("Meta")]
         public async Task GetAllMetadatas()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             var schema = await store.LoadSchemaAsync(new TestDomainDefinition());
             var dm = await store.CreateDomainModelAsync("Test");
 
@@ -124,7 +124,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestCategory("Meta")]
         public async Task GetMetaRelationshipsByTerminaison()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             var schema = await store.LoadSchemaAsync(new TestDomainDefinition());
             var dm = await store.CreateDomainModelAsync("Test");
 
@@ -137,7 +137,7 @@ namespace Hyperstore.Tests.MemoryStore
         {
             await AssertHelper.ThrowsException<MetadataNotFoundException>( async () =>
             {
-                var store = new Store();
+                var store = StoreBuilder.New().Create();
                 var schema = await store.LoadSchemaAsync(new TestDomainDefinition());
                 var domain = await store.CreateDomainModelAsync("Test");
                 var metadata = schema.GetSchemaInfo("Z");
@@ -147,7 +147,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod()]
         public async Task DefineMetaclassTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var dm = await store.CreateDomainModelAsync("Test");
             var metadata = store.GetSchemaInfo<XExtendsBaseClass>();
@@ -157,7 +157,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod()]
         public async Task DefinePropertyMetadataTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
 
@@ -173,7 +173,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod()]
         public async Task DefineEnumPropertyTest_Autodefinition()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test") as IUpdatableDomainModel;
 
@@ -182,14 +182,14 @@ namespace Hyperstore.Tests.MemoryStore
                 ISchemaEntity metadata = TestDomainDefinition.XExtendsBaseClass;
                 var prop = metadata.DefineProperty<ETest>( "enum" );
 
-                var a = new XExtendsBaseClass( domain );
+                IModelElement a = new XExtendsBaseClass( domain );
 
-                var pv = domain.GetPropertyValue(((IModelElement)a).Id,  prop);
+                var pv = domain.GetPropertyValue(a.Id, a.SchemaInfo, prop);
                 Assert.AreEqual(0, pv.CurrentVersion);
                 Assert.AreEqual( ETest.A, pv.Value );
                 
                 domain.SetPropertyValue( a, prop, ETest.B );
-                pv = domain.GetPropertyValue(((IModelElement)a).Id, prop);
+                pv = domain.GetPropertyValue(a.Id, a.SchemaInfo, prop);
                 Assert.AreNotEqual(0, pv.CurrentVersion);
                 Assert.AreEqual(ETest.B, pv.Value);
                 s.AcceptChanges();
@@ -199,7 +199,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod()]
         public async Task DefineEnumPropertyTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             var schema = await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test") as IUpdatableDomainModel;
 
@@ -209,14 +209,14 @@ namespace Hyperstore.Tests.MemoryStore
                 var e = new Hyperstore.Modeling.Metadata.Primitives.EnumPrimitive(schema, typeof(ETest));
                 var prop = metadata.DefineProperty<ETest>("enum");
 
-                var a = new XExtendsBaseClass(domain);
+                IModelElement a = new XExtendsBaseClass(domain);
 
-                var pv = domain.GetPropertyValue(((IModelElement)a).Id, prop);
+                var pv = domain.GetPropertyValue(a.Id, a.SchemaInfo, prop);
                 Assert.AreEqual(0, pv.CurrentVersion);
                 Assert.AreEqual(ETest.A, pv.Value);
 
                 domain.SetPropertyValue(a, prop, ETest.B);
-                pv = domain.GetPropertyValue(((IModelElement)a).Id, prop);
+                pv = domain.GetPropertyValue(a.Id, a.SchemaInfo, prop);
                 Assert.AreNotEqual(0, pv.CurrentVersion);
                 Assert.AreEqual(ETest.B, pv.Value);
                 s.AcceptChanges();

@@ -25,9 +25,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 #endregion
 
-namespace Hyperstore.Modeling.DomainExtension
+namespace Hyperstore.Modeling.Scopes
 {
-    internal class DomainModelExtension : DomainModel, IExtension, IDomainModelExtension
+    internal class DomainScope : DomainModel, IScope, IDomainScope
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -46,7 +46,7 @@ namespace Hyperstore.Modeling.DomainExtension
         ///  The extende domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public DomainModelExtension(IDependencyResolver resolver, string name, string extensionName, IDomainModel extendeDomainModel)
+        public DomainScope(IDependencyResolver resolver, string name, string extensionName, IDomainModel extendeDomainModel)
             : base(resolver, name)
         {
             DebugContract.Requires(resolver);
@@ -83,14 +83,14 @@ namespace Hyperstore.Modeling.DomainExtension
 
         public IEnumerable<IModelElement> GetExtensionElements(ISchemaElement schemaElement = null)
         {
-            var graph = InnerGraph as IExtensionHyperGraph;
+            var graph = InnerGraph as IScopeHyperGraph;
             Debug.Assert(graph != null);
             return graph.GetExtensionElements(schemaElement);
         }
 
         public IEnumerable<INodeInfo> GetDeletedElements()
         {
-            var graph = InnerGraph as IExtensionHyperGraph;
+            var graph = InnerGraph as IScopeHyperGraph;
             Debug.Assert(graph != null);
             return graph.GetDeletedElements();
         }
@@ -100,7 +100,7 @@ namespace Hyperstore.Modeling.DomainExtension
             return base.GetRelationships(schemaRelationship, start, end);
         }
 
-        public override System.Threading.Tasks.Task<IDomainModelExtension> LoadExtensionAsync(string extensionName, IDomainConfiguration configuration = null)
+        public override System.Threading.Tasks.Task<IDomainScope> CreateScopeAsync(string extensionName, IDomainConfiguration configuration = null)
         {
             throw new NotImplementedException();
         }
@@ -115,7 +115,7 @@ namespace Hyperstore.Modeling.DomainExtension
         ///-------------------------------------------------------------------------------------------------
         protected override IHyperGraph ResolveHyperGraph()
         {
-            return new DomainExtensionHyperGraph(DependencyResolver, ExtendedDomainModel as IHyperGraphProvider);
+            return new ScopeHyperGraph(DependencyResolver, ExtendedDomainModel as IHyperGraphProvider);
         }
     }
 }

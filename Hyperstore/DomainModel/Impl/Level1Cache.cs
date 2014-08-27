@@ -86,7 +86,7 @@ namespace Hyperstore.Modeling.Domain
             if (e.Session.IsAborted)
                 return;
 
-            foreach (var elem in e.Session.TrackingData.GetTrackingElementsByState(TrackingState.Removed))
+            foreach (var elem in e.Session.TrackingData.GetTrackedElementsByState(TrackingState.Removed))
             {
                 IModelElement weak;
                 _cache.TryRemove(elem.Id, out weak);
@@ -105,14 +105,14 @@ namespace Hyperstore.Modeling.Domain
                 if (InnerGraph.IsDeleted(id))
                     return null;
 
-                if (Session.Current != null && Session.Current.TrackingData.GetTrackingElementState(elem.Id) == TrackingState.Removed)
+                if (Session.Current != null && Session.Current.TrackingData.GetTrackedElementState(elem.Id) == TrackingState.Removed)
                     return null;
 
                 return elem;
             }
 
             elem = InnerGraph.GetElement(id, metaclass);
-            if (elem != null && Session.Current != null && Session.Current.TrackingData.GetTrackingElementState(elem.Id) == TrackingState.Removed)
+            if (elem != null && Session.Current != null && Session.Current.TrackingData.GetTrackedElementState(elem.Id) == TrackingState.Removed)
                 return null;
 
             if (cacheEnabled && elem != null)

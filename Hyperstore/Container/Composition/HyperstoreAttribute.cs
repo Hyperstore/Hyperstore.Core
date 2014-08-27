@@ -23,8 +23,22 @@ using System.Threading.Tasks;
 
 namespace Hyperstore.Modeling.Container.Composition
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  Attribute for hyperstore.
+    /// </summary>
+    /// <seealso cref="T:System.Attribute"/>
+    ///-------------------------------------------------------------------------------------------------
     public abstract class HyperstoreAttribute : Attribute
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Specialised constructor for use only by derived classes.
+        /// </summary>
+        /// <param name="domainModel">
+        ///  The domain model.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         protected HyperstoreAttribute(string domainModel)
         {
             DomainModel = domainModel;

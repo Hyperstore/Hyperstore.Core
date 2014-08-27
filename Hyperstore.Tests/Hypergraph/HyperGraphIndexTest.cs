@@ -36,7 +36,7 @@ namespace Hyperstore.Tests.Hypergraph
         [TestMethod()]
         public async Task CreateIndexTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
 
@@ -47,7 +47,7 @@ namespace Hyperstore.Tests.Hypergraph
         [TestMethod()]
         public async Task IndexTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
 

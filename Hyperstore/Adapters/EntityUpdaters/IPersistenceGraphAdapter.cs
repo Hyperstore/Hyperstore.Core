@@ -30,7 +30,7 @@ namespace Hyperstore.Modeling.Adapters
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     [PublicAPI]
-    public interface IPersistenceGraphAdapter
+    public interface IPersistenceGraphAdapter : IGraphAdapter
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -40,6 +40,6 @@ namespace Hyperstore.Modeling.Adapters
         ///  The session.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        void PersistSessionElements(ISessionInformation session);
+        void PersistElements(ISessionInformation session);
     }
 }

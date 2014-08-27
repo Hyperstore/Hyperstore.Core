@@ -232,6 +232,17 @@ namespace Hyperstore.Modeling.HyperGraph
         ///-------------------------------------------------------------------------------------------------
         public Identity EndId { get; private set; }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Sets a value.
+        /// </summary>
+        /// <param name="value">
+        ///  The value.
+        /// </param>
+        /// <returns>
+        ///  A MemoryGraphNode.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public MemoryGraphNode SetValue(object value)
         {
             return new MemoryGraphNode(this, value);
@@ -264,6 +275,10 @@ namespace Hyperstore.Modeling.HyperGraph
             DebugContract.Requires(endId, "endId");
             DebugContract.Requires(endSchemaId, "endSchemaId");
 
+            if( (direction & Direction.Outgoing) == Direction.Outgoing && _outgoings.ContainsKey(id)
+                || (direction & Direction.Incoming) == Direction.Incoming && _incomings.ContainsKey(id))            
+                return this;
+
             var edge = new EdgeInfo(id, metadataId, endId, endSchemaId);
 
             return new MemoryGraphNode(this, 
@@ -286,6 +301,10 @@ namespace Hyperstore.Modeling.HyperGraph
         public MemoryGraphNode RemoveEdge(Identity id, Direction direction)
         {
             DebugContract.Requires(id, "id");
+
+            if ((direction & Direction.Outgoing) == Direction.Outgoing && !_outgoings.ContainsKey(id)
+                || (direction & Direction.Incoming) == Direction.Incoming && !_incomings.ContainsKey(id))
+                return this;
 
             return new MemoryGraphNode(this, 
                     (direction & Direction.Outgoing) == Direction.Outgoing ? _outgoings.Remove(id) : _outgoings,  

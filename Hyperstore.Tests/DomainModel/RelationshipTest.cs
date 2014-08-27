@@ -120,7 +120,7 @@ namespace Hyperstore.Tests.Relationships
         [TestMethod]
         public async Task ManyToManyTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new RelationshipTestModel());
             var dm = await store.CreateDomainModelAsync("Test");
             store.DefaultSessionConfiguration.DefaultDomainModel = dm;
@@ -187,7 +187,7 @@ namespace Hyperstore.Tests.Relationships
         [TestMethod]
         public async Task ObservableManyToManyTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new RelationshipTestModel());
             var dm = await store.CreateDomainModelAsync("Test");
             store.DefaultSessionConfiguration.DefaultDomainModel = dm;

@@ -33,13 +33,13 @@ namespace Hyperstore.Modeling
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the involved tracking elements.
+        ///  Gets the involved tracked elements.
         /// </summary>
         /// <value>
         ///  The involved elements.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<TrackingElement> InvolvedTrackingElements { get; }
+        IEnumerable<TrackedElement> InvolvedTrackedElements { get; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -66,7 +66,7 @@ namespace Hyperstore.Modeling
         ///  this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<TrackingElement> GetTrackingElementsByState(TrackingState state);
+        IEnumerable<TrackedElement> GetTrackedElementsByState(TrackingState state);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -79,6 +79,6 @@ namespace Hyperstore.Modeling
         ///  The tracking element state.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        TrackingState GetTrackingElementState(Identity id);
+        TrackingState GetTrackedElementState(Identity id);
     }
 }

@@ -14,50 +14,63 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
-namespace Hyperstore.Modeling.HyperGraph
+
+namespace Hyperstore.Modeling
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  Interface for edge list.
+    ///  A query.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
-    public interface IEdgeList
+    public class Query
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the number of. 
+        ///  Gets or sets the domain model.
         /// </summary>
         /// <value>
-        ///  The count.
+        ///  The domain model.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        int Count { get; }
+        public string DomainModel { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Adds node.
+        ///  Gets or sets the skip.
         /// </summary>
-        /// <param name="node">
-        ///  The node to add.
-        /// </param>
-        /// <returns>
-        ///  An EdgeList.
-        /// </returns>
+        /// <value>
+        ///  The skip.
+        /// </value>
         ///-------------------------------------------------------------------------------------------------
-        EdgeList Add(EdgeInfo node);
+        public int Skip { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Removes the by key described by ID.
+        ///  Gets or sets the type of the node.
         /// </summary>
-        /// <param name="id">
-        ///  The identifier.
-        /// </param>
-        /// <returns>
-        ///  An EdgeList.
-        /// </returns>
+        /// <value>
+        ///  The type of the node.
+        /// </value>
         ///-------------------------------------------------------------------------------------------------
-        EdgeList RemoveByKey(Identity id);
+        public NodeType NodeType { get; set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the identifier of the single.
+        /// </summary>
+        /// <value>
+        ///  The identifier of the single.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public Identity SingleId { get; set; }
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the schema
+        /// </summary>
+        /// <value>
+        ///  The meta class.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public ISchemaElement Schema { get; set; }
     }
 }

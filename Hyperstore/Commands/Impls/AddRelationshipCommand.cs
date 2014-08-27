@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -41,8 +41,8 @@ namespace Hyperstore.Modeling.Commands
         ///     Initializes a new instance of the <see cref="AddRelationshipCommand" /> class.
         /// </summary>
         /// <param name="relationship">The relationship.</param>
-        internal AddRelationshipCommand(IModelRelationship relationship)
-            : this(relationship.SchemaInfo as ISchemaRelationship, relationship.Start, relationship.End, relationship.Id)
+        internal AddRelationshipCommand(IModelRelationship relationship, long? version = null)
+            : this(relationship.SchemaInfo as ISchemaRelationship, relationship.Start, relationship.End, relationship.Id, version)
         {
             Contract.Requires(relationship, "relationship");
 
@@ -78,8 +78,8 @@ namespace Hyperstore.Modeling.Commands
         ///  (Optional) The identifier.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public AddRelationshipCommand(IDomainModel domainModel, ISchemaRelationship relationshipSchema, Identity startId, ISchemaElement startSchema, Identity endId, ISchemaElement endSchema, Identity id = null)
-            : base(domainModel)
+        public AddRelationshipCommand(IDomainModel domainModel, ISchemaRelationship relationshipSchema, Identity startId, ISchemaElement startSchema, Identity endId, ISchemaElement endSchema, Identity id = null, long? version = null)
+            : base(domainModel, version)
         {
             Contract.Requires(startId, "startId");
             Contract.Requires(endId, "endId");
@@ -124,8 +124,8 @@ namespace Hyperstore.Modeling.Commands
         ///  (Optional) The identifier.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public AddRelationshipCommand(ISchemaRelationship relationshipSchema, IModelElement start, IModelElement end, Identity id = null)
-            : this(start.DomainModel, relationshipSchema, start.Id, start.SchemaInfo, end.Id, end.SchemaInfo, id)
+        public AddRelationshipCommand(ISchemaRelationship relationshipSchema, IModelElement start, IModelElement end, Identity id = null, long? version = null)
+            : this(start.DomainModel, relationshipSchema, start.Id, start.SchemaInfo, end.Id, end.SchemaInfo, id, version)
         {
             Contract.Requires(start, "start");
             Contract.Requires(end, "end");
@@ -238,7 +238,7 @@ namespace Hyperstore.Modeling.Commands
                 dm.CreateRelationship(Id, SchemaRelationship, start, EndId, EndSchema, _element);
             }
 
-            return new AddRelationshipEvent(_domainModel.Name, DomainModel.ExtensionName, Id, SchemaRelationship.Id, StartId, StartSchema.Id, EndId, EndSchema.Id, context.CurrentSession.SessionId, 1);
+            return new AddRelationshipEvent(_domainModel.Name, DomainModel.ExtensionName, Id, SchemaRelationship.Id, StartId, StartSchema.Id, EndId, EndSchema.Id, context.CurrentSession.SessionId, Version.Value);
         }
 
         ///-------------------------------------------------------------------------------------------------

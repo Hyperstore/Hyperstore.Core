@@ -22,6 +22,9 @@ using System.Collections.Generic;
 using Hyperstore.Modeling.HyperGraph;
 using System.Linq;
 using Hyperstore.Modeling.Statistics;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using Hyperstore.Modeling.Domain;
 #endregion
 
 namespace Hyperstore.Modeling.Adapters
@@ -147,21 +150,19 @@ namespace Hyperstore.Modeling.Adapters
         /// <summary>
         ///  Specialised constructor for use only by derived classes.
         /// </summary>
-        /// <param name="resolver">
-        ///  The resolver.
-        /// </param>
-        /// <param name="capability">
-        ///  (Optional) the capability.
+        /// <param name="services">
+        ///  The services.
         /// </param>
         /// <param name="statisticCounterName">
         ///  (Optional) name of the statistic counter.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        protected AbstractGraphAdapter(IDependencyResolver resolver, string statisticCounterName = null)
+        protected AbstractGraphAdapter(IDependencyResolver services, string statisticCounterName = null)
         {
-            Contract.Requires(resolver, "resolver");
-            DependencyResolver = resolver;
+            Contract.Requires(services, "services");
             _statisticCounterName = statisticCounterName ?? this.GetType().Name;
+            DependencyResolver = services;
+            Store = services.Resolve<IHyperstore>();
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -173,6 +174,16 @@ namespace Hyperstore.Modeling.Adapters
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         public IDependencyResolver DependencyResolver { get; private set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the store.
+        /// </summary>
+        /// <value>
+        ///  The store.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public IHyperstore Store { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -194,7 +205,8 @@ namespace Hyperstore.Modeling.Adapters
                 return;
 
             _initialized = true;
-            if (_sessionSubscription == null)
+
+            if (_sessionSubscription == null && this is IPersistenceGraphAdapter)
             {
                 _sessionSubscription = domainModel.Events.SessionCompleted.Subscribe(e =>
                 {
@@ -202,26 +214,39 @@ namespace Hyperstore.Modeling.Adapters
                 });
             }
 
+            InitializeCounters();
+
             Initialize();
+        }
 
-            IStatistics stat = null;
-            if (DependencyResolver != null)
-                stat = DependencyResolver.Resolve<IStatistics>();
-            else
-                stat = Statistics.EmptyStatistics.DefaultInstance;
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Check initialized.
+        /// </summary>
+        /// <exception cref="Exception">
+        ///  Thrown when an exception error condition occurs.
+        /// </exception>
+        ///-------------------------------------------------------------------------------------------------
+        protected void CheckInitialized()
+        {
+            if (_initialized == false)
+                throw new Exception("Adapter must be bound to a domain.");
+        }
 
-            StatGetNodes = stat.RegisterCounter(_statisticCounterName, String.Format("#GetNodes {0}", domainModel.Name), "GetNodes", StatisticCounterType.Value);
-            StatGetNodesAvgTime = stat.RegisterCounter(_statisticCounterName, String.Format("GetNodesAvgTime {0}", domainModel.Name), "GetNodesAvgTime", StatisticCounterType.Average);
-            StatGetNode = stat.RegisterCounter(_statisticCounterName, String.Format("#GetNode {0}", domainModel.Name), "GetNode", StatisticCounterType.Value);
-            StatGetNodeAvgTime = stat.RegisterCounter(_statisticCounterName, String.Format("GetNodeAvgTime {0}", domainModel.Name), "GetNodeAvgTime", StatisticCounterType.Average);
-            StatGetProperty = stat.RegisterCounter(_statisticCounterName, String.Format("#GetProperty {0}", domainModel.Name), "GetProperty", StatisticCounterType.Value);
-            StatGetPropertyAvgTime = stat.RegisterCounter(_statisticCounterName, String.Format("GetPropertyAvgTime {0}", domainModel.Name), "GetPropertyAvgTime", StatisticCounterType.Average);
-            StatGetEdges = stat.RegisterCounter(_statisticCounterName, String.Format("#GetEdges {0}", domainModel.Name), "GetEdges", StatisticCounterType.Value);
-            StatGetEdgesAvgTime = stat.RegisterCounter(_statisticCounterName, String.Format("GetEdgesAvgTime {0}", domainModel.Name), "GetEdgesAvgTime", StatisticCounterType.Average);
-
-            StatSessionCount = stat.RegisterCounter(_statisticCounterName, String.Format("#Session {0}", DomainModel.Name), "Session", StatisticCounterType.Value);
-            StatSessionAvgTime = stat.RegisterCounter(_statisticCounterName, String.Format("SessionAvgTime {0}", DomainModel.Name), "SessionAvgTime", StatisticCounterType.Average);
-
+        private void InitializeCounters()
+        {
+            var stat = DependencyResolver.Resolve<IStatistics>() ?? Statistics.EmptyStatistics.DefaultInstance;
+            var domainName = DomainModel != null ? DomainModel.Name : "-";
+            StatGetNodes = stat.RegisterCounter(_statisticCounterName, String.Format("#GetNodes {0}", domainName), "GetNodes", StatisticCounterType.Value);
+            StatGetNodesAvgTime = stat.RegisterCounter(_statisticCounterName, String.Format("GetNodesAvgTime {0}", domainName), "GetNodesAvgTime", StatisticCounterType.Average);
+            StatGetNode = stat.RegisterCounter(_statisticCounterName, String.Format("#GetNode {0}", domainName), "GetNode", StatisticCounterType.Value);
+            StatGetNodeAvgTime = stat.RegisterCounter(_statisticCounterName, String.Format("GetNodeAvgTime {0}", domainName), "GetNodeAvgTime", StatisticCounterType.Average);
+            StatGetProperty = stat.RegisterCounter(_statisticCounterName, String.Format("#GetProperty {0}", domainName), "GetProperty", StatisticCounterType.Value);
+            StatGetPropertyAvgTime = stat.RegisterCounter(_statisticCounterName, String.Format("GetPropertyAvgTime {0}", domainName), "GetPropertyAvgTime", StatisticCounterType.Average);
+            StatGetEdges = stat.RegisterCounter(_statisticCounterName, String.Format("#GetEdges {0}", domainName), "GetEdges", StatisticCounterType.Value);
+            StatGetEdgesAvgTime = stat.RegisterCounter(_statisticCounterName, String.Format("GetEdgesAvgTime {0}", domainName), "GetEdgesAvgTime", StatisticCounterType.Average);
+            StatSessionCount = stat.RegisterCounter(_statisticCounterName, String.Format("#Session {0}", domainName), "Session", StatisticCounterType.Value);
+            StatSessionAvgTime = stat.RegisterCounter(_statisticCounterName, String.Format("SessionAvgTime {0}", domainName), "SessionAvgTime", StatisticCounterType.Average);
         }
 
         private void OnSesssionCompleted(ISessionInformation session)
@@ -229,16 +254,15 @@ namespace Hyperstore.Modeling.Adapters
             DebugContract.Requires(session);
 
             var originId = session.OriginStoreId;
-            if (session.IsAborted || !session.Events.Any() || _disposed || (originId != Guid.Empty && originId != DomainModel.Store.Id))
+            if (session.IsAborted || !session.Events.Any() || _disposed || (originId != Guid.Empty && originId != Store.Id))
                 return;
 
             var observer = this as IPersistenceGraphAdapter;
-            if (observer == null)
-                return;
+            Debug.Assert(observer != null);
 
             try
             {
-                observer.PersistSessionElements(session);
+                observer.PersistElements(session);
             }
             catch (Exception ex)
             {
@@ -271,6 +295,7 @@ namespace Hyperstore.Modeling.Adapters
 
         IEnumerable<QueryNodeResult> IGraphAdapter.LoadNodes(Query query)
         {
+            Contract.Requires(query, "query");
             return LoadNodes(query);
         }
 

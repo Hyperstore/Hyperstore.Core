@@ -23,6 +23,7 @@ using System.Threading.Tasks;
 using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.MemoryStore;
 using Hyperstore.Modeling.Messaging;
+using Hyperstore.Modeling.Scopes;
 
 #endregion
 
@@ -75,13 +76,13 @@ namespace Hyperstore.Modeling
         ///  The domain models.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<IDomainModel> DomainModels { get; }
+        IModelList<IDomainModel> DomainModels { get; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Gets the schemas. </summary>
         /// <value> The schemas. </value>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<ISchema> Schemas { get; }
+        IModelList<ISchema> Schemas { get; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

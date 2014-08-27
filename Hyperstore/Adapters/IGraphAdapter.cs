@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,8 +23,47 @@ using System.Threading.Tasks;
 
 namespace Hyperstore.Modeling.Adapters
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  Interface for graph adapter.
+    /// </summary>
+    ///-------------------------------------------------------------------------------------------------
     public interface IGraphAdapter
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Enumerates load nodes in this collection.
+        /// </summary>
+        /// <param name="query">
+        ///  The query.
+        /// </param>
+        /// <returns>
+        ///  An enumerator that allows foreach to be used to process load nodes in this collection.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         IEnumerable<QueryNodeResult> LoadNodes(Query query);
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  Interface for supports lazy loading.
+    /// </summary>
+    /// <seealso cref="T:IGraphAdapter"/>
+    ///-------------------------------------------------------------------------------------------------
+    public interface ISupportsLazyLoading : IGraphAdapter
+    {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Enumerates lazy loading nodes in this collection.
+        /// </summary>
+        /// <param name="query">
+        ///  The query.
+        /// </param>
+        /// <returns>
+        ///  An enumerator that allows foreach to be used to process lazy loading nodes in this collection.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        IEnumerable<QueryNodeResult> LazyLoadingNodes(Query query);
+
     }
 }

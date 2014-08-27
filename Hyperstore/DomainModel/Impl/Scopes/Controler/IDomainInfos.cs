@@ -22,7 +22,7 @@ using System.Collections.Generic;
 
 #endregion
 
-namespace Hyperstore.Modeling.DomainExtension
+namespace Hyperstore.Modeling.Scopes
 {
     internal interface IDomainInfos<T> where T : class,IDomainModel
     {

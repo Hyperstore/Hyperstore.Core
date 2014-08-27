@@ -36,7 +36,7 @@ namespace Hyperstore.Tests.Commands
         [TestCategory("Commands")]
         public async Task ExplicitConstraint()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             var schema = await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test"); 
 
@@ -66,7 +66,7 @@ namespace Hyperstore.Tests.Commands
         [TestCategory("Commands")]
         public async Task ImplicitConstraint()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test"); 
 
@@ -95,7 +95,7 @@ namespace Hyperstore.Tests.Commands
         [TestCategory("Commands")]
         public async Task Contraint_Error_Notification()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test"); 
 
@@ -124,7 +124,7 @@ namespace Hyperstore.Tests.Commands
         [TestCategory("Commands")]
         public async Task EatConstraintException()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test"); 
 
@@ -142,7 +142,7 @@ namespace Hyperstore.Tests.Commands
         [TestCategory("Commands")]
         public async Task MultiConstraints()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test"); 
 
@@ -185,7 +185,7 @@ namespace Hyperstore.Tests.Commands
             await AssertHelper.ThrowsException<SessionException>(async () =>
             {
                 Identity aid = null;
-                var store = new Store();
+                var store = StoreBuilder.New().Create();
                 await store.LoadSchemaAsync(new TestDomainDefinition());
                 var domain = await store.CreateDomainModelAsync("Test"); 
 
@@ -211,7 +211,7 @@ namespace Hyperstore.Tests.Commands
         {
             await AssertHelper.ThrowsException<SessionException>(async () =>
             {
-                var store = new Store();
+                var store = StoreBuilder.New().Create();
                 await store.LoadSchemaAsync(new TestDomainDefinition());
                 var domain = await store.CreateDomainModelAsync("Test"); 
 
@@ -233,7 +233,7 @@ namespace Hyperstore.Tests.Commands
         [TestMethod]
         public async Task RelationshipConstraintTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test"); 
 

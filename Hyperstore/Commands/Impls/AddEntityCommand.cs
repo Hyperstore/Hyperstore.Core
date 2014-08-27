@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -39,8 +39,8 @@ namespace Hyperstore.Modeling.Commands
         ///     Initializes a new instance of the <see cref="AddEntityCommand" /> class.
         /// </summary>
         /// <param name="mel">The mel.</param>
-        internal AddEntityCommand(IModelEntity mel)
-            : this(mel.DomainModel, mel.SchemaInfo as ISchemaEntity, mel.Id)
+        internal AddEntityCommand(IModelEntity mel, long? version = null)
+            : this(mel.DomainModel, mel.SchemaInfo as ISchemaEntity, mel.Id, version)
         {
             _element = mel;
         }
@@ -62,8 +62,8 @@ namespace Hyperstore.Modeling.Commands
         ///  (Optional) The identifier.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public AddEntityCommand(IDomainModel domainModel, ISchemaEntity schemaEntity, Identity id = null)
-            : base(domainModel)
+        public AddEntityCommand(IDomainModel domainModel, ISchemaEntity schemaEntity, Identity id = null, long? version = null)
+            : base(domainModel, version)
         {
             Contract.Requires(domainModel, "domainModel");
             Contract.Requires(schemaEntity, "schemaEntity");
@@ -131,7 +131,7 @@ namespace Hyperstore.Modeling.Commands
             {
                 _element = dm.CreateEntity(Id, SchemaEntity, _element) as IModelEntity;
             }
-            return new AddEntityEvent(DomainModel.Name, DomainModel.ExtensionName, Id, SchemaEntity.Id, context.CurrentSession.SessionId, 1);
+            return new AddEntityEvent(DomainModel.Name, DomainModel.ExtensionName, Id, SchemaEntity.Id, context.CurrentSession.SessionId, Version.Value);
         }
 
         ///-------------------------------------------------------------------------------------------------

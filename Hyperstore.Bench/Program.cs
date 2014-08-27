@@ -31,11 +31,11 @@ namespace Hyperstore.Bench
         public async Task BenchWithConstraints(int cx)
         {
                 long nb = 0;
-                store = new Store();
+                store = StoreBuilder.New().Create();
                 await store.LoadSchemaAsync(new TestDomainDefinition("Hyperstore.Tests.Model"));
 
                 var config = new DomainConfiguration()
-                                    .UsesIdGenerator(resolver => new Hyperstore.Modeling.Domain.LongIdGenerator());
+                                    .UsingIdGenerator(resolver => new Hyperstore.Modeling.Domain.LongIdGenerator());
                 var domain = await store.CreateDomainModelAsync("Test", config);
 
                 var sw = new Stopwatch();

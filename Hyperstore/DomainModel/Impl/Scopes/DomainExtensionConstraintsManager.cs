@@ -23,7 +23,7 @@ using System.Collections.Generic;
 
 #endregion
 
-namespace Hyperstore.Modeling.DomainExtension
+namespace Hyperstore.Modeling.Scopes
 {
     /// <summary>
     /// </summary>

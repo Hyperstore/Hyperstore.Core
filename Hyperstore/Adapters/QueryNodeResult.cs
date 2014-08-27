@@ -73,6 +73,8 @@ namespace Hyperstore.Modeling.Adapters
             EndSchemaId = endSchemaId;
             SchemaInfo = schema;
             Properties = props;
+            Outgoings = new List<EdgeInfo>();
+            Incomings = new List<EdgeInfo>();
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -164,5 +166,26 @@ namespace Hyperstore.Modeling.Adapters
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         public IDictionary<ISchemaProperty, PropertyValue> Properties { get; private set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the outgoings.
+        /// </summary>
+        /// <value>
+        ///  The outgoings.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public List<EdgeInfo> Outgoings { get; private set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the incomings.
+        /// </summary>
+        /// <value>
+        ///  The incomings.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public List<EdgeInfo> Incomings { get; private set; }
+
     }
 }

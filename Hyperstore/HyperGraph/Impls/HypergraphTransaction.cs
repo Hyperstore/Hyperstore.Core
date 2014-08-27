@@ -418,7 +418,7 @@ namespace Hyperstore.Modeling.HyperGraph
         internal bool IsValidInTransaction(Identity id)
         {
             DebugContract.Requires(id);
-            return Session.Current.TrackingData.GetTrackingElementState(id) != TrackingState.Removed;
+            return Session.Current.TrackingData.GetTrackedElementState(id) != TrackingState.Removed;
         }
 
         internal IEnumerable<Identity> GetPendingIndexFor(string name, object key)

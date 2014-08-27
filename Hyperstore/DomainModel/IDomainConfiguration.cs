@@ -78,7 +78,7 @@ namespace Hyperstore.Modeling
         ///  An ISchemaDefinition.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        ISchemaDefinition UsesIdGenerator(Func<IDependencyResolver, IIdGenerator> factory);
+        ISchemaDefinition UsingIdGenerator(Func<IDependencyResolver, IIdGenerator> factory);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -94,7 +94,7 @@ namespace Hyperstore.Modeling
         ///  An ISchemaDefinition.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        ISchemaDefinition RegisterInEventBus(Modeling.Messaging.ChannelPolicy outputProperty, Hyperstore.Modeling.Messaging.ChannelPolicy inputProperty = null);
+        ISchemaDefinition SubscribeToEventBus(Modeling.Messaging.ChannelPolicy outputProperty, Hyperstore.Modeling.Messaging.ChannelPolicy inputProperty = null);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -110,7 +110,7 @@ namespace Hyperstore.Modeling
         ///  An ISchemaDefinition.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        ISchemaDefinition Uses<TService>(Func<IDependencyResolver, TService> factory) where TService : class;
+        ISchemaDefinition Using<TService>(Func<IDependencyResolver, TService> factory) where TService : class;
     }
 
     ///-------------------------------------------------------------------------------------------------
@@ -144,7 +144,7 @@ namespace Hyperstore.Modeling
         ///  An ISchemaDefinition.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IDomainConfiguration UsesIdGenerator(Func<IDependencyResolver, IIdGenerator> factory);
+        IDomainConfiguration UsingIdGenerator(Func<IDependencyResolver, IIdGenerator> factory);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -160,7 +160,7 @@ namespace Hyperstore.Modeling
         ///  An ISchemaDefinition.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IDomainConfiguration RegisterInEventBus(Modeling.Messaging.ChannelPolicy outputProperty, Hyperstore.Modeling.Messaging.ChannelPolicy inputProperty = null);
+        IDomainConfiguration SubscribeToEventBus(Modeling.Messaging.ChannelPolicy outputProperty, Hyperstore.Modeling.Messaging.ChannelPolicy inputProperty = null);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -176,20 +176,7 @@ namespace Hyperstore.Modeling
         ///  An ISchemaDefinition.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IDomainConfiguration Uses<TService>(Func<IDependencyResolver, TService> factory) where TService : class;
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Useses the memory eviction policy.
-        /// </summary>
-        /// <param name="factory">
-        ///  The factory.
-        /// </param>
-        /// <returns>
-        ///  An ISchemaDefinition.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        IDomainConfiguration UsesMemoryEvictionPolicy(Func<IDependencyResolver, IEvictionPolicy> factory);
+        IDomainConfiguration Using<TService>(Func<IDependencyResolver, TService> factory) where TService : class;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -202,7 +189,7 @@ namespace Hyperstore.Modeling
         ///  An ISchemaDefinition.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IDomainConfiguration UsesModelElementFactory(Func<IDependencyResolver, IModelElementFactory> factory);
+        IDomainConfiguration UsingModelElementFactory(Func<IDependencyResolver, IModelElementFactory> factory);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -215,7 +202,7 @@ namespace Hyperstore.Modeling
         ///  An ISchemaDefinition.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IDomainConfiguration UsesCommandManager(Func<IDependencyResolver, ICommandManager> factory);
+        IDomainConfiguration UsingCommandManager(Func<IDependencyResolver, ICommandManager> factory);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

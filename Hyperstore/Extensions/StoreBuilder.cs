@@ -15,115 +15,130 @@
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
 
-#region Imports
-
-using System.Collections;
+using Hyperstore.Modeling.Container;
+using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 
-#endregion
-
-namespace Hyperstore.Modeling.HyperGraph
+namespace Hyperstore.Modeling
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  Liste des relations au niveau d'un noeud.
+    ///  A store builder.
     /// </summary>
-    /// <seealso cref="T:Hyperstore.Modeling.HyperGraph.IEdgeList"/>
-    /// <seealso cref="T:System.Collections.Generic.IEnumerable{Hyperstore.Modeling.HyperGraph.EdgeInfo}"/>
     ///-------------------------------------------------------------------------------------------------
-    public class EdgeList : IEdgeList, IEnumerable<EdgeInfo>
+    public sealed class StoreBuilder
     {
-        private readonly ImmutableDictionary<Identity, EdgeInfo> _edges;
+        private StoreOptions _options = StoreOptions.None;
+        private Assembly[] _assemblies;
+        private IDependencyResolver _resolver = new DefaultDependencyResolver();
+        private Guid? _id;
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Default constructor.
-        /// </summary>
-        ///-------------------------------------------------------------------------------------------------
-        public EdgeList()
+        private StoreBuilder()
         {
-            _edges = ImmutableDictionary<Identity, EdgeInfo>.Empty;
         }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Constructeur de copie.
+        ///  Initialises this instance.
         /// </summary>
-        /// <param name="list">
-        ///  .
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
-        public EdgeList(ImmutableDictionary<Identity, EdgeInfo> list)
-        {
-            DebugContract.Requires(list, "list");
-            _edges = list; // new ImmutableDictionary<Identity, EdgeInfo>(infos._edges);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Adds node.
-        /// </summary>
-        /// <param name="info">
-        ///  The information to add.
-        /// </param>
         /// <returns>
-        ///  An EdgeList.
+        ///  A StoreBuilder.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public EdgeList Add(EdgeInfo info)
+        public static StoreBuilder New()
         {
-            if (!_edges.ContainsKey(info.Id))
-                return new EdgeList(_edges.Add(info.Id, info));
+            return new StoreBuilder();
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Enables the extensions.
+        /// </summary>
+        /// <returns>
+        ///  A StoreBuilder.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        public StoreBuilder EnableExtensions()
+        {
+            _options |= StoreOptions.EnableExtensions;
             return this;
         }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Removes the by key described by ID.
+        ///  Compose with.
+        /// </summary>
+        /// <param name="assemblies">
+        ///  A variable-length parameters list containing assemblies.
+        /// </param>
+        /// <returns>
+        ///  A StoreBuilder.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        public StoreBuilder ComposeWith(params Assembly[] assemblies)
+        {
+            if (assemblies.Length > 0)
+            {
+                _assemblies = assemblies;
+            }
+            return this;
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  With identifier.
         /// </summary>
         /// <param name="id">
         ///  The identifier.
         /// </param>
         /// <returns>
-        ///  An EdgeList.
+        ///  A StoreBuilder.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public EdgeList RemoveByKey(Identity id)
+        public StoreBuilder WithId(Guid id)
         {
-            Contract.Requires(id, "id");
-            return new EdgeList(_edges.Remove(id));
+            _id = id;
+            return this;
         }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the number of.
+        ///  Usings.
         /// </summary>
-        /// <value>
-        ///  The count.
-        /// </value>
+        /// <typeparam name="T">
+        ///  Generic type parameter.
+        /// </typeparam>
+        /// <param name="service">
+        ///  The service.
+        /// </param>
+        /// <param name="singleton">
+        ///  (Optional) true to singleton.
+        /// </param>
+        /// <returns>
+        ///  A StoreBuilder.
+        /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public int Count
+        public StoreBuilder Using<T>(Func<IDependencyResolver, T> service, bool singleton = false) where T : class
         {
-            get { return _edges.Count; }
+            _resolver.Register<T>(service, singleton);
+            return this;
         }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the enumerator.
+        ///  Creates the store.
         /// </summary>
         /// <returns>
-        ///  The enumerator.
+        ///  The new store.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerator<EdgeInfo> GetEnumerator()
+        public IHyperstore Create()
         {
-            return _edges.Values.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return _edges.Values.GetEnumerator();
+            return new Store(_resolver, _options, _id);
         }
     }
 }

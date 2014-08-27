@@ -25,9 +25,9 @@ using Hyperstore.Modeling.HyperGraph;
 using Hyperstore.Modeling.Domain;
 #endregion
 
-namespace Hyperstore.Modeling.DomainExtension
+namespace Hyperstore.Modeling.Scopes
 {
-    internal class DomainSchemaExtension : DomainSchema, IExtension, ISchemaExtension
+    internal class DomainSchemaExtension : DomainSchema, IScope, ISchemaExtension
     {
         private readonly ISchema _extendedMetaModel;
 
@@ -61,7 +61,7 @@ namespace Hyperstore.Modeling.DomainExtension
 
         protected override IHyperGraph ResolveHyperGraph()
         {
-            return new DomainExtensionHyperGraph(DependencyResolver, _extendedMetaModel as IHyperGraphProvider);
+            return new ScopeHyperGraph(DependencyResolver, _extendedMetaModel as IHyperGraphProvider);
         }
     }
 }

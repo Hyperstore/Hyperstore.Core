@@ -40,7 +40,7 @@ namespace Hyperstore.Tests.Commands
         [TestMethod]
         public async Task SerializeElement()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new LibraryDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
 

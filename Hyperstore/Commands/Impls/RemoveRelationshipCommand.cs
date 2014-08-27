@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -55,8 +55,8 @@ namespace Hyperstore.Modeling.Commands
         ///  (Optional) if set to <c>true</c> [throw exception if not exists].
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public RemoveRelationshipCommand(IDomainModel domainModel, Identity id, Identity schemaRelationshipId, bool throwExceptionIfNotExists = true)
-            : base(domainModel)
+        public RemoveRelationshipCommand(IDomainModel domainModel, Identity id, Identity schemaRelationshipId, bool throwExceptionIfNotExists = true, long? version = null)
+            : base(domainModel, version)
         {
             Contract.Requires(domainModel, "domainModel");
             Contract.Requires(id, "id");
@@ -77,8 +77,8 @@ namespace Hyperstore.Modeling.Commands
         ///  The relationship.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public RemoveRelationshipCommand(IModelRelationship relationship)
-            : base(relationship.DomainModel)
+        public RemoveRelationshipCommand(IModelRelationship relationship, long? version = null)
+            : base(relationship.DomainModel, version)
         {
             Contract.Requires(relationship, "relationship");
             Relationship = relationship;
@@ -118,16 +118,16 @@ namespace Hyperstore.Modeling.Commands
             var endSchemaId = Relationship.EndSchemaId;
 
             // Avant la suppression effective
-            var @event = new RemoveRelationshipEvent(Relationship.DomainModel.Name, 
+            var @event = new RemoveRelationshipEvent(Relationship.DomainModel.Name,
                                                      Relationship.DomainModel.ExtensionName,
-                                                     Relationship.Id, 
-                                                     Relationship.SchemaInfo.Id, 
-                                                     Relationship.Start.Id, 
-                                                     Relationship.Start.SchemaInfo.Id, 
-                                                     endId, 
+                                                     Relationship.Id,
+                                                     Relationship.SchemaInfo.Id,
+                                                     Relationship.Start.Id,
+                                                     Relationship.Start.SchemaInfo.Id,
+                                                     endId,
                                                      endSchemaId,
-                                                     context.CurrentSession.SessionId, 
-                                                     1);
+                                                     context.CurrentSession.SessionId,
+                                                     Version.Value);
 
             using (CodeMarker.MarkBlock("RemoveRelationshipCommand.Handle"))
             {

@@ -14,55 +14,96 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
+#region Imports
+
+using System.Collections.Generic;
+
+
+#endregion
+
 namespace Hyperstore.Modeling.Commands
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  A tracking relationship.
+    ///  A tracked element.
     /// </summary>
-    /// <seealso cref="T:Hyperstore.Modeling.Commands.TrackingElement"/>
     ///-------------------------------------------------------------------------------------------------
-    public class TrackingRelationship : TrackingElement
+    public class TrackedElement
     {
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the identifier of the start.
-        /// </summary>
-        /// <value>
-        ///  The identifier of the start.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public Identity StartId { get; internal set; }
+        internal TrackedElement()
+        {
+            Properties = new Dictionary<string, PropertyValue>();
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the identifier of the start schema.
+        ///  This is an element of a schema.
         /// </summary>
         /// <value>
-        ///  The identifier of the start schema.
+        ///  true if this instance is schema, false if not.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity StartSchemaId { get; internal set; }
+        public bool IsSchema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the identifier of the end.
+        ///  Version number.
         /// </summary>
         /// <value>
-        ///  The identifier of the end.
+        ///  The version.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity EndId { get; internal set; }
+        public long Version { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the identifier of the end schema.
+        ///  Get information about the type of modification.
         /// </summary>
         /// <value>
-        ///  The identifier of the end schema.
+        ///  The state.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity EndSchemaId { get; internal set; }
+        public TrackingState State { get; internal set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Element id.
+        /// </summary>
+        /// <value>
+        ///  The identifier.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public Identity Id { get; internal set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Schema id of the element.
+        /// </summary>
+        /// <value>
+        ///  The identifier of the schema.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public Identity SchemaId { get; internal set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Involved properties list.
+        /// </summary>
+        /// <value>
+        ///  The properties.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public IDictionary<string, PropertyValue> Properties { get; internal set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Link to the involved model element. Null until the session is disposed.
+        /// </summary>
+        /// <value>
+        ///  The model element.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public IModelElement ModelElement { get; internal set; }
     }
 }

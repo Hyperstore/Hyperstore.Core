@@ -59,7 +59,7 @@ namespace Hyperstore.Tests.Container
         [TestMethod]
         public void CreateDefault()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             IDependencyResolverInternal r = new DefaultDependencyResolver();
             r.SetStore(store);
 
@@ -70,7 +70,7 @@ namespace Hyperstore.Tests.Container
         [TestMethod]
         public void RegisterSingleton()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             IDependencyResolverInternal r = new DefaultDependencyResolver();
             r.SetStore(store);
             r.Register<IService>(new Service() );
@@ -92,7 +92,7 @@ namespace Hyperstore.Tests.Container
         [TestMethod]
         public void RegisterByDomain()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             IDependencyResolverInternal r1 = new DefaultDependencyResolver();
             r1.SetStore(store);
             r1.Register<IService>(resolver => new Service());
@@ -123,7 +123,7 @@ namespace Hyperstore.Tests.Container
         [TestMethod]
         public void RegisterByDomainAndModel()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             IDependencyResolverInternal r1 = new DefaultDependencyResolver();
             r1.SetStore(store);
             r1.Register<IService>(new Service());
@@ -143,7 +143,7 @@ namespace Hyperstore.Tests.Container
         [TestMethod]
         public void RegisterMany()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             IDependencyResolverInternal r1 = new DefaultDependencyResolver();
             r1.SetStore(store);
             r1.Register<IService>(new Service());
@@ -172,7 +172,7 @@ namespace Hyperstore.Tests.Container
         {
             AssertHelper.ThrowsException<Exception>(() =>
             {
-                var store = new Store();
+                var store = StoreBuilder.New().Create();
                 IDependencyResolverInternal r1 = new DefaultDependencyResolver();
                 r1.SetStore(store);
                 r1.Register<IService>(new Service());
@@ -188,7 +188,7 @@ namespace Hyperstore.Tests.Container
         [TestMethod]
         public void DisposeAll()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             IDependencyResolverInternal r1 = new DefaultDependencyResolver();
             r1.SetStore(store);
             r1.Register<IService>(new Service());
@@ -205,7 +205,7 @@ namespace Hyperstore.Tests.Container
         [TestMethod]
         public void Settings()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             IDependencyResolverInternal r1 = new DefaultDependencyResolver();
             r1.SetStore(store);
             r1.Register<Setting>(new Setting("X", 1));
@@ -226,7 +226,7 @@ namespace Hyperstore.Tests.Container
         [TestMethod]
         public async Task WithDomains()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             store.DependencyResolver.Register<Setting>(new Setting("X", 1));
             store.DependencyResolver.Register<Setting>(new Setting("Y", 1));
 

@@ -22,12 +22,12 @@ using System.Collections.Generic;
 
 #endregion
 
-namespace Hyperstore.Modeling.DomainExtension
+namespace Hyperstore.Modeling.Scopes
 {
     /// <summary>
     ///     Information sur un domaine et ses extensions
     /// </summary>
-    internal class ExtensionInfos<T> : InfosBase<T>, IDomainInfos<T> where T : class, IDomainModel
+    internal class ExtensionInfo<T> : ScopeInfo<T>, IDomainInfos<T> where T : class, IDomainModel
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -40,7 +40,7 @@ namespace Hyperstore.Modeling.DomainExtension
         ///  The active sessions.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public ExtensionInfos(T extension, List<Guid> activeSessions)
+        public ExtensionInfo(T extension, List<Guid> activeSessions)
             : base(extension)
         {
             PendingLoadSessions = activeSessions;
@@ -58,9 +58,9 @@ namespace Hyperstore.Modeling.DomainExtension
         {
             if (domain.InstanceId == DomainModel.InstanceId)
             {
-                DebugContract.Requires(Status != DomainExtensionStatus.ExtensionEnabled);
+                DebugContract.Requires(Status != ScopeStatus.ScopeEnabled);
                 DebugContract.Requires(DomainModel != null);
-                Status = DomainExtensionStatus.ExtensionEnabled;
+                Status = ScopeStatus.ScopeEnabled;
             }
         }
 
@@ -84,7 +84,7 @@ namespace Hyperstore.Modeling.DomainExtension
             //    DomainModel.Store.Trace.WriteTrace(TraceCategory.DomainControler, "      -- load : {0}", String.Join(",", PendingLoadSessions));
 
             if (DomainModel != null
-                && ( Status == DomainExtensionStatus.ExtensionEnabled) && (PendingUnloadSessions == null || sessionId == null || PendingUnloadSessions.Contains(sessionId.Value))
+                && ( Status == ScopeStatus.ScopeEnabled) && (PendingUnloadSessions == null || sessionId == null || PendingUnloadSessions.Contains(sessionId.Value))
                 && (PendingLoadSessions == null || sessionId == null || !PendingLoadSessions.Contains(sessionId.Value) || (Session.Current.Mode & SessionMode.LoadingSchema) == SessionMode.LoadingSchema)) // TODO ou Loading ???
             {
                 //DomainModel.Store.Trace.WriteTrace(TraceCategory.DomainControler, "  return ALT");

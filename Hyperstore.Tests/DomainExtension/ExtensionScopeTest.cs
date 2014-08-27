@@ -22,6 +22,7 @@ using Hyperstore.Modeling;
 using Hyperstore.Tests.Model;
 using System.Linq;
 using Hyperstore.Modeling.Commands;
+using Hyperstore.Modeling.Domain;
 
 namespace Hyperstore.Tests.DomainExtension
 {
@@ -31,10 +32,16 @@ namespace Hyperstore.Tests.DomainExtension
         [TestMethod]
         public async Task TestMethod1()
         {
-            var store = new Store(StoreOptions.EnableExtensions);
-            await store.LoadSchemaAsync(new LibraryDefinition());
+            var store = StoreBuilder.New().EnableExtensions().Create();
 
-            var domain = await store.CreateDomainModelAsync("lib");
+            await store.Schemas
+                            .New<LibraryDefinition>()                            
+                            .CreateAsync();
+
+            var domain = await store.DomainModels
+                                        .New()
+                                        .UsingIdGenerator(r => new LongIdGenerator())
+                                        .CreateAsync("lib");
 
             Library lib;
             using (var session = store.BeginSession())
@@ -51,7 +58,7 @@ namespace Hyperstore.Tests.DomainExtension
                 session.AcceptChanges();
             }
 
-            var extension = await domain.LoadExtensionAsync("X1");
+            var extension = await domain.CreateScopeAsync("X1");
             var xLib = extension.GetEntities<Library>().First();
 
             Book extensionBook;

@@ -99,7 +99,7 @@ namespace Hyperstore.Tests.Commands
         [TestMethod]
         public async Task InterceptorOrdersEvents()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test"); 
 
@@ -120,7 +120,7 @@ namespace Hyperstore.Tests.Commands
         [TestMethod]
         public async Task SharedInterceptorTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test"); 
 
@@ -140,7 +140,7 @@ namespace Hyperstore.Tests.Commands
         [TestMethod]
         public async Task AddInterceptorTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test"); 
 

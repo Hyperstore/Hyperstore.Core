@@ -38,7 +38,7 @@ namespace Hyperstore.Tests.HyperGraph
         [TestCategory("Hypergraph")]
         public async Task InitTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
             var Graph = domain.Resolve<IHyperGraph>();
@@ -52,7 +52,7 @@ namespace Hyperstore.Tests.HyperGraph
         [TestCategory("Hypergraph")]
         public async Task AddElementTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
             var Graph = domain.Resolve<IHyperGraph>();
@@ -74,7 +74,7 @@ namespace Hyperstore.Tests.HyperGraph
         [TestCategory("Hypergraph")]
         public async Task AddElementOutOfScopeTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
             var Graph = domain.Resolve<IHyperGraph>();
@@ -94,7 +94,7 @@ namespace Hyperstore.Tests.HyperGraph
         [TestCategory("Hypergraph")]
         public async Task AddElementRollbackTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test"); 
 
@@ -116,7 +116,7 @@ namespace Hyperstore.Tests.HyperGraph
         [TestCategory("Hypergraph")]
         public async Task RemoveElementTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test"); 
 
@@ -128,7 +128,7 @@ namespace Hyperstore.Tests.HyperGraph
             var mel = domain.GetElement(aid, metadata);
             var namePropertyMetadata = mel.SchemaInfo.GetProperty("Name");
 
-                var prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo.GetProperty("Name"));
+                var prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo, mel.SchemaInfo.GetProperty("Name"));
                 Assert.IsNull(prop);
 
             using (var session = domain.Store.BeginSession())
@@ -157,7 +157,7 @@ namespace Hyperstore.Tests.HyperGraph
         [TestCategory("Hypergraph")]
         public async Task RollbackPropertyTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
 
@@ -182,7 +182,7 @@ namespace Hyperstore.Tests.HyperGraph
             }
 
             mel = domain.GetElement(aid, metadata);
-            var prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo.GetProperty("Name"));
+            var prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo, mel.SchemaInfo.GetProperty("Name"));
             Assert.IsNotNull(prop);
             Assert.AreEqual("am", prop.Value);
 
@@ -195,7 +195,7 @@ namespace Hyperstore.Tests.HyperGraph
                 // Rollback
             }
 
-            prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo.GetProperty("Name"));
+            prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo, mel.SchemaInfo.GetProperty("Name"));
             Assert.IsNotNull(prop);
             Assert.AreEqual("am", prop.Value);
             Assert.AreEqual(version, prop.CurrentVersion);
@@ -221,7 +221,7 @@ namespace Hyperstore.Tests.HyperGraph
         //[TestCategory("Hypergraph")]
         //public async Task ConflictPropertyTest()
         //{
-        //    var store = new Store();
+        //    var store = StoreBuilder.Init().CreateStore();
         //    await store.LoadSchemaAsync(new TestDomainDefinition());
         //    var domain = await store.CreateDomainModelAsync("Test");
 
@@ -263,7 +263,7 @@ namespace Hyperstore.Tests.HyperGraph
         [TestCategory("Hypergraph")]
         public async Task GetPropertyTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
 
@@ -276,7 +276,7 @@ namespace Hyperstore.Tests.HyperGraph
             metadata = TestDomainDefinition.XExtendsBaseClass;
             mel = domain.GetElement(aid, metadata);
 
-            var prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo.GetProperty("Name"));
+            var prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo, mel.SchemaInfo.GetProperty("Name"));
             Assert.IsNull(prop);
 
             var version = 0L;
@@ -289,7 +289,7 @@ namespace Hyperstore.Tests.HyperGraph
 
             await Task.Delay(20); // Délai mini entre diffèrents Ticks de UtcNow 
 
-            prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo.GetProperty("Name"));
+            prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo, mel.SchemaInfo.GetProperty("Name"));
             Assert.IsNotNull(prop);
             Assert.AreEqual("am", prop.Value);
             Assert.AreEqual(version, prop.CurrentVersion);
@@ -302,7 +302,7 @@ namespace Hyperstore.Tests.HyperGraph
                 version = v;
             }
 
-            prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo.GetProperty("Name"));
+            prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo, mel.SchemaInfo.GetProperty("Name"));
             Assert.IsNotNull(prop);
             Assert.AreEqual("am2", prop.Value);
             Assert.AreEqual(version, prop.CurrentVersion);
@@ -312,7 +312,7 @@ namespace Hyperstore.Tests.HyperGraph
         [TestCategory("Hypergraph")]
         public async Task GetPropertyTest2()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
 
@@ -350,7 +350,7 @@ namespace Hyperstore.Tests.HyperGraph
 
             Task.WaitAll(t1, t2);
 
-            var prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo.GetProperty("Name"));
+            var prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo, mel.SchemaInfo.GetProperty("Name"));
             Assert.IsNotNull(prop);
             Assert.AreEqual("am2", prop.Value);
         }
@@ -360,7 +360,7 @@ namespace Hyperstore.Tests.HyperGraph
         //[TestMethod()]
         //public void AddEdgeTest()
         //{
-        //    var store = new Store();
+        //    var store = StoreBuilder.Init().CreateStore();
 
         //    var domain = store.LoadDomainModelAsync("Test1");
         //    var id1 = new Identity("Test1", "1");
@@ -400,7 +400,7 @@ namespace Hyperstore.Tests.HyperGraph
         //[TestMethod()]
         //public void RemoveEdgeTest()
         //{
-        //    var store = new Store();
+        //    var store = StoreBuilder.Init().CreateStore();
 
         //    var domain = store.LoadDomainModelAsync("Test1");
         //    var id1 = new Identity("Test1", "1");
@@ -448,7 +448,7 @@ namespace Hyperstore.Tests.HyperGraph
         [TestCategory("Hypergraph")]
         public async Task MultiGraphTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
 
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test1");
@@ -486,7 +486,7 @@ namespace Hyperstore.Tests.HyperGraph
         [TestCategory("Hypergraph")]
         public async Task TraversalTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test"); 
 

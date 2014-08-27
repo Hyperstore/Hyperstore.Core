@@ -14,13 +14,18 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
-namespace Hyperstore.Modeling.DomainExtension
+
+using Hyperstore.Modeling.HyperGraph;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Hyperstore.Modeling
 {
-    internal enum DomainExtensionStatus
+    internal interface IScopeHyperGraph
     {
-        Disabled,
-        Enabled,
-        ExtensionEnabled
+        IEnumerable<IModelElement> GetExtensionElements(ISchemaElement schemaElement = null);
+        IEnumerable<INodeInfo> GetDeletedElements();
     }
 }

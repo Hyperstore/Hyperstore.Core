@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -64,7 +64,7 @@ namespace Hyperstore.Modeling.Events
         ///  (Optional) the version.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public AddEntityEvent(string domainModelName, string extensionName, Identity id, Identity schemaEntityId, Guid correlationId, long version = 1)
+        public AddEntityEvent(string domainModelName, string extensionName, Identity id, Identity schemaEntityId, Guid correlationId, long version)
             : base(domainModelName, extensionName, version, correlationId)
         {
             Contract.Requires(id, "id");

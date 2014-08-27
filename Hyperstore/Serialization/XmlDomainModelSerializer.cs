@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using Hyperstore.Modeling.Commands;
-using Hyperstore.Modeling.DomainExtension;
+using Hyperstore.Modeling.Scopes;
 using Hyperstore.Modeling.Metadata;
 
 #endregion

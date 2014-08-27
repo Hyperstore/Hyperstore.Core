@@ -39,7 +39,7 @@ namespace Hyperstore.Tests.Memory
         [TestCategory("MemoryIndex")]
         public async Task CreateIndexDefinition()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
             var graph = ((Hyperstore.Modeling.Domain.IHyperGraphProvider)domain).InnerGraph;
@@ -53,7 +53,7 @@ namespace Hyperstore.Tests.Memory
         [TestCategory("MemoryIndex")]
         public async Task IsImpactedIndexDefinition()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
             var graph = ((Hyperstore.Modeling.Domain.IHyperGraphProvider)domain).InnerGraph;
@@ -67,7 +67,7 @@ namespace Hyperstore.Tests.Memory
         [TestCategory("MemoryIndex")]
         public async Task AddInTransaction()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
 
@@ -93,7 +93,7 @@ namespace Hyperstore.Tests.Memory
         [TestCategory("MemoryIndex")]
         public async Task UpdateIndexedProperty()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
 
@@ -130,7 +130,7 @@ namespace Hyperstore.Tests.Memory
         [TestCategory("MemoryIndex")]
         public async Task RemoveIndexElement()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
 

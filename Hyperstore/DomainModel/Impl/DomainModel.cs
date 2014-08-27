@@ -28,6 +28,7 @@ using Hyperstore.Modeling.Messaging;
 using Hyperstore.Modeling.Metadata;
 using Hyperstore.Modeling.Statistics;
 using Hyperstore.Modeling.Validations;
+using Hyperstore.Modeling.Adapters;
 
 #endregion
 
@@ -104,7 +105,7 @@ namespace Hyperstore.Modeling.Domain
         ///  true if same, false if not.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public bool IsSame(IDomainModel domain)
+        public bool SameAs(IDomainModel domain)
         {
             return domain != null && String.Compare(Name, domain.Name, StringComparison.OrdinalIgnoreCase) == 0 && String.Compare(ExtensionName, domain.ExtensionName, StringComparison.OrdinalIgnoreCase) == 0;
         }
@@ -353,7 +354,7 @@ namespace Hyperstore.Modeling.Domain
         ///  The extension.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual async Task<IDomainModelExtension> LoadExtensionAsync(string extensionName, IDomainConfiguration configuration = null)
+        public virtual async Task<IDomainScope> CreateScopeAsync(string extensionName, IDomainConfiguration configuration = null)
         {
             Contract.RequiresNotEmpty(extensionName, "extensionName");
             CheckInitialized();
@@ -365,8 +366,30 @@ namespace Hyperstore.Modeling.Domain
             if ((Store.Options & StoreOptions.EnableExtensions) != StoreOptions.EnableExtensions)
                 throw new Exception("Extensions are not enabled. Use StoreOptions.EnableExtensions when instancing the store.");
 
-            var domain = await Store.CreateDomainModelAsync(extensionName, configuration, (resolver, name) => new DomainExtension.DomainModelExtension(resolver, ((IDomainModel)this).Name, extensionName, this));
-            return (IDomainModelExtension)domain;
+            var domain = await Store.CreateDomainModelAsync(extensionName, configuration, (resolver, name) => new Scopes.DomainScope(resolver, ((IDomainModel)this).Name, extensionName, this));
+            return (IDomainScope)domain;
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Loads.
+        /// </summary>
+        /// <param name="adapter">
+        ///  The adapter.
+        /// </param>
+        /// <param name="query">
+        ///  The query.
+        /// </param>
+        /// <param name="option">
+        ///  The option.
+        /// </param>
+        /// <returns>
+        ///  Number of nodes loaded
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        public Task<int> LoadAsync(Query query = null, MergeOption option = MergeOption.OverwriteChanges, IGraphAdapter adapter=null)
+        {
+            return InnerGraph.LoadNodes(query ?? new Query { DomainModel = this.Name }, option, adapter);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -966,6 +989,9 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="ownerId">
         ///  The identifier that owns this item.
         /// </param>
+        /// <param name="ownerSchema">
+        ///  The schema that owns this item.
+        /// </param>
         /// <param name="property">
         ///  The property.
         /// </param>
@@ -973,13 +999,13 @@ namespace Hyperstore.Modeling.Domain
         ///  The property value.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual PropertyValue GetPropertyValue(Identity ownerId, ISchemaProperty property)
+        public virtual PropertyValue GetPropertyValue(Identity ownerId, ISchemaElement ownerSchema, ISchemaProperty property)
         {
             Contract.Requires(ownerId, "ownerId");
             Contract.Requires(property, "property");
             CheckInitialized();
 
-            var prop = InnerGraph.GetPropertyValue(ownerId, property);
+            var prop = InnerGraph.GetPropertyValue(ownerId, ownerSchema, property);
             if (prop == null || prop.CurrentVersion == 0)
             {
                 prop = new PropertyValue { Value = property.DefaultValue, CurrentVersion = 0 };

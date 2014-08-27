@@ -527,7 +527,7 @@ namespace Hyperstore.Modeling
                     return -1;
 
                 item = DomainModel.Store.GetElement(id, SchemaRelationship.End);
-                if (item == null || !item.DomainModel.IsSame(Source.DomainModel))
+                if (item == null || !item.DomainModel.SameAs(Source.DomainModel))
                     return -1;
             }
             else // Opposite
@@ -540,7 +540,7 @@ namespace Hyperstore.Modeling
                     return -1;
 
                 item = DomainModel.Store.GetElement(id, SchemaRelationship.Start);
-                if (item == null || !item.DomainModel.IsSame(End.DomainModel))
+                if (item == null || !item.DomainModel.SameAs(End.DomainModel))
                     return -1;
             }
 
@@ -617,7 +617,7 @@ namespace Hyperstore.Modeling
                 item = _items[pos];
                 if (item != null)
                 {
-                    if( (Source != null && !item.DomainModel.IsSame(Source.DomainModel)) || (End != null && !item.DomainModel.IsSame(End.DomainModel)))
+                    if( (Source != null && !item.DomainModel.SameAs(Source.DomainModel)) || (End != null && !item.DomainModel.SameAs(End.DomainModel)))
                         return false;
 
                     if (End != null && item.DomainModel != End.DomainModel && SchemaRelationship.Cardinality == Cardinality.ManyToMany)

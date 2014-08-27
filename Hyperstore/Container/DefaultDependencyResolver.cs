@@ -60,7 +60,7 @@ namespace Hyperstore.Modeling.Container
         ///  Default constructor.
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
-        public DefaultDependencyResolver()
+        internal DefaultDependencyResolver()
         {
         }
 

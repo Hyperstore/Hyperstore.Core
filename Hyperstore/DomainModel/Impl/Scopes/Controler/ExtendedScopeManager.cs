@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -25,16 +25,30 @@ using Hyperstore.Modeling.Utils;
 
 #endregion
 
-namespace Hyperstore.Modeling.DomainExtension
+namespace Hyperstore.Modeling.Scopes
 {
     /// <summary>
     ///     Controleur permettant de gérer les domaines et les extensions
     /// </summary>
-    internal class ExtensionModelControler<T> : IDomainModelControler<T> where T : class,IDomainModel 
+    internal class ExtendedScopeManager<T> : IScopeManager<T> where T : class,IDomainModel
     {
         private readonly List<Guid> _activeSessions = new List<Guid>();
         private readonly ReaderWriterLockSlim _sync = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
-        private List<DomainStack<T>> _domainModels = new List<DomainStack<T>>();
+        private List<ScopeStack<T>> _domainModels = new List<ScopeStack<T>>();
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Constructor.
+        /// </summary>
+        /// <param name="store">
+        ///  The store.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
+        public ExtendedScopeManager(IHyperstore store)
+        {
+            Contract.Requires(store, "store");
+            Store = store;
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -44,14 +58,14 @@ namespace Hyperstore.Modeling.DomainExtension
         ///-------------------------------------------------------------------------------------------------
         void IDisposable.Dispose()
         {
-            var activeSessions =  _activeSessions.ToList();
-            if( Session.Current != null)
-                activeSessions = activeSessions.Except(new[] {Session.Current.SessionId}).ToList();
+            var activeSessions = _activeSessions.ToList();
+            if (Session.Current != null)
+                activeSessions = activeSessions.Except(new[] { Session.Current.SessionId }).ToList();
 
             for (var i = _domainModels.Count - 1; i >= 0; i--)
             {
                 var dm = _domainModels[i];
-                dm.Unload(activeSessions); 
+                dm.Unload(activeSessions);
             }
 
             // wait fin des session actives 
@@ -78,7 +92,7 @@ namespace Hyperstore.Modeling.DomainExtension
         ///  .
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void ActivateDomain(T domain)
+        public void ActivateScope(T domain)
         {
             DebugContract.Requires(domain != null);
 
@@ -103,10 +117,10 @@ namespace Hyperstore.Modeling.DomainExtension
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void UnloadDomainExtension(T domainModel)
+        public void UnloadScope(T domainModel)
         {
             DebugContract.Requires(domainModel != null);
-            DomainStack<T> item;
+            ScopeStack<T> item;
             List<Guid> activeSessions;
 
             _sync.EnterWriteLock();
@@ -140,10 +154,10 @@ namespace Hyperstore.Modeling.DomainExtension
         ///  The domain model.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public T GetDomainModel(string name)
+        public T GetActiveScope(string name)
         {
             DebugContract.RequiresNotEmpty(name, "name");
-            return GetDomainModels()
+            return GetActiveScopes()
                     .FirstOrDefault(d => String.Compare(d.Name, name, StringComparison.CurrentCultureIgnoreCase) == 0);
         }
 
@@ -158,11 +172,11 @@ namespace Hyperstore.Modeling.DomainExtension
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void RegisterDomainModel(T domainModel)
+        public void RegisterScope(T domainModel)
         {
-            DebugContract.Requires(domainModel!=null);
+            DebugContract.Requires(domainModel != null);
 
-            var domainExtension = domainModel as IExtension;
+            var domainExtension = domainModel as IScope;
 
             _sync.EnterWriteLock();
             try
@@ -177,7 +191,7 @@ namespace Hyperstore.Modeling.DomainExtension
                     {
                         var throwException = true;
                         Guid? sessionId = null;
-                        if( Session.Current != null )
+                        if (Session.Current != null)
                             sessionId = Session.Current.SessionId;
 
                         if (item.GetDomainModel(sessionId) == null)
@@ -195,9 +209,9 @@ namespace Hyperstore.Modeling.DomainExtension
                             throw new Exception(string.Format(ExceptionMessages.TryToLoadDuplicateDomainModelFormat, domainModel.Name));
                     }
 
-                    var tmp = new List<DomainStack<T>>(_domainModels)
+                    var tmp = new List<ScopeStack<T>>(_domainModels)
                               {
-                                      new DomainStack<T>(domainModel.Name, new DomainInfos<T>(domainModel))
+                                      new ScopeStack<T>(domainModel.Name, new DomainInfo<T>(domainModel))
                               };
                     _domainModels = tmp;
                 }
@@ -215,7 +229,7 @@ namespace Hyperstore.Modeling.DomainExtension
             }
         }
 
-        private DomainStack<T> FindDomainStack(string domainModelName)
+        private ScopeStack<T> FindDomainStack(string domainModelName)
         {
             // Ici on est sur d'être appelé dans une section protégé
             var item = _domainModels.FirstOrDefault(s => s.IsNameEquals(domainModelName));
@@ -227,24 +241,21 @@ namespace Hyperstore.Modeling.DomainExtension
             return item;
         }
 
-        public IEnumerable<T> GetAllDomainModelIncludingExtensions()
+        private IEnumerable<T> GetActiveScopes()
         {
             _sync.EnterReadLock();
             try
             {
-                var list = new List<T>(8); 
+                var list = new List<T>(8);
                 var sessionId = Session.Current != null ? Session.Current.SessionId : Guid.Empty;
                 var tmp = _domainModels;
 
                 // Recherche les domaines actifs pour une session
                 foreach (var swap in tmp)
                 {
-                    foreach(var dm in swap)
-                    {
-                        var item = dm.GetDomainModel(sessionId);
-                        if (item != null)
-                            list.Add(item);
-                    }
+                    var item = swap.GetDomainModel(sessionId);
+                    if (item != null)
+                        list.Add(item);
                 }
                 return list;
             }
@@ -262,7 +273,7 @@ namespace Hyperstore.Modeling.DomainExtension
         ///  An enumerator that allows foreach to be used to process the domain models in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<T> GetDomainModels()
+        public IEnumerable<T> GetAllScopes()
         {
             _sync.EnterReadLock();
             try
@@ -274,9 +285,12 @@ namespace Hyperstore.Modeling.DomainExtension
                 // Recherche les domaines actifs pour une session
                 foreach (var swap in tmp)
                 {
-                    var dm = swap.GetDomainModel(sessionId);
-                    if (dm != null)
-                        list.Add(dm);
+                    foreach (var dm in swap)
+                    {
+                        var item = dm.GetDomainModel(sessionId);
+                        if (item != null)
+                            list.Add(item);
+                    }
                 }
                 return list;
             }
@@ -335,7 +349,7 @@ namespace Hyperstore.Modeling.DomainExtension
         ///     unload
         ///     an extension in any position.
         /// </summary>
-        private class DomainStack<TElement> : IEnumerable<IDomainInfos<TElement>> where TElement : class,IDomainModel
+        private class ScopeStack<TElement> : IEnumerable<IDomainInfos<TElement>> where TElement : class,IDomainModel
         {
             /// <summary>
             ///     Domain (first position) and its extensions
@@ -353,7 +367,7 @@ namespace Hyperstore.Modeling.DomainExtension
             ///  The domain infos.
             /// </param>
             ///-------------------------------------------------------------------------------------------------
-            public DomainStack(string name, DomainInfos<TElement> domainInfos)
+            public ScopeStack(string name, DomainInfo<TElement> domainInfos)
             {
                 Name = name;
                 _list = new LinkedList<IDomainInfos<TElement>>();
@@ -418,7 +432,7 @@ namespace Hyperstore.Modeling.DomainExtension
                 extension.Store.Trace.WriteTrace(TraceCategory.DomainControler, "*** Load extension for {1} with active sessions {0}", String.Join(",", activeSessions), extension.Name);
 
                 // TODO gestion si l'extension est en train d'être déchargée
-                var item = new ExtensionInfos<TElement>(extension, new List<Guid>(activeSessions));
+                var item = new ExtensionInfo<TElement>(extension, new List<Guid>(activeSessions));
                 if (_list.Any(i => i.IsExtensionNameExists(extension.ExtensionName)))
                     throw new Exception("Duplicate extension name " + extension.ExtensionName);
 
@@ -482,6 +496,46 @@ namespace Hyperstore.Modeling.DomainExtension
             {
                 return _list.GetEnumerator();
             }
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the store.
+        /// </summary>
+        /// <value>
+        ///  The store.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public IHyperstore Store
+        {
+            get;
+            private set;
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the enumerator.
+        /// </summary>
+        /// <returns>
+        ///  The enumerator.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        public IEnumerator<T> GetEnumerator()
+        {
+            return GetActiveScopes().GetEnumerator();
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the enumerator.
+        /// </summary>
+        /// <returns>
+        ///  The enumerator.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetActiveScopes().GetEnumerator();
         }
     }
 }

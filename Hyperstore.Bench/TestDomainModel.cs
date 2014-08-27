@@ -45,12 +45,6 @@ namespace Hyperstore.Tests.Model
     {
         private Action<IDependencyResolver> _prepareDependency;
 
-        public TestDomainDefinition()
-            : this((Action<IDependencyResolver>)null)
-        {
-            UsesIdGenerator(r => new LongIdGenerator());
-        }
-
         public TestDomainDefinition(Action<IDependencyResolver> handler = null)
             : base("Hyperstore.Tests", DomainBehavior.Observable)
         {
@@ -81,13 +75,15 @@ namespace Hyperstore.Tests.Model
         //        XExtendsBaseClass.DefineProperty("OthersX", XReferencesX);
         //    }
 
-        //protected override IDependencyResolver PrepareDependencyResolver(IDependencyResolver parentResolver)
-        //{
-        //    var resolver = base.PrepareDependencyResolver(parentResolver);
-        //    if (_prepareDependency != null)
-        //        _prepareDependency(resolver);
-        //    resolver.Register<global::Hyperstore.Modeling.ISynchronizationContext>(new global::Hyperstore.Modeling.Utils.UIDispatcher());
-        //    return resolver;
-        //}
+        protected override IDependencyResolver PrepareDependencyResolver(IDependencyResolver parentResolver)
+        {
+            UsingIdGenerator(r => new LongIdGenerator());
+
+            var resolver = base.PrepareDependencyResolver(parentResolver);
+            if (_prepareDependency != null)
+                _prepareDependency(resolver);
+            //resolver.Register<global::Hyperstore.Modeling.ISynchronizationContext>(new global::Hyperstore.Modeling.Utils.UIDispatcher());
+            return resolver;
+        }
     }
 }

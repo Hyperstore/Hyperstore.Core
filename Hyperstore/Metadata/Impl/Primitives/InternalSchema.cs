@@ -526,7 +526,7 @@ namespace Hyperstore.Modeling.Metadata
             get { return null; }
         }
 
-        Task<IDomainModelExtension> IDomainModel.LoadExtensionAsync(string extensionName, IDomainConfiguration config)
+        Task<IDomainScope> IDomainModel.CreateScopeAsync(string extensionName, IDomainConfiguration config)
         {
             throw new NotSupportedException();
         }
@@ -694,12 +694,17 @@ namespace Hyperstore.Modeling.Metadata
             yield break;
         }
 
-        PropertyValue IDomainModel.GetPropertyValue(Identity ownerId, ISchemaProperty propertyMetadata)
+        PropertyValue IDomainModel.GetPropertyValue(Identity ownerId, ISchemaElement ownerSchema, ISchemaProperty propertyMetadata)
         {
             throw new NotSupportedException();
         }
 
         IModelRelationship IDomainModel.GetRelationship(Identity id, ISchemaRelationship metaclass)
+        {
+            throw new NotSupportedException();
+        }
+
+        Task<int> IDomainModel.LoadAsync(Query query, MergeOption option, Hyperstore.Modeling.Adapters.IGraphAdapter adapter)
         {
             throw new NotSupportedException();
         }
@@ -715,7 +720,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  true if same, false if not.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public bool IsSame(IDomainModel domainModel)
+        public bool SameAs(IDomainModel domainModel)
         {
             return domainModel == this;
         }

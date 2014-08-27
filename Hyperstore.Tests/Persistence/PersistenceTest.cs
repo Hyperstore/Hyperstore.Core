@@ -40,7 +40,7 @@ namespace Hyperstore.Tests.Commands
         [TestMethod]
         public async Task SerializationWithMetadatas()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
             CreateGraph(domain);
@@ -55,7 +55,7 @@ namespace Hyperstore.Tests.Commands
             Assert.AreEqual(7, domain.GetEntities().Count());
             Assert.AreEqual(8, domain.GetRelationships().Count());
 
-            store = new Store();
+            store = StoreBuilder.New().Create();
 
             using (var reader = new FileStream("test.xml", FileMode.Open))
             {
@@ -70,7 +70,7 @@ namespace Hyperstore.Tests.Commands
         [TestMethod]
         public async Task Serialization()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             var domain = await store.CreateDomainModelAsync("Test");
             CreateGraph(domain);
@@ -83,7 +83,7 @@ namespace Hyperstore.Tests.Commands
             Assert.AreEqual(7, domain.GetEntities().Count());
             Assert.AreEqual(8, domain.GetRelationships().Count());
 
-            store = new Store();
+            store = StoreBuilder.New().Create();
             await store.LoadSchemaAsync(new TestDomainDefinition());
             domain = await store.CreateDomainModelAsync("Test");
             using (var reader = new FileStream("test.xml", FileMode.Open))
@@ -102,7 +102,7 @@ namespace Hyperstore.Tests.Commands
         //    if (File.Exists("test2.xml"))
         //        File.Delete("test2.xml");
 
-        //    var store = new Store();
+        //    var store = StoreBuilder.Init().CreateStore();
         //    var domain = store.LoadDomainModel("Test", new TestDomainDefinition()
         //        .Uses<IDomainPersistenceProvider>(r=>new XmlPersistenceProvider("test2.xml"), ModelType.Model)                
         //        ) as TestDomain;
@@ -112,7 +112,7 @@ namespace Hyperstore.Tests.Commands
         //    Assert.AreEqual(8, domain.GetRelationships().Count());
         //    store.Close();
 
-        //    store = new Store();
+        //    store = StoreBuilder.Init().CreateStore();
         //    domain = store.LoadDomainModel("Test", new TestDomainDefinition()
         //        .Uses<IDomainPersistenceProvider>(r => new XmlPersistenceProvider("test2.xml"), ModelType.Model)
         //        ) as TestDomain;
@@ -127,7 +127,7 @@ namespace Hyperstore.Tests.Commands
         //    if (File.Exists("test2.xml"))
         //        File.Delete("test2.xml");
 
-        //    var store = new Store();
+        //    var store = StoreBuilder.Init().CreateStore();
         //    var domain = store.LoadDomainModel("Test", new TestDomainDefinition()
         //        .Uses<IDomainPersistenceProvider>(r => new XmlPersistenceProvider("test2.xml"), ModelType.Model)
         //        ) as TestDomain;
@@ -137,7 +137,7 @@ namespace Hyperstore.Tests.Commands
         //    Assert.AreEqual(8, domain.GetRelationships().Count());
         //    store.UnloadDomainOrExtension(domain);
 
-        //    store = new Store();
+        //    store = StoreBuilder.Init().CreateStore();
         //    domain = store.LoadDomainModel("Test", new TestDomainDefinition()
         //        .Uses<IDomainPersistenceProvider>(r => new XmlPersistenceProvider("test2.xml"), ModelType.Model)
         //        ) as TestDomain;

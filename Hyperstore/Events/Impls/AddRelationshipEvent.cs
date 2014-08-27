@@ -76,7 +76,7 @@ namespace Hyperstore.Modeling.Events
         ///  (Optional) the version.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public AddRelationshipEvent(string domainModelName, string extensionName, Identity relationshipId, Identity schemaRelationshipId, Identity startId, Identity startSchema, Identity endId, Identity endSchema, Guid correlationId, long version = 1)
+        public AddRelationshipEvent(string domainModelName, string extensionName, Identity relationshipId, Identity schemaRelationshipId, Identity startId, Identity startSchema, Identity endId, Identity endSchema, Guid correlationId, long version)
             : base(domainModelName, extensionName, version, correlationId)
         {
             Contract.Requires(relationshipId, "relationshipId");

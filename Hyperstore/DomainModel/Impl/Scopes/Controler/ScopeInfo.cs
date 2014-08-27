@@ -22,9 +22,9 @@ using System.Collections.Generic;
 
 #endregion
 
-namespace Hyperstore.Modeling.DomainExtension
+namespace Hyperstore.Modeling.Scopes
 {
-    internal abstract class InfosBase<T> where T : class, IDomainModel
+    internal abstract class ScopeInfo<T> where T : class, IDomainModel
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -55,11 +55,11 @@ namespace Hyperstore.Modeling.DomainExtension
         ///  The domain.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        protected InfosBase(T domain)
+        protected ScopeInfo(T domain)
         {
             DebugContract.Requires(domain!=null);
             DomainModel = domain;
-            Status = DomainExtensionStatus.Disabled;
+            Status = ScopeStatus.Disabled;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -70,7 +70,7 @@ namespace Hyperstore.Modeling.DomainExtension
         ///  The status.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        protected DomainExtensionStatus Status { get; set; }
+        protected ScopeStatus Status { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -103,7 +103,7 @@ namespace Hyperstore.Modeling.DomainExtension
                 {
                     if (PendingLoadSessions == null)
                     {
-                        DebugContract.Requires(Status == DomainExtensionStatus.ExtensionEnabled);
+                        DebugContract.Requires(Status == ScopeStatus.ScopeEnabled);
                         DomainModel.Store.Trace.WriteTrace(TraceCategory.DomainControler, " - Set extensionDomain to null");
                         PendingUnloadSessions = null; // Raz que si _pendingLoadSessions est null
 
@@ -131,9 +131,9 @@ namespace Hyperstore.Modeling.DomainExtension
         ///  The status after unload.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected virtual DomainExtensionStatus GetStatusAfterUnload()
+        protected virtual ScopeStatus GetStatusAfterUnload()
         {
-            return DomainExtensionStatus.Enabled;
+            return ScopeStatus.Enabled;
         }
 
         ///-------------------------------------------------------------------------------------------------

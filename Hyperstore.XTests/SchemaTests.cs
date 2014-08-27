@@ -58,7 +58,7 @@ namespace Hyperstore.XTests
         [Fact]
         public void CheckPrimitives()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             Assert.NotNull(store.GetSchemaInfo<string>());
             Assert.NotNull(store.GetSchemaInfo<int>());
             Assert.NotNull(store.GetSchemaInfo<double>());
@@ -67,7 +67,7 @@ namespace Hyperstore.XTests
         [Fact]
         public async void SchemaEvents()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             var def = new MySchemaDefinition();            
             var schema = await store.LoadSchemaAsync(def);
             Assert.True(def.IsSchemaLoaded);
@@ -76,7 +76,7 @@ namespace Hyperstore.XTests
         [Fact]
         public async Task LoadSchema()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             var def = new MySchemaDefinition();
             var schema = await store.LoadSchemaAsync(def);
             Assert.NotNull(schema);
@@ -87,7 +87,7 @@ namespace Hyperstore.XTests
         [Fact]
         public async void UnloadSchema()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             var def = new MySchemaDefinition();
             var schema = await store.LoadSchemaAsync(def);
             Assert.NotNull(schema);
@@ -98,7 +98,7 @@ namespace Hyperstore.XTests
         [Fact]
         public void UnloadPrimitivesSchemaMustFailed()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             var schema = store.Schemas.First();
             Assert.NotNull(schema);
             Assert.IsType<PrimitivesSchema>(schema);

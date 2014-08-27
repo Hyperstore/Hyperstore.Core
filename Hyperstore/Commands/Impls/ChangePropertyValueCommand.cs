@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -50,8 +50,8 @@ namespace Hyperstore.Modeling.Commands
         ///  (Optional) The version (corresponding at UtcNow.Ticks)
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public ChangePropertyValueCommand(IModelElement element, ISchemaProperty propertySchema, object value, long? version=null)
-            : base(element.DomainModel)
+        public ChangePropertyValueCommand(IModelElement element, ISchemaProperty propertySchema, object value, long? version = null)
+            : base(element.DomainModel, version)
         {
             Contract.Requires(element, "element");
             Contract.Requires(propertySchema, "propertySchema");
@@ -59,18 +59,7 @@ namespace Hyperstore.Modeling.Commands
             Value = value;
             Element = element;
             SchemaProperty = propertySchema;
-            Version = version;
         }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets or sets the version (UtcNow.Ticks)
-        /// </summary>
-        /// <value>
-        ///  The version.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public long? Version { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -81,6 +70,16 @@ namespace Hyperstore.Modeling.Commands
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         public object OldValue { get; set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the old version.
+        /// </summary>
+        /// <value>
+        ///  The old version.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public long OldVersion { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -136,18 +135,18 @@ namespace Hyperstore.Modeling.Commands
                 if (pv == null)
                     return null;
                 OldValue = pv.OldValue;
-                Version = pv.CurrentVersion;
+                OldVersion = pv.CurrentVersion;
             }
 
-            var evt = new ChangePropertyValueEvent(Element.DomainModel.Name, 
-                                                   DomainModel.ExtensionName, 
-                                                   Element.Id, 
-                                                   Element.SchemaInfo.Id, 
-                                                   SchemaProperty.Id, 
-                                                   SchemaProperty.Name, 
-                                                   SchemaProperty.PropertySchema.Serialize(Value), 
+            var evt = new ChangePropertyValueEvent(Element.DomainModel.Name,
+                                                   DomainModel.ExtensionName,
+                                                   Element.Id,
+                                                   Element.SchemaInfo.Id,
+                                                   SchemaProperty.Id,
+                                                   SchemaProperty.Name,
+                                                   SchemaProperty.PropertySchema.Serialize(Value),
                                                    SchemaProperty.PropertySchema.Serialize(OldValue),
-                                                   context.CurrentSession.SessionId, 
+                                                   context.CurrentSession.SessionId,
                                                    Version.Value);
             evt.SetInternalValue(Value, OldValue);
             return evt;

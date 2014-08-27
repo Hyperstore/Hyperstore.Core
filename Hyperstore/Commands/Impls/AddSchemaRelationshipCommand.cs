@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -54,8 +54,8 @@ namespace Hyperstore.Modeling.Commands
         ///  The end.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public AddSchemaRelationshipCommand(ISchema domainModel, Identity id, ISchemaRelationship schemaRelationship, ISchemaElement start, ISchemaElement end)
-            : base(domainModel)
+        public AddSchemaRelationshipCommand(ISchema domainModel, Identity id, ISchemaRelationship schemaRelationship, ISchemaElement start, ISchemaElement end, long? version = null)
+            : base(domainModel, version)
         {
             Contract.Requires(id, "id");
             Contract.Requires(schemaRelationship, "schemaRelationship");
@@ -134,7 +134,7 @@ namespace Hyperstore.Modeling.Commands
                 updatableMetaModel.AddRelationshipSchema(Id, SchemaRelationship, Start, End);
             }
 
-            return new AddSchemaRelationshipEvent(DomainModel.Name, DomainModel.ExtensionName, Id, SchemaRelationship.Id, Start.Id, Start.SchemaInfo.Id, End.Id, End.SchemaInfo.Id, context.CurrentSession.SessionId, 1);
+            return new AddSchemaRelationshipEvent(DomainModel.Name, DomainModel.ExtensionName, Id, SchemaRelationship.Id, Start.Id, Start.SchemaInfo.Id, End.Id, End.SchemaInfo.Id, context.CurrentSession.SessionId, Version.Value);
         }
 
         ///-------------------------------------------------------------------------------------------------

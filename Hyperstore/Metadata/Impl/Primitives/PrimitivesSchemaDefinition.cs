@@ -125,7 +125,7 @@ namespace Hyperstore.Modeling.Metadata
         /// <param name="factory">  The factory. </param>
         /// <returns>   An ISchemaDefinition. </returns>
         ///-------------------------------------------------------------------------------------------------
-        public ISchemaDefinition Uses<TService>(Func<IDependencyResolver, TService> factory) where TService : class
+        public ISchemaDefinition Using<TService>(Func<IDependencyResolver, TService> factory) where TService : class
         {
             throw new NotImplementedException();
         }
@@ -160,7 +160,7 @@ namespace Hyperstore.Modeling.Metadata
         /// <param name="inputProperty">    (Optional) the input property. </param>
         /// <returns>   An ISchemaDefinition. </returns>
         ///-------------------------------------------------------------------------------------------------
-        public ISchemaDefinition RegisterInEventBus( Messaging.ChannelPolicy outputProperty, Messaging.ChannelPolicy inputProperty = null)
+        public ISchemaDefinition SubscribeToEventBus( Messaging.ChannelPolicy outputProperty, Messaging.ChannelPolicy inputProperty = null)
         {
             throw new NotImplementedException();
         }
@@ -173,7 +173,7 @@ namespace Hyperstore.Modeling.Metadata
         /// <param name="factory">  The factory. </param>
         /// <returns>   An ISchemaDefinition. </returns>
         ///-------------------------------------------------------------------------------------------------
-        public ISchemaDefinition UsesIdGenerator(Func<IDependencyResolver, IIdGenerator> factory)
+        public ISchemaDefinition UsingIdGenerator(Func<IDependencyResolver, IIdGenerator> factory)
         {
             throw new NotImplementedException();
         }

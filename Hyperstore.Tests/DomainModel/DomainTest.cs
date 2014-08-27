@@ -39,7 +39,7 @@ namespace Hyperstore.Tests
         [TestMethod]
         public async Task ReferenceInRelationshipTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             var schema = await store.LoadSchemaAsync(new TestDomainDefinition());
             var dm = await store.CreateDomainModelAsync("Test"); 
 
@@ -61,7 +61,7 @@ namespace Hyperstore.Tests
         [TestMethod]
         public async Task SetReferenceTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             var schema = await store.LoadSchemaAsync(new TestDomainDefinition());
             var dm = await store.CreateDomainModelAsync("Test"); 
             XExtendsBaseClass x = null;
@@ -100,7 +100,7 @@ namespace Hyperstore.Tests
         [TestMethod]
         public async Task SetReferenceFromOppositeTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             var schema = await store.LoadSchemaAsync(new TestDomainDefinition());
             var dm = await store.CreateDomainModelAsync("Test"); 
             XExtendsBaseClass x = null;
@@ -139,9 +139,9 @@ namespace Hyperstore.Tests
         [TestMethod]
         public async Task PropertyChangedOnSetReferenceTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             var schema = await store.LoadSchemaAsync(new TestDomainDefinition((Action<IDependencyResolver>)null));
-            var dm = await store.CreateDomainModelAsync("Test", new DomainConfiguration().UsesIdGenerator(r=>new LongIdGenerator()));
+            var dm = await store.CreateDomainModelAsync("Test", new DomainConfiguration().UsingIdGenerator(r=>new LongIdGenerator()));
             XExtendsBaseClass x = null;
             YClass y = null;
             
@@ -188,7 +188,7 @@ namespace Hyperstore.Tests
         [TestMethod]
         public async Task SetReferenceToNullTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             var schema = await store.LoadSchemaAsync(new TestDomainDefinition());
             var dm = await store.CreateDomainModelAsync("Test"); 
             XExtendsBaseClass x = null;
@@ -216,7 +216,7 @@ namespace Hyperstore.Tests
         [TestMethod]
         public async Task SetReferenceToNullFromOppositeTest()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             var schema = await store.LoadSchemaAsync(new TestDomainDefinition());
             var dm = await store.CreateDomainModelAsync("Test"); 
             XExtendsBaseClass x = null;
@@ -245,7 +245,7 @@ namespace Hyperstore.Tests
         [TestMethod]
         public async Task SetReferenceToNullFromOpposite2Test()
         {
-            var store = new Store();
+            var store = StoreBuilder.New().Create();
             var schema = await store.LoadSchemaAsync(new TestDomainDefinition());
             var dm = await store.CreateDomainModelAsync("Test"); 
             XExtendsBaseClass x = null;

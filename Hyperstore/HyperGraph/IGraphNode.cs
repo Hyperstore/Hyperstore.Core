@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using Hyperstore.Modeling.MemoryStore;
@@ -27,50 +27,10 @@ namespace Hyperstore.Modeling.HyperGraph
     /// <summary>
     ///  Noeud du graphe pouvant représenter un noeud simple et une relation.
     /// </summary>
-    /// <seealso cref="T:ICloneable{IGraphNode}"/>
+    /// <seealso cref="T:IRelationshipInfo"/>
     ///-------------------------------------------------------------------------------------------------
-    public interface IGraphNode : INodeInfo
+    public interface IGraphNode : IRelationshipInfo
     {
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the start.
-        /// </summary>
-        /// <value>
-        ///  The identifier of the start.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        Identity StartId { get; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the start meta class id.
-        /// </summary>
-        /// <value>
-        ///  The identifier of the start schema.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        Identity StartSchemaId { get; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the end.
-        /// </summary>
-        /// <value>
-        ///  The identifier of the end.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        Identity EndId { get; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the end meta class id.
-        /// </summary>
-        /// <value>
-        ///  The identifier of the end schema.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        Identity EndSchemaId { get; }
-
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Gets the type of the node.
@@ -80,5 +40,5 @@ namespace Hyperstore.Modeling.HyperGraph
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         NodeType NodeType { get; }
-    } 
+    }
 }

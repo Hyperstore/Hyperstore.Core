@@ -24,7 +24,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.Domain;
-using Hyperstore.Modeling.DomainExtension;
+using Hyperstore.Modeling.Scopes;
 using Hyperstore.Modeling.Container;
 using Hyperstore.Modeling.MemoryStore;
 using Hyperstore.Modeling.Messaging;
@@ -71,8 +71,8 @@ namespace Hyperstore.Modeling
         #region Fields
         private List<IEventNotifier> _notifiersCache;
         private readonly IDependencyResolver _dependencyResolver;
-        private readonly IDomainModelControler<IDomainModel> _domainControler;
-        private readonly IDomainModelControler<ISchema> _schemaControler;
+        private readonly IScopeManager<IDomainModel> _domainControler;
+        private readonly IScopeManager<ISchema> _schemaControler;
         private readonly ILockManager _lockManager;
         private Statistics.Statistics _statistics;
         private bool _disposed;
@@ -154,22 +154,12 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Constructor. </summary>
-        /// <param name="options">  (Optional) options for controlling the operation. </param>
-        /// <param name="id">       (Optional) The identifier. </param>
-        ///-------------------------------------------------------------------------------------------------
-        public Store(StoreOptions options = StoreOptions.None, Guid? id = null)
-            : this(new DefaultDependencyResolver(), options, id)
-        {
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>   Constructor. </summary>
         /// <exception cref="Exception">    Thrown when an exception error condition occurs. </exception>
         /// <param name="resolver"> The resolver. </param>
         /// <param name="options">  (Optional) options for controlling the operation. </param>
         /// <param name="id">       (Optional) The identifier. </param>
         ///-------------------------------------------------------------------------------------------------
-        public Store(IDependencyResolver resolver, StoreOptions options = StoreOptions.None, Guid? id = null)
+        internal Store(IDependencyResolver resolver, StoreOptions options = StoreOptions.None, Guid? id = null)
         {
             Contract.Requires(resolver, "resolver");
 
@@ -189,8 +179,8 @@ namespace Hyperstore.Modeling
             DefaultSessionConfiguration.IsolationLevel = SessionIsolationLevel.ReadCommitted;
             DefaultSessionConfiguration.SessionTimeout = TimeSpan.FromMinutes(1);
 
-            _domainControler = ((options & StoreOptions.EnableExtensions) == StoreOptions.EnableExtensions) ? (IDomainModelControler<IDomainModel>)new ExtensionModelControler<IDomainModel>() : new DomainModelControler<IDomainModel>();
-            _schemaControler = ((options & StoreOptions.EnableExtensions) == StoreOptions.EnableExtensions) ? (IDomainModelControler<ISchema>)new ExtensionModelControler<ISchema>() : new DomainModelControler<ISchema>();
+            _domainControler = ((options & StoreOptions.EnableExtensions) == StoreOptions.EnableExtensions) ? (IScopeManager<IDomainModel>)new ExtendedScopeManager<IDomainModel>(this) : new ScopeManager<IDomainModel>(this);
+            _schemaControler = ((options & StoreOptions.EnableExtensions) == StoreOptions.EnableExtensions) ? (IScopeManager<ISchema>)new ExtendedScopeManager<ISchema>(this) : new ScopeManager<ISchema>(this);
 
             _lockManager = _dependencyResolver.Resolve<ILockManager>() ?? new LockManager(_dependencyResolver);
             EventBus = _dependencyResolver.Resolve<IEventBus>();
@@ -838,7 +828,7 @@ namespace Hyperstore.Modeling
         public void UnloadDomainOrExtension(IDomainModel domainOrExtension)
         {
             Contract.Requires(domainOrExtension, "domainOrExtension");
-            _domainControler.UnloadDomainExtension(domainOrExtension);
+            _domainControler.UnloadScope(domainOrExtension);
             _notifiersCache = null;
         }
 
@@ -864,7 +854,7 @@ namespace Hyperstore.Modeling
             if (schemaOrExtension is PrimitivesSchema)
                 throw new Exception("Primitives schema canot be unloaded");
 
-            _schemaControler.UnloadDomainExtension(schemaOrExtension);
+            _schemaControler.UnloadScope(schemaOrExtension);
             _notifiersCache = null;
             InitializeSchemaInfoCache();
         }
@@ -877,11 +867,11 @@ namespace Hyperstore.Modeling
         ///  The domain models.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<IDomainModel> DomainModels
+        public IModelList<IDomainModel> DomainModels
         {
             get
             {
-                return _domainControler.GetDomainModels();
+                return _domainControler;
             }
         }
 
@@ -893,11 +883,11 @@ namespace Hyperstore.Modeling
         ///  The schemas.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<ISchema> Schemas
+        public IModelList<ISchema> Schemas
         {
             get
             {
-                return _schemaControler.GetDomainModels();
+                return _schemaControler;
             }
         }
 
@@ -906,11 +896,11 @@ namespace Hyperstore.Modeling
             if (_notifiersCache != null)
                 return _notifiersCache;
 
-            var domainNotifiers = _domainControler.GetAllDomainModelIncludingExtensions()
+            var domainNotifiers = _domainControler.GetAllScopes()
                     .Where(domainModel => domainModel.Events is IEventNotifier)
                     .Select(domainmodel => domainmodel.Events as IEventNotifier);
 
-            var schemaNotifiers = _schemaControler.GetAllDomainModelIncludingExtensions()
+            var schemaNotifiers = _schemaControler.GetAllScopes()
                     .Where(domainModel => domainModel.Events is IEventNotifier)
                     .Select(domainmodel => domainmodel.Events as IEventNotifier);
 
@@ -936,7 +926,7 @@ namespace Hyperstore.Modeling
             if (name == PrimitivesSchema.DomainModelName)
                 return PrimitivesSchema.Current;
 
-            return _domainControler.GetDomainModel(name) ?? GetSchema(name);
+            return _domainControler.GetActiveScope(name) ?? GetSchema(name);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -954,7 +944,7 @@ namespace Hyperstore.Modeling
         public ISchema GetSchema(string name)
         {
             Contract.RequiresNotEmpty(name, "name");
-            return _schemaControler.GetDomainModel(name);
+            return _schemaControler.GetActiveScope(name);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -1176,7 +1166,7 @@ namespace Hyperstore.Modeling
             var domainModel = domainFactory != null ? domainFactory(domainResolver, name) : new DomainModel(domainResolver, name);
 
             // Enregistrement du domaine au niveau du store
-            _domainControler.RegisterDomainModel(domainModel);
+            _domainControler.RegisterScope(domainModel);
 
             // Initialisation du domaine
             domainModel.Configure();
@@ -1205,7 +1195,7 @@ namespace Hyperstore.Modeling
                 }
             }
 
-            _domainControler.ActivateDomain(domainModel);
+            _domainControler.ActivateScope(domainModel);
             _notifiersCache = null;
 
             return domainModel;
@@ -1256,7 +1246,7 @@ namespace Hyperstore.Modeling
                 var schema = desc.CreateSchema(domainResolver);
 
                 // Enregistrement du domaine au niveau du store
-                _schemaControler.RegisterDomainModel(schema);
+                _schemaControler.RegisterScope(schema);
 
                 // Initialisation du domaine
                 await schema.Initialize(desc);
@@ -1266,7 +1256,7 @@ namespace Hyperstore.Modeling
                     EventBus.RegisterDomainPolicies(schema, r.OutputProperty, r.InputProperty);
                 }
 
-                _schemaControler.ActivateDomain(schema);
+                _schemaControler.ActivateScope(schema);
                 _notifiersCache = null;
                 session.AcceptChanges();
 
@@ -1415,7 +1405,7 @@ namespace Hyperstore.Modeling
         {
             // Chargement du méta modéle
             domainModel.Configure();
-            _domainControler.ActivateDomain(domainModel);
+            _domainControler.ActivateScope(domainModel);
         }
 
         #endregion

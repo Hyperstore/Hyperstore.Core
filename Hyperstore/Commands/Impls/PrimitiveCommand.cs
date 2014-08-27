@@ -14,7 +14,8 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
+using System;
 namespace Hyperstore.Modeling.Commands
 {
     ///-------------------------------------------------------------------------------------------------
@@ -33,10 +34,11 @@ namespace Hyperstore.Modeling.Commands
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        protected PrimitiveCommand(IDomainModel domainModel)
+        protected PrimitiveCommand(IDomainModel domainModel, long? version)
         {
             Contract.Requires(domainModel, "domainModel");
             DomainModel = domainModel;
+            Version = version ?? DateTime.UtcNow.Ticks;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -48,5 +50,15 @@ namespace Hyperstore.Modeling.Commands
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         public IDomainModel DomainModel { get; private set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the version (UtcNow.Ticks)
+        /// </summary>
+        /// <value>
+        ///  The version.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public long? Version { get; private set; }
     }
 }

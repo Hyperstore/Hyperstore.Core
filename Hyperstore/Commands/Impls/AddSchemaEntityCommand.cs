@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -48,8 +48,8 @@ namespace Hyperstore.Modeling.Commands
         ///  The entity schema.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public AddSchemaEntityCommand(ISchema domainModel, Identity id, ISchemaEntity entitySchema)
-            : base(domainModel)
+        public AddSchemaEntityCommand(ISchema domainModel, Identity id, ISchemaEntity entitySchema, long? version = null)
+            : base(domainModel, version)
         {
             Contract.Requires(id, "id");
             Contract.Requires(entitySchema, "entitySchema");
@@ -104,7 +104,7 @@ namespace Hyperstore.Modeling.Commands
                 updatableMetaModel.AddEntitySchema(Id, SchemaEntity);
             }
 
-            return new AddSchemaEntityEvent(DomainModel.Name, DomainModel.ExtensionName, Id, SchemaEntity.Id, context.CurrentSession.SessionId, 1);
+            return new AddSchemaEntityEvent(DomainModel.Name, DomainModel.ExtensionName, Id, SchemaEntity.Id, context.CurrentSession.SessionId, Version.Value);
         }
 
         ///-------------------------------------------------------------------------------------------------

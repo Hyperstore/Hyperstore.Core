@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using Hyperstore.Modeling.Events;
@@ -48,8 +48,8 @@ namespace Hyperstore.Modeling.Commands
         ///  The property schema.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public RemovePropertyCommand(IDomainModel domainModel, Identity ownerId, ISchemaElement schemaElement, ISchemaProperty propertySchema)
-            : base(domainModel)
+        public RemovePropertyCommand(IDomainModel domainModel, Identity ownerId, ISchemaElement schemaElement, ISchemaProperty propertySchema, long? version = null)
+            : base(domainModel, version)
         {
             Contract.Requires(domainModel, "domainModel");
             Contract.Requires(schemaElement, "schemaElement");
@@ -131,7 +131,7 @@ namespace Hyperstore.Modeling.Commands
 
             using (CodeMarker.MarkBlock("RemovePropertyCommand.Handle"))
             {
-                var pv = DomainModel.GetPropertyValue(ElementId, SchemaProperty);
+                var pv = DomainModel.GetPropertyValue(ElementId, SchemaElement, SchemaProperty);
                 if (pv != null)
                 {
                     OldValue = pv.OldValue;
