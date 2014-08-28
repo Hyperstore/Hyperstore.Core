@@ -56,16 +56,16 @@ namespace Hyperstore.Modeling
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Prepare dependency resolver.
+        ///  Prepare the scoped services container.
         /// </summary>
-        /// <param name="defaultDependencyResolver">
-        ///  The default dependency resolver.
+        /// <param name="container">
+        ///  The default services container.
         /// </param>
         /// <returns>
-        ///  An IDependencyResolver.
+        ///  An services container.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IDependencyResolver PrepareDependencyResolver(IDependencyResolver defaultDependencyResolver);
+        IServicesContainer PrepareScopedContainer(IServicesContainer container);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -97,7 +97,7 @@ namespace Hyperstore.Modeling
         ///  An ISchemaDefinition.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        void Using<TService>(Func<IDependencyResolver, TService> factory) where TService : class;
+        void Using<TService>(Func<IServicesContainer, TService> factory) where TService : class;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

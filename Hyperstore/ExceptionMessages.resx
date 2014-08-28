@@ -153,8 +153,8 @@
   <data name="DefaultConfigurationIsNull" xml:space="preserve">
     <value>Default configuration is null</value>
   </data>
-  <data name="DependencyResolverMustInheritFromDefaultDependencyResolver" xml:space="preserve">
-    <value>DependencyResolver must inherit from DefaultDependencyResolver</value>
+  <data name="Dependency_servicesMustInheritFromDefaultDependencyResolver" xml:space="preserve">
+    <value>services must inherit from DefaultDependencyResolver</value>
   </data>
   <data name="Diagnostic_ApplicationError" xml:space="preserve">
     <value>Application error</value>

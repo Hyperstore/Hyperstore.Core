@@ -44,6 +44,8 @@ namespace Hyperstore.Modeling
     ///-------------------------------------------------------------------------------------------------
     public class Store : IHyperstore, IDomainManager
     {
+        private const string platformTypeName = "Hyperstore.Modeling.Platform.PlatformServicesInstance, Hyperstore.Platform";
+
         #region Events
 
         ///-------------------------------------------------------------------------------------------------
@@ -70,7 +72,7 @@ namespace Hyperstore.Modeling
 
         #region Fields
         private List<IEventNotifier> _notifiersCache;
-        private readonly IDependencyResolver _dependencyResolver;
+        private readonly IServicesContainer _services;
         private readonly IScopeManager<IDomainModel> _domainControler;
         private readonly IScopeManager<ISchema> _schemaControler;
         private readonly ILockManager _lockManager;
@@ -126,16 +128,16 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the dependency resolver.
+        ///  Gets the services container.
         /// </summary>
         /// <value>
-        ///  The dependency resolver.
+        ///  The services container.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IDependencyResolver DependencyResolver
+        public IServicesContainer Services
         {
             [DebuggerStepThrough]
-            get { return _dependencyResolver; }
+            get { return _services; }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -155,13 +157,13 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Constructor. </summary>
         /// <exception cref="Exception">    Thrown when an exception error condition occurs. </exception>
-        /// <param name="resolver"> The resolver. </param>
+        /// <param name="services"> The services. </param>
         /// <param name="options">  (Optional) options for controlling the operation. </param>
         /// <param name="id">       (Optional) The identifier. </param>
         ///-------------------------------------------------------------------------------------------------
-        internal Store(IDependencyResolver resolver, StoreOptions options = StoreOptions.None, Guid? id = null)
+        internal Store(IServicesContainer services, StoreOptions options = StoreOptions.None, Guid? id = null)
         {
-            Contract.Requires(resolver, "resolver");
+            Contract.Requires(services, "services");
 
             DefaultSessionConfiguration = new SessionConfiguration();
             InitializeSchemaInfoCache();
@@ -169,12 +171,9 @@ namespace Hyperstore.Modeling
             _options = options;
             Id = id ?? Guid.NewGuid();
             _statistics = new Statistics.Statistics();
-            _dependencyResolver = resolver;
+            _services = services;
 
-            var r = resolver as IDependencyResolverInternal;
-            if (r == null)
-                throw new Exception(ExceptionMessages.DependencyResolverMustInheritFromDefaultDependencyResolver);
-            r.SetStore(this);
+            ConfigureServices();
 
             DefaultSessionConfiguration.IsolationLevel = SessionIsolationLevel.ReadCommitted;
             DefaultSessionConfiguration.SessionTimeout = TimeSpan.FromMinutes(1);
@@ -182,8 +181,47 @@ namespace Hyperstore.Modeling
             _domainControler = ((options & StoreOptions.EnableExtensions) == StoreOptions.EnableExtensions) ? (IScopeManager<IDomainModel>)new ExtendedScopeManager<IDomainModel>(this) : new ScopeManager<IDomainModel>(this);
             _schemaControler = ((options & StoreOptions.EnableExtensions) == StoreOptions.EnableExtensions) ? (IScopeManager<ISchema>)new ExtendedScopeManager<ISchema>(this) : new ScopeManager<ISchema>(this);
 
-            _lockManager = _dependencyResolver.Resolve<ILockManager>() ?? new LockManager(_dependencyResolver);
-            EventBus = _dependencyResolver.Resolve<IEventBus>();
+            _lockManager = _services.Resolve<ILockManager>() ?? new LockManager(_services);
+            EventBus = _services.Resolve<IEventBus>();
+        }
+
+        private void ConfigureServices()
+        {
+            var platformfactoryType = Type.GetType(platformTypeName, false);
+            if (platformfactoryType != null)
+            {
+                Activator.CreateInstance(platformfactoryType);
+            }
+
+            // Store instance
+            _services.Register<IHyperstore>(this);
+            _services.Register<Hyperstore.Modeling.Statistics.IStatistics>(this.Statistics);
+            // Global
+            _services.Register<ITransactionManager>(new TransactionManager(_services));
+            _services.Register<Hyperstore.Modeling.HyperGraph.IIdGenerator>(r => new GuidIdGenerator());
+
+            // Par domain et par metamodel => Nouvelle instance à chaque fois
+            _services.Register<Hyperstore.Modeling.HyperGraph.IHyperGraph>(r => new HyperGraph.HyperGraph(r));
+            _services.Register<IEventManager>(r => new Hyperstore.Modeling.Events.EventManager(r));
+            _services.Register<IModelElementFactory>(r => Hyperstore.Modeling.Platform.PlatformServices.Current.CreateModelElementFactory());
+            _services.Register<ICommandManager>(r => new CommandManager());
+            _services.Register<IEventBus>(r => new EventBus(r));
+            _services.Register<IConstraintsManager>(r => new ConstraintsManager(r));
+            _services.Register<Hyperstore.Modeling.Events.IEventDispatcher>(r => new Hyperstore.Modeling.Events.EventDispatcher(r, true));
+            var ctx = System.Threading.SynchronizationContext.Current;
+            if (ctx != null)
+                _services.Register(ctx);
+
+            _services.Register<ISynchronizationContext>(Hyperstore.Modeling.Platform.PlatformServices.Current.CreateDispatcher());
+
+            // découverte automatique (sans mef) de l'extension rx
+            const string typeName = "Hyperstore.ReactiveExtension.SubjectFactory, Hyperstore.ReactiveExtension";
+            var rxfactoryType = Type.GetType(typeName, false);
+            if (rxfactoryType != null)
+            {
+                var factory = (ISubjectFactory)Activator.CreateInstance(rxfactoryType);
+                _services.Register(factory);
+            }
         }
 
         #endregion
@@ -206,7 +244,7 @@ namespace Hyperstore.Modeling
             {
                 if (_traceProvider == null)
                 {
-                    _traceProvider = DependencyResolver.Resolve<IHyperstoreTrace>() ?? new EmptyHyperstoreTrace();
+                    _traceProvider = Services.Resolve<IHyperstoreTrace>() ?? new EmptyHyperstoreTrace();
                 }
                 return _traceProvider;
             }
@@ -1138,6 +1176,9 @@ namespace Hyperstore.Modeling
         /// <param name="config">
         ///  (Optional) the configuration.
         /// </param>
+        /// <param name="services">
+        ///  The services.
+        /// </param>
         /// <param name="domainFactory">
         ///  (Optional) the domain factory.
         /// </param>
@@ -1145,7 +1186,7 @@ namespace Hyperstore.Modeling
         ///  The new domain model.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        async Task<IDomainModel> IDomainManager.CreateDomainModelAsync(string name, IDomainConfiguration config, IDependencyResolver parentResolver, Func<IDependencyResolver, string, IDomainModel> domainFactory)
+        async Task<IDomainModel> IDomainManager.CreateDomainModelAsync(string name, IDomainConfiguration config, IServicesContainer services, Func<IServicesContainer, string, IDomainModel> domainFactory)
         {
             Conventions.CheckValidDomainName(name);
 
@@ -1155,15 +1196,14 @@ namespace Hyperstore.Modeling
             // On s'assure que le domaine primitif est bien chargé
             await Initialize();
 
-            var resolver = (parentResolver ?? DependencyResolver) as IDependencyResolverInternal;
-            if (resolver == null)
-                throw new Exception(ExceptionMessages.DependencyResolverMustInheritFromDefaultDependencyResolver);
+            if (services == null)
+            {
+                services = Services.NewScope();
+                if (config != null)
+                    config.PrepareScopedContainer(services);
+            }
 
-            var domainResolver = resolver.CreateDependencyResolver();
-            if (config != null)
-                config.PrepareDependencyResolver(domainResolver);
-
-            var domainModel = domainFactory != null ? domainFactory(domainResolver, name) : new DomainModel(domainResolver, name);
+            var domainModel = domainFactory != null ? domainFactory(services, name) : new DomainModel(services, name);
 
             // Enregistrement du domaine au niveau du store
             _domainControler.RegisterScope(domainModel);
@@ -1173,7 +1213,7 @@ namespace Hyperstore.Modeling
 
             if (config != null)
             {
-                foreach (var r in domainResolver.ResolveAll<RegistrationEventBusSetting>())
+                foreach (var r in services.ResolveAll<RegistrationEventBusSetting>())
                 {
                     EventBus.RegisterDomainPolicies(domainModel, r.OutputProperty, r.InputProperty);
                 }
@@ -1181,7 +1221,7 @@ namespace Hyperstore.Modeling
 
             if (config != null)
             {
-                var preloadAction = domainResolver.GetSettingValue<Action<IDomainModel>>(DomainConfiguration.PreloadActionKey);
+                var preloadAction = services.GetSettingValue<Action<IDomainModel>>(DomainConfiguration.PreloadActionKey);
                 if (preloadAction != null)
                 {
                     await Task.Run(() =>
@@ -1201,7 +1241,7 @@ namespace Hyperstore.Modeling
             return domainModel;
         }
 
-        async Task<ISchema> IDomainManager.LoadSchemaAsync(ISchemaDefinition desc, IDependencyResolver parentResolver)
+        async Task<ISchema> IDomainManager.LoadSchemaAsync(ISchemaDefinition desc, IServicesContainer parentContainer)
         {
             Contract.Requires(desc, "desc");
             Conventions.CheckValidName(desc.SchemaName, true);
@@ -1220,16 +1260,12 @@ namespace Hyperstore.Modeling
             {
                 desc.LoadDependentSchemas(this);
 
-                // Création du resolver du domaine à partir du resolver maitre (du store)
-                var resolver = (parentResolver ?? DependencyResolver) as IDependencyResolverInternal;
-                if (resolver == null)
-                    throw new Exception(ExceptionMessages.DependencyResolverMustInheritFromDefaultDependencyResolver);
+                // Création du services du domaine à partir du services maitre (du store)
+                var domainContainer = (parentContainer ?? Services).NewScope();
 
-                var domainResolver = resolver.CreateDependencyResolver();
+                desc.PrepareScopedContainer(domainContainer);
 
-                desc.PrepareDependencyResolver(domainResolver);
-
-                var schema = desc.CreateSchema(domainResolver);
+                var schema = desc.CreateSchema(domainContainer);
 
                 // Enregistrement du domaine au niveau du store
                 _schemaControler.RegisterScope(schema);
@@ -1237,7 +1273,7 @@ namespace Hyperstore.Modeling
                 // Initialisation du domaine
                 await schema.Initialize(desc);
 
-                foreach (var r in domainResolver.ResolveAll<RegistrationEventBusSetting>())
+                foreach (var r in domainContainer.ResolveAll<RegistrationEventBusSetting>())
                 {
                     EventBus.RegisterDomainPolicies(schema, r.OutputProperty, r.InputProperty);
                 }
@@ -1344,7 +1380,7 @@ namespace Hyperstore.Modeling
 
                 _domainControler.Dispose();
                 _schemaControler.Dispose();
-                DependencyResolver.Dispose();
+                Services.Dispose();
 
                 _schemaInfosCache.Clear();
                 _notifiersCache.Clear();

@@ -132,17 +132,17 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the dependency resolver.
+        ///  Gets the services container.
         /// </summary>
         /// <value>
-        ///  The dependency resolver.
+        ///  The services container.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        IDependencyResolver DependencyResolver { get; }
+        IServicesContainer Services { get; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Resolves the or register singleton.
+        ///  Resolves or register a scoped service.
         /// </summary>
         /// <typeparam name="TService">
         ///  The type of the service.

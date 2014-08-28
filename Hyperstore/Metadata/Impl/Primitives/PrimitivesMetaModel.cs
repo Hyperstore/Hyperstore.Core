@@ -48,12 +48,12 @@ namespace Hyperstore.Modeling.Metadata
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <param name="resolver">
-        ///  The resolver.
+        /// <param name="services">
+        ///  The services.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        internal PrimitivesSchema(IDependencyResolver resolver)
-            : base(resolver, "", DomainModelName)
+        internal PrimitivesSchema(IServicesContainer services)
+            : base(services, "", DomainModelName)
         {
         }
 

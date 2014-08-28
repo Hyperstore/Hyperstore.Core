@@ -31,7 +31,7 @@ namespace Hyperstore.Modeling.Scopes
     {
         private readonly IConstraintsManager _extendedDomainConstraints;
         private readonly SchemaConstraintExtensionMode _extensionMode;
-        private readonly IDependencyResolver _resolver;
+        private readonly IServicesContainer _services;
         private IConstraintsManager _domainConstraints;
         private ISchema _schema;
 
@@ -41,8 +41,8 @@ namespace Hyperstore.Modeling.Scopes
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <param name="resolver">
-        ///  The resolver.
+        /// <param name="services">
+        ///  The services.
         /// </param>
         /// <param name="extendedSchema">
         ///  The extended domain model.
@@ -51,14 +51,14 @@ namespace Hyperstore.Modeling.Scopes
         ///  The mode.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public DomainExtensionConstraintsManager(IDependencyResolver resolver, ISchema extendedSchema, SchemaConstraintExtensionMode mode)
+        public DomainExtensionConstraintsManager(IServicesContainer services, ISchema extendedSchema, SchemaConstraintExtensionMode mode)
         {
-            DebugContract.Requires(resolver);
+            DebugContract.Requires(services);
             DebugContract.Requires(extendedSchema);
 
             _extendedDomainConstraints = extendedSchema.Constraints;
             _extensionMode = mode;
-            _resolver = resolver;
+            _services = services;
             _schema = extendedSchema;
         }
 
@@ -67,7 +67,7 @@ namespace Hyperstore.Modeling.Scopes
             DebugContract.Requires(domainModel);
 
             _schema = domainModel as ISchema;
-            _domainConstraints = _resolver.Resolve<IConstraintsManager>();
+            _domainConstraints = _services.Resolve<IConstraintsManager>();
             var service = _domainConstraints as IDomainService;
             if (service != null)
                 service.SetDomain(domainModel);

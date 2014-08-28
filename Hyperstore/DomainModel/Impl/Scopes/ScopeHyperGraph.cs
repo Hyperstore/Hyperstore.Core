@@ -36,16 +36,16 @@ namespace Hyperstore.Modeling.Scopes
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <param name="resolver">
-        ///  The resolver.
+        /// <param name="services">
+        ///  The services.
         /// </param>
         /// <param name="extendedDomain">
         ///  The extended domain.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public ScopeHyperGraph(IDependencyResolver resolver, IHyperGraphProvider extendedDomain) : base(resolver)
+        public ScopeHyperGraph(IServicesContainer services, IHyperGraphProvider extendedDomain) : base(services)
         {
-            DebugContract.Requires(resolver);
+            DebugContract.Requires(services);
             DebugContract.Requires(extendedDomain);
 
             _extendedDomain = extendedDomain;
@@ -55,7 +55,7 @@ namespace Hyperstore.Modeling.Scopes
             _deletedElements = new Hyperstore.Modeling.MemoryStore.TransactionalMemoryStore(
                             _extendedDomain.Name,
                             5,
-                            _extendedDomain.DependencyResolver.Resolve<Hyperstore.Modeling.MemoryStore.ITransactionManager>()
+                            _extendedDomain.Services.Resolve<Hyperstore.Modeling.MemoryStore.ITransactionManager>()
                             );
         }
 

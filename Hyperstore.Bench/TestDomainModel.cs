@@ -43,9 +43,9 @@ namespace Hyperstore.Tests.Model
 
     public partial class TestDomainDefinition
     {
-        private Action<IDependencyResolver> _prepareDependency;
+        private Action<IServicesContainer> _prepareDependency;
 
-        public TestDomainDefinition(Action<IDependencyResolver> handler = null)
+        public TestDomainDefinition(Action<IServicesContainer> handler = null)
             : base("Hyperstore.Tests", DomainBehavior.Observable)
         {
             _prepareDependency = handler;
@@ -75,15 +75,15 @@ namespace Hyperstore.Tests.Model
         //        XExtendsBaseClass.DefineProperty("OthersX", XReferencesX);
         //    }
 
-        protected override IDependencyResolver PrepareDependencyResolver(IDependencyResolver parentResolver)
+        protected override IServicesContainer PrepareScopedContainer(IServicesContainer parentResolver)
         {
             Using<Hyperstore.Modeling.HyperGraph.IIdGenerator>(r => new LongIdGenerator());
 
-            var resolver = base.PrepareDependencyResolver(parentResolver);
+            var services = base.PrepareScopedContainer(parentResolver);
             if (_prepareDependency != null)
-                _prepareDependency(resolver);
-            //resolver.Register<global::Hyperstore.Modeling.ISynchronizationContext>(new global::Hyperstore.Modeling.Utils.UIDispatcher());
-            return resolver;
+                _prepareDependency(services);
+            //services.Register<global::Hyperstore.Modeling.ISynchronizationContext>(new global::Hyperstore.Modeling.Utils.UIDispatcher());
+            return services;
         }
     }
 }

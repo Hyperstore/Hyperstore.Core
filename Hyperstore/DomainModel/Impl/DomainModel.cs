@@ -43,7 +43,7 @@ namespace Hyperstore.Modeling.Domain
     [DebuggerDisplay("Domain {Name} {ExtensionName}")]
     public class DomainModel : IUpdatableDomainModel, IHyperGraphProvider
     {
-        private readonly IDependencyResolver _dependencyResolver;
+        private readonly IServicesContainer _services;
         private readonly object _resolversLock = new object();
         private bool _disposed;
 
@@ -75,23 +75,23 @@ namespace Hyperstore.Modeling.Domain
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <param name="dependencyResolver">
-        ///  The dependency resolver.
+        /// <param name="services">
+        ///  The services container.
         /// </param>
         /// <param name="name">
         ///  The name.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public DomainModel(IDependencyResolver dependencyResolver, string name)
+        public DomainModel(IServicesContainer services, string name)
         {
-            Contract.Requires(dependencyResolver, "dependencyResolver");
+            Contract.Requires(services, "services");
             Contract.RequiresNotEmpty(name, "name");
 
             InstanceId = Guid.NewGuid().ToString("N");
 
             Name = name.ToLower();
-            _dependencyResolver = dependencyResolver;
-            Store = DependencyResolver.Resolve<IHyperstore>();
+            _services = services;
+            Store = Services.Resolve<IHyperstore>();
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -247,7 +247,7 @@ namespace Hyperstore.Modeling.Domain
         ///-------------------------------------------------------------------------------------------------
         public TService Resolve<TService>(bool throwExceptionIfNotExists = true) where TService : class
         {
-            return Resolve(() => DependencyResolver.Resolve<TService>(), throwExceptionIfNotExists);
+            return Resolve(() => Services.Resolve<TService>(), throwExceptionIfNotExists);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -313,10 +313,10 @@ namespace Hyperstore.Modeling.Domain
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the model element resolver.
+        ///  Gets the model element services.
         /// </summary>
         /// <value>
-        ///  The model element resolver.
+        ///  The model element services.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         public virtual IModelElementFactory ModelElementFactory
@@ -326,15 +326,15 @@ namespace Hyperstore.Modeling.Domain
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the dependency resolver.
+        ///  Gets the services container.
         /// </summary>
         /// <value>
-        ///  The dependency resolver.
+        ///  The services container.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IDependencyResolver DependencyResolver
+        public IServicesContainer Services
         {
-            get { return _dependencyResolver; }
+            get { return _services; }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -366,7 +366,13 @@ namespace Hyperstore.Modeling.Domain
             if ((Store.Options & StoreOptions.EnableExtensions) != StoreOptions.EnableExtensions)
                 throw new Exception("Extensions are not enabled. Use StoreOptions.EnableExtensions when instancing the store.");
 
-            var domain = await ((IDomainManager)Store).CreateDomainModelAsync(extensionName, configuration, DependencyResolver, (resolver, name) => new Scopes.DomainScope(resolver, ((IDomainModel)this).Name, extensionName, this));
+            var services = Services.NewScope();
+            // Removed graphadapter from services
+            services.Register<IGraphAdapter>(null);
+
+            var domain = await ((IDomainManager)Store).CreateDomainModelAsync(extensionName, configuration, services,
+                                                                              (r, name) => new Scopes.DomainScope(r, ((IDomainModel)this).Name, extensionName, this)
+                                                                             );
             return (IDomainScope)domain;
         }
 
@@ -416,7 +422,7 @@ namespace Hyperstore.Modeling.Domain
             {
                 result = Resolve<TService>(false);
                 if (result == null)
-                    DependencyResolver.Register(service);
+                    Services.Register(service);
 
                 return result ?? service;
             }
@@ -535,7 +541,7 @@ namespace Hyperstore.Modeling.Domain
         ///-------------------------------------------------------------------------------------------------
         protected virtual IHyperGraph ResolveHyperGraph()
         {
-            return DependencyResolver.Resolve<IHyperGraph>();
+            return Services.Resolve<IHyperGraph>();
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -548,7 +554,7 @@ namespace Hyperstore.Modeling.Domain
         ///-------------------------------------------------------------------------------------------------
         protected virtual ICommandManager ResolveCommandManager()
         {
-            return DependencyResolver.Resolve<ICommandManager>();
+            return Services.Resolve<ICommandManager>();
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -561,7 +567,7 @@ namespace Hyperstore.Modeling.Domain
         ///-------------------------------------------------------------------------------------------------
         protected virtual IModelElementFactory ResolveModelElementFactory()
         {
-            return DependencyResolver.Resolve<IModelElementFactory>();
+            return Services.Resolve<IModelElementFactory>();
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -574,7 +580,7 @@ namespace Hyperstore.Modeling.Domain
         ///-------------------------------------------------------------------------------------------------
         protected virtual IIdGenerator ResolveIdGenerator()
         {
-            return DependencyResolver.Resolve<IIdGenerator>();
+            return Services.Resolve<IIdGenerator>();
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -587,7 +593,7 @@ namespace Hyperstore.Modeling.Domain
         ///-------------------------------------------------------------------------------------------------
         protected virtual IEventManager ResolveEventManager()
         {
-            return DependencyResolver.Resolve<IEventManager>();
+            return Services.Resolve<IEventManager>();
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -652,7 +658,7 @@ namespace Hyperstore.Modeling.Domain
                 disposable.Dispose();
             _modelElementFactory = null;
 
-            DependencyResolver.Dispose();
+            Services.Dispose();
             _disposed = true;
         }
 

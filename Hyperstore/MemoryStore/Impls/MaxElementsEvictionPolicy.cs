@@ -42,8 +42,8 @@ namespace Hyperstore.Modeling.MemoryStore
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <param name="resolver">
-        ///  Dependency resolver
+        /// <param name="services">
+        ///  Services container
         /// </param>
         /// <param name="max">
         ///  Number of element indicating when the eviction process begins
@@ -52,13 +52,13 @@ namespace Hyperstore.Modeling.MemoryStore
         ///  (Optional)Do not evict element which has been created in this last delay (Default = 10 000ms)
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public MaxElementsEvictionPolicy(IDependencyResolver resolver, int max, int minLifeTimeInMs = 10000)
+        public MaxElementsEvictionPolicy(IServicesContainer services, int max, int minLifeTimeInMs = 10000)
         {
             Contract.Requires(max > 0, "max");
             Contract.Requires(minLifeTimeInMs >= 0, "minLifeTimeInMs");
-            Contract.Requires(resolver, "resolver");
+            Contract.Requires(services, "services");
 
-            _store = resolver.Resolve<IHyperstore>();
+            _store = services.Resolve<IHyperstore>();
             _max = max;
             _minLifeTime = minLifeTimeInMs;
         }

@@ -61,19 +61,16 @@ namespace Hyperstore.Tests.Container
         public void CreateDefault()
         {
             var store = StoreBuilder.New().Create();
-            IDependencyResolverInternal r = new DefaultDependencyResolver();
-            r.SetStore(store);
 
-            Assert.IsNotNull(r.Resolve<IHyperstore>());
-            r.Dispose();
+            Assert.IsNotNull(store.Services.Resolve<IHyperstore>());
+            store.Dispose();
         }
 
         [TestMethod]
         public void RegisterSingleton()
         {
             var store = StoreBuilder.New().Create();
-            IDependencyResolverInternal r = new DefaultDependencyResolver();
-            r.SetStore(store);
+            var r = store.Services;
             r.Register<IService>(new Service() );
 
             Assert.AreEqual(1, r.Resolve<IService>().Id);
@@ -81,7 +78,7 @@ namespace Hyperstore.Tests.Container
             Assert.AreEqual(1, r.Resolve<IService>().Id);
             Assert.AreEqual(1, r.Resolve<IService>().Id);
 
-            r = r.CreateDependencyResolver() as IDependencyResolverInternal;
+            r = r.NewScope();
             Assert.AreEqual(1, r.Resolve<IService>().Id);
             Assert.AreEqual(1, r.Resolve<IService>().Id);
 
@@ -91,26 +88,41 @@ namespace Hyperstore.Tests.Container
         }
 
         [TestMethod]
+        public void HideServiceInScope()
+        {
+            var store = StoreBuilder.New().Create();
+            var r = store.Services.NewScope();
+            r.Register<IService>(new Service());
+
+            Assert.AreEqual(1, r.Resolve<IService>().Id);
+
+            r = r.NewScope();
+            r.Register<IService>(null);
+
+            Assert.IsNull(r.Resolve<IService>());
+            r.Dispose();
+        }
+
+        [TestMethod]
         public void RegisterByDomain()
         {
             var store = StoreBuilder.New().Create();
-            IDependencyResolverInternal r1 = new DefaultDependencyResolver();
-            r1.SetStore(store);
-            r1.Register<IService>(resolver => new Service());
+            var r1 = store.Services;
+            r1.Register<IService>(services => new Service());
 
             Assert.AreEqual(1, r1.Resolve<IService>().Id);
             Assert.AreEqual(1, r1.Resolve<IService>().Id);
             Assert.AreEqual(1, r1.Resolve<IService>().Id);
             Assert.AreEqual(1, r1.Resolve<IService>().Id);
 
-            var r2 = r1.CreateDependencyResolver();
+            var r2 = r1.NewScope();
             Assert.AreEqual(2, r2.Resolve<IService>().Id);
             Assert.AreEqual(2, r2.Resolve<IService>().Id);
 
             Assert.AreEqual(2, r2.Resolve<IService>().Id);
             Assert.AreEqual(2, r2.Resolve<IService>().Id);
 
-            var r3 = r1.CreateDependencyResolver();
+            var r3 = r1.NewScope();
             Assert.AreEqual(3, r3.Resolve<IService>().Id);
             Assert.AreEqual(3, r3.Resolve<IService>().Id);
 
@@ -125,13 +137,12 @@ namespace Hyperstore.Tests.Container
         public void RegisterByDomainAndModel()
         {
             var store = StoreBuilder.New().Create();
-            IDependencyResolverInternal r1 = new DefaultDependencyResolver();
-            r1.SetStore(store);
+            var r1 = store.Services;
             r1.Register<IService>(new Service());
 
             Assert.AreEqual(1, r1.Resolve<IService>().Id);
 
-            var r2 = r1.CreateDependencyResolver();
+            var r2 = r1.NewScope();
             r2.Register<IService>(new Service());
 
             Assert.AreEqual(2, r2.Resolve<IService>().Id);
@@ -145,58 +156,41 @@ namespace Hyperstore.Tests.Container
         public void RegisterMany()
         {
             var store = StoreBuilder.New().Create();
-            IDependencyResolverInternal r1 = new DefaultDependencyResolver();
-            r1.SetStore(store);
+            var r1 = store.Services;
             r1.Register<IService>(new Service());
             r1.Register<IService>(new Service());
 
             Assert.AreEqual(2, r1.ResolveAll<IService>().Count());
             Assert.AreEqual(2, r1.Resolve<IService>().Id);
 
-            Assert.AreEqual(1, r1.ResolveAll<IService>().First().Id);
-            Assert.AreEqual(2, r1.ResolveAll<IService>().Last().Id);
+            Assert.AreEqual(2, r1.ResolveAll<IService>().First().Id);
+            Assert.AreEqual(1, r1.ResolveAll<IService>().Last().Id);
 
-            var r2 = r1.CreateDependencyResolver();
+            var r2 = r1.NewScope();
             r2.Register<IService>(new Service() );
 
             Assert.AreEqual(3, r2.ResolveAll<IService>().Count());
             Assert.AreEqual(3, r2.Resolve<IService>().Id);
 
             Assert.AreEqual(3, r2.ResolveAll<IService>().First().Id); // D'abord ceux de r2
-            Assert.AreEqual(2, r2.ResolveAll<IService>().Last().Id);  // puis ceux de r1
+            Assert.AreEqual(1, r2.ResolveAll<IService>().Last().Id);  // puis ceux de r1
             r2.Dispose();
             r1.Dispose();
-        }
-
-        [TestMethod]
-        public void ErrorRegisterAfterACallToResolve()
-        {
-            AssertHelper.ThrowsException<Exception>(() =>
-            {
-                var store = StoreBuilder.New().Create();
-                IDependencyResolverInternal r1 = new DefaultDependencyResolver();
-                r1.SetStore(store);
-                r1.Register<IService>(new Service());
-                r1.Register<IService>(new Service());
-
-                Assert.AreEqual(2, r1.ResolveAll<IService>().Count());
-                r1.Register<IService>(new Service());
-
-                r1.Dispose();
-            });
         }
 
         [TestMethod]
         public void DisposeAll()
         {
             var store = StoreBuilder.New().Create();
-            IDependencyResolverInternal r1 = new DefaultDependencyResolver();
-            r1.SetStore(store);
-            r1.Register<IService>(new Service());
-            r1.Register<IService>(new Service());
+            var r1 = store.Services.NewScope();
 
-            var r2 = r1.CreateDependencyResolver();
-            r2.Register<IService>(new Service());
+            r1.Register<IService>(r => new Service());
+            r1.Register<IService>(r => new Service());
+
+            var r2 = r1.NewScope();
+            r2.Register<IService>(r => new Service());
+
+            r2.ResolveAll<IService>().ToList();
 
             r2.Dispose();
             r1.Dispose();
@@ -207,14 +201,14 @@ namespace Hyperstore.Tests.Container
         public void Settings()
         {
             var store = StoreBuilder.New().Create();
-            IDependencyResolverInternal r1 = new DefaultDependencyResolver();
-            r1.SetStore(store);
+            var r1 = store.Services;
+
             r1.Register<Setting>(new Setting("X", 1));
             r1.Register<Setting>(new Setting("Y", 1));
             Assert.AreEqual(1, r1.ResolveAll<Setting>().Where(s => s.Name == "X").First().Value);
             Assert.AreEqual(1, r1.ResolveAll<Setting>().Where(s=>s.Name=="Y").First().Value);
-            
-            var r2 = r1.CreateDependencyResolver();
+
+            var r2 = r1.NewScope();
             r2.Register<Setting>(new Setting("X", 2));
 
             Assert.AreEqual(2, r2.ResolveAll<Setting>().Where(s => s.Name == "X").First().Value);
@@ -228,15 +222,15 @@ namespace Hyperstore.Tests.Container
         public async Task WithDomains()
         {
             var store = StoreBuilder.New().Create();
-            store.DependencyResolver.Register<Setting>(new Setting("X", 1));
-            store.DependencyResolver.Register<Setting>(new Setting("Y", 1));
+            store.Services.Register<Setting>(new Setting("X", 1));
+            store.Services.Register<Setting>(new Setting("Y", 1));
 
-            Assert.AreEqual(1, store.DependencyResolver.ResolveAll<Setting>().Where(s => s.Name == "X").First().Value);
-            Assert.AreEqual(1, store.DependencyResolver.ResolveAll<Setting>().Where(s => s.Name == "Y").First().Value);
+            Assert.AreEqual(1, store.Services.ResolveAll<Setting>().Where(s => s.Name == "X").First().Value);
+            Assert.AreEqual(1, store.Services.ResolveAll<Setting>().Where(s => s.Name == "Y").First().Value);
 
             var schema = await store.Schemas.New<TestDomainDefinition>().Set("X", 2).CreateAsync();
-            Assert.AreEqual(2, schema.DependencyResolver.ResolveAll<Setting>().Where(s => s.Name == "X").First().Value);
-            Assert.AreEqual(1, schema.DependencyResolver.ResolveAll<Setting>().Where(s => s.Name == "Y").First().Value);
+            Assert.AreEqual(2, schema.Services.ResolveAll<Setting>().Where(s => s.Name == "X").First().Value);
+            Assert.AreEqual(1, schema.Services.ResolveAll<Setting>().Where(s => s.Name == "Y").First().Value);
 
             store.Dispose();
         }

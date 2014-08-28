@@ -38,7 +38,7 @@ namespace Hyperstore.Modeling.HyperGraph
 
         #region Enums of HyperGraph (4)
 
-        private readonly IDependencyResolver _resolver;
+        private readonly IServicesContainer _services;
         private IKeyValueStore _storage;
         private bool _disposed;
         private IDomainModel _domainModel;
@@ -79,15 +79,15 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <param name="resolver">
-        ///  The resolver.
+        /// <param name="services">
+        ///  The services.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public HyperGraph(IDependencyResolver resolver)
+        public HyperGraph(IServicesContainer services)
         {
-            Contract.Requires(resolver, "resolver");
+            Contract.Requires(services, "services");
 
-            _resolver = resolver;
+            _services = services;
         }
 
         #endregion Constructors of HyperGraph (1)
@@ -113,12 +113,12 @@ namespace Hyperstore.Modeling.HyperGraph
             _trace = domainModel.Resolve<IHyperstoreTrace>(false) ?? new EmptyHyperstoreTrace();
             _domainModel = domainModel;
 
-            var kv = _resolver.Resolve<IKeyValueStore>() ?? new Hyperstore.Modeling.MemoryStore.TransactionalMemoryStore(domainModel);
+            var kv = _services.Resolve<IKeyValueStore>() ?? new Hyperstore.Modeling.MemoryStore.TransactionalMemoryStore(domainModel);
             _storage = kv;
             if (kv is IDomainService)
                 ((IDomainService)kv).SetDomain(domainModel);
             _indexManager = new Hyperstore.Modeling.HyperGraph.Index.MemoryIndexManager(this); // TODO lier avec TransactionalMemoryStore
-            _loader = _resolver.Resolve<IGraphAdapter>();
+            _loader = _services.Resolve<IGraphAdapter>();
             if (_loader is IDomainService)
                 ((IDomainService)_loader).SetDomain(domainModel);
             _lazyLoader = _loader as ISupportsLazyLoading;

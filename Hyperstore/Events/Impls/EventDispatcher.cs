@@ -62,17 +62,17 @@ namespace Hyperstore.Modeling.Events
         /// <summary>
         ///  Initializes a new instance of the <see cref="EventDispatcher" /> class.
         /// </summary>
-        /// <param name="resolver">
+        /// <param name="services">
         ///  The store.
         /// </param>
         /// <param name="initializeWithDefaultHandlers">
         ///  (Optional) if set to <c>true</c> [initialize with default handlers].
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public EventDispatcher(IDependencyResolver resolver, bool initializeWithDefaultHandlers = true)
+        public EventDispatcher(IServicesContainer services, bool initializeWithDefaultHandlers = true)
         {
-            Contract.Requires(resolver, "resolver");
-            _store = resolver.Resolve<IHyperstore>();
+            Contract.Requires(services, "services");
+            _store = services.Resolve<IHyperstore>();
             _initializeWithDefaultHandlers = initializeWithDefaultHandlers;
         }
 
@@ -114,7 +114,7 @@ namespace Hyperstore.Modeling.Events
             _initialized = true;
 
 #if MEF_NATIVE
-            var r = _store.DependencyResolver.Resolve<ICompositionService>();
+            var r = _store.services.Resolve<ICompositionService>();
             if (r != null)
             {
                 foreach (var handler in r.GetEventHandlers())

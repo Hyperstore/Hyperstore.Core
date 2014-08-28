@@ -233,7 +233,7 @@ namespace Hyperstore.Modeling.Commands
         private void RegisterFromComposition(IDomainModel domainModel)
         {
             DebugContract.Requires(domainModel != null);
-            var compositionService = domainModel.Store.DependencyResolver.Resolve<ICompositionService>();
+            var compositionService = domainModel.Store.Services.Resolve<ICompositionService>();
             if (compositionService == null)
                 return;
 

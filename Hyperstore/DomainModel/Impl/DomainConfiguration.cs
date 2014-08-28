@@ -33,7 +33,7 @@ namespace Hyperstore.Modeling
     ///-------------------------------------------------------------------------------------------------
     public class DomainConfiguration : IDomainConfiguration
     {
-        private readonly List<Action<IDependencyResolver>> _factories = new List<Action<IDependencyResolver>>();
+        private readonly List<Action<IServicesContainer>> _factories = new List<Action<IServicesContainer>>();
         internal const string PreloadActionKey = "{A8D153D6-EEED-4841-9106-A508CAAB2BCF}";
 
         internal DomainConfiguration()
@@ -51,51 +51,51 @@ namespace Hyperstore.Modeling
         ///  The factory.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void Using<TService>(Func<IDependencyResolver, TService> factory) where TService : class
+        public void Using<TService>(Func<IServicesContainer, TService> factory) where TService : class
         {
             Contract.Requires(factory, "factory");
 
-            var f = new Action<IDependencyResolver>(r => r.Register<TService>(factory));
+            var f = new Action<IServicesContainer>(r => r.Register<TService>(factory));
             _factories.Add(f);
         }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Prepare dependency resolver.
+        ///  Prepare services container.
         /// </summary>
-        /// <param name="parentResolver">
-        ///  The default dependency resolver.
+        /// <param name="container">
+        ///  The default services container.
         /// </param>
         /// <returns>
-        ///  An IDependencyResolver.
+        ///  An services container.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IDependencyResolver IDomainConfiguration.PrepareDependencyResolver(IDependencyResolver parentResolver)
+        IServicesContainer IDomainConfiguration.PrepareScopedContainer(IServicesContainer container)
         {
-            return PrepareDependencyResolver(parentResolver);
+            return PrepareScopedContainer(container);
         }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Prepare dependency resolver.
+        ///  Prepare services container.
         /// </summary>
-        /// <param name="parentResolver">
-        ///  The default dependency resolver.
+        /// <param name="container">
+        ///  The default services container.
         /// </param>
         /// <returns>
-        ///  An IDependencyResolver.
+        ///  An services container.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected virtual IDependencyResolver PrepareDependencyResolver(IDependencyResolver parentResolver)
+        protected virtual IServicesContainer PrepareScopedContainer(IServicesContainer container)
         {
-            Contract.Requires(parentResolver, "parentResolver");
+            Contract.Requires(container, "container");
 
             foreach (var action in _factories)
             {
-                action(parentResolver);
+                action(container);
             }
 
-            return parentResolver;
+            return container;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -111,7 +111,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public void SubscribeToEventBus(Messaging.ChannelPolicy outputProperty, Messaging.ChannelPolicy inputProperty = null)
         {
-            _factories.Add(new Action<IDependencyResolver>(r => r.Register(new Hyperstore.Modeling.RegistrationEventBusSetting { OutputProperty = outputProperty, InputProperty = inputProperty })));
+            _factories.Add(new Action<IServicesContainer>(r => r.Register(new Hyperstore.Modeling.RegistrationEventBusSetting { OutputProperty = outputProperty, InputProperty = inputProperty })));
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -128,7 +128,7 @@ namespace Hyperstore.Modeling
         public void SetProperty(string key, object value)
         {
             Contract.RequiresNotEmpty(key, "key");
-            _factories.Add(new Action<IDependencyResolver>(r => r.RegisterSetting(key, value)));
+            _factories.Add(new Action<IServicesContainer>(r => r.RegisterSetting(key, value)));
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -142,7 +142,7 @@ namespace Hyperstore.Modeling
         public void ExecutePreloadAction(Action<IDomainModel> preloadAction)
         {
             Contract.Requires(preloadAction, "preloadAction");
-            var f = new Action<IDependencyResolver>(r => r.RegisterSetting(PreloadActionKey, preloadAction));
+            var f = new Action<IServicesContainer>(r => r.RegisterSetting(PreloadActionKey, preloadAction));
             _factories.Add(f);
         }
     }

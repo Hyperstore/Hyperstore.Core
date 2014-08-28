@@ -27,12 +27,43 @@ namespace Hyperstore.Modeling
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  Interface for dependency resolver.
+    ///  Represent a service life cycle
+    /// </summary>
+    ///-------------------------------------------------------------------------------------------------
+    public enum ServiceLifecycle
+    {
+        /// <summary>
+        ///  Only one instance per store
+        /// </summary>
+        Singleton,
+        /// <summary>
+        ///  Per domain or extension
+        /// </summary>
+        Scoped,     
+        /// <summary>
+        ///  Always a new instance
+        /// </summary>
+        Transient   
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  Interface for services container.
     /// </summary>
     /// <seealso cref="T:IDisposable"/>
     ///-------------------------------------------------------------------------------------------------
-    public interface IDependencyResolver : IDisposable
+    public interface IServicesContainer : IDisposable
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Creates a new scope.
+        /// </summary>
+        /// <returns>
+        ///  An services container.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        IServicesContainer NewScope();
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Registers a configuration parameter.
@@ -85,11 +116,11 @@ namespace Hyperstore.Modeling
         /// <param name="factory">
         ///  The service factory.
         /// </param>
-        /// <param name="singleton">
-        ///  (Optional) True if the service is a singleton.
+        /// <param name="lifecyle">
+        ///  (Optional) service life cycle
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        void Register<TService>(Func<IDependencyResolver, TService> factory, bool singleton = false) where TService : class;
+        void Register<TService>(Func<IServicesContainer, TService> factory, ServiceLifecycle lifecyle = ServiceLifecycle.Scoped) where TService : class;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

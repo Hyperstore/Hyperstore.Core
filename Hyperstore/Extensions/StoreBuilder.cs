@@ -34,7 +34,7 @@ namespace Hyperstore.Modeling
     {
         private StoreOptions _options = StoreOptions.None;
         private Assembly[] _assemblies;
-        private IDependencyResolver _resolver = new DefaultDependencyResolver();
+        private IServicesContainer _services = new ServicesContainer();
         private Guid? _id;
 
         private StoreBuilder()
@@ -107,7 +107,7 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Usings.
+        ///  Usings a service
         /// </summary>
         /// <typeparam name="T">
         ///  Generic type parameter.
@@ -115,16 +115,16 @@ namespace Hyperstore.Modeling
         /// <param name="service">
         ///  The service.
         /// </param>
-        /// <param name="singleton">
-        ///  (Optional) true to singleton.
+        /// <param name="lifecycle">
+        ///  (Optional) the lifecycle.
         /// </param>
         /// <returns>
         ///  A StoreBuilder.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public StoreBuilder Using<T>(Func<IDependencyResolver, T> service, bool singleton = false) where T : class
+        public StoreBuilder Using<T>(Func<IServicesContainer, T> service, ServiceLifecycle lifecycle= ServiceLifecycle.Scoped) where T : class
         {
-            _resolver.Register<T>(service, singleton);
+            _services.Register<T>(service, lifecycle);
             return this;
         }
 
@@ -138,7 +138,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public IHyperstore Create()
         {
-            return new Store(_resolver, _options, _id);
+            return new Store(_services, _options, _id);
         }
     }
 }

@@ -38,8 +38,8 @@ namespace Hyperstore.Modeling.Scopes
         /// <param name="extendedMetaModel">
         ///  The extended meta model.
         /// </param>
-        /// <param name="dependencyResolver">
-        ///  The dependency resolver.
+        /// <param name="services">
+        ///  The services container.
         /// </param>
         /// <param name="behavior">
         ///  (Optional) the behavior.
@@ -49,11 +49,11 @@ namespace Hyperstore.Modeling.Scopes
         ///  The constraints.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public DomainSchemaExtension(ISchema extendedMetaModel, IDependencyResolver dependencyResolver, DomainBehavior behavior = DomainBehavior.Standard, IConstraintsManager constraints = null)
-            : base(extendedMetaModel.Name, dependencyResolver, behavior, constraints)
+        public DomainSchemaExtension(ISchema extendedMetaModel, IServicesContainer services, DomainBehavior behavior = DomainBehavior.Standard, IConstraintsManager constraints = null)
+            : base(extendedMetaModel.Name, services, behavior, constraints)
         {
             DebugContract.Requires(extendedMetaModel);
-            DebugContract.Requires(dependencyResolver);
+            DebugContract.Requires(services);
             DebugContract.Requires(constraints);
 
             _extendedMetaModel = extendedMetaModel;
@@ -61,7 +61,7 @@ namespace Hyperstore.Modeling.Scopes
 
         protected override IHyperGraph ResolveHyperGraph()
         {
-            return new ScopeHyperGraph(DependencyResolver, _extendedMetaModel as IHyperGraphProvider);
+            return new ScopeHyperGraph(Services, _extendedMetaModel as IHyperGraphProvider);
         }
     }
 }

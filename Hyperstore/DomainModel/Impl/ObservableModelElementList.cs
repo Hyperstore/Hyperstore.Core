@@ -47,7 +47,7 @@ namespace Hyperstore.Modeling
             var query2 = DomainModel.Events.RelationshipRemoved;
             var query3 = DomainModel.Events.PropertyChanged;
 
-            _synchronizationContext = source.DomainModel.DependencyResolver.Resolve<ISynchronizationContext>();
+            _synchronizationContext = source.DomainModel.Services.Resolve<ISynchronizationContext>();
             if (_synchronizationContext == null)
                 throw new Exception("No synchronizationContext founded. You can define a synchronization context in the store with store.Register<ISynchronizationContext>.");
 

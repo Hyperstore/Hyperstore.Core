@@ -33,8 +33,8 @@ namespace Hyperstore.Modeling.Scopes
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <param name="resolver">
-        ///  The resolver.
+        /// <param name="services">
+        ///  The services.
         /// </param>
         /// <param name="name">
         ///  The name.
@@ -46,10 +46,10 @@ namespace Hyperstore.Modeling.Scopes
         ///  The extende domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public DomainScope(IDependencyResolver resolver, string name, string extensionName, IDomainModel extendeDomainModel)
-            : base(resolver, name)
+        public DomainScope(IServicesContainer services, string name, string extensionName, IDomainModel extendeDomainModel)
+            : base(services, name)
         {
-            DebugContract.Requires(resolver);
+            DebugContract.Requires(services);
             DebugContract.RequiresNotEmpty(name);
             DebugContract.Requires(extendeDomainModel);
             DebugContract.RequiresNotEmpty(extensionName);
@@ -115,7 +115,7 @@ namespace Hyperstore.Modeling.Scopes
         ///-------------------------------------------------------------------------------------------------
         protected override IHyperGraph ResolveHyperGraph()
         {
-            return new ScopeHyperGraph(DependencyResolver, ExtendedDomainModel as IHyperGraphProvider);
+            return new ScopeHyperGraph(Services, ExtendedDomainModel as IHyperGraphProvider);
         }
     }
 }

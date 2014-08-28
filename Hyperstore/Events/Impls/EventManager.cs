@@ -36,20 +36,20 @@ namespace Hyperstore.Modeling.Events
 
         private class DefaultSubjectFactory : ISubjectFactory
         {
-            private readonly IDependencyResolver _resolver;
+            private readonly IServicesContainer _services;
 
             ///-------------------------------------------------------------------------------------------------
             /// <summary>
             ///  Constructor.
             /// </summary>
-            /// <param name="resolver">
-            ///  The resolver.
+            /// <param name="services">
+            ///  The services.
             /// </param>
             ///-------------------------------------------------------------------------------------------------
-            public DefaultSubjectFactory(IDependencyResolver resolver)
+            public DefaultSubjectFactory(IServicesContainer services)
             {
-                DebugContract.Requires(resolver);
-                _resolver = resolver;
+                DebugContract.Requires(services);
+                _services = services;
             }
 
             ///-------------------------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ namespace Hyperstore.Modeling.Events
             ///-------------------------------------------------------------------------------------------------
             public ISubjectWrapper<T> CreateSubject<T>()
             {
-                return new Subject<T>(_resolver);
+                return new Subject<T>(_services);
             }
         }
 
@@ -384,13 +384,13 @@ namespace Hyperstore.Modeling.Events
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <param name="resolver">
-        ///  The resolver.
+        /// <param name="services">
+        ///  The services.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public EventManager(IDependencyResolver resolver)
+        public EventManager(IServicesContainer services)
         {
-            var factory = resolver.Resolve<ISubjectFactory>() ?? new DefaultSubjectFactory(resolver);
+            var factory = services.Resolve<ISubjectFactory>() ?? new DefaultSubjectFactory(services);
 
             _messageOccurs = factory.CreateSubject<IExecutionResult>();
             _sessionCompleted = factory.CreateSubject<ISessionInformation>();

@@ -29,10 +29,10 @@ namespace Hyperstore.Modeling
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the model element resolver.
+        ///  Gets the model element services.
         /// </summary>
         /// <value>
-        ///  The model element resolver.
+        ///  The model element services.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         IModelElementFactory ModelElementFactory { get; }

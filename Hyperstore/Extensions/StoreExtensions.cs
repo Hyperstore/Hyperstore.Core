@@ -100,7 +100,7 @@ namespace Hyperstore.Modeling
         ///  A schema builder.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public SchemaBuilder Using<TService>(Func<IDependencyResolver, TService> factory) where TService : class
+        public SchemaBuilder Using<TService>(Func<IServicesContainer, TService> factory) where TService : class
         {
             _definition.Using<TService>(factory);
             return this;
@@ -117,7 +117,7 @@ namespace Hyperstore.Modeling
         ///  A schema builder.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public SchemaBuilder UsingIdGenerator(Func<IDependencyResolver, Hyperstore.Modeling.HyperGraph.IIdGenerator> factory)
+        public SchemaBuilder UsingIdGenerator(Func<IServicesContainer, Hyperstore.Modeling.HyperGraph.IIdGenerator> factory)
         {
             Using(factory);
             return this;
@@ -239,7 +239,7 @@ namespace Hyperstore.Modeling
         ///  A schema builder.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public DomainBuilder Using<TService>(Func<IDependencyResolver, TService> factory) where TService : class
+        public DomainBuilder Using<TService>(Func<IServicesContainer, TService> factory) where TService : class
         {
             _definition.Using<TService>(factory);
             return this;
@@ -256,7 +256,7 @@ namespace Hyperstore.Modeling
         ///  A schema builder.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public DomainBuilder UsingIdGenerator(Func<IDependencyResolver, Hyperstore.Modeling.HyperGraph.IIdGenerator> factory)
+        public DomainBuilder UsingIdGenerator(Func<IServicesContainer, Hyperstore.Modeling.HyperGraph.IIdGenerator> factory)
         {
             Using(factory);
             return this;
@@ -280,7 +280,7 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Uses the model element resolver.
+        ///  Uses the model element services.
         /// </summary>
         /// <param name="factory">
         ///  The factory.
@@ -289,7 +289,7 @@ namespace Hyperstore.Modeling
         ///  An ISchemaDefinition.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public DomainBuilder UsingModelElementFactory(Func<IDependencyResolver, IModelElementFactory> factory)
+        public DomainBuilder UsingModelElementFactory(Func<IServicesContainer, IModelElementFactory> factory)
         {
             Using(factory);
             return this;
@@ -306,7 +306,7 @@ namespace Hyperstore.Modeling
         ///  An ISchemaDefinition.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public DomainBuilder UsingCommandManager(Func<IDependencyResolver, ICommandManager> factory)
+        public DomainBuilder UsingCommandManager(Func<IServicesContainer, ICommandManager> factory)
         {
             Using(factory);
             return this;

@@ -258,7 +258,7 @@ namespace Hyperstore.Tests.MemoryStore
         public async Task NestedSession()
         {
             var store = StoreBuilder.New().Create();
-            store.DependencyResolver.Register<ITransactionManager>(new MockTransactionManager());
+            store.Services.Register<ITransactionManager>(new MockTransactionManager());
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
 

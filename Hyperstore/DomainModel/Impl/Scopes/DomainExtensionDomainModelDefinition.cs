@@ -68,31 +68,31 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Prepare dependency resolver.
+        ///  Prepare services container.
         /// </summary>
-        /// <param name="defaultDependencyResolver">
-        ///  The default dependency resolver.
+        /// <param name="container">
+        ///  The default services container.
         /// </param>
         /// <returns>
-        ///  An IDependencyResolver.
+        ///  An services container.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected override IDependencyResolver PrepareDependencyResolver(IDependencyResolver defaultDependencyResolver)
+        protected override IServicesContainer PrepareScopedContainer(IServicesContainer container)
         {
-            return _definition.PrepareDependencyResolver(defaultDependencyResolver);
+            return _definition.PrepareScopedContainer(container);
         }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Creates a schema. </summary>
-        /// <param name="resolver"> The domain resolver. </param>
+        /// <param name="services"> The domain services. </param>
         /// <returns>   The new schema. </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected override ISchema CreateSchema(IDependencyResolver resolver)
+        protected override ISchema CreateSchema(IServicesContainer services)
         {
             return new Hyperstore.Modeling.Scopes.DomainSchemaExtension(_extendedSchema,
-                                                                              resolver,
+                                                                              services,
                                                                               Behavior,
-                                                                              new Hyperstore.Modeling.Scopes.DomainExtensionConstraintsManager(resolver, _extendedSchema, _mode));
+                                                                              new Hyperstore.Modeling.Scopes.DomainExtensionConstraintsManager(services, _extendedSchema, _mode));
         }
     }
 }

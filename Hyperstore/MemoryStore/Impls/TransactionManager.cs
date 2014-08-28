@@ -44,14 +44,14 @@ namespace Hyperstore.Modeling.MemoryStore
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <param name="resolver">
-        ///  The resolver.
+        /// <param name="services">
+        ///  The services.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public TransactionManager(IDependencyResolver resolver)
+        public TransactionManager(IServicesContainer services)
         {
-            DebugContract.Requires(resolver);
-            _trace = resolver.Resolve<IHyperstoreTrace>() ?? new EmptyHyperstoreTrace();
+            DebugContract.Requires(services);
+            _trace = services.Resolve<IHyperstoreTrace>() ?? new EmptyHyperstoreTrace();
         }
 
         ///-------------------------------------------------------------------------------------------------

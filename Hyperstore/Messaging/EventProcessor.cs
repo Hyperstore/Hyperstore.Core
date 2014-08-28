@@ -140,7 +140,7 @@ namespace Hyperstore.Modeling.Messaging
                 return domainModel.EventDispatcher;
             if (_defaultDispatcher == null)
             {
-                _defaultDispatcher = _store.DependencyResolver.Resolve<IEventDispatcher>();
+                _defaultDispatcher = _store.Services.Resolve<IEventDispatcher>();
                 DebugContract.Assert(_defaultDispatcher != null);
             }
             return _defaultDispatcher;

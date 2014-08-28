@@ -64,10 +64,10 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Creates a schema. </summary>
-        /// <param name="domainResolver">   The domain resolver. </param>
+        /// <param name="services">   The domain services. </param>
         /// <returns>   The new schema. </returns>
         ///-------------------------------------------------------------------------------------------------
-        ISchema CreateSchema(IDependencyResolver domainResolver);
+        ISchema CreateSchema(IServicesContainer services);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Loads dependent schemas. </summary>

@@ -60,13 +60,13 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the dependency resolver.
+        ///  Gets the services container.
         /// </summary>
         /// <value>
-        ///  The dependency resolver.
+        ///  The services container.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        IDependencyResolver DependencyResolver { get; }
+        IServicesContainer Services { get; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -596,14 +596,14 @@ namespace Hyperstore.Modeling
         /// <param name="definition">
         ///  The schema definition.
         /// </param>
-        /// <param name="parentResolver">
-        ///  (Optional) the resolver.
+        /// <param name="parentContainer">
+        ///  (Optional) the parent services container.
         /// </param>
         /// <returns>
         ///  The schema.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        Task<ISchema> LoadSchemaAsync(ISchemaDefinition definition, IDependencyResolver parentResolver = null);
+        Task<ISchema> LoadSchemaAsync(ISchemaDefinition definition, IServicesContainer parentContainer = null);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -615,8 +615,8 @@ namespace Hyperstore.Modeling
         /// <param name="config">
         ///  (Optional) the configuration.
         /// </param>
-        /// <param name="parentResolver">
-        ///  (Optional) the resolver.
+        /// <param name="services">
+        ///  (Optional) the services.
         /// </param>
         /// <param name="domainFactory">
         ///  (Optional) the domain factory.
@@ -625,7 +625,7 @@ namespace Hyperstore.Modeling
         ///  The new domain model.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        Task<IDomainModel> CreateDomainModelAsync(string name, IDomainConfiguration config = null, IDependencyResolver parentResolver = null, Func<IDependencyResolver, string, IDomainModel> domainFactory = null);
+        Task<IDomainModel> CreateDomainModelAsync(string name, IDomainConfiguration config = null, IServicesContainer services = null, Func<IServicesContainer, string, IDomainModel> domainFactory = null);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

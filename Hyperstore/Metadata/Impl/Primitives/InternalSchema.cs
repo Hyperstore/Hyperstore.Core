@@ -42,12 +42,12 @@ namespace Hyperstore.Modeling.Metadata
         private readonly IDictionary<string, ISchemaInfo> _metadatasByName = new Dictionary<string, ISchemaInfo>(31);
         private readonly string _name;
         private readonly string _instanceId;
-        private readonly IDependencyResolver _dependencyResolver;
+        private readonly IServicesContainer _services;
         private static ISchema _instance;
         internal static ISchema Current { get { return _instance; } }
 
-        internal InternalSchema(IDependencyResolver resolver)
-            : this(resolver, "{2C7C8DA4-5146-4478-9C1E-9DCC2C15481B}", "$$")
+        internal InternalSchema(IServicesContainer services)
+            : this(services, "{2C7C8DA4-5146-4478-9C1E-9DCC2C15481B}", "$$")
         {
         }
 
@@ -55,8 +55,8 @@ namespace Hyperstore.Modeling.Metadata
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <param name="resolver">
-        ///  The resolver.
+        /// <param name="services">
+        ///  The services.
         /// </param>
         /// <param name="instanceId">
         ///  The identifier of the instance.
@@ -65,10 +65,10 @@ namespace Hyperstore.Modeling.Metadata
         ///  The name.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        protected internal InternalSchema( IDependencyResolver resolver, string instanceId, string name)
+        protected internal InternalSchema( IServicesContainer services, string instanceId, string name)
         {
-            Store = resolver.Resolve<IHyperstore>();
-            _dependencyResolver = resolver;
+            Store = services.Resolve<IHyperstore>();
+            _services = services;
             _instance = this;
             _name = name;
             _instanceId = instanceId;
@@ -541,9 +541,9 @@ namespace Hyperstore.Modeling.Metadata
             get { throw new NotSupportedException(); }
         }
 
-        IDependencyResolver IDomainModel.DependencyResolver
+        IServicesContainer IDomainModel.Services
         {
-            get { return _dependencyResolver; }
+            get { return _services; }
         }
 
         TService IDomainModel.ResolveOrRegisterSingleton<TService>(TService service)

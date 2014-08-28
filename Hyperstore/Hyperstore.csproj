@@ -70,6 +70,8 @@
     <Compile Include="Container\Composition\ICommandHandlerMetadata.cs" />
     <Compile Include="Container\Composition\ICommandInterceptorMetadata.cs" />
     <Compile Include="Container\Composition\HyperstoreAttribute.cs" />
+    <Compile Include="Container\ServiceDescriptor.cs" />
+    <Compile Include="Container\ServicesContainer.cs" />
     <Compile Include="Container\IEventHandlerMetadata.cs" />
     <Compile Include="DomainModel\IHyperGraphProvider.cs" />
     <Compile Include="DomainModel\Impl\CalculatedProperty.cs" />
@@ -106,7 +108,6 @@
     <Compile Include="Commands\UndoManager\RecursiveStack.cs" />
     <Compile Include="Container\EmptyHyperstoreTrace.cs" />
     <Compile Include="Container\ICompositionService.cs" />
-    <Compile Include="Container\IDependencyResolverInternal.cs" />
     <Compile Include="Container\IHyperstoreTrace.cs" />
     <Compile Include="Container\ISubjectFactory.cs" />
     <Compile Include="Container\ISubjectWrapper.cs" />
@@ -166,7 +167,6 @@
     <Compile Include="Commands\SessionMode.cs" />
     <Compile Include="Commands\UndoManager\IUndoManager.cs" />
     <Compile Include="Commands\UndoManager\UndoManager.cs" />
-    <Compile Include="Container\DefaultDependencyResolver.cs" />
     <Compile Include="Commands\Constraints\Impls\ConstraintBuilder.cs" />
     <Compile Include="Commands\Constraints\Impls\ConstraintsManager.cs" />
     <Compile Include="Commands\Constraints\Impls\CustomConstraint.cs" />
@@ -200,7 +200,6 @@
     <Compile Include="DomainModel\SessionCreatedEventArgs.cs" />
     <Compile Include="DomainModel\INamedElement.cs" />
     <Compile Include="DomainModel\IUpdatableSchema.cs" />
-    <Compile Include="Container\DependencyFactory.cs" />
     <Compile Include="Events\Impls\AddSchemaPropertyEvent.cs" />
     <Compile Include="Events\Impls\DomainEvent.cs" />
     <Compile Include="Events\Impls\EventHandler\AddMetadataEventHandler.cs" />
@@ -369,7 +368,7 @@
     <Compile Include="HyperGraph\Impls\MemoryGraph\Index\BTreeIndex.cs" />
     <Compile Include="HyperGraph\IIndexManager.cs" />
     <Compile Include="HyperGraph\Impls\MemoryGraph\Index\MemoryIndexManager.cs" />
-    <Compile Include="Container\IDependencyResolver.cs" />
+    <Compile Include="Container\IServicesContainer.cs" />
     <Compile Include="MemoryStore\DeadLockException.cs" />
     <Compile Include="MemoryStore\IKeyValueStore.cs" />
     <Compile Include="MemoryStore\Impls\CommandContext.cs" />
@@ -442,6 +441,7 @@
     <EmbeddedResource Include="ExceptionMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

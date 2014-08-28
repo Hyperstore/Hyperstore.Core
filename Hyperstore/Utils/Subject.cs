@@ -33,14 +33,14 @@ namespace Hyperstore.Modeling.Utils
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <param name="resolver">
-        ///  The resolver.
+        /// <param name="services">
+        ///  The services.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public Subject(IDependencyResolver resolver)
+        public Subject(IServicesContainer services)
         {
             this._observers = new ImmutableList<IObserver<T>>();
-            _synchronizationContext = resolver.Resolve<ISynchronizationContext>();
+            _synchronizationContext = services.Resolve<ISynchronizationContext>();
         }
 
         ///-------------------------------------------------------------------------------------------------

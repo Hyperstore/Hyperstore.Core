@@ -66,7 +66,7 @@ namespace Hyperstore.Modeling.Messaging
         protected override Task StartAsync()
         {
             var tcs = new TaskCompletionSource<object>();
-            _messages = new Subject<InprocMessage>(EventBus.Store.DependencyResolver);
+            _messages = new Subject<InprocMessage>(EventBus.Store.Services);
             try
             {
                 if (EventsProcessor != null)

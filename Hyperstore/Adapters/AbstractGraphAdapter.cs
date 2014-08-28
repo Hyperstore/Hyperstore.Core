@@ -157,23 +157,23 @@ namespace Hyperstore.Modeling.Adapters
         ///  (Optional) name of the statistic counter.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        protected AbstractGraphAdapter(IDependencyResolver services, string statisticCounterName = null)
+        protected AbstractGraphAdapter(IServicesContainer services, string statisticCounterName = null)
         {
             Contract.Requires(services, "services");
             _statisticCounterName = statisticCounterName ?? this.GetType().Name;
-            DependencyResolver = services;
+            Services = services;
             Store = services.Resolve<IHyperstore>();
         }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the dependency resolver.
+        ///  Gets the services container.
         /// </summary>
         /// <value>
-        ///  The dependency resolver.
+        ///  The services container.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IDependencyResolver DependencyResolver { get; private set; }
+        public IServicesContainer Services { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -235,7 +235,7 @@ namespace Hyperstore.Modeling.Adapters
 
         private void InitializeCounters()
         {
-            var stat = DependencyResolver.Resolve<IStatistics>() ?? Statistics.EmptyStatistics.DefaultInstance;
+            var stat = Services.Resolve<IStatistics>() ?? Statistics.EmptyStatistics.DefaultInstance;
             var domainName = DomainModel != null ? DomainModel.Name : "-";
             StatGetNodes = stat.RegisterCounter(_statisticCounterName, String.Format("#GetNodes {0}", domainName), "GetNodes", StatisticCounterType.Value);
             StatGetNodesAvgTime = stat.RegisterCounter(_statisticCounterName, String.Format("GetNodesAvgTime {0}", domainName), "GetNodesAvgTime", StatisticCounterType.Average);

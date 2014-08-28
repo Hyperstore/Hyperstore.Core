@@ -224,7 +224,7 @@ namespace Hyperstore.Modeling.Messaging
         {
             DebugContract.Requires(eventBus);
             EventBus = eventBus;
-            EventsProcessor = EventBus.Store.DependencyResolver.Resolve<IEventsProcessor>() ?? new EventsProcessor(EventBus.Store);
+            EventsProcessor = EventBus.Store.Services.Resolve<IEventsProcessor>() ?? new EventsProcessor(EventBus.Store);
 
             await StartAsync();
         }

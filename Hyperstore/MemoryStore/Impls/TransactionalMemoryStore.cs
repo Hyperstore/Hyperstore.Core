@@ -95,14 +95,14 @@ namespace Hyperstore.Modeling.MemoryStore
         {
             DebugContract.Requires(domainModel, "domainModel");
 
-            var dependencyResolver = domainModel.DependencyResolver;
+            var services = domainModel.Services;
 
             // On utilise RX pour empiler les demandes de Vaccum en utilisant le principe du sample. c a d quelque soit le nombre de demande de vaccum, on le lancera que toutes les
             // x secondes.
-            var defaultMemoryStoreVacuumIntervalInSeconds = dependencyResolver.GetSettingValue<int?>(Setting.MemoryStoreVacuumIntervalInSeconds);
+            var defaultMemoryStoreVacuumIntervalInSeconds = services.GetSettingValue<int?>(Setting.MemoryStoreVacuumIntervalInSeconds);
             var n = defaultMemoryStoreVacuumIntervalInSeconds != null ? defaultMemoryStoreVacuumIntervalInSeconds.Value : defaultInterval;
 
-            Initialize(domainModel.Name, n, dependencyResolver.Resolve<ITransactionManager>(), dependencyResolver.Resolve<IEvictionPolicy>(), dependencyResolver.Resolve<IHyperstoreTrace>(), dependencyResolver.Resolve<IStatistics>());
+            Initialize(domainModel.Name, n, services.Resolve<ITransactionManager>(), services.Resolve<IEvictionPolicy>(), services.Resolve<IHyperstoreTrace>(), services.Resolve<IStatistics>());
         }
 
         public TransactionalMemoryStore(string domainModelName, int memoryStoreVacuumIntervalInSeconds, ITransactionManager transactionManager, IEvictionPolicy evictionPolicy = null, IHyperstoreTrace trace = null, IStatistics stat = null)

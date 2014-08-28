@@ -129,12 +129,12 @@ namespace Hyperstore.Modeling.Metadata
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Creates a schema. </summary>
-        /// <param name="domainResolver">   The domain resolver. </param>
+        /// <param name="container">   The domain services. </param>
         /// <returns>   The new schema. </returns>
         ///-------------------------------------------------------------------------------------------------
-        public ISchema CreateSchema(IDependencyResolver domainResolver)
+        public ISchema CreateSchema(IServicesContainer container)
         {
-            return new PrimitivesSchema(domainResolver);
+            return new PrimitivesSchema(container);
         }
 
         ///-------------------------------------------------------------------------------------------------

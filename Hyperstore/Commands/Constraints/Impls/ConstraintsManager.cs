@@ -37,14 +37,14 @@ namespace Hyperstore.Modeling.Validations
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <param name="resolver">
-        ///  The resolver.
+        /// <param name="services">
+        ///  The services.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public ConstraintsManager(IDependencyResolver resolver)
+        public ConstraintsManager(IServicesContainer services)
         {
-            Contract.Requires(resolver, "resolver");
-            _store = resolver.Resolve<IHyperstore>();
+            Contract.Requires(services, "services");
+            _store = services.Resolve<IHyperstore>();
         }
 
         ///-------------------------------------------------------------------------------------------------

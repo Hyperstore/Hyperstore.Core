@@ -46,8 +46,8 @@ namespace Hyperstore.Modeling.Metadata
         /// <param name="name">
         ///  The name.
         /// </param>
-        /// <param name="dependencyResolver">
-        ///  The dependency resolver.
+        /// <param name="services">
+        ///  The services container.
         /// </param>
         /// <param name="behavior">
         ///  (Optional) The behavior.
@@ -57,16 +57,16 @@ namespace Hyperstore.Modeling.Metadata
         ///  The constraints.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public DomainSchema(string name, IDependencyResolver dependencyResolver, DomainBehavior behavior= DomainBehavior.DisableL1Cache, IConstraintsManager constraints = null)
-            : base(dependencyResolver, name)
+        public DomainSchema(string name, IServicesContainer services, DomainBehavior behavior= DomainBehavior.DisableL1Cache, IConstraintsManager constraints = null)
+            : base(services, name)
         {
-            Contract.Requires(dependencyResolver, "dependencyResolver");
+            Contract.Requires(services, "services");
 
             _elements = PlatformServices.Current.CreateConcurrentDictionary<Identity, IModelElement>();
             _relationships = PlatformServices.Current.CreateConcurrentDictionary<Identity, IModelRelationship>();
             _behavior = behavior;
 
-            _constraints = constraints ?? dependencyResolver.Resolve<IConstraintsManager>();
+            _constraints = constraints ?? services.Resolve<IConstraintsManager>();
             if (_constraints is IDomainService)
                 ((IDomainService)_constraints).SetDomain(this);
         }
@@ -140,7 +140,7 @@ namespace Hyperstore.Modeling.Metadata
                 throw new Exception("Extension schema must have the same name that the extended schema.");
 
             var desc = new ExtensionSchemaDefinition(definition, this, mode);
-            var schema = await ((IDomainManager)Store).LoadSchemaAsync(desc, DependencyResolver);
+            var schema = await ((IDomainManager)Store).LoadSchemaAsync(desc, Services);
             return (ISchemaExtension)schema;
         }
 

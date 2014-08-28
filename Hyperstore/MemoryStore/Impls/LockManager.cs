@@ -46,13 +46,13 @@ namespace Hyperstore.Modeling
         public int DeadLockLimitTimeInMs;
         private readonly IHyperstoreTrace _trace;
 
-        internal LockManager(IDependencyResolver dependencyResolver)
+        internal LockManager(IServicesContainer services)
         {
-            Contract.Requires(dependencyResolver, "dependencyResolver");
+            Contract.Requires(services, "services");
 
-            _trace = dependencyResolver.Resolve<IHyperstoreTrace>() ?? new EmptyHyperstoreTrace();
+            _trace = services.Resolve<IHyperstoreTrace>() ?? new EmptyHyperstoreTrace();
 
-            var defaultMaxTimeBeforeDeadlockInSeconds = dependencyResolver.GetSettingValue<int?>(Setting.MaxTimeBeforeDeadlockInMs);
+            var defaultMaxTimeBeforeDeadlockInSeconds = services.GetSettingValue<int?>(Setting.MaxTimeBeforeDeadlockInMs);
             var n = defaultMaxTimeBeforeDeadlockInSeconds != null ? defaultMaxTimeBeforeDeadlockInSeconds.Value : DEFAULT_DEADLOCK_TIME;
             if (n < 0)
                 n = DEFAULT_DEADLOCK_TIME;

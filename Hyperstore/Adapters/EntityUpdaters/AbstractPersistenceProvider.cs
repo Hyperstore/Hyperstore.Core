@@ -174,8 +174,8 @@
 //        /// <summary>
 //        ///  Specialised constructor for use only by derived classes.
 //        /// </summary>
-//        /// <param name="resolver">
-//        ///  The resolver.
+//        /// <param name="services">
+//        ///  The services.
 //        /// </param>
 //        /// <param name="capability">
 //        ///  (Optional) the capability.
@@ -184,23 +184,23 @@
 //        ///  (Optional) name of the statistic counter.
 //        /// </param>
 //        ///-------------------------------------------------------------------------------------------------
-//        protected AbstractGraphAdapter(IDependencyResolver resolver, AdapterCapability capability = AdapterCapability.QueryAndUpdate, string statisticCounterName = null)
+//        protected AbstractGraphAdapter(services container services, AdapterCapability capability = AdapterCapability.QueryAndUpdate, string statisticCounterName = null)
 //        {
-//            Contract.Requires(resolver, "resolver");
-//            DependencyResolver = resolver;
+//            Contract.Requires(services, "services");
+//            services = services;
 //            _statisticCounterName = statisticCounterName ?? this.GetType().Name;
 //            _capability = capability;
 //        }
 
 //        ///-------------------------------------------------------------------------------------------------
 //        /// <summary>
-//        ///  Gets the dependency resolver.
+//        ///  Gets the services container.
 //        /// </summary>
 //        /// <value>
-//        ///  The dependency resolver.
+//        ///  The services container.
 //        /// </value>
 //        ///-------------------------------------------------------------------------------------------------
-//        public IDependencyResolver DependencyResolver { get; private set; }
+//        public services container services { get; private set; }
 
 //        ///-------------------------------------------------------------------------------------------------
 //        /// <summary>
@@ -233,8 +233,8 @@
 //            Initialize();
 
 //            IStatistics stat = null;
-//            if (DependencyResolver != null)
-//                stat = DependencyResolver.Resolve<IStatistics>();
+//            if (services != null)
+//                stat = services.Resolve<IStatistics>();
 
 //            StatGetNodes = stat.RegisterCounter(_statisticCounterName, String.Format("#GetNodes {0}", domainModel.Name), "GetNodes", StatisticCounterType.Value);
 //            StatGetNodesAvgTime = stat.RegisterCounter(_statisticCounterName, String.Format("GetNodesAvgTime {0}", domainModel.Name), "GetNodesAvgTime", StatisticCounterType.Average);

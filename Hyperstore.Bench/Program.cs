@@ -36,7 +36,7 @@ namespace Hyperstore.Bench
 
             var domain = await store.DomainModels
                                     .New()
-                                        .UsingIdGenerator(resolver => new Hyperstore.Modeling.Domain.LongIdGenerator())
+                                        .UsingIdGenerator(services => new Hyperstore.Modeling.Domain.LongIdGenerator())
                                     .CreateAsync("Test");
 
             var sw = new Stopwatch();

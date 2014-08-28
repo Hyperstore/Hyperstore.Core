@@ -90,15 +90,15 @@ namespace Hyperstore.Modeling.Messaging
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <param name="resolver">
-        ///  The resolver.
+        /// <param name="services">
+        ///  The services.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public EventBus(IDependencyResolver resolver)
+        public EventBus(IServicesContainer services)
         {
-            DebugContract.Requires(resolver);
-            _store = resolver.Resolve<IHyperstore>();
-            DefaultEventDispatcher = resolver.Resolve<IEventDispatcher>();
+            DebugContract.Requires(services);
+            _store = services.Resolve<IHyperstore>();
+            DefaultEventDispatcher = services.Resolve<IEventDispatcher>();
         }
 
         ///-------------------------------------------------------------------------------------------------

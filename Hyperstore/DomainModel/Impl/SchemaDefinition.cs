@@ -136,33 +136,33 @@ namespace Hyperstore.Modeling
         /// <summary>
         ///  Creates a schema.
         /// </summary>
-        /// <param name="resolver">
-        ///  The resolver.
+        /// <param name="services">
+        ///  The services.
         /// </param>
         /// <returns>
         ///  The new schema.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        ISchema ISchemaDefinition.CreateSchema(IDependencyResolver resolver)
+        ISchema ISchemaDefinition.CreateSchema(IServicesContainer services)
         {
-            DebugContract.Requires(resolver);
-            return CreateSchema(resolver);
+            DebugContract.Requires(services);
+            return CreateSchema(services);
         }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Creates a schema.
         /// </summary>
-        /// <param name="domainResolver">
-        ///  The domain resolver.
+        /// <param name="container">
+        ///  The domain services container.
         /// </param>
         /// <returns>
         ///  The new schema.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected virtual ISchema CreateSchema(IDependencyResolver domainResolver)
+        protected virtual ISchema CreateSchema(IServicesContainer container)
         {
-            return new Hyperstore.Modeling.Metadata.DomainSchema(_name, domainResolver, _behavior);
+            return new Hyperstore.Modeling.Metadata.DomainSchema(_name, container, _behavior);
         }
 
         ///-------------------------------------------------------------------------------------------------
