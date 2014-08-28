@@ -38,7 +38,7 @@ namespace Hyperstore.Tests.HyperGraph
         [TestCategory("Hypergraph")]
         public async Task InitTest()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
             var Graph = domain.Resolve<IHyperGraph>();
@@ -52,7 +52,7 @@ namespace Hyperstore.Tests.HyperGraph
         [TestCategory("Hypergraph")]
         public async Task AddElementTest()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
             var Graph = domain.Resolve<IHyperGraph>();
@@ -74,7 +74,7 @@ namespace Hyperstore.Tests.HyperGraph
         [TestCategory("Hypergraph")]
         public async Task AddElementOutOfScopeTest()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
             var Graph = domain.Resolve<IHyperGraph>();
@@ -94,7 +94,7 @@ namespace Hyperstore.Tests.HyperGraph
         [TestCategory("Hypergraph")]
         public async Task AddElementRollbackTest()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test"); 
 
@@ -116,7 +116,7 @@ namespace Hyperstore.Tests.HyperGraph
         [TestCategory("Hypergraph")]
         public async Task RemoveElementTest()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test"); 
 
@@ -157,7 +157,7 @@ namespace Hyperstore.Tests.HyperGraph
         [TestCategory("Hypergraph")]
         public async Task RollbackPropertyTest()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
 
@@ -221,7 +221,7 @@ namespace Hyperstore.Tests.HyperGraph
         //[TestCategory("Hypergraph")]
         //public async Task ConflictPropertyTest()
         //{
-        //    var store = StoreBuilder.Init().CreateStore();
+        //    var store = await StoreBuilder.Init().CreateStore();
         //    await store.Schemas.New<TestDomainDefinition>().CreateAsync();
         //    var domain = await store.DomainModels.New().CreateAsync("Test");
 
@@ -263,7 +263,7 @@ namespace Hyperstore.Tests.HyperGraph
         [TestCategory("Hypergraph")]
         public async Task GetPropertyTest()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
 
@@ -312,7 +312,7 @@ namespace Hyperstore.Tests.HyperGraph
         [TestCategory("Hypergraph")]
         public async Task GetPropertyTest2()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
 
@@ -360,7 +360,7 @@ namespace Hyperstore.Tests.HyperGraph
         //[TestMethod()]
         //public void AddEdgeTest()
         //{
-        //    var store = StoreBuilder.Init().CreateStore();
+        //    var store = await StoreBuilder.Init().CreateStore();
 
         //    var domain = store.LoadDomainModelAsync("Test1");
         //    var id1 = new Identity("Test1", "1");
@@ -400,7 +400,7 @@ namespace Hyperstore.Tests.HyperGraph
         //[TestMethod()]
         //public void RemoveEdgeTest()
         //{
-        //    var store = StoreBuilder.Init().CreateStore();
+        //    var store = await StoreBuilder.Init().CreateStore();
 
         //    var domain = store.LoadDomainModelAsync("Test1");
         //    var id1 = new Identity("Test1", "1");
@@ -448,7 +448,7 @@ namespace Hyperstore.Tests.HyperGraph
         [TestCategory("Hypergraph")]
         public async Task MultiGraphTest()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
 
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test1");
@@ -486,7 +486,7 @@ namespace Hyperstore.Tests.HyperGraph
         [TestCategory("Hypergraph")]
         public async Task TraversalTest()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test"); 
 

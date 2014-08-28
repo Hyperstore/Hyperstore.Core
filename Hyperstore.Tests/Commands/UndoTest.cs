@@ -40,7 +40,7 @@ namespace Hyperstore.Tests.Commands
         [TestCategory("Commands")]
         public async Task Undo()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
             var undoManager = new UndoManager(store);
@@ -67,7 +67,7 @@ namespace Hyperstore.Tests.Commands
         [TestCategory("Commands")]
         public async Task UndoWithEnum()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
 
             var domain = await store.DomainModels.New().CreateAsync("Test");
@@ -100,7 +100,7 @@ namespace Hyperstore.Tests.Commands
         [TestCategory("Commands")]
         public async Task UndoWithMultipleDelete()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
             var undoManager = new UndoManager(store);
@@ -136,7 +136,7 @@ namespace Hyperstore.Tests.Commands
         [TestCategory("Commands")]
         public async Task UndoInEmbeddedSessions()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
             var undoManager = new UndoManager(store);

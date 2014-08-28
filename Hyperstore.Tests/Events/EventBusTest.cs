@@ -44,7 +44,7 @@ namespace Hyperstore.Tests.Commands
             // Synchronize two domain in two diffrent stores.
 
             // Load source doman
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
@@ -52,7 +52,7 @@ namespace Hyperstore.Tests.Commands
             store.EventBus.RegisterDomainPolicies(domain, new ChannelPolicy { PropagationStrategy = EventPropagationStrategy.All });
 
             // Load target domain
-            var store2 = StoreBuilder.New().Create();
+            var store2 = await StoreBuilder.New().CreateAsync();
             await store2.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain2 = await store2.DomainModels.New().CreateAsync("Test");
             // Configure an input channel
@@ -87,14 +87,14 @@ namespace Hyperstore.Tests.Commands
         //public async Task InprocEventBusWithMetadatas()
         //{
         //    // Initial store
-        //    var store = StoreBuilder.Init().CreateStore();
+        //    var store = await StoreBuilder.Init().CreateStore();
         //    await store.Schemas.New<TestDomainDefinition>().CreateAsync();
         //    var domain = await store.DomainModels.New().CreateAsync("Test");
         //    store.EventBus.RegisterDomainPolicies(domain, new ChannelPolicy { PropagationStrategy = EventPropagationStrategy.All });
         //    await store.EventBus.OpenAsync(new InProcChannel());
 
         //    // New target store
-        //    var store2 = StoreBuilder.Init().CreateStore();
+        //    var store2 = await StoreBuilder.Init().CreateStore();
         //    await store2.LoadSchemaAsync(new TestDomainDefinition());
         //    var domain2 = await store2.CreateDomainModelAsync("Test");
         //    store2.EventBus.RegisterDomainPolicies(domain2, null, new ChannelPolicy { PropagationStrategy = EventPropagationStrategy.All }); // En entrée uniquement

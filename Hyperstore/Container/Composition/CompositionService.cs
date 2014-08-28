@@ -36,27 +36,26 @@ namespace Hyperstore.Modeling.Container.Composition
         public void Compose(params Assembly[] assemblies)
         {            
             var types = assemblies
-                        .SelectMany(asm => asm.ExportedTypes);
+                        .SelectMany(asm => asm.DefinedTypes);
 
-            foreach (var type in types)
+            foreach (var typeInfo in types)
             {
-                var typeInfo = type.GetTypeInfo();
-                if (!typeInfo.IsPublic)
+                if (typeInfo.IsAbstract)
                     continue;
 
                 foreach (var attr in typeInfo.GetCustomAttributes(true))
                 {
                     if (attr is CommandHandlerAttribute)
                     {
-                        _commands.Add(new Lazy<ICommandHandler, ICommandHandlerMetadata>( () => (ICommandHandler)Activator.CreateInstance(type), (ICommandHandlerMetadata)attr));
+                        _commands.Add(new Lazy<ICommandHandler, ICommandHandlerMetadata>( () => (ICommandHandler)Activator.CreateInstance(typeInfo.AsType()), (ICommandHandlerMetadata)attr));
                     }
                     else if (attr is CommandInterceptorAttribute)
                     {
-                        _interceptors.Add(new Lazy<ICommandInterceptor, ICommandInterceptorMetadata>(() => (ICommandInterceptor)Activator.CreateInstance(type), (ICommandInterceptorMetadata)attr));
+                        _interceptors.Add(new Lazy<ICommandInterceptor, ICommandInterceptorMetadata>(() => (ICommandInterceptor)Activator.CreateInstance(typeInfo.AsType()), (ICommandInterceptorMetadata)attr));
                     }
                     else if (attr is EventHandlerAttribute)
                     {
-                        _eventHandlers.Add(new Lazy<IEventHandler, IEventHandlerMetadata>(() => (IEventHandler)Activator.CreateInstance(type), (IEventHandlerMetadata)attr));
+                        _eventHandlers.Add(new Lazy<IEventHandler, IEventHandlerMetadata>(() => (IEventHandler)Activator.CreateInstance(typeInfo.AsType()), (IEventHandlerMetadata)attr));
                     }
                 }
             }

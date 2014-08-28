@@ -69,7 +69,7 @@ namespace Hyperstore.Tests.Commands
         [TestMethod]
         public async Task EventLevel()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test"); 
             var undoManager = new UndoManager(store);

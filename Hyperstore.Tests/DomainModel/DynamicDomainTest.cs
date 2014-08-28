@@ -84,7 +84,7 @@ namespace Hyperstore.Tests
 
         private async Task<IDomainModel> LoadDynamicDomain()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<DynamicModelDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
             return domain;

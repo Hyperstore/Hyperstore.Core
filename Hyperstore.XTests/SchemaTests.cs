@@ -56,18 +56,18 @@ namespace Hyperstore.XTests
         }
 
         [Fact]
-        public void CheckPrimitives()
+        public async Task CheckPrimitives()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             Assert.NotNull(store.GetSchemaInfo<string>());
             Assert.NotNull(store.GetSchemaInfo<int>());
             Assert.NotNull(store.GetSchemaInfo<double>());
         }
 
         [Fact]
-        public async void SchemaEvents()
+        public async Task SchemaEvents()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             var def = new MySchemaDefinition();
             var schema = await store.Schemas.New(def).CreateAsync();
             Assert.True(def.IsSchemaLoaded);
@@ -76,7 +76,7 @@ namespace Hyperstore.XTests
         [Fact]
         public async Task LoadSchema()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             var def = new MySchemaDefinition();
             var schema = await store.Schemas.New(def).CreateAsync();
             Assert.NotNull(schema);
@@ -85,9 +85,9 @@ namespace Hyperstore.XTests
         }
 
         [Fact]
-        public async void UnloadSchema()
+        public async Task UnloadSchema()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             var def = new MySchemaDefinition();
             var schema = await store.Schemas.New(def).CreateAsync();
             Assert.NotNull(schema);
@@ -96,9 +96,9 @@ namespace Hyperstore.XTests
         }
 
         [Fact]
-        public void UnloadPrimitivesSchemaMustFailed()
+        public async Task UnloadPrimitivesSchemaMustFailed()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             var schema = store.Schemas.First();
             Assert.NotNull(schema);
             Assert.IsType<PrimitivesSchema>(schema);

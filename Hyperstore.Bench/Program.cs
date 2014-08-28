@@ -31,7 +31,7 @@ namespace Hyperstore.Bench
         public async Task BenchWithConstraints(int cx)
         {
             long nb = 0;
-            store = StoreBuilder.New().Create();
+            store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
 
             var domain = await store.DomainModels

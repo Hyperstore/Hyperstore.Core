@@ -52,7 +52,7 @@ namespace Hyperstore.Tests
         [TestMethod]
         public async Task CalculatedPropertyTest()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var dm = await store.DomainModels.New().CreateAsync("Test");
 

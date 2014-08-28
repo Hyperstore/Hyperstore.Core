@@ -33,7 +33,7 @@ namespace Hyperstore.Modeling
     public sealed class StoreBuilder
     {
         private StoreOptions _options = StoreOptions.None;
-        private Assembly[] _assemblies;
+        private List<Assembly> _assemblies;
         private IServicesContainer _services = new ServicesContainer();
         private Guid? _id;
 
@@ -83,7 +83,9 @@ namespace Hyperstore.Modeling
         {
             if (assemblies.Length > 0)
             {
-                _assemblies = assemblies;
+                if (_assemblies == null)
+                    _assemblies = new List<Assembly>();
+                _assemblies.AddRange(assemblies);
             }
             return this;
         }
@@ -122,7 +124,7 @@ namespace Hyperstore.Modeling
         ///  A StoreBuilder.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public StoreBuilder Using<T>(Func<IServicesContainer, T> service, ServiceLifecycle lifecycle= ServiceLifecycle.Scoped) where T : class
+        public StoreBuilder Using<T>(Func<IServicesContainer, T> service, ServiceLifecycle lifecycle = ServiceLifecycle.Scoped) where T : class
         {
             _services.Register<T>(service, lifecycle);
             return this;
@@ -136,9 +138,13 @@ namespace Hyperstore.Modeling
         ///  The new store.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IHyperstore Create()
+        public async Task<IHyperstore> CreateAsync()
         {
-            return new Store(_services, _options, _id);
+            if (_assemblies != null)
+                await _services.ComposeAsync(_assemblies.ToArray());
+
+            var store = new Store(_services, _options, _id);
+            return store;
         }
     }
 }

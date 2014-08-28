@@ -33,7 +33,7 @@ namespace Hyperstore.Tests
         [TestMethod]
         public async Task DisposedTest()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().UsingIdGenerator(r=>new Hyperstore.Modeling.Domain.LongIdGenerator()).CreateAsync("Test");
 

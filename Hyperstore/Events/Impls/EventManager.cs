@@ -462,7 +462,11 @@ namespace Hyperstore.Modeling.Events
                         _attributedChangedObservers[element.Id]++;
                     else
                         _attributedChangedObservers.Add(element.Id, 1);
-                    return Disposables.ExecuteOnDispose(() => { _attributedChangedObservers[element.Id]--; if (_attributedChangedObservers[element.Id] == 0) _attributedChangedObservers.Remove(element.Id); });
+                    
+                    return Disposables.ExecuteOnDispose(() => { 
+                        _attributedChangedObservers[element.Id]--; 
+                        if (_attributedChangedObservers[element.Id] == 0) _attributedChangedObservers.Remove(element.Id); 
+                    });
                 }
                 finally
                 {

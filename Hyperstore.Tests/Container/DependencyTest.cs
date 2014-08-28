@@ -58,18 +58,18 @@ namespace Hyperstore.Tests.Container
         }
 
         [TestMethod]
-        public void CreateDefault()
+        public async Task CreateDefault()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
 
             Assert.IsNotNull(store.Services.Resolve<IHyperstore>());
             store.Dispose();
         }
 
         [TestMethod]
-        public void RegisterSingleton()
+        public async Task RegisterSingleton()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             var r = store.Services;
             r.Register<IService>(new Service() );
 
@@ -88,9 +88,9 @@ namespace Hyperstore.Tests.Container
         }
 
         [TestMethod]
-        public void HideServiceInScope()
+        public async Task HideServiceInScope()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             var r = store.Services.NewScope();
             r.Register<IService>(new Service());
 
@@ -104,9 +104,9 @@ namespace Hyperstore.Tests.Container
         }
 
         [TestMethod]
-        public void RegisterByDomain()
+        public async Task RegisterByDomain()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             var r1 = store.Services;
             r1.Register<IService>(services => new Service());
 
@@ -134,9 +134,9 @@ namespace Hyperstore.Tests.Container
         }
 
         [TestMethod]
-        public void RegisterByDomainAndModel()
+        public async Task RegisterByDomainAndModel()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             var r1 = store.Services;
             r1.Register<IService>(new Service());
 
@@ -153,9 +153,9 @@ namespace Hyperstore.Tests.Container
         }
 
         [TestMethod]
-        public void RegisterMany()
+        public async Task RegisterMany()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             var r1 = store.Services;
             r1.Register<IService>(new Service());
             r1.Register<IService>(new Service());
@@ -179,9 +179,9 @@ namespace Hyperstore.Tests.Container
         }
 
         [TestMethod]
-        public void DisposeAll()
+        public async Task DisposeAll()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             var r1 = store.Services.NewScope();
 
             r1.Register<IService>(r => new Service());
@@ -198,9 +198,9 @@ namespace Hyperstore.Tests.Container
         }
 
         [TestMethod]
-        public void Settings()
+        public async Task Settings()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             var r1 = store.Services;
 
             r1.Register<Setting>(new Setting("X", 1));
@@ -221,7 +221,7 @@ namespace Hyperstore.Tests.Container
         [TestMethod]
         public async Task WithDomains()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             store.Services.Register<Setting>(new Setting("X", 1));
             store.Services.Register<Setting>(new Setting("Y", 1));
 

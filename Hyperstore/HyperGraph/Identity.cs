@@ -164,7 +164,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public bool Equals(Identity other)
         {
-            return Equals((object) other);
+            return _hash == other._hash && String.Compare(_value, other._value, StringComparison.Ordinal) == 0;
         }
 
         #endregion
@@ -301,7 +301,7 @@ namespace Hyperstore.Modeling
         public override bool Equals(object obj)
         {
             if (obj is Identity)
-                return _hash == ((Identity) obj)._hash && String.Compare(_value, ((Identity) obj)._value, StringComparison.Ordinal) == 0;
+                return Equals((Identity)obj);
 
             return false;
         }

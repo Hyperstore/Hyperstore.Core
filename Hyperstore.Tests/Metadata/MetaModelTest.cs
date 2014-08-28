@@ -39,7 +39,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestCategory("Meta")]
         public async Task PrimitivesIsATest()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             await store.DomainModels.New().CreateAsync("test");
 
             var metaClass = PrimitivesSchema.SchemaEntitySchema;
@@ -56,7 +56,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestCategory("Meta")]
         public async Task IsAMetaTest()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var dm = await store.DomainModels.New().CreateAsync("Test");
 
@@ -69,7 +69,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestCategory("Meta")]
         public async Task IsATest()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var dm = await store.DomainModels.New().CreateAsync("Test");
 
@@ -90,7 +90,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestCategory("Meta")]
         public async Task IsAInheritTest()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var dm = await store.DomainModels.New().CreateAsync("Test");
 
@@ -111,7 +111,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestCategory("Meta")]
         public async Task GetAllMetadatas()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var dm = await store.DomainModels.New().CreateAsync("Test");
 
@@ -124,7 +124,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestCategory("Meta")]
         public async Task GetMetaRelationshipsByTerminaison()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var dm = await store.DomainModels.New().CreateAsync("Test");
 
@@ -137,7 +137,7 @@ namespace Hyperstore.Tests.MemoryStore
         {
             await AssertHelper.ThrowsException<MetadataNotFoundException>( async () =>
             {
-                var store = StoreBuilder.New().Create();
+                var store = await StoreBuilder.New().CreateAsync();
                 var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
                 var domain = await store.DomainModels.New().CreateAsync("Test");
                 var metadata = schema.GetSchemaInfo("Z");
@@ -147,7 +147,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod()]
         public async Task DefineMetaclassTest()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var dm = await store.DomainModels.New().CreateAsync("Test");
             var metadata = store.GetSchemaInfo<XExtendsBaseClass>();
@@ -157,7 +157,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod()]
         public async Task DefinePropertyMetadataTest()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
 
@@ -173,7 +173,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod()]
         public async Task DefineEnumPropertyTest_Autodefinition()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test") as IUpdatableDomainModel;
 
@@ -199,7 +199,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod()]
         public async Task DefineEnumPropertyTest()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test") as IUpdatableDomainModel;
 

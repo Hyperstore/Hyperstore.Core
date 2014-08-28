@@ -19,6 +19,7 @@ using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Hyperstore.Modeling;
 using Hyperstore.Modeling.MemoryStore;
+using System.Threading.Tasks;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 #endif
@@ -29,9 +30,9 @@ namespace Hyperstore.Tests.MemoryStore
     public class MemoryCommandContextTest : Hyperstore.Tests.HyperstoreTestBase 
     {
         [TestMethod]
-        public void Create_CommandContext_inside_a_current_transaction()
+        public async Task Create_CommandContext_inside_a_current_transaction()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             using (var session = store.BeginSession())
             {
                 TransactionManager tm = new Hyperstore.Tests.MemoryStore.MockTransactionManager();
@@ -46,9 +47,9 @@ namespace Hyperstore.Tests.MemoryStore
         }
 
         [TestMethod]
-        public void CommandId_must_be_incremented()
+        public async Task CommandId_must_be_incremented()
         {
-            var store = StoreBuilder.New().Create();
+            var store = await StoreBuilder.New().CreateAsync();
             using (var session = store.BeginSession())
             {
                 TransactionManager tm = new Hyperstore.Tests.MemoryStore.MockTransactionManager();
