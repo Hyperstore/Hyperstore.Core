@@ -104,7 +104,7 @@ namespace Hyperstore.Tests.Extension
         [TestMethod]
         public async Task ExtensionGetExisting()
         {
-            var store = await StoreBuilder.New().EnableExtensions().CreateAsync();
+            var store = await StoreBuilder.New().EnableScoping().CreateAsync();
             var schema = await store.Schemas.New<InitialDomainDefinition>().CreateAsync();
             var initial = await store.DomainModels.New().CreateAsync("D1");
 
@@ -160,7 +160,7 @@ namespace Hyperstore.Tests.Extension
         {
             await AssertHelper.ThrowsException<SessionException>(async () =>
                 {
-                    var store = await StoreBuilder.New().EnableExtensions().CreateAsync();
+                    var store = await StoreBuilder.New().EnableScoping().CreateAsync();
                     var schema = await store.Schemas.New<InitialDomainDefinition>().CreateAsync();
                     var initial = await store.DomainModels.New().CreateAsync("D1");
                     await schema.LoadSchemaExtension( new ExtensionsDomainDefinition());
@@ -181,7 +181,7 @@ namespace Hyperstore.Tests.Extension
         [TestMethod]
         public async Task Extension_constraint_in_readonly_mode()
         {
-            var store = await StoreBuilder.New().EnableExtensions().CreateAsync();
+            var store = await StoreBuilder.New().EnableScoping().CreateAsync();
             var schema = await store.Schemas.New<InitialDomainDefinition>().CreateAsync();
             var initial = await store.DomainModels.New().CreateAsync("D1");
 
@@ -268,7 +268,7 @@ namespace Hyperstore.Tests.Extension
         [TestMethod]
         public async Task ExtendedUnloadTest()
         {
-            var store = await StoreBuilder.New().EnableExtensions().CreateAsync();
+            var store = await StoreBuilder.New().EnableScoping().CreateAsync();
             var initialSchema = await store.Schemas.New<InitialDomainDefinition>().CreateAsync();
             var initial = await store.DomainModels.New().CreateAsync("D1");
 
@@ -365,7 +365,7 @@ namespace Hyperstore.Tests.Extension
         [TestMethod]
         public async Task ExtendedDeleteElementTest()
         {
-            var store = await StoreBuilder.New().EnableExtensions().CreateAsync();
+            var store = await StoreBuilder.New().EnableScoping().CreateAsync();
             var initialSchema = await store.Schemas.New<InitialDomainDefinition>().CreateAsync();
             var initial = await store.DomainModels.New().CreateAsync("D1");
 

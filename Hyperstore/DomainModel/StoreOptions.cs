@@ -12,15 +12,19 @@ namespace Hyperstore.Modeling
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  Specifying StoreOptions.
+    ///  Specifying Store Options.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     [Flags]
     public enum StoreOptions
     {
-        /// <summary>   A binary constant representing the none flag. </summary>
+        /// <summary>
+        ///  No option
+        /// </summary>
         None = 0,
-        /// <summary>   A binary constant representing the enable extensions flag. </summary>
-        EnableExtensions = 1
+        /// <summary>
+        ///  Store supports scoping for domain model
+        /// </summary>
+        EnableScopings = 1
     }
 }

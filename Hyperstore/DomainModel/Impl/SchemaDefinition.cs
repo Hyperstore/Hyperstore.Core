@@ -36,7 +36,6 @@ namespace Hyperstore.Modeling
     public abstract class SchemaDefinition : DomainConfiguration, ISchemaDefinition
     {
         private readonly string _name;
-        private readonly DomainBehavior _behavior;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -46,7 +45,7 @@ namespace Hyperstore.Modeling
         ///  The behavior.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        protected DomainBehavior Behavior { get { return _behavior; } }
+        public DomainBehavior Behavior { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -65,10 +64,10 @@ namespace Hyperstore.Modeling
             Conventions.CheckValidDomainName(name);
 
             _name = name;
-            _behavior = behavior;
-            if ((_behavior & DomainBehavior.Observable) == DomainBehavior.Observable)
+            Behavior = behavior;
+            if ((Behavior & DomainBehavior.Observable) == DomainBehavior.Observable)
             {
-                _behavior &= ~DomainBehavior.DisableL1Cache;
+                Behavior &= ~DomainBehavior.DisableL1Cache;
             }
         }
 
@@ -162,7 +161,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         protected virtual ISchema CreateSchema(IServicesContainer container)
         {
-            return new Hyperstore.Modeling.Metadata.DomainSchema(_name, container, _behavior);
+            return new Hyperstore.Modeling.Metadata.DomainSchema(_name, container, Behavior);
         }
 
         ///-------------------------------------------------------------------------------------------------

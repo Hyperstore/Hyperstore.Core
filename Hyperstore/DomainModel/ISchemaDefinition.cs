@@ -32,6 +32,8 @@ namespace Hyperstore.Modeling
     ///-------------------------------------------------------------------------------------------------
     public interface ISchemaDefinition : IDomainConfiguration
     {
+        DomainBehavior Behavior { get; set; }
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Gets the name of the schema.

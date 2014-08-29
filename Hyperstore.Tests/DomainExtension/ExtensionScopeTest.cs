@@ -32,7 +32,7 @@ namespace Hyperstore.Tests.DomainExtension
         [TestMethod]
         public async Task TestMethod1()
         {
-            var store = await StoreBuilder.New().EnableExtensions().CreateAsync();
+            var store = await StoreBuilder.New().EnableScoping().CreateAsync();
 
             await store.Schemas
                             .New<LibraryDefinition>()                            

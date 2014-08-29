@@ -360,11 +360,11 @@ namespace Hyperstore.Modeling.Domain
             CheckInitialized();
 
             if (this is ISchema)
-                throw new Exception("Uses LoadSchemaExtension for a schema");
+                throw new Exception("Can not create a scope for a schema. Uses LoadSchemaExtension for a schema");
 
             Conventions.CheckValidDomainName(extensionName);
-            if ((Store.Options & StoreOptions.EnableExtensions) != StoreOptions.EnableExtensions)
-                throw new Exception("Extensions are not enabled. Use StoreOptions.EnableExtensions when instancing the store.");
+            if ((Store.Options & StoreOptions.EnableScopings) != StoreOptions.EnableScopings)
+                throw new Exception("Scoping are not enabled. Use EnableScoping when instancing the store.");
 
             var services = Services.NewScope();
             // Removed graphadapter from services
@@ -393,7 +393,7 @@ namespace Hyperstore.Modeling.Domain
         ///  Number of nodes loaded
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public Task<int> LoadAsync(Query query = null, MergeOption option = MergeOption.OverwriteChanges, IGraphAdapter adapter=null)
+        public Task<int> LoadAsync(Query query = null, MergeOption option = MergeOption.OverwriteChanges, IGraphAdapter adapter = null)
         {
             return InnerGraph.LoadNodes(query ?? new Query { DomainModel = this.Name }, option, adapter, false);
         }

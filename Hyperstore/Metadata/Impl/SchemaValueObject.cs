@@ -139,10 +139,6 @@ namespace Hyperstore.Modeling.Metadata
             Contract.Requires(schema, "schema");
         }
 
-        #region Methods of MetaValue (1)
-
-        #endregion Methods of MetaValue (1)
-
         #endregion Constructors of MetaValue (1)
     }
 }

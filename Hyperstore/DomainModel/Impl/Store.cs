@@ -178,8 +178,8 @@ namespace Hyperstore.Modeling
             DefaultSessionConfiguration.IsolationLevel = SessionIsolationLevel.ReadCommitted;
             DefaultSessionConfiguration.SessionTimeout = TimeSpan.FromMinutes(1);
 
-            _domainControler = ((options & StoreOptions.EnableExtensions) == StoreOptions.EnableExtensions) ? (IScopeManager<IDomainModel>)new ExtendedScopeManager<IDomainModel>(this) : new ScopeManager<IDomainModel>(this);
-            _schemaControler = ((options & StoreOptions.EnableExtensions) == StoreOptions.EnableExtensions) ? (IScopeManager<ISchema>)new ExtendedScopeManager<ISchema>(this) : new ScopeManager<ISchema>(this);
+            _domainControler = ((options & StoreOptions.EnableScopings) == StoreOptions.EnableScopings) ? (IScopeManager<IDomainModel>)new ExtendedScopeManager<IDomainModel>(this) : new ScopeManager<IDomainModel>(this);
+            _schemaControler = ((options & StoreOptions.EnableScopings) == StoreOptions.EnableScopings) ? (IScopeManager<ISchema>)new ExtendedScopeManager<ISchema>(this) : new ScopeManager<ISchema>(this);
 
             _lockManager = _services.Resolve<ILockManager>() ?? new LockManager(_services);
             EventBus = _services.Resolve<IEventBus>();

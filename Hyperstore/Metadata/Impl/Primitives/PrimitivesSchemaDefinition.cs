@@ -144,5 +144,15 @@ namespace Hyperstore.Modeling.Metadata
         public void LoadDependentSchemas(IHyperstore store)
         {
         }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the behavior.
+        /// </summary>
+        /// <value>
+        ///  The behavior.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public DomainBehavior Behavior { get; set; }
     }
 }

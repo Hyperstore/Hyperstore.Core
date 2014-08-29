@@ -523,8 +523,8 @@ namespace Hyperstore.Modeling
                     return -1;
 
                 var id = evt.End;
-                if (IndexOfCore(id) >= 0)
-                    return -1;
+                //if (IndexOfCore(id) >= 0)
+                //    return -1;
 
                 item = DomainModel.Store.GetElement(id, SchemaRelationship.End);
                 if (item == null || !item.DomainModel.SameAs(Source.DomainModel))
@@ -536,8 +536,8 @@ namespace Hyperstore.Modeling
                     return -1;
 
                 var id = evt.Start;
-                if (IndexOfCore(id) >= 0)
-                    return -1;
+                //if (IndexOfCore(id) >= 0)
+                //    return -1;
 
                 item = DomainModel.Store.GetElement(id, SchemaRelationship.Start);
                 if (item == null || !item.DomainModel.SameAs(End.DomainModel))
@@ -595,7 +595,7 @@ namespace Hyperstore.Modeling
             }
             else
             {
-                if (evt.SchemaRelationshipId != SchemaRelationship.Id || evt.End != End.Id )
+                if (evt.SchemaRelationshipId != SchemaRelationship.Id || evt.End != End.Id)
                     return false;
 
                 id = evt.Start;
@@ -617,7 +617,7 @@ namespace Hyperstore.Modeling
                 item = _items[pos];
                 if (item != null)
                 {
-                    if( (Source != null && !item.DomainModel.SameAs(Source.DomainModel)) || (End != null && !item.DomainModel.SameAs(End.DomainModel)))
+                    if ((Source != null && !item.DomainModel.SameAs(Source.DomainModel)) || (End != null && !item.DomainModel.SameAs(End.DomainModel)))
                         return false;
 
                     if (End != null && item.DomainModel != End.DomainModel && SchemaRelationship.Cardinality == Cardinality.ManyToMany)

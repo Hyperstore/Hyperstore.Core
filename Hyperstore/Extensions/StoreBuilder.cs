@@ -27,7 +27,7 @@ namespace Hyperstore.Modeling
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  A store builder.
+    ///  Store builder is used to create a new store
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     public sealed class StoreBuilder
@@ -43,10 +43,10 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Initialises this instance.
+        ///  Intialize a new definition context
         /// </summary>
         /// <returns>
-        ///  A StoreBuilder.
+        ///  A StoreBuilder instance
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
         public static StoreBuilder New()
@@ -56,27 +56,27 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Enables the extensions.
+        ///  Enable scoping for domain model
         /// </summary>
         /// <returns>
         ///  A StoreBuilder.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public StoreBuilder EnableExtensions()
+        public StoreBuilder EnableScoping()
         {
-            _options |= StoreOptions.EnableExtensions;
+            _options |= StoreOptions.EnableScopings;
             return this;
         }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Compose with.
+        ///  Find and integrate types with composition attribute (CommandHandler, CommandInterceptor...).
         /// </summary>
         /// <param name="assemblies">
-        ///  A variable-length parameters list containing assemblies.
+        ///  A list of assemblies containing the type to integrate.
         /// </param>
         /// <returns>
-        ///  A StoreBuilder.
+        ///  A StorBuilder
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
         public StoreBuilder ComposeWith(params Assembly[] assemblies)
@@ -92,10 +92,10 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  With identifier.
+        ///  Force the store id
         /// </summary>
         /// <param name="id">
-        ///  The identifier.
+        ///  The new store identifier.
         /// </param>
         /// <returns>
         ///  A StoreBuilder.
@@ -109,16 +109,16 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Usings a service
+        ///  Register a service in the store context
         /// </summary>
         /// <typeparam name="T">
-        ///  Generic type parameter.
+        ///  Type of the service
         /// </typeparam>
         /// <param name="service">
-        ///  The service.
+        ///  The factory used to instanciate the service
         /// </param>
         /// <param name="lifecycle">
-        ///  (Optional) the lifecycle.
+        ///  The service life cycle
         /// </param>
         /// <returns>
         ///  A StoreBuilder.

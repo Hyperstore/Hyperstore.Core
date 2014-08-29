@@ -133,7 +133,7 @@ namespace Hyperstore.Modeling.Metadata
         {
             Contract.Requires(definition, "definition");
 
-            if ((Store.Options & StoreOptions.EnableExtensions) != StoreOptions.EnableExtensions)
+            if ((Store.Options & StoreOptions.EnableScopings) != StoreOptions.EnableScopings)
                 throw new Exception("Extensions are not enabled. Use StoreOptions.EnableExtensions when instancing the store.");
 
             if (String.CompareOrdinal(definition.SchemaName, this.Name) == 0)

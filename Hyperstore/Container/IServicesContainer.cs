@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -37,13 +37,13 @@ namespace Hyperstore.Modeling
         /// </summary>
         Singleton,
         /// <summary>
-        ///  Per domain or extension
+        ///  One instance per domain or extension
         /// </summary>
-        Scoped,     
+        Scoped,
         /// <summary>
         ///  Always a new instance
         /// </summary>
-        Transient   
+        Transient
     }
 
     ///-------------------------------------------------------------------------------------------------
