@@ -30,6 +30,8 @@ namespace Hyperstore.Bench
 
         public async Task BenchWithConstraints(int cx)
         {
+            var collects = Enumerable.Range(0, 3).Select(i => GC.CollectionCount(i)).ToArray();
+            
             long nb = 0;
             store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
@@ -76,6 +78,8 @@ namespace Hyperstore.Bench
             domain = null;
             store.Dispose();
 
+            for (int i = 0; i < 3; i++)
+                Console.WriteLine("GC collection {0} : {1}", i, GC.CollectionCount(i) - collects[i]);
             //Console.WriteLine();
 
 

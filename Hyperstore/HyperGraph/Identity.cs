@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -45,10 +45,10 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public static readonly Identity Empty = new Identity
                                                 {
-                                                        _key = null,
-                                                        _domainModelName = null,
-                                                        _value = EmptyId,
-                                                        _hash = 0
+                                                    _key = null,
+                                                    _domainModelName = null,
+                                                    _value = EmptyId,
+                                                    _hash = 0
                                                 };
         private string _domainModelName;
 
@@ -79,8 +79,8 @@ namespace Hyperstore.Modeling
             Contract.Requires(key.IndexOf(Separator) < 0, "key cannot contains " + Separator);
 
             _key = key;
-            _domainModelName = domainModelName.ToLower();
-            _value = _domainModelName + Separator + _key.ToLower();
+            _domainModelName = domainModelName;
+            _value = _domainModelName + Separator + _key;
             _hash = _value.GetHashCode();
         }
 
@@ -144,7 +144,7 @@ namespace Hyperstore.Modeling
         {
             if (other == null)
                 return -1;
-            return String.Compare(_value, other._value, StringComparison.Ordinal);
+            return String.Compare(_value, other._value, StringComparison.OrdinalIgnoreCase);
         }
 
         #endregion
@@ -164,7 +164,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public bool Equals(Identity other)
         {
-            return _hash == other._hash && String.Compare(_value, other._value, StringComparison.Ordinal) == 0;
+            return other != null && _hash == other._hash && String.Compare(_value, other._value, StringComparison.OrdinalIgnoreCase) == 0;
         }
 
         #endregion
@@ -189,7 +189,7 @@ namespace Hyperstore.Modeling
         public int CompareTo(object obj)
         {
             if (obj is Identity)
-                return CompareTo((Identity) obj);
+                return CompareTo((Identity)obj);
             return 0;
         }
 
@@ -325,7 +325,7 @@ namespace Hyperstore.Modeling
             if (ReferenceEquals(a, b))
                 return false;
 
-            if ( a == null)
+            if (a == null)
                 return b != null;
 
             return !a.Equals(b);
@@ -350,7 +350,7 @@ namespace Hyperstore.Modeling
             if (ReferenceEquals(a, b))
                 return true;
 
-            if ((object) a == null || (object) b == null)
+            if ((object)a == null || (object)b == null)
                 return false;
 
             return a.Equals(b);
