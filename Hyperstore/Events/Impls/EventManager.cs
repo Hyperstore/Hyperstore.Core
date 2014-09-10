@@ -740,14 +740,31 @@ namespace Hyperstore.Modeling.Events
         /// <summary>
         ///  Send all validations message raises during the session.
         /// </summary>
-        /// <param name="log">
+        /// <param name="session">
         ///  .
         /// </param>
+        /// <param name="result">
+        ///  The result.
+        /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void NotifyMessages(IExecutionResult log)
+        public void NotifyMessages(ISessionInformation session, IExecutionResult result)
         {
-            Contract.Requires(log, "log");
-            _messageOccurs.OnNext(log);
+            Contract.Requires(session, "session");
+            Contract.Requires(result, "result");
+
+            _messageOccurs.OnNext(result);
+
+            if (session.IsReadOnly)
+                return;
+
+            foreach(var mel in PrepareNotificationList(session).Values)
+            {
+                var den = mel as IDataErrorNotifier;
+                if(den != null && _attributedChangedObservers.ContainsKey(mel.Id))
+                {
+                    den.NotifyDataErrors(result);
+                }
+            }
         }
 
         /// <summary>

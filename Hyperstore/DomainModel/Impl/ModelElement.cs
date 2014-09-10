@@ -50,7 +50,6 @@ namespace Hyperstore.Modeling
         private ISchemaElement _schema;
         private int _sequence;
         private IHyperstore _store;
-        private IDisposable _onErrorsSubscription;
         private ModelElementStatus _status;
 
         ///-------------------------------------------------------------------------------------------------
@@ -389,9 +388,6 @@ namespace Hyperstore.Modeling
         protected void DisableDataErrorsNotification()
         {
             ValidationMessages = null;
-            if (_onErrorsSubscription != null)
-                _onErrorsSubscription.Dispose();
-            _onErrorsSubscription = null;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -408,12 +404,6 @@ namespace Hyperstore.Modeling
                 DomainModel.Events.RegisterForAttributeChangedEvent(this);
 
                 ValidationMessages = new Dictionary<string, List<string>>();
-                // DataErrorInfo
-                _onErrorsSubscription = DomainModel.Events.OnErrors.Subscribe(result =>
-                {
-                    ((IDataErrorNotifier)this).NotifyDataErrors(result);
-
-                });
             }
         }
 
@@ -707,8 +697,6 @@ namespace Hyperstore.Modeling
                     if (!domainModelDisposed && _domainModel.Events != null)
                         _domainModel.Events.UnregisterForAttributeChangedEvent(this);
 
-                    DisableDataErrorsNotification();
-
                     // Le finalizer existe pour être certain qu'une instance d'un élément sera bien déréférencée du gestionnaire d'événements,
                     // comme cela a été fait, ce n'est plus la peine de l'appeler.
                     GC.SuppressFinalize(this);
@@ -719,6 +707,7 @@ namespace Hyperstore.Modeling
                 // Domain already disposed
             }
 
+            DisableDataErrorsNotification();
 
             if (_calculatedProperties != null && _calculatedProperties.IsValueCreated)
             {

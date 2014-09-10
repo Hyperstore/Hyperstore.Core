@@ -23,7 +23,7 @@ domain Hyperstore.Tests.Model.TestDomain
         Name : string;
         Direction : Direction;
         Culture : CultureInfo;
-        X <- XExtendsBaseClass : XReferencesY;
+        X <= XExtendsBaseClass : XReferencesY;
     }
 
     def relationship XReferencesY (XExtendsBaseClass => YClass) {

@@ -611,21 +611,7 @@ namespace Hyperstore.Modeling.Domain
             var tmp = DomainUnloaded;
             if (tmp != null)
             {
-                try
-                {
-                    tmp(this, new EventArgs());
-                }
-                catch (Exception ex)
-                {
-                    var notifier = this.Events as IEventNotifier;
-                    if (notifier != null)
-                    {
-                        var message = new DiagnosticMessage(MessageType.Error, ex.Message, "DomainModelSave", false, null, ex);
-                        var list = new ExecutionResult();
-                        list.AddMessage(message);
-                        notifier.NotifyMessages(list);
-                    }
-                }
+                tmp(this, new EventArgs());
             }
 
             if (L1Cache != null)

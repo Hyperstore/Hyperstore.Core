@@ -90,6 +90,16 @@ namespace Hyperstore.Modeling.Validations
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
+        ///  Converts this instance to a warning.
+        /// </summary>
+        /// <returns>
+        ///  An IConstraintBuilder&lt;T&gt;
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        IConstraintBuilder<T> AsWarning();
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
         ///  Categories the constraint.
         /// </summary>
         /// <param name="name">

@@ -41,7 +41,7 @@ namespace Hyperstore.Modeling
     /// <seealso cref="T:Hyperstore.Modeling.ISessionContext"/>
     /// <seealso cref="T:Hyperstore.Modeling.ISessionInternal"/>
     ///-------------------------------------------------------------------------------------------------
-    public class Session : ISession, ISessionContext, ISessionInternal, ISupportsCalculatedPropertiesTracking 
+    public class Session : ISession, ISessionContext, ISessionInternal, ISupportsCalculatedPropertiesTracking
     {
         /// <summary>
         ///     Gestion des numéros de session.
@@ -864,25 +864,27 @@ namespace Hyperstore.Modeling
                 {
                     var notifiers = GetNotifiers();
 
-                    var messages = CompleteTopLevelTransaction(notifiers, ctx, currentInfo);
+                    var result = CompleteTopLevelTransaction(notifiers, ctx, currentInfo);
 
                     if (!ctx.CancellationToken.IsCancellationRequested)
-                        NotifyDiagnosticMessages(disposing, currentMode, notifiers, messages);
+                        NotifyDiagnosticMessages(disposing, currentMode, notifiers, result);
                 }
             }
         }
 
-        private void NotifyDiagnosticMessages(bool disposing, SessionMode currentMode, IEnumerable<IEventNotifier> notifiers, ExecutionResult messages)
+        private void NotifyDiagnosticMessages(bool disposing, SessionMode currentMode, IEnumerable<IEventNotifier> notifiers, Tuple<ExecutionResult, ISessionInformation> result)
         {
+            var messages = result.Item1;
             try
             {
+
                 // Enfin notification des erreurs
                 // Cette partie ne doit pas planter toute erreur sera ignorée
                 using (CodeMarker.MarkBlock("Session.Notifications"))
                 {
                     foreach (var notifier in notifiers)
                     {
-                        notifier.NotifyMessages(messages);
+                        notifier.NotifyMessages(result.Item2, messages);
                     }
                 }
             }
@@ -898,10 +900,11 @@ namespace Hyperstore.Modeling
             }
         }
 
-        private ExecutionResult CompleteTopLevelTransaction(IEnumerable<IEventNotifier> notifiers, SessionDataContext ctx, SessionLocalInfo currentInfo)
+        private Tuple<ExecutionResult, ISessionInformation> CompleteTopLevelTransaction(IEnumerable<IEventNotifier> notifiers, SessionDataContext ctx, SessionLocalInfo currentInfo)
         {
             // Sauvegarde des références vers les objets qui sont utilisés aprés que les données de la session auront été supprimées
             ExecutionResult messages = null;
+            ISessionInformation sessionInfo = null;
 
             // Il ne peut pas y avoir d'erreur dans cette partie de code
             try
@@ -921,7 +924,7 @@ namespace Hyperstore.Modeling
                 {
                     using (CodeMarker.MarkBlock("Session.OnSessionCompleted"))
                     {
-                        OnSessionCompleted(currentInfo, notifiers);
+                        sessionInfo = OnSessionCompleted(currentInfo, notifiers);
                     }
                 }
 
@@ -938,7 +941,7 @@ namespace Hyperstore.Modeling
                 DisposeSession(ctx);
             }
 
-            return messages ?? ExecutionResult.Empty;
+            return Tuple.Create(messages ?? ExecutionResult.Empty, sessionInfo);
         }
 
         private ExecutionResult ExecuteConstraints(SessionDataContext ctx, SessionLocalInfo currentInfo)
@@ -1075,15 +1078,15 @@ namespace Hyperstore.Modeling
         /// <summary>
         ///     Notification de la fin de la session
         /// </summary>
-        private void OnSessionCompleted(SessionLocalInfo info, IEnumerable<IEventNotifier> notifiers)
+        private ISessionInformation OnSessionCompleted(SessionLocalInfo info, IEnumerable<IEventNotifier> notifiers)
         {
             DebugContract.Requires(notifiers != null, "notifiers");
+            // On fait une copie de la session car les événements peuvent 
+            // être souscrits dans un autre thread
+            var sessionContext = new SessionInformation(this, info, SessionDataContext.TrackingData);
 
             try
             {
-                // On fait une copie de la session car les événements peuvent 
-                // être souscrits dans un autre thread
-                var sessionContext = new SessionInformation(this, info, SessionDataContext.TrackingData);
 
                 // Déclenchement des événements
                 // D'abord évenement hard
@@ -1102,6 +1105,7 @@ namespace Hyperstore.Modeling
                 // Si une erreur survient dans une notification, on l'intercepte
                 Log(new DiagnosticMessage(MessageType.Error, ex.Message, "SessionTerminated", SessionDataContext.InValidationProcess, null, ex));
             }
+            return sessionContext;
         }
 
         private class MultiThreadedSession : IDisposable
@@ -1150,22 +1154,22 @@ namespace Hyperstore.Modeling
             if (ctx == null)
                 return Disposables.Empty;
 
-            if( ctx.Trackers == null)
+            if (ctx.Trackers == null)
                 ctx.Trackers = new Stack<CalculatedProperty>();
 
             ctx.Trackers.Push(tracker);
-            
-            
-            return Disposables.ExecuteOnDispose(() =>  SessionDataContext.Trackers.Pop());
+
+
+            return Disposables.ExecuteOnDispose(() => SessionDataContext.Trackers.Pop());
         }
 
         CalculatedProperty ISupportsCalculatedPropertiesTracking.CurrentTracker
         {
-            get 
+            get
             {
                 var ctx = SessionDataContext;
                 var trackers = ctx != null ? ctx.Trackers : null;
-                return trackers != null && trackers.Count > 0 ? trackers.Peek() : null; 
+                return trackers != null && trackers.Count > 0 ? trackers.Peek() : null;
             }
         }
     }

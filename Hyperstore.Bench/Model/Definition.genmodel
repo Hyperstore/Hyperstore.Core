@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<Configuration>
-  <SourceFileName>definition.domain</SourceFileName>
-  <Generation>
-    <TargetFileName extension=".cs"/>
-  </Generation>
-</Configuration>

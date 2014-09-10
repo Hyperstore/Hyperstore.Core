@@ -20,20 +20,20 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="..\..\Codeplex\lib\Release\WinRT\Hyperstore.Platform.*" target="lib\netcore45\" />
-    <file src="..\..\Codeplex\lib\Release\Hyperstore.dll" target="lib\netcore45\Hyperstore.dll" />
-    <file src="..\..\Codeplex\lib\Release\Hyperstore.pdb" target="lib\netcore45\Hyperstore.pdb" />
+    <file src="..\..\Hyperstore\lib\Release\WinRT\Hyperstore.Platform.*" target="lib\netcore45\" />
+    <file src="..\..\Hyperstore\lib\Release\Hyperstore.dll" target="lib\netcore45\Hyperstore.dll" />
+    <file src="..\..\Hyperstore\lib\Release\Hyperstore.pdb" target="lib\netcore45\Hyperstore.pdb" />
     
-    <file src="..\..\Codeplex\lib\Release\Net45\Hyperstore.Platform.*" target="lib\net45\" />
-    <file src="..\..\Codeplex\lib\Release\Hyperstore.dll" target="lib\net45\Hyperstore.dll" />
-    <file src="..\..\Codeplex\lib\Release\Hyperstore.pdb" target="lib\net45\Hyperstore.pdb" />
+    <file src="..\..\Hyperstore\lib\Release\Net45\Hyperstore.Platform.*" target="lib\net45\" />
+    <file src="..\..\Hyperstore\lib\Release\Hyperstore.dll" target="lib\net45\Hyperstore.dll" />
+    <file src="..\..\Hyperstore\lib\Release\Hyperstore.pdb" target="lib\net45\Hyperstore.pdb" />
     
-    <file src="..\..\Codeplex\lib\Release\WP8\Hyperstore.Platform.*" target="lib\wp8\" />
-    <file src="..\..\Codeplex\lib\Release\Hyperstore.dll" target="lib\wp8\Hyperstore.dll" />
-    <file src="..\..\Codeplex\lib\Release\Hyperstore.pdb" target="lib\wp8\Hyperstore.pdb" />
+    <file src="..\..\Hyperstore\lib\Release\WP8\Hyperstore.Platform.*" target="lib\wp8\" />
+    <file src="..\..\Hyperstore\lib\Release\Hyperstore.dll" target="lib\wp8\Hyperstore.dll" />
+    <file src="..\..\Hyperstore\lib\Release\Hyperstore.pdb" target="lib\wp8\Hyperstore.pdb" />
     
-    <file src="..\..\Codeplex\lib\Release\Hyperstore.dll" target="lib\portable-net45+wp8+win8\Hyperstore.dll" />
-    <file src="..\..\Codeplex\lib\Release\Hyperstore.pdb" target="lib\portable-net45+wp8+win8\Hyperstore.pdb" />
+    <file src="..\..\Hyperstore\lib\Release\Hyperstore.dll" target="lib\portable-net45+wp8+win8\Hyperstore.dll" />
+    <file src="..\..\Hyperstore\lib\Release\Hyperstore.pdb" target="lib\portable-net45+wp8+win8\Hyperstore.pdb" />
     <!--<file src="Hyperstore\**\*.cs" target="src"/>-->
   </files>
 </package>

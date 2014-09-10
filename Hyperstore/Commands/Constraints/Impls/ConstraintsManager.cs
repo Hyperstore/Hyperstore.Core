@@ -188,6 +188,7 @@ namespace Hyperstore.Modeling.Validations
             if (policyName == ConstraintsCategory.ImplicitPolicy)
                 throw new ArgumentException("You can not use Implicit policy directly");
 
+            elements = elements.ToList();
             if (_constraints.Count == 0 || !elements.Any())
                 return ExecutionResult.Empty;
 
@@ -313,6 +314,10 @@ namespace Hyperstore.Modeling.Validations
                 if (_constraint == null)
                     return;
 
+                var internalConstraints = value.SchemaInfo as IConstraint<T>;
+                if( internalConstraints != null)
+                    internalConstraints.Apply((T)value, log);
+
                 _constraint.Apply((T)value, log);
             }
 
@@ -362,6 +367,16 @@ namespace Hyperstore.Modeling.Validations
             }
 
             #endregion
+
+            ///-------------------------------------------------------------------------------------------------
+            /// <summary>
+            ///  Gets or sets a value indicating whether this instance is warning.
+            /// </summary>
+            /// <value>
+            ///  true if this instance is warning, false if not.
+            /// </value>
+            ///-------------------------------------------------------------------------------------------------
+            public bool IsWarning { get; set; }
         }
 
         void IDomainService.SetDomain(IDomainModel domainModel)

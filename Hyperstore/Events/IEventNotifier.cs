@@ -63,11 +63,14 @@ namespace Hyperstore.Modeling
         /// <summary>
         ///  Send all validations message raises during the session.
         /// </summary>
+        /// <param name="session">
+        ///  The session.
+        /// </param>
         /// <param name="log">
         ///  The log.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        void NotifyMessages(IExecutionResult log);
+        void NotifyMessages(ISessionInformation session, IExecutionResult log);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

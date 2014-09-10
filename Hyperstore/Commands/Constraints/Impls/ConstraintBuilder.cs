@@ -89,6 +89,20 @@ namespace Hyperstore.Modeling.Validations
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
+        ///  Converts this instance to a warning.
+        /// </summary>
+        /// <returns>
+        ///  An IConstraintBuilder&lt;T&gt;
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        public IConstraintBuilder<T> AsWarning()
+        {
+            _proxy.IsWarning = true;
+            return this;
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
         ///  Checks.
         /// </summary>
         /// <param name="expression">
@@ -105,7 +119,7 @@ namespace Hyperstore.Modeling.Validations
         {
             Contract.Requires(expression, "expression");
 
-            _proxy.SetConstraint(new CustomConstraint<T>(expression, message, _propertyName));
+            _proxy.SetConstraint(new CustomConstraint<T>(expression, message, _propertyName, _proxy.IsWarning));
             return this;
         }
 

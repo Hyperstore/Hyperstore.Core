@@ -156,6 +156,8 @@ namespace Hyperstore.Modeling.Serialization
                     if (pv == null || pv.Value == null || !pv.HasValue)
                         continue;
                     var value = prop.Serialize(pv.Value);
+                    if (prop.PropertySchema.IsPrimitive && value != null)
+                        value = value.Trim('"');
 
                     if (props == null)
                         props = new XElement("attributes");

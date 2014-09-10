@@ -74,13 +74,16 @@ namespace Hyperstore.Modeling.Validations
         /// <param name="propertyName">
         ///  (Optional) name of the property.
         /// </param>
+        /// <param name="isWarning">
+        ///  (Optional) true if this instance is warning.
+        /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public CustomConstraint(Func<T, bool> expression, string message = null, string propertyName=null)
+        public CustomConstraint(Func<T, bool> expression, string message = null, string propertyName=null, bool isWarning=false)
         {
             Contract.Requires(expression, "expression");
 
             _expression = expression;            
-            _validationMessage = new DiagnosticMessage(MessageType.Error, message, "Validation", null, null, propertyName);
+            _validationMessage = new DiagnosticMessage(isWarning ? MessageType.Warning : MessageType.Error, message, "Validation", null, null, propertyName);
         }
 
         #region IConstraint<T> Members
