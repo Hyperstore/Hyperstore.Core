@@ -462,10 +462,11 @@ namespace Hyperstore.Modeling.Events
                         _attributedChangedObservers[element.Id]++;
                     else
                         _attributedChangedObservers.Add(element.Id, 1);
-                    
-                    return Disposables.ExecuteOnDispose(() => { 
-                        _attributedChangedObservers[element.Id]--; 
-                        if (_attributedChangedObservers[element.Id] == 0) _attributedChangedObservers.Remove(element.Id); 
+
+                    return Disposables.ExecuteOnDispose(() =>
+                    {
+                        _attributedChangedObservers[element.Id]--;
+                        if (_attributedChangedObservers[element.Id] == 0) _attributedChangedObservers.Remove(element.Id);
                     });
                 }
                 finally
@@ -489,9 +490,15 @@ namespace Hyperstore.Modeling.Events
             _attributedChangedObserversSync.EnterWriteLock();
             try
             {
-                var cx = --_attributedChangedObservers[element.Id];
-                if (cx == 0)
-                    _attributedChangedObservers.Remove(element.Id);
+                int cx;
+                if (_attributedChangedObservers.TryGetValue(element.Id, out cx))
+                {
+                    cx--;
+                    if (cx == 0)
+                        _attributedChangedObservers.Remove(element.Id);
+                    else
+                        _attributedChangedObservers[element.Id] = cx;
+                }
             }
             finally
             {
@@ -585,8 +592,8 @@ namespace Hyperstore.Modeling.Events
                                 if (notifications.TryGetValue(evt.Start, out mel) && relationshipSchema.StartPropertyName != null)
                                 {
                                     var key = mel.Id.CreateAttributeIdentity(relationshipSchema.StartPropertyName);
-                                    if( notifiedProperties.Add(key))
-                                    NotifyPropertyChanged(mel, relationshipSchema.StartPropertyName);
+                                    if (notifiedProperties.Add(key))
+                                        NotifyPropertyChanged(mel, relationshipSchema.StartPropertyName);
                                 }
                                 if (notifications.TryGetValue(evt.End, out mel) && relationshipSchema.EndPropertyName != null)
                                 {
@@ -609,7 +616,7 @@ namespace Hyperstore.Modeling.Events
                                 {
                                     var key = mel.Id.CreateAttributeIdentity(relationshipSchema.StartPropertyName);
                                     if (notifiedProperties.Add(key))
-                                    NotifyPropertyChanged(mel, relationshipSchema.StartPropertyName);
+                                        NotifyPropertyChanged(mel, relationshipSchema.StartPropertyName);
                                 }
                                 if (notifications.TryGetValue(evt.End, out mel) && relationshipSchema.EndPropertyName != null)
                                 {
@@ -754,13 +761,13 @@ namespace Hyperstore.Modeling.Events
 
             _messageOccurs.OnNext(result);
 
-            if (session.IsReadOnly )
+            if (session.IsReadOnly)
                 return;
 
-            foreach(var mel in PrepareNotificationList(session).Values)
+            foreach (var mel in PrepareNotificationList(session).Values)
             {
                 var den = mel as IDataErrorNotifier;
-                if(den != null )
+                if (den != null)
                 {
                     den.NotifyDataErrors(result);
                 }
@@ -827,7 +834,7 @@ namespace Hyperstore.Modeling.Events
 
         private static void NotifyPropertyChanged(IModelElement mel, string propertyName)
         {
-            if( mel != null && propertyName != null)
+            if (mel != null && propertyName != null)
             {
                 var notifier = mel as IPropertyChangedNotifier;
                 if (notifier != null)

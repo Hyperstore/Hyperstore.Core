@@ -53,10 +53,13 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         {
             DebugContract.Requires(ctx);
             var str = ctx.Value as string;
-            if (str == null || str.Length < 3)
+            if (str == null || str.Length == 0)
                 return null;
 
-            return str.Substring(1, str.Length - 2);
+            if (str[0] == '"')
+                return str.Substring(1, str.Length - 2);
+
+            return str;
         }
 
         ///-------------------------------------------------------------------------------------------------

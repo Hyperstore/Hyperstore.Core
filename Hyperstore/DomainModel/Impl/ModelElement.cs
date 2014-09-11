@@ -689,17 +689,18 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         protected virtual void Dispose(bool disposing)
         {
+            // Le finalizer existe pour être certain qu'une instance d'un élément sera bien déréférencée du gestionnaire d'événements,
+            // comme cela a été fait, ce n'est plus la peine de l'appeler.
+            GC.SuppressFinalize(this);
+
             try
             {
                 var domainModelDisposed = _domainModel != null && _domainModel.IsDisposed;
-                if (this is INotifyPropertyChanged && (domainModelDisposed || _schema.Schema.IsDisposed || (_schema.Schema.Behavior & DomainBehavior.Observable) == DomainBehavior.Observable))
+                if (this is INotifyPropertyChanged )
                 {
                     if (!domainModelDisposed && _domainModel.Events != null)
                         _domainModel.Events.UnregisterForAttributeChangedEvent(this);
 
-                    // Le finalizer existe pour être certain qu'une instance d'un élément sera bien déréférencée du gestionnaire d'événements,
-                    // comme cela a été fait, ce n'est plus la peine de l'appeler.
-                    GC.SuppressFinalize(this);
                 }
             }
             catch

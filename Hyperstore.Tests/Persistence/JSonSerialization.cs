@@ -38,7 +38,7 @@ namespace Hyperstore.Tests.Commands
     public class JSonSerializationTest : HyperstoreTestBase
     {
         [TestMethod]
-        public async Task SerializeElement()
+        public async Task SerializeElementAsJson()
         {
             var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<LibraryDefinition>().CreateAsync();
@@ -64,11 +64,11 @@ namespace Hyperstore.Tests.Commands
                 session.AcceptChanges();
             }
 
-            var json = JSonDomainModelSerializer.Serialize(lib, JSonSerializationOption.Json | JSonSerializationOption.SerializeIdentity);
+            var json = JSonDomainModelSerializer.Serialize(lib, JSonSerializationOption.Json);
             Assert.IsTrue(!String.IsNullOrEmpty( json) );
 
             var newton = Newtonsoft.Json.JsonConvert.SerializeObject(lib);
-            Assert.AreEqual(newton, json);
+            Assert.AreEqual(newton, json); // TODO a terminer la serialization ne se fait pas dans le même ordre (chercher comment tester)
         }
      
     }
