@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -38,7 +38,9 @@ namespace Hyperstore.Modeling
     /// </typeparam>
     /// <seealso cref="T:Hyperstore.Modeling.ModelElementCollection{TElement}"/>
     ///-------------------------------------------------------------------------------------------------
-    public class ModelElementCollection<TRelationship, TElement> : ModelElementCollection<TElement> where TElement : IModelElement where TRelationship : IModelRelationship
+    public class ModelElementCollection<TRelationship, TElement> : ModelElementCollection<TElement>
+        where TElement : IModelElement
+        where TRelationship : IModelRelationship
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -55,7 +57,7 @@ namespace Hyperstore.Modeling
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         public ModelElementCollection(IModelElement element, bool opposite = false, bool readOnly = false)
-                : base(element, element.DomainModel.Store.GetSchemaRelationship<TRelationship>(), opposite, readOnly) 
+            : base(element, element.DomainModel.Store.GetSchemaRelationship<TRelationship>(), opposite, readOnly)
         {
         }
     }
@@ -92,7 +94,7 @@ namespace Hyperstore.Modeling
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         public ModelElementCollection(IModelElement element, string schemaRelationshipName, bool opposite = false, bool readOnly = false)
-                : this(element, element.DomainModel.Store.GetSchemaRelationship(schemaRelationshipName), opposite, readOnly) 
+            : this(element, element.DomainModel.Store.GetSchemaRelationship(schemaRelationshipName), opposite, readOnly)
         {
             Contract.Requires(element, "element");
             Contract.RequiresNotEmpty(schemaRelationshipName, "schemaRelationshipName");
@@ -115,8 +117,8 @@ namespace Hyperstore.Modeling
         ///  (Optional) true to read only.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public ModelElementCollection(IModelElement element, ISchemaRelationship schemaRelationship, bool opposite = false, bool readOnly = false) 
-                : base(element, schemaRelationship, opposite)
+        public ModelElementCollection(IModelElement element, ISchemaRelationship schemaRelationship, bool opposite = false, bool readOnly = false)
+            : base(element, schemaRelationship, opposite)
         {
             _readOnly = readOnly;
         }
@@ -143,17 +145,33 @@ namespace Hyperstore.Modeling
             if (item == null)
                 return;
 
-            var itemMetadata = Source != null ? SchemaRelationship.End : SchemaRelationship.Start; 
+            var itemMetadata = Source != null ? SchemaRelationship.End : SchemaRelationship.Start;
             if (!((IModelElement)item).SchemaInfo.IsA(itemMetadata))
                 throw new Exception(ExceptionMessages.InvalidItemType);
 
             var start = Source ?? item;
             var end = End ?? item;
-            using (var session = DomainModel.Store.BeginSession())
+
+            var session = EnsuresSession();
+            try
             {
-                session.Execute(new AddRelationshipCommand(SchemaRelationship, start, end));
-                session.AcceptChanges();
+                Session.Current.Execute(new AddRelationshipCommand(SchemaRelationship, start, end));
             }
+            finally
+            {
+                if (session != null)
+                {
+                    session.AcceptChanges();
+                    session.Dispose();
+                }
+            }
+        }
+
+        private ISession EnsuresSession()
+        {
+            if (Session.Current != null)
+                return null;
+            return DomainModel.Store.BeginSession();
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -198,10 +216,18 @@ namespace Hyperstore.Modeling
                 return false;
 
             var cmd = new RemoveRelationshipCommand(link);
-            using (var session = DomainModel.Store.BeginSession())
+            var session = EnsuresSession();
+            try
             {
-                session.Execute(cmd);
-                session.AcceptChanges();
+                Session.Current.Execute(cmd);
+            }
+            finally
+            {
+                if (session != null)
+                {
+                    session.AcceptChanges();
+                    session.Dispose();
+                }
             }
             //  Count--;
             return true; // cmd.Success;
@@ -226,10 +252,18 @@ namespace Hyperstore.Modeling
                 list.Add(new RemoveRelationshipCommand(relationship));
             }
 
-            using (var session = DomainModel.Store.BeginSession())
+            var session = EnsuresSession();
+            try
             {
-                session.Execute(list.ToArray());
-                session.AcceptChanges();
+                Session.Current.Execute(list.ToArray());
+            }
+            finally
+            {
+                if (session != null)
+                {
+                    session.AcceptChanges();
+                    session.Dispose();
+                }
             }
         }
 

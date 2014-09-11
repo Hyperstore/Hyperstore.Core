@@ -81,7 +81,7 @@ namespace Hyperstore.Modeling
             _key = key;
             _domainModelName = domainModelName;
             _value = _domainModelName + Separator + _key;
-            _hash = _value.GetHashCode();
+            _hash = _value.ToLowerInvariant().GetHashCode();
         }
 
         ///-------------------------------------------------------------------------------------------------

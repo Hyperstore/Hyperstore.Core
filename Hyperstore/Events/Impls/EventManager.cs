@@ -754,13 +754,13 @@ namespace Hyperstore.Modeling.Events
 
             _messageOccurs.OnNext(result);
 
-            if (session.IsReadOnly)
+            if (session.IsReadOnly )
                 return;
 
             foreach(var mel in PrepareNotificationList(session).Values)
             {
                 var den = mel as IDataErrorNotifier;
-                if(den != null && _attributedChangedObservers.ContainsKey(mel.Id))
+                if(den != null )
                 {
                     den.NotifyDataErrors(result);
                 }

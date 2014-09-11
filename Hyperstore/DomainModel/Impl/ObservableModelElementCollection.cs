@@ -438,7 +438,7 @@ namespace Hyperstore.Modeling
             }
 
             if (newClause != null)
-                _propertyChangedSubscription = DomainModel.Events.PropertyChanged.Subscribe(e => OnPropertyChanged(e.Event));
+                _propertyChangedSubscription = DomainModel.Events.PropertyChanged.Subscribe(e => OnPropertyChanged(e.Event)); // TODO Memory leak candidate ?
         }
 
         private void OnPropertyChanged(ChangePropertyValueEvent evt)
