@@ -144,20 +144,20 @@ namespace Hyperstore.Modeling.MemoryStore
             get { return _lastAccess; }
         }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Adds slot.
-        /// </summary>
-        /// <param name="slot">
-        ///  The slot to remove.
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
-        public void Add(ISlot slot)
+        internal void Add(ISlot slot)
         {
             DebugContract.Requires(slot);
 
             this._slots.ExchangeValue( slots=> slots.Add(slot));
             Length++;
+        }
+
+        internal void Remove(ISlot slot)
+        {
+            DebugContract.Requires(slot);
+
+            this._slots.ExchangeValue(slots => slots.Remove(slot));
+            Length--;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -227,8 +227,8 @@ namespace Hyperstore.Modeling.MemoryStore
 
         internal void Mark()
         {
-            _lastAccess = PreciseClock.GetCurrent();
-            Interlocked.Increment(ref _hits);
+            //_lastAccess = PreciseClock.GetCurrent();
+            //Interlocked.Increment(ref _hits);
         }
 
         #region IDisposable Members
@@ -326,5 +326,7 @@ namespace Hyperstore.Modeling.MemoryStore
                 _current = null;
             }
         }
+
+
     }
 }

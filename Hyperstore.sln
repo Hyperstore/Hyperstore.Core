@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hyperstore", "Hyperstore\Hyperstore.csproj", "{3AB9FBAB-4E14-4661-90BC-DA6D4236066A}"
 EndProject
@@ -151,6 +151,9 @@ Global
 		{65A22C6F-D70B-427A-962A-40007921EF02} = {41992136-C867-41CB-8DAB-3A450794021E}
 		{49378800-E348-43C7-9C47-2CE2059A77D0} = {41992136-C867-41CB-8DAB-3A450794021E}
 		{8836017C-AA58-4A40-9008-8D02E3F75E33} = {41992136-C867-41CB-8DAB-3A450794021E}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 	GlobalSection(CodealikeProperties) = postSolution
 		SolutionGuid = 40702718-6f8f-4d73-b37c-5670671837a1
