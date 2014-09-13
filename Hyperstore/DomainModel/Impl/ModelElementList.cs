@@ -132,6 +132,19 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
+        ///  Gets element schema.
+        /// </summary>
+        /// <returns>
+        ///  The element schema.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        protected ISchemaElement GetElementSchema()
+        {
+            return Source == null ? SchemaRelationship.Start : SchemaRelationship.End;
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
         ///  Gets the domain model.
         /// </summary>
         /// <value>

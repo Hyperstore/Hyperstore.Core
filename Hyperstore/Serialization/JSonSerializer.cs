@@ -38,15 +38,15 @@ namespace Hyperstore.Modeling.Serialization
         /// <summary>
         ///  Serialize schema
         /// </summary>
-        SerializeSchema=1,
+        SerializeSchema = 1,
         /// <summary>
         ///  Serialize IModelElement identity
         /// </summary>
-        SerializeIdentity=2,
+        SerializeIdentity = 2,
         /// <summary>
         ///  Serialize embedded element by ref
         /// </summary>
-        SerializeByReference=6, // 4 + 2 Identity must be referenced
+        SerializeByReference = 6, // 4 + 2 Identity must be referenced
         /// <summary>
         ///  Include relationship
         /// </summary>
@@ -58,7 +58,7 @@ namespace Hyperstore.Modeling.Serialization
         /// <summary>
         ///  Serialize all hyperstore informations (schema and id)
         /// </summary>
-        Hyperstore=63, // 32 + 16 + 8 + 1 + 2 + 4
+        Hyperstore = 63, // 32 + 16 + 8 + 1 + 2 + 4
         /// <summary>
         ///  Standard json format 
         /// </summary>
@@ -66,11 +66,11 @@ namespace Hyperstore.Modeling.Serialization
         /// <summary>
         ///  Format json result
         /// </summary>
-        Indent=512, 
+        Indent = 512,
         /// <summary>
         ///  Serialize only elements defined in parameter
         /// </summary>
-        SerializeGraphObject=1024
+        SerializeGraphObject = 1024
     }
 
     ///-------------------------------------------------------------------------------------------------
@@ -272,10 +272,10 @@ namespace Hyperstore.Modeling.Serialization
         {
             Contract.Requires(mel, "mel");
 
-            
+
             var list = new List<IModelElement>();
             list.Add(mel);
-            
+
             if (query != null)
             {
                 if (settings == null)
@@ -348,7 +348,7 @@ namespace Hyperstore.Modeling.Serialization
             }
 
             bool array = false;
-            if (_elements.Count != 1 || HasOption(JSonSerializationOption.SerializeGraphObject))
+            if (_elements.Count != 1)
             {
                 Write('[', indent);
                 _depth++;
@@ -356,7 +356,7 @@ namespace Hyperstore.Modeling.Serialization
             }
 
             bool first = true;
-            while(_elements.Count > 0)
+            while (_elements.Count > 0)
             {
                 var mel = _elements.Dequeue();
                 SerializeElement(mel, !first);
@@ -393,13 +393,13 @@ namespace Hyperstore.Modeling.Serialization
             }
         }
 
-        private void Write(string text, bool indent=true)
+        private void Write(string text, bool indent = true)
         {
             WriteIndent(indent);
             _writer.Write(text);
         }
 
-        private void Write(char ch, bool indent=false)
+        private void Write(char ch, bool indent = false)
         {
             WriteIndent(indent);
             _writer.Write(ch);
@@ -433,18 +433,9 @@ namespace Hyperstore.Modeling.Serialization
             insertComma = WriteStartElement(element, insertComma);
 
             var schemaInfo = GetSchemaInfo(element);
-            foreach (var prop in schemaInfo.GetProperties(true))
-            {
-                var value = element.GetPropertyValue(prop);
-                if (value.HasValue)
-                {
-                    WriteKeyValue(prop.Name, prop.Serialize(value.Value, _serializer), insertComma);
-                    insertComma = true;
-                }
-            }
 
             var schema = schemaInfo.Schema;
-            foreach (var relationship in schema.GetRelationships(start:schemaInfo))
+            foreach (var relationship in schema.GetRelationships(start: schemaInfo))
             {
                 var relationshipSchema = relationship as ISchemaRelationship;
                 if (relationshipSchema != null && relationshipSchema.StartPropertyName != null)
@@ -462,13 +453,23 @@ namespace Hyperstore.Modeling.Serialization
                 }
             }
 
+            foreach (var prop in schemaInfo.GetProperties(true))
+            {
+                var value = element.GetPropertyValue(prop);
+                if (value.HasValue)
+                {
+                    WriteKeyValue(prop.Name, prop.Serialize(value.Value, _serializer), insertComma);
+                    insertComma = true;
+                }
+            }
+
             _depth--;
             WriteEndElement();
         }
 
         private bool SerializeReference(IModelElement element, ISchemaRelationship relationshipSchema, bool outDirection, bool insertComma)
         {
-            bool many = relationshipSchema.Cardinality == Cardinality.ManyToMany || relationshipSchema.Cardinality == Cardinality.OneToMany;
+            bool many = (outDirection && (relationshipSchema.Cardinality & Cardinality.OneToMany) == Cardinality.OneToMany) || (!outDirection && (relationshipSchema.Cardinality & Cardinality.ManyToOne) == Cardinality.ManyToOne);
             bool first = !insertComma;
 
             if (insertComma)
@@ -502,30 +503,45 @@ namespace Hyperstore.Modeling.Serialization
                 if (terminal == null)
                     continue;
 
-                if (HasOption(JSonSerializationOption.SerializeByReference) || _serialized.Contains(terminal.Id))
+                if (HasOption(JSonSerializationOption.Json) && outDirection )
                 {
-                    Write('{', true);
+                    Write('"', true);
+                    Write(outDirection ? relationshipSchema.EndPropertyName : relationshipSchema.StartPropertyName, false);
+                    Write('"');
+                    Write(':');
+                    Write('{', false);
                     _depth++;
-                    if (!HasOption(JSonSerializationOption.SerializeIdentity))
-                        throw new Exception("Circular dependency detected. You must set the JSonSerializationOption.SerializeIdentity to serialize this object grpah.");
-
-                    WriteKeyString("_eid", terminal.Id.ToString(), false);
-
-                    if (HasOption(JSonSerializationOption.SerializeRelationship))
-                    {
-                        WriteKeyString("_rid", rel.Id.ToString());
-                    }
-                    if (HasOption(JSonSerializationOption.SerializeSchemaIdentity))
-                    {
-                        WriteKeyValue("_eshid", GetSchemaIndex(GetSchemaInfo(terminal).Id));
-                        WriteKeyValue("_rshid", GetSchemaIndex(GetSchemaInfo(rel).Id));
-                    }
+                    WriteJsonId(element, insertComma, true);
                     _depth--;
                     Write('}', true);
                 }
                 else
                 {
-                    SerializeElement(terminal, false);
+                    if (!HasOption(JSonSerializationOption.Json) && (HasOption(JSonSerializationOption.SerializeByReference) || _serialized.Contains(terminal.Id)))
+                    {
+                        Write('{', true);
+                        _depth++;
+                        if (!HasOption(JSonSerializationOption.SerializeIdentity))
+                            throw new Exception("Circular dependency detected. You must set the JSonSerializationOption.SerializeIdentity to serialize this object graph.");
+
+                        WriteKeyString("_eid", terminal.Id.ToString(), false);
+
+                        if (HasOption(JSonSerializationOption.SerializeRelationship))
+                        {
+                            WriteKeyString("_rid", rel.Id.ToString());
+                        }
+                        if (HasOption(JSonSerializationOption.SerializeSchemaIdentity))
+                        {
+                            WriteKeyValue("_eshid", GetSchemaIndex(GetSchemaInfo(terminal).Id));
+                            WriteKeyValue("_rshid", GetSchemaIndex(GetSchemaInfo(rel).Id));
+                        }
+                        _depth--;
+                        Write('}', true);
+                    }
+                    else
+                    {
+                        SerializeElement(terminal, false);
+                    }
                 }
             }
             if (many)
@@ -549,6 +565,9 @@ namespace Hyperstore.Modeling.Serialization
             return _toSerialize.Contains(rel);
         }
 
+        private Dictionary<Identity, string> _identityMaps;
+        private int _sequence;
+
         private bool WriteStartElement(IModelElement mel, bool insertComma)
         {
             if (insertComma)
@@ -557,34 +576,62 @@ namespace Hyperstore.Modeling.Serialization
             Write('{', true);
             _depth++;
             insertComma = false;
-            if (HasOption(JSonSerializationOption.SerializeIdentity))
+            if (HasOption(JSonSerializationOption.Json))
             {
-                WriteKeyString("_id", mel.Id.ToString(), insertComma);
+                WriteJsonId(mel, insertComma);
                 insertComma = true;
             }
-
-            if (HasOption(JSonSerializationOption.SerializeSchemaIdentity))
+            else
             {
-                WriteKeyValue("_shid", GetSchemaIndex(GetSchemaInfo(mel).Id), insertComma);
-                insertComma = true;
-            }
-
-            if (mel is IModelRelationship)
-            {
-                var rel = mel as IModelRelationship;
                 if (HasOption(JSonSerializationOption.SerializeIdentity))
                 {
-                    WriteKeyString("_sid", rel.Start.Id.ToString());
-                    WriteKeyString("_eid", rel.End.Id.ToString());
+                    WriteKeyString("_id", mel.Id.ToString(), insertComma);
+                    insertComma = true;
                 }
 
                 if (HasOption(JSonSerializationOption.SerializeSchemaIdentity))
                 {
-                    WriteKeyValue("_sshid", GetSchemaIndex(GetSchemaInfo(rel.Start).Id));
-                    WriteKeyValue("_eshid", GetSchemaIndex(GetSchemaInfo(rel.End).Id));
+                    WriteKeyValue("_shid", GetSchemaIndex(GetSchemaInfo(mel).Id), insertComma);
+                    insertComma = true;
+                }
+
+                if (mel is IModelRelationship)
+                {
+                    var rel = mel as IModelRelationship;
+                    if (HasOption(JSonSerializationOption.SerializeIdentity))
+                    {
+                        WriteKeyString("_sid", rel.Start.Id.ToString());
+                        WriteKeyString("_eid", rel.End.Id.ToString());
+                    }
+
+                    if (HasOption(JSonSerializationOption.SerializeSchemaIdentity))
+                    {
+                        WriteKeyValue("_sshid", GetSchemaIndex(GetSchemaInfo(rel.Start).Id));
+                        WriteKeyValue("_eshid", GetSchemaIndex(GetSchemaInfo(rel.End).Id));
+                    }
                 }
             }
+
             return insertComma;
+        }
+
+        private void WriteJsonId(IModelElement mel, bool insertComma, bool isRef=false)
+        {
+            if (_identityMaps == null)
+            {
+                _identityMaps = new Dictionary<Identity, string>();
+                _sequence = 0;
+            }
+
+            string id;
+            if (!_identityMaps.TryGetValue(mel.Id, out id))
+            {
+                _sequence++;
+                id = _sequence.ToString();
+                _identityMaps.Add(mel.Id, id);
+            }
+
+            WriteKeyString(isRef ? "$ref" : "$id", id, insertComma);
         }
 
         private string GetSchemaIndex(Identity identity)

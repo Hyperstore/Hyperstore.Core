@@ -52,7 +52,7 @@ namespace Hyperstore.Tests.Commands
                 for(int i=0;i<3;i++)
                 {
                     var b  = new Book(domain);
-                    b.Title = "Book " + i.ToString();
+                    b.Title = "Book \"book\" " + i.ToString();
                     b.Copies = i + 1;
                     lib.Books.Add(b);
 
@@ -64,11 +64,20 @@ namespace Hyperstore.Tests.Commands
                 session.AcceptChanges();
             }
 
-            var json = JSonDomainModelSerializer.Serialize(lib, JSonSerializationOption.Json);
+            var json = JSonDomainModelSerializer.Serialize(lib, JSonSerializationOption.Json );
             Assert.IsTrue(!String.IsNullOrEmpty( json) );
 
-            var newton = Newtonsoft.Json.JsonConvert.SerializeObject(lib);
-            Assert.AreEqual(newton, json); // TODO a terminer la serialization ne se fait pas dans le même ordre (chercher comment tester)
+            var newton = Newtonsoft.Json.JsonConvert.SerializeObject(lib, new Newtonsoft.Json.JsonSerializerSettings { PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects });
+            store.DomainModels.Unload(domain);
+            domain = await store.DomainModels.New().CreateAsync("Test");
+            using (var session = store.BeginSession())
+            {
+                Newtonsoft.Json.JsonConvert.DeserializeObject<Library>(json);
+                session.AcceptChanges();
+            }
+            lib = domain.GetEntities<Library>().FirstOrDefault();
+            Assert.IsNotNull(lib);
+            Assert.AreEqual(3, lib.Books.Count());
         }
      
     }

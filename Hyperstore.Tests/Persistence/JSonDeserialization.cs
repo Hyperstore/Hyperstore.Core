@@ -38,7 +38,7 @@ namespace Hyperstore.Tests.Commands
     public class JSonDeSerialization : HyperstoreTestBase
     {
         [TestMethod]
-        public void SerializeElement()
+        public void SerializeJsonElement()
         {
             var json = "{ \"a\" : 10, \"b\" : \"abcd\" , \"c\" : [ 10.5, null]}";
             JsonReader reader = new JsonReader(new StringReader(json));

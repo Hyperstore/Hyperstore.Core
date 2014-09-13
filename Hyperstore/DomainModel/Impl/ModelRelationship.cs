@@ -35,9 +35,9 @@ namespace Hyperstore.Modeling
     {
         private readonly ISchemaElement _endMetadata;
         private readonly ISchemaElement _startMetadata;
-        private IModelElement _end;
+      //  private IModelElement _end;
         private Identity _endId;
-        private IModelElement _start;
+      //  private IModelElement _start;
         private Identity _startId;
         private Identity _endSchemaId;
 
@@ -119,11 +119,11 @@ namespace Hyperstore.Modeling
             Contract.Requires(start, "start");
             Contract.Requires(end, "end");
 
-            _start = start;
-            _end = end;
+            _startId = start.Id;
+            _endId = end.Id;
             _endSchemaId = end.SchemaInfo.Id;
             // Appel du ctor hérité
-            Super(start.DomainModel, schemaRelationship, (dm, melId, mid) => new AddRelationshipCommand(mid as ISchemaRelationship, _start, _end, melId));
+            Super(start.DomainModel, schemaRelationship, (dm, melId, mid) => new AddRelationshipCommand(mid as ISchemaRelationship, start, end, melId));
 
             if (((IModelRelationship)this).SchemaRelationship == null)
                 throw new Exception(ExceptionMessages.SchemaMismatch);
@@ -136,7 +136,7 @@ namespace Hyperstore.Modeling
 
         IModelElement IModelRelationship.Start
         {
-            get { return this._start ?? (this._start = DomainModel.GetElement(this._startId, ((ISchemaRelationship) ((IModelElement) this).SchemaInfo).Start)); }
+            get { return  (DomainModel.GetElement(this._startId, ((ISchemaRelationship) ((IModelElement) this).SchemaInfo).Start)); }
         }
 
         Identity IModelRelationship.EndId
@@ -151,7 +151,7 @@ namespace Hyperstore.Modeling
 
         IModelElement IModelRelationship.End
         {
-            get { return this._end ?? (this._end = Store.GetElement(this._endId, ((ISchemaRelationship) ((IModelElement) this).SchemaInfo).End)); }
+            get { return  (Store.GetElement(this._endId, ((ISchemaRelationship) ((IModelElement) this).SchemaInfo).End)); }
         }
 
         ///-------------------------------------------------------------------------------------------------

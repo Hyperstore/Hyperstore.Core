@@ -82,7 +82,14 @@ namespace Hyperstore.Modeling
     ///-------------------------------------------------------------------------------------------------
     public class ObservableModelElementCollection<T> : ModelElementCollection<T>, INotifyCollectionChanged, IList<T>, IList where T : IModelElement
     {
-        private readonly List<IModelElement> _items;
+        struct ItemEntry
+        {
+            public Identity Id;
+            public string DomainName;
+            public string ExtensionName;
+        }
+
+        private readonly List<ItemEntry> _items;
         private bool _loaded;
         private readonly object _sync = new object();
         private IDisposable _propertyChangedSubscription;
@@ -135,7 +142,7 @@ namespace Hyperstore.Modeling
             Contract.Requires(source, "source");
             Contract.Requires(schemaRelationship, "schemaRelationship");
 
-            _items = new List<IModelElement>();
+            _items = new List<ItemEntry>();
 
             var query = DomainModel.Events.RelationshipAdded;
             var query2 = DomainModel.Events.RelationshipRemoved;
@@ -167,7 +174,7 @@ namespace Hyperstore.Modeling
                 foreach (var mel in query)
                 {
                     if (WhereClause == null || WhereClause((T)mel))
-                        _items.Add(mel);
+                        _items.Add(new ItemEntry { Id = mel.Id, DomainName = mel.DomainModel.Name, ExtensionName = mel.DomainModel.ExtensionName });
                 }
                 _loaded = true;
             }
@@ -354,7 +361,11 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public T this[int index]
         {
-            get { LoadItems(); return (T)_items[index]; }
+            get 
+            {
+                LoadItems(); 
+                return (T)this.DomainModel.Store.GetElement(_items[index].Id, GetElementSchema()); 
+            }
             set { Insert(index, value); }
         }
 
@@ -398,11 +409,10 @@ namespace Hyperstore.Modeling
         public void RemoveAt(int index)
         {
             LoadItems();
-            var value = _items[index];
-            if (value != null)
+            var id = _items[index].Id;
+            if (id != null)
             {
-                base.Remove((T)value);
-                RemoveItemAt(IndexOfCore(((IModelElement)value).Id));
+                RemoveItemAt(IndexOfCore(id));
             }
         }
 
@@ -452,11 +462,9 @@ namespace Hyperstore.Modeling
             if (pos < 0)
                 return;
 
-            var item = _items[pos];
-            if (item == null)
-                return;
-
-            if (WhereClause((T)item) == false)
+            var id = _items[pos].Id;
+            var mel = DomainModel.Store.GetElement(id, GetElementSchema());
+            if (WhereClause((T)mel) == false)
                 RemoveItemAt(pos);
         }
 
@@ -565,14 +573,15 @@ namespace Hyperstore.Modeling
                 index = IndexOfCore(item.Id);
                 if (index < 0)
                 {
+                    var entry = new ItemEntry { DomainName = item.DomainModel.Name, ExtensionName = item.DomainModel.ExtensionName, Id = item.Id };
                     if (pos < 0)
                     {
-                        _items.Add(item);
+                        _items.Add(entry);
                         index = _items.Count - 1;
                     }
                     else
                     {
-                        _items.Insert(pos, item);
+                        _items.Insert(pos, entry);
                         index = pos;
                     }
                 }
@@ -611,26 +620,25 @@ namespace Hyperstore.Modeling
             if (pos < 0)
                 return false;
 
-            IModelElement item;
+            ItemEntry entry;
             lock (_items)
             {
-                item = _items[pos];
-                if (item != null)
-                {
-                    if ((Source != null && !item.DomainModel.SameAs(Source.DomainModel)) || (End != null && !item.DomainModel.SameAs(End.DomainModel)))
+                entry = _items[pos];
+                    if ((Source != null && !SameDomains(entry, Source.DomainModel)) || (End != null && !SameDomains(entry, End.DomainModel)))
                         return false;
 
-                    if (End != null && item.DomainModel != End.DomainModel && SchemaRelationship.Cardinality == Cardinality.ManyToMany)
+                    if (End != null && entry.DomainName != End.DomainModel.Name && SchemaRelationship.Cardinality == Cardinality.ManyToMany)
                         throw new Exception("Many to many obervableCollection doesn't work on inter domain relationship.");
-                    _items.Remove(item);
-                }
+                    _items.Remove(entry);
             }
 
-            if (item == null)
-                return false;
-
-            _synchronizationContext.Send(() => OnCollectionChanged(item, NotifyCollectionChangedAction.Remove, pos));
+            _synchronizationContext.Send(() => OnCollectionChanged(entry.Id, NotifyCollectionChangedAction.Remove, pos));
             return true;
+        }
+
+        private bool SameDomains(ItemEntry entry, IDomainModel domain)
+        {
+            return domain != null && String.Compare(entry.DomainName, domain.Name, StringComparison.OrdinalIgnoreCase) == 0 && String.Compare(entry.ExtensionName, domain.ExtensionName, StringComparison.OrdinalIgnoreCase) == 0;
         }
 
         private void OnCollectionChanged(object item, NotifyCollectionChangedAction action, int index = -1)

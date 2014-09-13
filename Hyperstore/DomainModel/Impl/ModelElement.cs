@@ -78,7 +78,7 @@ namespace Hyperstore.Modeling
         }
 
 #if DEBUG
-        public int Sequence
+        internal int Sequence
         {
             get { return _sequence; }
         }

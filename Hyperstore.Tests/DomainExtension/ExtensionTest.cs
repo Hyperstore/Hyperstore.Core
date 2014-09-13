@@ -155,28 +155,28 @@ namespace Hyperstore.Tests.Extension
         //        });
         //}
 
-        [TestMethod]
-        public async Task Extension_constraint()
-        {
-            await AssertHelper.ThrowsException<SessionException>(async () =>
-                {
-                    var store = await StoreBuilder.New().EnableScoping().CreateAsync();
-                    var schema = await store.Schemas.New<InitialDomainDefinition>().CreateAsync();
-                    var initial = await store.DomainModels.New().CreateAsync("D1");
-                    await schema.LoadSchemaExtension( new ExtensionsDomainDefinition());
-                    var extended = await initial.CreateScopeAsync("Ex1");
+        //[TestMethod]
+        //public async Task Extension_constraint()
+        //{
+        //    await AssertHelper.ThrowsException<SessionException>(async () =>
+        //        {
+        //            var store = await StoreBuilder.New().EnableScoping().CreateAsync();
+        //            var schema = await store.Schemas.New<InitialDomainDefinition>().CreateAsync();
+        //            var initial = await store.DomainModels.New().CreateAsync("D1");
+        //            await schema.LoadSchemaExtension( new ExtensionsDomainDefinition());
+        //            var extended = await initial.CreateScopeAsync("Ex1");
 
-                    store.GetSchemaEntity<Category>().AddImplicitConstraint<Category>(c => c.Value < 10, "Invalid value");
+        //            store.GetSchemaEntity<Category>().AddImplicitConstraint<Category>(c => c.Value < 10, "Invalid value");
 
-                    Category cat;
-                    using (var s = store.BeginSession())
-                    {
-                        cat = new Category(initial);
-                        cat.Value = 10;
-                        s.AcceptChanges();
-                    }
-                });
-        }
+        //            Category cat;
+        //            using (var s = store.BeginSession())
+        //            {
+        //                cat = new Category(initial);
+        //                cat.Value = 10;
+        //                s.AcceptChanges();
+        //            }
+        //        });
+        //}
 
         [TestMethod]
         public async Task Extension_constraint_in_readonly_mode()

@@ -150,18 +150,21 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Creates a schema.
+        ///  Schema factory. Create a new schema instance
         /// </summary>
-        /// <param name="container">
+        /// <remarks>
+        /// You can override this method to create a custom schema instance.
+        /// </remarks>
+        /// <param name="services">
         ///  The domain services container.
         /// </param>
         /// <returns>
         ///  The new schema.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected virtual ISchema CreateSchema(IServicesContainer container)
+        protected virtual ISchema CreateSchema(IServicesContainer services)
         {
-            return new Hyperstore.Modeling.Metadata.DomainSchema(_name, container, Behavior);
+            return new Hyperstore.Modeling.Metadata.DomainSchema(_name, services, Behavior);
         }
 
         ///-------------------------------------------------------------------------------------------------

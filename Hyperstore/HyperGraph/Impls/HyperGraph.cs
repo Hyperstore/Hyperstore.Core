@@ -1059,7 +1059,7 @@ namespace Hyperstore.Modeling.HyperGraph
                 if (incoming == null)
                     continue;
 
-                Debug.Assert(_domainModel.Name == incoming.Id.DomainModelName);
+                Debug.Assert(String.Compare( _domainModel.Name, incoming.Id.DomainModelName, StringComparison.OrdinalIgnoreCase) == 0);
 
                 // Génére la commande de suppression.
                 commands.Add(new RemoveRelationshipCommand(_domainModel, incoming.Id, incoming.SchemaId));

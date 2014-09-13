@@ -57,9 +57,9 @@ namespace Hyperstore.Modeling.Metadata.Primitives
                 return null;
 
             if (str[0] == '"')
-                return str.Substring(1, str.Length - 2);
+                return str.Substring(1, str.Length - 2).Replace(@"\""", "\"");
 
-            return str;
+            return str.Replace(@"\""", "\"");
         }
 
         ///-------------------------------------------------------------------------------------------------

@@ -47,7 +47,7 @@ namespace Hyperstore.Modeling.MemoryStore
         private IStatisticCounter _statVaccumCount;
         private IStatisticCounter _statVaccumAverage;
 
-        private IStatisticCounter _statGeIGraphNode;
+        private IStatisticCounter _statGetGraphNode;
         private IStatisticCounter _statUpdateValue;
         private IStatisticCounter _statRemoveValue;
         private IStatisticCounter _statAddValue;
@@ -128,7 +128,7 @@ namespace Hyperstore.Modeling.MemoryStore
                 stat = EmptyStatistics.DefaultInstance;
 
             _statAddValue = stat.RegisterCounter("MemoryStore", String.Format("#AddValue {0}", domainModelName), domainModelName, StatisticCounterType.Value);
-            _statGeIGraphNode = stat.RegisterCounter("MemoryStore", String.Format("#GeIGraphNode {0}", domainModelName), domainModelName, StatisticCounterType.Value);
+            _statGetGraphNode = stat.RegisterCounter("MemoryStore", String.Format("#GetGraphNode {0}", domainModelName), domainModelName, StatisticCounterType.Value);
             _statUpdateValue = stat.RegisterCounter("MemoryStore", String.Format("#UpdateValue {0}", domainModelName), domainModelName, StatisticCounterType.Value);
             _statRemoveValue = stat.RegisterCounter("MemoryStore", String.Format("#RemoveValue {0}", domainModelName), domainModelName, StatisticCounterType.Value);
             _statVaccumCount = stat.RegisterCounter("MemoryStore", String.Format("#Vaccum{0}", domainModelName), domainModelName, StatisticCounterType.Value);
@@ -292,7 +292,7 @@ namespace Hyperstore.Modeling.MemoryStore
                             data.Add(slots.Key, new SlotList(slots.Value));
                     }
 
-                    _values = data;
+                    Interlocked.Exchange(ref _values, data);
                 }
                 finally
                 {
@@ -316,9 +316,9 @@ namespace Hyperstore.Modeling.MemoryStore
                 _statVaccumSkipped.Incr();
         }
 
-        private CommandContext CreateCommandContext()
+        private CommandContext CreateCommandContext(bool readOnly=false)
         {
-            return new CommandContext(_transactionManager);
+            return new CommandContext(_transactionManager, readOnly);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -486,7 +486,7 @@ namespace Hyperstore.Modeling.MemoryStore
                     ctx.Complete();
                     //                NotifyVacuum();
                     _valuesLock.ExitReadLock();
-                    _statGeIGraphNode.Incr();
+                    _statGetGraphNode.Incr();
                 }
             }
         }
@@ -508,7 +508,7 @@ namespace Hyperstore.Modeling.MemoryStore
                     ctx.Complete();
                     //                NotifyVacuum();
                     _valuesLock.ExitReadLock();
-                    _statGeIGraphNode.Incr();
+                    _statGetGraphNode.Incr();
                 }
             }
         }
@@ -599,63 +599,50 @@ namespace Hyperstore.Modeling.MemoryStore
         ///-------------------------------------------------------------------------------------------------
         public IEnumerable<GraphNode> GetAllNodes(NodeType elementType)
         {
-            //// Sauvegarde du pointeur sur les valeurs qui sera protégé du vaccum (Le vaccum ne supprime pas mais recré un
-            //// tableau pour remplacer l'ancien)
-            //var values = _values;
-            //var ctx = CreateCommandContext();
-
-            //var iter = values.Where(s => s.Value.ElementType == elementType);
-
-            //foreach (var item in iter)
+            // Démarrage d'une transaction afin de pouvoir initialiser le contexte 
+            // dans lequel va s'exécuter la lecture.
+            //using (var ctx = CreateCommandContext())
             //{
-            //    Slot<GraphNode> slot;
-            //    this._valuesLock.EnterReadLock();
+            //    // Dans un 1er temps, la méthode utilisait un yield pour renvoyer le résultat à chaque itération.
+            //    // Mais cela générait une erreur si pendant l'itération une valeur était modifiée car il y avait un conflit 
+            //    // avec le _valuesLock (impossible de passer en write car on est en read).
+            //    // Pour éviter cela, on va lire toutes les valeurs et les renvoyer d"un coup.
+            //    // TODO voir si on peut pas faire mieux
+            //    var result = new List<GraphNode>(); // Stockage des résultats de l'itération
+            //    _valuesLock.EnterReadLock();
             //    try
             //    {
-            //        slot = item.Value.GetInSnapshot(ctx) as Slot<GraphNode>;
+            //        var iter = _values.Values.Where(s => (s.ElementType & elementType) != 0);
+
+            //        foreach (var slots in iter)
+            //        {
+            //            var slot = slots.GetInSnapshot(ctx) as Slot<GraphNode>;
+            //            if (slot != null)
+            //                result.Add(slot.Value);
+            //        }
             //    }
             //    finally
             //    {
-            //        this._valuesLock.ExitReadLock();
+            //        // On valide la transaction dans tous les cas pour qu'elle soit purgée par le vacuum
+            //        ctx.Complete();
+            //        _valuesLock.ExitReadLock();
+            //        _statGeIGraphNode.IncrBy(result.Count);
             //    }
 
-            //    if (slot != null)
-            //        yield return slot.Value;
+            //    return result;
             //}
+            var values = _values; // Copy
+            var ctx = CreateCommandContext(true);
+            var iter = values.Values.Where(s => (s.ElementType & elementType) != 0);
 
-            //ctx.Complete();
-
-            // Démarrage d'une transaction afin de pouvoir initialiser le contexte 
-            // dans lequel va s'exécuter la lecture.
-            using (var ctx = CreateCommandContext())
+            foreach (var slots in iter)
             {
-                // Dans un 1er temps, la méthode utilisait un yield pour renvoyer le résultat à chaque itération.
-                // Mais cela générait une erreur si pendant l'itération une valeur était modifiée car il y avait un conflit 
-                // avec le _valuesLock (impossible de passer en write car on est en read).
-                // Pour éviter cela, on va lire toutes les valeurs et les renvoyer d"un coup.
-                // TODO voir si on peut pas faire mieux
-                var result = new List<GraphNode>(); // Stockage des résultats de l'itération
-                _valuesLock.EnterReadLock();
-                try
+                var slot = slots.GetInSnapshot(ctx) as Slot<GraphNode>;
+                if (slot != null)
                 {
-                    var iter = _values.Values.Where(s => (s.ElementType & elementType) != 0);
-
-                    foreach (var slots in iter)
-                    {
-                        var slot = slots.GetInSnapshot(ctx) as Slot<GraphNode>;
-                        if (slot != null)
-                            result.Add(slot.Value);
-                    }
+                    _statGetGraphNode.IncrBy(1);
+                    yield return slot.Value;
                 }
-                finally
-                {
-                    // On valide la transaction dans tous les cas pour qu'elle soit purgée par le vacuum
-                    ctx.Complete();
-                    _valuesLock.ExitReadLock();
-                    _statGeIGraphNode.IncrBy(result.Count);
-                }
-
-                return result;
             }
         }
 

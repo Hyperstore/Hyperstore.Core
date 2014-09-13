@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -76,7 +76,7 @@ namespace Hyperstore.Modeling.MemoryStore
                 lock (_activeTransactions)
                 {
                     return _activeTransactions.Where(t => t.Status == TransactionStatus.Active)
-                            .Min(t => (long?) t.Id);
+                            .Min(t => (long?)t.Id);
                 }
             }
         }
@@ -99,7 +99,7 @@ namespace Hyperstore.Modeling.MemoryStore
                 var session = Session.Current;
                 if (session == null)
                     return null;
-                    //throw new NotInTransactionException();
+                //throw new NotInTransactionException();
 
                 var ctx = session.GetContextInfo<MemoryTransaction>(CONTEXT_KEY);
                 return ctx;
@@ -128,11 +128,14 @@ namespace Hyperstore.Modeling.MemoryStore
         /// <param name="isolationLevel">
         ///  .
         /// </param>
+        /// <param name="readOnly">
+        ///  (Optional) true to read only.
+        /// </param>
         /// <returns>
         ///  A MemoryTransaction.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public MemoryTransaction BeginTransaction(SessionIsolationLevel isolationLevel)
+        public MemoryTransaction BeginTransaction(SessionIsolationLevel isolationLevel, bool readOnly = false)
         {
             if (isolationLevel == SessionIsolationLevel.Unspecified)
             {
@@ -140,7 +143,7 @@ namespace Hyperstore.Modeling.MemoryStore
                 isolationLevel = s != null ? Session.Current.SessionIsolationLevel : SessionIsolationLevel.ReadCommitted;
             }
 
-            var tx = CreateTransaction(isolationLevel);
+            var tx = CreateTransaction(isolationLevel, readOnly);
 
             if (isolationLevel == SessionIsolationLevel.Serializable)
             {
@@ -149,8 +152,7 @@ namespace Hyperstore.Modeling.MemoryStore
                 if (_trace.IsEnabled(TraceCategory.MemoryStore))
                 {
                     _trace.WriteTrace(TraceCategory.MemoryStore, "Active transaction when tx {0} starts : {1}", tx.Id, list != null
-                            ? String.Join(",", list.Select(t => t.Id)
-                                    .ToArray())
+                            ? String.Join(",", list.Select(t => t.Id).ToArray())
                             : "");
                 }
             }
@@ -254,12 +256,21 @@ namespace Hyperstore.Modeling.MemoryStore
             return tx;
         }
 
+        ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Création d'une transaction (Scope = RequiredNested)
+        ///  Création d'une transaction (Scope = RequiredNested)
         /// </summary>
-        /// <param name="isolationLevel"></param>
-        /// <returns></returns>
-        private MemoryTransaction CreateTransaction(SessionIsolationLevel isolationLevel)
+        /// <param name="isolationLevel">
+        ///  .
+        /// </param>
+        /// <param name="readOnly">
+        ///  true to read only.
+        /// </param>
+        /// <returns>
+        ///  The new transaction.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        private MemoryTransaction CreateTransaction(SessionIsolationLevel isolationLevel, bool readOnly)
         {
             var current = CurrentTransaction;
             if (current == null)
@@ -273,20 +284,23 @@ namespace Hyperstore.Modeling.MemoryStore
                 current = new MemoryTransaction(_trace, this, xid, isolationLevel);
                 if (Session.Current != null)
                     CurrentTransaction = current;
-                
-                lock (_sync)
-                {
-                    _transactions.Add(current.Id, current);
-                    lock (_activeTransactions)
-                    {
-                        _activeTransactions.Add(current);
-                    }
 
-                    if (Session.Current != null)
-                        Session.Current.Enlist(current);
+                if (!readOnly)
+                {
+                    lock (_sync)
+                    {
+                        _transactions.Add(current.Id, current);
+                        lock (_activeTransactions)
+                        {
+                            _activeTransactions.Add(current);
+                        }
+
+                        if (Session.Current != null)
+                            Session.Current.Enlist(current);
+                    }
                 }
             }
-            else
+            else if( !readOnly)
                 current.PushNestedTransaction();
 
             return current;

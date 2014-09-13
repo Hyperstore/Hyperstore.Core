@@ -33,7 +33,6 @@ namespace Hyperstore.Modeling.MemoryStore
         private readonly ITransactionManager _transactionManager;
         private bool _aborted;
         private TransactionStatus _currentStatus;
-        private readonly IHyperstoreTrace _trace;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -66,7 +65,6 @@ namespace Hyperstore.Modeling.MemoryStore
             DebugContract.Requires(transactionManager);
             DebugContract.Requires(trace);
 
-            _trace = trace;
             if (isolationLevel != SessionIsolationLevel.ReadCommitted && isolationLevel != SessionIsolationLevel.Serializable)
                 throw new ArgumentOutOfRangeException("Only ReadCommitted or Serializable is allowed.");
 
@@ -144,7 +142,6 @@ namespace Hyperstore.Modeling.MemoryStore
           //  lock (this)
             {
                 _transactionManager.OnTransactionTerminated(this);
-                _trace.WriteTrace(TraceCategory.MemoryStore, "Rollback " + Id);
             }
         }
 

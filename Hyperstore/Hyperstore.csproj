@@ -395,6 +395,8 @@
     <Compile Include="Adapters\EntityUpdaters\AbstractPersistenceProvider.cs" />
     <Compile Include="Serialization\JSonDeserializer.cs" />
     <Compile Include="Serialization\JsonReader.cs" />
+    <Compile Include="Serialization\XmlDeserializer.cs" />
+    <Compile Include="Serialization\XmlSerializer.cs" />
     <Compile Include="Serialization\JSonSerializer.cs" />
     <Compile Include="Serialization\XmlDomainModelSerializer.cs" />
     <Compile Include="Serialization\SerializationOption.cs" />

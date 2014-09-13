@@ -16,7 +16,7 @@ domain Hyperstore.Tests.Model.Library
     def entity Book {
         Title  : string;
         Copies : int;
-		//Library *<= Library : LibraryHasBooks;
+		Library *<= Library : LibraryHasBooks;
     }
 
     def entity Member extends NamedElement {

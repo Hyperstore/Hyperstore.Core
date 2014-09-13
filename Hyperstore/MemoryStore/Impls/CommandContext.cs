@@ -78,16 +78,19 @@ namespace Hyperstore.Modeling.MemoryStore
         /// <param name="transactionManager">
         ///  .
         /// </param>
+        /// <param name="readOnly">
+        ///  true to read only.
+        /// </param>
         /// <param name="isolationLevel">
         ///  (Optional)
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public CommandContext(ITransactionManager transactionManager, SessionIsolationLevel isolationLevel = SessionIsolationLevel.Unspecified)
+        public CommandContext(ITransactionManager transactionManager, bool readOnly=false, SessionIsolationLevel isolationLevel = SessionIsolationLevel.Unspecified)
         {
             DebugContract.Requires(transactionManager, "transactionManager");
 
             _transactionManager = transactionManager;
-            _currentTransaction = _transactionManager.CurrentTransaction ?? (_transaction = transactionManager.BeginTransaction(isolationLevel));
+            _currentTransaction = _transactionManager.CurrentTransaction ?? (_transaction = transactionManager.BeginTransaction(isolationLevel, readOnly));
 
             // On s'assure qu' il existe une transaction courante
 

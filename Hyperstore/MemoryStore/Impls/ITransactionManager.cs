@@ -51,11 +51,14 @@ namespace Hyperstore.Modeling.MemoryStore
         /// <param name="mode">
         ///  (Optional)
         /// </param>
+        /// <param name="readOnly">
+        ///  (Optional) true to read only.
+        /// </param>
         /// <returns>
         ///  A MemoryTransaction.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        MemoryTransaction BeginTransaction(SessionIsolationLevel mode = SessionIsolationLevel.Unspecified);
+        MemoryTransaction BeginTransaction(SessionIsolationLevel mode = SessionIsolationLevel.Unspecified, bool readOnly=false);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
