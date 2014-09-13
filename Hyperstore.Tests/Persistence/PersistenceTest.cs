@@ -179,7 +179,7 @@ namespace Hyperstore.Tests.Commands
             var sw = new Stopwatch();
             sw.Start();
             var size1 = 0L;
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 40; i++)
             {
                 using (var writer = new FileStream("test2.xml", FileMode.Create))
                 {
@@ -194,7 +194,7 @@ namespace Hyperstore.Tests.Commands
 
             sw.Restart();
             var size2 = 0L;
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 40; i++)
             {
                 using (var writer = new FileStream("test2.xml", FileMode.Create))
                 {

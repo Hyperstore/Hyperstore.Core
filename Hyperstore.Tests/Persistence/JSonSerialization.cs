@@ -68,9 +68,10 @@ namespace Hyperstore.Tests.Commands
             Assert.IsTrue(!String.IsNullOrEmpty( json) );
 
             var newton = Newtonsoft.Json.JsonConvert.SerializeObject(lib, new Newtonsoft.Json.JsonSerializerSettings { PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects });
+           
             store.DomainModels.Unload(domain);
             domain = await store.DomainModels.New().CreateAsync("Test");
-            using (var session = store.BeginSession())
+            using (var session = store.BeginSession(new SessionConfiguration { DefaultDomainModel = domain, Mode= SessionMode.Loading }))
             {
                 Newtonsoft.Json.JsonConvert.DeserializeObject<Library>(json);
                 session.AcceptChanges();
