@@ -27,6 +27,7 @@ using Hyperstore.Modeling.Statistics;
 using Hyperstore.Modeling.Utils;
 using Hyperstore.Modeling.HyperGraph;
 using Hyperstore.Modeling.Platform;
+using System.Collections.Immutable;
 
 #endregion
 
@@ -70,7 +71,7 @@ namespace Hyperstore.Modeling.MemoryStore
         /// <summary>
         ///     Stockage des slots
         /// </summary>
-        private Dictionary<Identity, SlotList> _values = new Dictionary<Identity, SlotList>();
+        private ThreadSafeLazyRef<ImmutableDictionary<Identity, SlotList>> _values = new ThreadSafeLazyRef<ImmutableDictionary<Identity, SlotList>>(() => ImmutableDictionary<Identity, SlotList>.Empty);
 
         /// <summary>
         ///     Gestionnaire des demandes de vaccum
@@ -271,28 +272,22 @@ namespace Hyperstore.Modeling.MemoryStore
                     }
 
                     if (_evictionPolicy != null)
-                        _evictionPolicy.StartProcess(_values.Count);
-
-                    // Création d'un dictionnaire temporaire dans lequel on va copier les valeurs à conserver.
-                    // Comme un dictionnaire ne permet pas de récupérer la place qui n'est plus utilisé, on va ainsi optimiser
-                    // la mémoire.
-                    // On peut se permettre de le faire ici car le vaccum bloque toutes les transactions.
-                    var data = new Dictionary<Identity, SlotList>((int)(_values.Count * 0.1));
+                        _evictionPolicy.StartProcess(_values.Value.Count());
 
                     // On parcourt toutes les valeurs
-                    foreach (var slots in _values)
+                    foreach (var slots in _values.Value)
                     {
                         if (_disposed)
                             break;
 
                         // Si il n'y a plus rien dans le slot, on le supprime aussi
                         if (slots.Value.Length == 0 || (_evictionPolicy != null && _evictionPolicy.ShouldEvictSlot(slots.Key, slots.Value)))
+                        {
                             slots.Value.Dispose();
-                        else
-                            data.Add(slots.Key, new SlotList(slots.Value));
+                            _values.ExchangeValue(values => values.Remove(slots.Key));
+                        }
                     }
 
-                    Interlocked.Exchange(ref _values, data);
                 }
                 finally
                 {
@@ -347,20 +342,12 @@ namespace Hyperstore.Modeling.MemoryStore
                 try
                 {
                     SlotList slots = null;
-                    if (!_values.TryGetValue(node.Id, out slots))
+                    if (!_values.Value.TryGetValue(node.Id, out slots))
                     {
                         // N'existe pas encore. On rajoute
                         slots = new SlotList(node.NodeType, ownerKey);
-                        _valuesLock.EnterWriteLock();
-                        try
-                        {
-                            _values.Add(node.Id, slots);
-                        }
-                        finally
-                        {
-                            _valuesLock.ExitWriteLock();
-                        }
 
+                        _values.ExchangeValue(values => values.Add(node.Id, slots));
                         AddSlot(ctx, slots, currentSlot);
                     }
                     else
@@ -368,7 +355,7 @@ namespace Hyperstore.Modeling.MemoryStore
                         if (SelectSlot(node.Id, ctx) != null)
                             throw new DuplicateElementException(node.Id.ToString());
 
-                        if (_values.TryGetValue(node.Id, out slots))
+                        if (_values.Value.TryGetValue(node.Id, out slots))
                         {
                             var initialSlot = slots.GetActiveSlot();
                             AddSlot(ctx, slots, currentSlot);
@@ -418,7 +405,7 @@ namespace Hyperstore.Modeling.MemoryStore
                     // En MVCC, la suppression consiste seulement à positionner XMAX avec la transaction en cours.
                     // Si cette transaction est committée, la supression sera valide sinon xmax sera ignoré.
                     SlotList slots;
-                    if (_values.TryGetValue(key, out slots))
+                    if (_values.Value.TryGetValue(key, out slots))
                     {
                         var currentSlot = slots.GetInSnapshot(ctx);
                         if (currentSlot == null)
@@ -470,9 +457,9 @@ namespace Hyperstore.Modeling.MemoryStore
         {
             DebugContract.Requires(key);
 
-            using (var ctx = CreateCommandContext())
+            using (var ctx = CreateCommandContext(true))
             {
-                _valuesLock.EnterReadLock();
+               // _valuesLock.EnterReadLock();
                 try
                 {
                     var result = SelectSlot(key, ctx);
@@ -485,7 +472,7 @@ namespace Hyperstore.Modeling.MemoryStore
                 {
                     ctx.Complete();
                     //                NotifyVacuum();
-                    _valuesLock.ExitReadLock();
+               //     _valuesLock.ExitReadLock();
                     _statGetGraphNode.Incr();
                 }
             }
@@ -518,7 +505,7 @@ namespace Hyperstore.Modeling.MemoryStore
             DebugContract.Requires(id);
 
             SlotList slots;
-            if (_values.TryGetValue(id, out slots))
+            if (_values.Value.TryGetValue(id, out slots)) // TODO put values as volatile ???? (cf GetNode)
             {
                 slots.Mark();
                 return slots.GetInSnapshot(ctx) as Slot<GraphNode>;
@@ -551,7 +538,7 @@ namespace Hyperstore.Modeling.MemoryStore
                     _valuesLock.EnterReadLock();
                     try
                     {
-                        _values.TryGetValue(node.Id, out tuples);
+                        _values.Value.TryGetValue(node.Id, out tuples);
                     }
                     finally
                     {
@@ -631,9 +618,8 @@ namespace Hyperstore.Modeling.MemoryStore
 
             //    return result;
             //}
-            var values = _values; // Copy
             var ctx = CreateCommandContext(true);
-            var iter = values.Values.Where(s => (s.ElementType & elementType) != 0);
+            var iter = _values.Value.Values.Where(s => (s.ElementType & elementType) != 0);
 
             foreach (var slots in iter)
             {

@@ -106,14 +106,6 @@ namespace Hyperstore.Modeling.Serialization
 
         #endregion
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Constructor.
-        /// </summary>
-        /// <param name="settings">
-        ///  Options for controlling the operation.
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
         private XmlDeserializer(IDomainModel domain, XmlDeserializationSettings settings)
         {
             _domain = domain;
@@ -167,14 +159,6 @@ namespace Hyperstore.Modeling.Serialization
         }
 
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Entry point
-        /// </summary>
-        /// <param name="elements">
-        ///  The elements.
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
         private void Deserialize(Stream stream)
         {
             _monikers = new Dictionary<string, ISchemaElement>();

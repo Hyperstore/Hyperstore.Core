@@ -11,6 +11,7 @@ namespace Hyperstore.Modeling.Platform.Net
         public ConcurrentDictionaryWrapper()
             : base()
         {
+
         }
 
         bool IConcurrentDictionary<TKey, TValue>.TryAdd(TKey key, TValue value)

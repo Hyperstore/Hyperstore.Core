@@ -98,7 +98,8 @@ namespace Hyperstore.Modeling.Domain
             DebugContract.Requires(id);
             IModelElement elem;
 
-            var cacheEnabled = (metaclass.Schema.Behavior & DomainBehavior.DisableL1Cache) != DomainBehavior.DisableL1Cache;
+            var cacheEnabled = (metaclass.Schema.Behavior & DomainBehavior.DisableL1Cache) != DomainBehavior.DisableL1Cache 
+                                || (Session.Current != null && (Session.Current.Mode & SessionMode.IgnoreCache) != SessionMode.IgnoreCache);
 
             if (cacheEnabled && _cache.TryGetValue(id, out elem))
             {

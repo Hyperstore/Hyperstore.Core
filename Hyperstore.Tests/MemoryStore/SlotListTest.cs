@@ -37,15 +37,6 @@ namespace Hyperstore.Tests.MemoryStore
             Assert.IsTrue(list.Length == 1);
         }
 
-        [TestMethod]
-        public void RemoveItem()
-        {
-            SlotList list = new SlotList(NodeType.Node);
-            var a = new Slot<int>(1);
-            list.Add(a);
-            list.Remove(a);
-            Assert.IsTrue(list.Length == 0);
-        }
 
         [TestMethod]
         public void Enumerate()
@@ -77,7 +68,6 @@ namespace Hyperstore.Tests.MemoryStore
             list = new SlotList(NodeType.Node);
             a = new Slot<int>(1);
             list.Add(a);
-            list.Remove(a);
             list.Dispose();
             AssertHelper.IsGarbageCollected(ref list);
         }

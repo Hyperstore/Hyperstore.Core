@@ -48,7 +48,7 @@ namespace Hyperstore.Modeling
         /// </summary>
         LoadingSchema = 3,
         /// <summary>
-        /// Domain loading
+        /// A domain is being loading. If an adapter is attached to the domain this is disable the lazy loading mechanism.
         /// </summary>
         Loading = 4,
         /// <summary>
@@ -60,7 +60,7 @@ namespace Hyperstore.Modeling
         /// </summary>
         Redo = 16,
         /// <summary>
-        /// Uses to check
+        /// Used to check undo/redo mode
         /// </summary>
         UndoOrRedo = 24,
         /// <summary>

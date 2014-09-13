@@ -124,6 +124,7 @@ namespace Hyperstore.Modeling.Serialization
         private int _monikerSequence;
         private readonly IDomainModel _domain;
         private IJsonSerializer _serializer;
+
         #region static
 
         ///-------------------------------------------------------------------------------------------------
@@ -176,12 +177,16 @@ namespace Hyperstore.Modeling.Serialization
         /// <summary>
         ///  Constructor.
         /// </summary>
+        /// <param name="domain">
+        /// The domain to serialize
+        /// </param>
         /// <param name="settings">
         ///  Options for controlling the operation.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public XmlSerializer(IDomainModel domain, XmlSerializationSettings settings)
+        private XmlSerializer(IDomainModel domain, XmlSerializationSettings settings)
         {
+            Contract.Requires(domain, "domain");
             _domain = domain;
             _options = settings.Options;
             _schema = settings.Schema;
@@ -228,14 +233,6 @@ namespace Hyperstore.Modeling.Serialization
             return (_options & option) == option;
         }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Entry point
-        /// </summary>
-        /// <param name="elements">
-        ///  The elements.
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
         private void Serialize(Stream stream)
         {
             try

@@ -17,8 +17,10 @@
  
 #region Imports
 
+using Hyperstore.Modeling.Utils;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 
@@ -37,32 +39,9 @@ namespace Hyperstore.Modeling.MemoryStore
     {
         private readonly NodeType _elementType;
         private readonly object _ownerKey;
-        private readonly List<ISlot> _slots;
+        private readonly ThreadSafeLazyRef<ImmutableList<ISlot>> _slots;
         private int _hits;
         private long _lastAccess;
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Constructor.
-        /// </summary>
-        /// <param name="clone">
-        ///  The clone.
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
-        public SlotList(SlotList clone)
-        {
-            DebugContract.Requires(clone, "clone");
-
-            _ownerKey = clone._ownerKey;
-            _elementType = clone._elementType;
-            _hits = clone._hits;
-            _lastAccess = clone.LastAccess;
-
-            _ownerKey = clone._ownerKey;
-            _slots = new List<ISlot>(Length + 2);
-            _slots.AddRange(clone._slots.Where(s => s.Id > 0));
-            Length = _slots.Count;
-        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -81,7 +60,7 @@ namespace Hyperstore.Modeling.MemoryStore
 
             _ownerKey = ownerKey;
             _elementType = elementType;
-            _slots = new List<ISlot>(12);
+            _slots = new ThreadSafeLazyRef<ImmutableList<ISlot>>(() => ImmutableList<ISlot>.Empty);
             Mark();
         }
 
@@ -105,12 +84,12 @@ namespace Hyperstore.Modeling.MemoryStore
         ///-------------------------------------------------------------------------------------------------
         public IEnumerator<ISlot> GetEnumerator()
         {
-            return new ReverseEnumerator(_slots);
+            return new ReverseEnumerator(_slots.Value);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return new ReverseEnumerator(_slots);
+            return new ReverseEnumerator(_slots.Value);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -177,34 +156,8 @@ namespace Hyperstore.Modeling.MemoryStore
         {
             DebugContract.Requires(slot);
 
-            this._slots.Add(slot);
+            this._slots.ExchangeValue( slots=> slots.Add(slot));
             Length++;
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Removes the given slot.
-        /// </summary>
-        /// <param name="slot">
-        ///  The slot to remove.
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
-        public void Remove(ISlot slot)
-        {
-            DebugContract.Requires(slot);
-
-            // Pas de lock ici car le Remove est tjs appelé dans le contexte du vaccum qui
-            // a un lock exclusif sur toutes les données
-            for (var i = 0; i < _slots.Count; i++)
-            {
-                var s = _slots[i];
-                if (s != null && s.Id == slot.Id)
-                {
-                    // On se contente de mettre à null
-                    _slots[i] = null;
-                    Length--;
-                }
-            }
         }
 
         ///-------------------------------------------------------------------------------------------------

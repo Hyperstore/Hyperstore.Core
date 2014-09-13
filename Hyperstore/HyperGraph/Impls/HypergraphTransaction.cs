@@ -253,8 +253,6 @@ namespace Hyperstore.Modeling.HyperGraph
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
         public bool Aborted;
-        private TransactionStatus _currentStatus;
-
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Constructor.
@@ -273,7 +271,6 @@ namespace Hyperstore.Modeling.HyperGraph
             Session.Current.Enlist(this);
 
             PushNestedTransaction();
-            _currentStatus = TransactionStatus.Active;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -334,14 +331,12 @@ namespace Hyperstore.Modeling.HyperGraph
         void ISessionEnlistmentNotification.NotifyCommit()
         {
             Debug.Assert(_nestedStatus.Count == 0);
-            _currentStatus = TransactionStatus.Committed;
             UpdateProfiler(s => s.NumberOfTransactions.Incr());
             ExecutePendinActions();
         }
 
         void ISessionEnlistmentNotification.NotifyRollback()
         {
-            _currentStatus = TransactionStatus.Aborted;
             Aborted = true;
         }
 
