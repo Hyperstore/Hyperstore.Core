@@ -34,7 +34,7 @@ namespace Hyperstore.Tests.MemoryStore
         {
             SlotList list = new SlotList(NodeType.Node);
             list.Add(new Slot<int>(1));
-            Assert.IsTrue(list.Length == 1);
+            Assert.IsTrue(list.GetSlots().Count() == 1);
         }
 
 
@@ -44,7 +44,7 @@ namespace Hyperstore.Tests.MemoryStore
             SlotList list = new SlotList(NodeType.Node);
             list.Add(new Slot<int>(1));
             list.Add(new Slot<int>(1));
-            Assert.AreEqual(2, list.Sum( i=> ((Slot<int>)i).Value));
+            Assert.AreEqual(2, list.GetSlots().Sum(i => ((Slot<int>)i).Value));
         }
 
 #if !NETFX_CORE

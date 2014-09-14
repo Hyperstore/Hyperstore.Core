@@ -71,7 +71,7 @@ namespace Hyperstore.Modeling.MemoryStore
         /// <summary>
         ///     Stockage des slots
         /// </summary>
-        private ThreadSafeLazyRef<ImmutableDictionary<Identity, SlotList>> _values = new ThreadSafeLazyRef<ImmutableDictionary<Identity, SlotList>>(() => ImmutableDictionary<Identity, SlotList>.Empty);
+        private IConcurrentDictionary<Identity, SlotList> _values;
 
         /// <summary>
         ///     Gestionnaire des demandes de vaccum
@@ -83,7 +83,7 @@ namespace Hyperstore.Modeling.MemoryStore
 
         class SlotEntry
         {
-            public ISlot Slot;
+            public SlotList Slots;
             public Identity Id;
         }
 
@@ -122,12 +122,14 @@ namespace Hyperstore.Modeling.MemoryStore
             DebugContract.RequiresNotEmpty(domainModelName);
             DebugContract.Requires(transactionManager);
 
+            _values = Platform.PlatformServices.Current.CreateConcurrentDictionary<Identity, SlotList>();
+
             _evictionPolicy = evictionPolicy;
             _trace = trace ?? new EmptyHyperstoreTrace();
             _transactionManager = transactionManager;
             if (memoryStoreVacuumIntervalInSeconds < 0)
-                memoryStoreVacuumIntervalInSeconds = defaultInterval; 
-            
+                memoryStoreVacuumIntervalInSeconds = defaultInterval;
+
             _jobScheduler = new JobScheduler(Vacuum, TimeSpan.FromSeconds(memoryStoreVacuumIntervalInSeconds));
             _involvedSlots = PlatformServices.Current.CreateConcurrentQueue<SlotEntry>();
 
@@ -146,12 +148,12 @@ namespace Hyperstore.Modeling.MemoryStore
         /// <summary>
         ///     Demande d'une execution du vaccum
         /// </summary>
-        private void NotifyVacuum(ISlot slot, Identity id)
+        private void NotifyVacuum(SlotList slots, Identity id)
         {
 #if !DEBUG
             if (_jobScheduler != null)
             {
-                _involvedSlots.Enqueue(new SlotEntry { Slot = slot, Id = id });
+                _involvedSlots.Enqueue(new SlotEntry { Slots = slots, Id = id });
                 _jobScheduler.RequestJob();
             }
 #endif
@@ -177,6 +179,7 @@ namespace Hyperstore.Modeling.MemoryStore
 
             _jobScheduler.Dispose();
             _evictionPolicy = null;
+            _involvedSlots = null;
 
             // On attend la fin du vaccum
             _valuesLock.EnterWriteLock();
@@ -258,32 +261,35 @@ namespace Hyperstore.Modeling.MemoryStore
 
                     while (!_involvedSlots.IsEmpty && !_disposed)
                     {
-                        SlotEntry  entry;
+                        SlotEntry entry;
                         if (_involvedSlots.TryDequeue(out entry))
                         {
-                            // On élimine ceux qui ont été supprimées depuis longtemps
-                            // = Tuple qui a été supprimé par une transaction committée
-                            if (entry.Slot.XMax != null)
+                            var slots = entry.Slots;
+                            ISlot slot = null;
+                            while ((slot = slots.Peek()) != null)
                             {
-                                var tx = _transactionManager.GetTransaction(entry.Slot.XMax.Value);
-                                // On supprime
-                                if (tx == null)
+                                // On élimine ceux qui ont été supprimées depuis longtemps
+                                // = Tuple qui a été supprimé par une transaction committée
+                                if (slot.XMax != null)
                                 {
-                                    if (entry.Slot is IDisposable)
-                                        ((IDisposable)entry.Slot).Dispose();
-
-                                    SlotList slots;
-                                    if (_values.Value.TryGetValue(entry.Id, out slots))
+                                    var tx = _transactionManager.GetTransaction(slot.XMax.Value);
+                                    // On supprime
+                                    if (tx == null)
                                     {
-                                        slots.Remove(entry.Slot);
-                                        
-                                        if (slots.Length == 0 )
-                                        {
-                                            slots.Dispose();
-                                            _values.ExchangeValue(values => values.Remove(entry.Id));
-                                        }
+                                        if (slot is IDisposable)
+                                            ((IDisposable)slot).Dispose();
+                                        slots.Pop();
+                                        continue;
                                     }
                                 }
+
+                                break;
+                            }
+
+                            if (slot == null)
+                            {
+                                slots.Dispose();
+                                _values.TryRemove(entry.Id, out slots);
                             }
                         }
                     }
@@ -328,7 +334,7 @@ namespace Hyperstore.Modeling.MemoryStore
                 _statVaccumSkipped.Incr();
         }
 
-        private CommandContext CreateCommandContext(bool readOnly=false)
+        private CommandContext CreateCommandContext(bool readOnly = false)
         {
             return new CommandContext(_transactionManager, readOnly);
         }
@@ -359,12 +365,12 @@ namespace Hyperstore.Modeling.MemoryStore
                 try
                 {
                     SlotList slots = null;
-                    if (!_values.Value.TryGetValue(node.Id, out slots))
+                    if (!_values.TryGetValue(node.Id, out slots))
                     {
                         // N'existe pas encore. On rajoute
                         slots = new SlotList(node.NodeType, ownerKey);
 
-                        _values.ExchangeValue(values => values.Add(node.Id, slots));
+                        _values.TryAdd(node.Id, slots);
                         AddSlot(ctx, slots, currentSlot);
                     }
                     else
@@ -372,7 +378,7 @@ namespace Hyperstore.Modeling.MemoryStore
                         if (SelectSlot(node.Id, ctx) != null)
                             throw new DuplicateElementException(node.Id.ToString());
 
-                        if (_values.Value.TryGetValue(node.Id, out slots))
+                        if (_values.TryGetValue(node.Id, out slots))
                         {
                             var initialSlot = slots.GetActiveSlot();
                             AddSlot(ctx, slots, currentSlot);
@@ -385,7 +391,8 @@ namespace Hyperstore.Modeling.MemoryStore
                     }
                     _trace.WriteTrace(TraceCategory.MemoryStore, "Add {0} - {1}", node.Id, node);
                     ctx.Complete();
-                    NotifyVacuum(currentSlot, node.Id);
+                    if( slots != null)
+                    NotifyVacuum(slots, node.Id);
                 }
                 finally
                 {
@@ -422,7 +429,7 @@ namespace Hyperstore.Modeling.MemoryStore
                     // En MVCC, la suppression consiste seulement à positionner XMAX avec la transaction en cours.
                     // Si cette transaction est committée, la supression sera valide sinon xmax sera ignoré.
                     SlotList slots;
-                    if (_values.Value.TryGetValue(key, out slots))
+                    if (_values.TryGetValue(key, out slots))
                     {
                         var currentSlot = slots.GetInSnapshot(ctx);
                         if (currentSlot == null)
@@ -433,7 +440,7 @@ namespace Hyperstore.Modeling.MemoryStore
                         slots.Mark();
                         _trace.WriteTrace(TraceCategory.MemoryStore, "Remove {0}", key);
                         _statRemoveValue.Incr();
-                        NotifyVacuum(currentSlot, key);
+                        NotifyVacuum(slots, key);
                         return true;
                     }
                 }
@@ -476,7 +483,7 @@ namespace Hyperstore.Modeling.MemoryStore
 
             using (var ctx = CreateCommandContext(true))
             {
-               // _valuesLock.EnterReadLock();
+                // _valuesLock.EnterReadLock();
                 try
                 {
                     var result = SelectSlot(key, ctx);
@@ -489,7 +496,7 @@ namespace Hyperstore.Modeling.MemoryStore
                 {
                     ctx.Complete();
                     //                NotifyVacuum();
-               //     _valuesLock.ExitReadLock();
+                    //     _valuesLock.ExitReadLock();
                     _statGetGraphNode.Incr();
                 }
             }
@@ -522,7 +529,7 @@ namespace Hyperstore.Modeling.MemoryStore
             DebugContract.Requires(id);
 
             SlotList slots;
-            if (_values.Value.TryGetValue(id, out slots)) // TODO put values as volatile ???? (cf GetNode)
+            if (_values.TryGetValue(id, out slots)) // TODO put values as volatile ???? (cf GetNode)
             {
                 slots.Mark();
                 return slots.GetInSnapshot(ctx) as Slot<GraphNode>;
@@ -555,7 +562,7 @@ namespace Hyperstore.Modeling.MemoryStore
                     _valuesLock.EnterReadLock();
                     try
                     {
-                        _values.Value.TryGetValue(node.Id, out tuples);
+                        _values.TryGetValue(node.Id, out tuples);
                     }
                     finally
                     {
@@ -574,8 +581,8 @@ namespace Hyperstore.Modeling.MemoryStore
                             currentSlot.XMax = ctx.Transaction.Id;
                         }
 
-                        NotifyVacuum(currentSlot, node.Id);
-                        Debug.Assert(tuples.Count(e => e.XMax == null) == 1);
+                        NotifyVacuum(tuples, node.Id);
+                        //Debug.Assert(tuples.Count(e => e.XMax == null) == 1);
                         _trace.WriteTrace(TraceCategory.MemoryStore, "Update {0} - {1}", node.Id, node);
                     }
                     else
@@ -636,7 +643,7 @@ namespace Hyperstore.Modeling.MemoryStore
             //    return result;
             //}
             var ctx = CreateCommandContext(true);
-            var iter = _values.Value.Values.Where(s => (s.ElementType & elementType) != 0);
+            var iter = _values.Values.Where(s => (s.ElementType & elementType) != 0);
 
             foreach (var slots in iter)
             {

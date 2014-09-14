@@ -45,7 +45,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
     }
 
     [DebuggerDisplay("Primitive {_name} Id={_id}")]
-    internal class PrimitiveMetaEntity : ISchemaEntity
+    public class PrimitiveMetaEntity : ISchemaEntity
     {
         private static int _sequence = 1;
         private readonly ISchema _domainModel;
@@ -84,7 +84,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  (Optional) The identifier.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public PrimitiveMetaEntity(ISchema domainModel, Type implementedType, ISchemaElement superClass, string name = null, Identity id = null) : this()
+        internal PrimitiveMetaEntity(ISchema domainModel, Type implementedType, ISchemaElement superClass, string name = null, Identity id = null) : this()
         {
             DebugContract.Requires(domainModel, "domainModel");
 

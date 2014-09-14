@@ -23,7 +23,7 @@ using System;
 
 namespace Hyperstore.Modeling.Metadata.Primitives
 {
-    internal class PrimitiveMetaValue : PrimitiveMetaEntity, ISchemaValueObject
+    public abstract class PrimitiveMetaValue : PrimitiveMetaEntity, ISchemaValueObject
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -45,7 +45,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  Type of the implemented.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public PrimitiveMetaValue(ISchema domainModel, Type implementedType)
+        protected PrimitiveMetaValue(ISchema domainModel, Type implementedType)
             : base(domainModel, implementedType, PrimitivesSchema.SchemaValueObjectSchema)
         {
         }

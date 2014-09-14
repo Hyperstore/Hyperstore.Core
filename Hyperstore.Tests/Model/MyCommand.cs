@@ -25,6 +25,30 @@ using Hyperstore.Tests.Model;
 
 namespace Hyperstore.Tests
 {
+
+    public class EmailSchema : Hyperstore.Modeling.Metadata.SchemaValueObject<string>, Hyperstore.Modeling.Validations.IConstraint<string>
+    {
+        public EmailSchema(ISchema schema)
+            : base(schema)
+        {
+        }
+
+        protected override object Deserialize(SerializationContext ctx)
+        {
+            return Hyperstore.Modeling.Metadata.Primitives.StringPrimitive.DeserializeString(ctx);
+        }
+
+        protected override string Serialize(object data, IJsonSerializer serializer)
+        {
+            return Hyperstore.Modeling.Metadata.Primitives.StringPrimitive.SerializeString(data);
+        }
+
+        void Modeling.Validations.IConstraint<string>.Apply(string element, ISessionContext context)
+        {
+            
+        }
+    }
+
     /// <summary>
     /// Creation d'une classe X dont le name est test
     /// </summary>

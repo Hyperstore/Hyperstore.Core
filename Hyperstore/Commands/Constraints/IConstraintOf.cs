@@ -25,7 +25,7 @@ namespace Hyperstore.Modeling.Validations
     ///  Type of the element to validate.
     /// </typeparam>
     ///-------------------------------------------------------------------------------------------------
-    public interface IConstraint<in TModelElement>
+    public interface IConstraint<in TModelElement>  
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

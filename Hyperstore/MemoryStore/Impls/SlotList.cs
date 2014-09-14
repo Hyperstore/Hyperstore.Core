@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using Hyperstore.Modeling.Utils;
@@ -35,11 +35,17 @@ namespace Hyperstore.Modeling.MemoryStore
     ///     Cette liste est implémentée sous la forme d'une liste chainée afin de pouvoir itérer dessus alors qu'elle est
     ///     modifiée (TODO voir si cela à un sens maintenant)
     /// </remarks>
-    internal sealed class SlotList : IEnumerable<ISlot>, ISlotList
+    internal sealed class SlotList :  ISlotList
     {
+        class SlotEntry
+        {
+            public SlotEntry Next;
+            public ISlot Slot;
+        }
+
         private readonly NodeType _elementType;
         private readonly object _ownerKey;
-        private readonly ThreadSafeLazyRef<ImmutableList<ISlot>> _slots;
+        private SlotEntry _head;
         private int _hits;
         private long _lastAccess;
 
@@ -60,19 +66,9 @@ namespace Hyperstore.Modeling.MemoryStore
 
             _ownerKey = ownerKey;
             _elementType = elementType;
-            _slots = new ThreadSafeLazyRef<ImmutableList<ISlot>>(() => ImmutableList<ISlot>.Empty);
+            _head = new SlotEntry();
             Mark();
         }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the length.
-        /// </summary>
-        /// <value>
-        ///  The length.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public int Length { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -82,14 +78,14 @@ namespace Hyperstore.Modeling.MemoryStore
         ///  The enumerator.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerator<ISlot> GetEnumerator()
+        public IEnumerable<ISlot> GetSlots()
         {
-            return new ReverseEnumerator(_slots.Value);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return new ReverseEnumerator(_slots.Value);
+            SlotEntry entry = _head.Next;
+            while (entry != null)
+            {
+                yield return entry.Slot;
+                entry = entry.Next;
+            }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -147,17 +143,33 @@ namespace Hyperstore.Modeling.MemoryStore
         internal void Add(ISlot slot)
         {
             DebugContract.Requires(slot);
-
-            this._slots.ExchangeValue( slots=> slots.Add(slot));
-            Length++;
+            SlotEntry entry = new SlotEntry();
+            entry.Slot = slot;
+            do
+            {
+                entry.Next = _head.Next;
+            }
+            while (Interlocked.CompareExchange(ref _head.Next, entry, entry.Next) != entry.Next);
         }
 
-        internal void Remove(ISlot slot)
+        internal ISlot Peek()
         {
-            DebugContract.Requires(slot);
+            var entry = _head.Next;
+            return entry != null ? entry.Slot : null;
+        }
 
-            this._slots.ExchangeValue(slots => slots.Remove(slot));
-            Length--;
+        internal bool Pop()
+        {
+            SlotEntry entry = null;
+            do
+            {
+                entry = _head.Next;
+                if (entry == null)
+                {
+                    return false;
+                }
+            } while (Interlocked.CompareExchange(ref _head.Next, entry.Next, entry) != entry);
+            return true;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -175,22 +187,13 @@ namespace Hyperstore.Modeling.MemoryStore
         {
             DebugContract.Requires(ctx);
 
-            //    this._lock.EnterReadLock();
-            var enumerator = GetEnumerator();
-            try
+            SlotEntry entry = _head.Next;
+            while (entry != null)
             {
-                while (enumerator.MoveNext())
-                {
-                    var item = enumerator.Current;
-                    if (ctx.IsValidInSnapshot(item))
-                        return item;
-                }
-            }
-            finally
-            {
-                if (enumerator != null)
-                    enumerator.Dispose();
-                //      this._lock.ExitReadLock();
+                var slot = entry.Slot;
+                if (ctx.IsValidInSnapshot(slot))
+                    return slot;
+                entry = entry.Next;
             }
             return null;
         }
@@ -205,22 +208,13 @@ namespace Hyperstore.Modeling.MemoryStore
         ///-------------------------------------------------------------------------------------------------
         public ISlot GetActiveSlot()
         {
-            //this._lock.EnterReadLock();
-            var enumerator = GetEnumerator();
-            try
+            SlotEntry entry = _head.Next;
+            while (entry != null)
             {
-                while (enumerator.MoveNext())
-                {
-                    var slot = enumerator.Current;
-                    if (slot.XMax == null)
-                        return slot;
-                }
-            }
-            finally
-            {
-                if (enumerator != null)
-                    enumerator.Dispose();
-                //    this._lock.ExitReadLock();
+                var slot = entry.Slot;
+                if (slot.XMax == null)
+                    return slot;
+                entry = entry.Next;
             }
             return null;
         }
@@ -241,92 +235,9 @@ namespace Hyperstore.Modeling.MemoryStore
         ///-------------------------------------------------------------------------------------------------
         public void Dispose()
         {
+            _head = null;
         }
 
         #endregion
-
-        private class ReverseEnumerator : IEnumerator<ISlot>
-        {
-            private ISlot _current;
-            private IList<ISlot> _list;
-            private int _pos;
-
-            ///-------------------------------------------------------------------------------------------------
-            /// <summary>
-            ///  Constructor.
-            /// </summary>
-            /// <param name="list">
-            ///  The list.
-            /// </param>
-            ///-------------------------------------------------------------------------------------------------
-            public ReverseEnumerator(IList<ISlot> list)
-            {
-                DebugContract.Requires(list);
-
-                _list = list;
-                _pos = list.Count;
-            }
-
-            ///-------------------------------------------------------------------------------------------------
-            /// <summary>
-            ///  Gets the current.
-            /// </summary>
-            /// <value>
-            ///  The current.
-            /// </value>
-            ///-------------------------------------------------------------------------------------------------
-            public ISlot Current
-            {
-                get { return _current; }
-            }
-
-            ///-------------------------------------------------------------------------------------------------
-            /// <summary>
-            ///  Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged
-            ///  resources.
-            /// </summary>
-            ///-------------------------------------------------------------------------------------------------
-            public void Dispose()
-            {
-                _list = null;
-            }
-
-            object IEnumerator.Current
-            {
-                get { return _current; }
-            }
-
-            ///-------------------------------------------------------------------------------------------------
-            /// <summary>
-            ///  Determines if we can move next.
-            /// </summary>
-            /// <returns>
-            ///  true if it succeeds, false if it fails.
-            /// </returns>
-            ///-------------------------------------------------------------------------------------------------
-            public bool MoveNext()
-            {
-                if (_pos > 0)
-                {
-                    _pos--;
-                    _current = _list[_pos];
-                    return true;
-                }
-                _current = null;
-                return false;
-            }
-
-            ///-------------------------------------------------------------------------------------------------
-            /// <summary>
-            ///  Resets this instance.
-            /// </summary>
-            ///-------------------------------------------------------------------------------------------------
-            public void Reset()
-            {
-                _current = null;
-            }
-        }
-
-
     }
 }

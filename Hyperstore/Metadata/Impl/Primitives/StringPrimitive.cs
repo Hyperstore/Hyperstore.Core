@@ -18,24 +18,25 @@
 using System;
 namespace Hyperstore.Modeling.Metadata.Primitives
 {
-    internal class StringPrimitive : PrimitiveMetaValue
+    public sealed class StringPrimitive : PrimitiveMetaValue
     {
         protected StringPrimitive()
         {
+
         }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <param name="domainModel">
+        /// <param name="schema">
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public StringPrimitive(ISchema domainModel)
-            : base(domainModel, typeof(string))
+        internal StringPrimitive(ISchema schema)
+            : base(schema, typeof(string))
         {
-            DebugContract.Requires(domainModel, "domainModel");
+            DebugContract.Requires(schema, "schema");
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -51,7 +52,13 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///-------------------------------------------------------------------------------------------------
         public override object Deserialize(SerializationContext ctx)
         {
+            return DeserializeString(ctx);
+        }
+
+        public static object DeserializeString(SerializationContext ctx)
+        {
             DebugContract.Requires(ctx);
+
             var str = ctx.Value as string;
             if (str == null || str.Length == 0)
                 return null;
@@ -77,6 +84,11 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
         public override string Serialize(object data, IJsonSerializer serializer)
+        {
+            return SerializeString(data);
+        }
+
+        public static string SerializeString(object data)
         {
             var str = data as string;
             if (str == null)

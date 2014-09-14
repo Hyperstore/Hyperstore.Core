@@ -60,6 +60,7 @@ namespace Hyperstore.Modeling.Utils
         public void Dispose()
         {
             _cancellationToken.Cancel();
+            _cancellationToken.Dispose();
         }
 
         ///-------------------------------------------------------------------------------------------------
