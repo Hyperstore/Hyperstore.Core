@@ -132,7 +132,7 @@ namespace Hyperstore.Modeling.Domain
             DebugContract.Requires(instance);
 
             if ((instance.SchemaInfo.Schema.Behavior & DomainBehavior.DisableL1Cache) == DomainBehavior.DisableL1Cache
-                 || (Session.Current != null && (Session.Current.Mode & SessionMode.IgnoreCache) != SessionMode.IgnoreCache))
+                 || (Session.Current != null && (Session.Current.Mode & SessionMode.IgnoreCache) == SessionMode.IgnoreCache))
                 return instance;
 
             return _cache.GetOrAdd(instance.Id, instance);

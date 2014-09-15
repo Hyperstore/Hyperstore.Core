@@ -17,10 +17,8 @@
 
 #region Imports
 
-using Hyperstore.Modeling.Utils;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 
@@ -35,19 +33,36 @@ namespace Hyperstore.Modeling.MemoryStore
     ///     Cette liste est implémentée sous la forme d'une liste chainée afin de pouvoir itérer dessus alors qu'elle est
     ///     modifiée (TODO voir si cela à un sens maintenant)
     /// </remarks>
-    internal sealed class SlotList :  ISlotList
+    internal sealed class SlotList : IEnumerable<ISlot>, ISlotList
     {
-        class SlotEntry
-        {
-            public SlotEntry Next;
-            public ISlot Slot;
-        }
-
         private readonly NodeType _elementType;
         private readonly object _ownerKey;
-        private SlotEntry _head;
+        private readonly List<ISlot> _slots;
         private int _hits;
         private long _lastAccess;
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Constructor.
+        /// </summary>
+        /// <param name="clone">
+        ///  The clone.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
+        public SlotList(SlotList clone)
+        {
+            DebugContract.Requires(clone, "clone");
+
+            _ownerKey = clone._ownerKey;
+            _elementType = clone._elementType;
+            _hits = clone._hits;
+            _lastAccess = clone.LastAccess;
+
+            _ownerKey = clone._ownerKey;
+            _slots = new List<ISlot>(Length + 2);
+            _slots.AddRange(clone._slots.Where(s => s.Id > 0));
+            Length = _slots.Count;
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -66,9 +81,19 @@ namespace Hyperstore.Modeling.MemoryStore
 
             _ownerKey = ownerKey;
             _elementType = elementType;
-            _head = new SlotEntry();
+            _slots = new List<ISlot>(12);
             Mark();
         }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the length.
+        /// </summary>
+        /// <value>
+        ///  The length.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public int Length { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -78,14 +103,14 @@ namespace Hyperstore.Modeling.MemoryStore
         ///  The enumerator.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<ISlot> GetSlots()
+        public IEnumerator<ISlot> GetEnumerator()
         {
-            SlotEntry entry = _head.Next;
-            while (entry != null)
-            {
-                yield return entry.Slot;
-                entry = entry.Next;
-            }
+            return new ReverseEnumerator(_slots);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return new ReverseEnumerator(_slots);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -140,36 +165,46 @@ namespace Hyperstore.Modeling.MemoryStore
             get { return _lastAccess; }
         }
 
-        internal void Add(ISlot slot)
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Adds slot.
+        /// </summary>
+        /// <param name="slot">
+        ///  The slot to remove.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
+        public void Add(ISlot slot)
         {
             DebugContract.Requires(slot);
-            SlotEntry entry = new SlotEntry();
-            entry.Slot = slot;
-            do
-            {
-                entry.Next = _head.Next;
-            }
-            while (Interlocked.CompareExchange(ref _head.Next, entry, entry.Next) != entry.Next);
+
+            this._slots.Add(slot);
+            Length++;
         }
 
-        internal ISlot Peek()
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Removes the given slot.
+        /// </summary>
+        /// <param name="slot">
+        ///  The slot to remove.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
+        public void Remove(ISlot slot)
         {
-            var entry = _head.Next;
-            return entry != null ? entry.Slot : null;
-        }
+            DebugContract.Requires(slot);
 
-        internal bool Pop()
-        {
-            SlotEntry entry = null;
-            do
+            // Pas de lock ici car le Remove est tjs appelé dans le contexte du vaccum qui
+            // a un lock exclusif sur toutes les données
+            for (var i = 0; i < _slots.Count; i++)
             {
-                entry = _head.Next;
-                if (entry == null)
+                var s = _slots[i];
+                if (s != null && s.Id == slot.Id)
                 {
-                    return false;
+                    // On se contente de mettre à null
+                    _slots[i] = null;
+                    Length--;
                 }
-            } while (Interlocked.CompareExchange(ref _head.Next, entry.Next, entry) != entry);
-            return true;
+            }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -187,13 +222,22 @@ namespace Hyperstore.Modeling.MemoryStore
         {
             DebugContract.Requires(ctx);
 
-            SlotEntry entry = _head.Next;
-            while (entry != null)
+            //    this._lock.EnterReadLock();
+            var enumerator = GetEnumerator();
+            try
             {
-                var slot = entry.Slot;
-                if (ctx.IsValidInSnapshot(slot))
-                    return slot;
-                entry = entry.Next;
+                while (enumerator.MoveNext())
+                {
+                    var item = enumerator.Current;
+                    if (ctx.IsValidInSnapshot(item))
+                        return item;
+                }
+            }
+            finally
+            {
+                if (enumerator != null)
+                    enumerator.Dispose();
+                //      this._lock.ExitReadLock();
             }
             return null;
         }
@@ -208,21 +252,30 @@ namespace Hyperstore.Modeling.MemoryStore
         ///-------------------------------------------------------------------------------------------------
         public ISlot GetActiveSlot()
         {
-            SlotEntry entry = _head.Next;
-            while (entry != null)
+            //this._lock.EnterReadLock();
+            var enumerator = GetEnumerator();
+            try
             {
-                var slot = entry.Slot;
-                if (slot.XMax == null)
-                    return slot;
-                entry = entry.Next;
+                while (enumerator.MoveNext())
+                {
+                    var slot = enumerator.Current;
+                    if (slot.XMax == null)
+                        return slot;
+                }
+            }
+            finally
+            {
+                if (enumerator != null)
+                    enumerator.Dispose();
+                //    this._lock.ExitReadLock();
             }
             return null;
         }
 
         internal void Mark()
         {
-            //_lastAccess = PreciseClock.GetCurrent();
-            //Interlocked.Increment(ref _hits);
+            _lastAccess = PreciseClock.GetCurrent();
+            Interlocked.Increment(ref _hits);
         }
 
         #region IDisposable Members
@@ -235,9 +288,90 @@ namespace Hyperstore.Modeling.MemoryStore
         ///-------------------------------------------------------------------------------------------------
         public void Dispose()
         {
-            _head = null;
         }
 
         #endregion
+
+        private class ReverseEnumerator : IEnumerator<ISlot>
+        {
+            private ISlot _current;
+            private IList<ISlot> _list;
+            private int _pos;
+
+            ///-------------------------------------------------------------------------------------------------
+            /// <summary>
+            ///  Constructor.
+            /// </summary>
+            /// <param name="list">
+            ///  The list.
+            /// </param>
+            ///-------------------------------------------------------------------------------------------------
+            public ReverseEnumerator(IList<ISlot> list)
+            {
+                DebugContract.Requires(list);
+
+                _list = list;
+                _pos = list.Count;
+            }
+
+            ///-------------------------------------------------------------------------------------------------
+            /// <summary>
+            ///  Gets the current.
+            /// </summary>
+            /// <value>
+            ///  The current.
+            /// </value>
+            ///-------------------------------------------------------------------------------------------------
+            public ISlot Current
+            {
+                get { return _current; }
+            }
+
+            ///-------------------------------------------------------------------------------------------------
+            /// <summary>
+            ///  Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged
+            ///  resources.
+            /// </summary>
+            ///-------------------------------------------------------------------------------------------------
+            public void Dispose()
+            {
+                _list = null;
+            }
+
+            object IEnumerator.Current
+            {
+                get { return _current; }
+            }
+
+            ///-------------------------------------------------------------------------------------------------
+            /// <summary>
+            ///  Determines if we can move next.
+            /// </summary>
+            /// <returns>
+            ///  true if it succeeds, false if it fails.
+            /// </returns>
+            ///-------------------------------------------------------------------------------------------------
+            public bool MoveNext()
+            {
+                if (_pos > 0)
+                {
+                    _pos--;
+                    _current = _list[_pos];
+                    return true;
+                }
+                _current = null;
+                return false;
+            }
+
+            ///-------------------------------------------------------------------------------------------------
+            /// <summary>
+            ///  Resets this instance.
+            /// </summary>
+            ///-------------------------------------------------------------------------------------------------
+            public void Reset()
+            {
+                _current = null;
+            }
+        }
     }
 }

@@ -27,7 +27,6 @@ using Hyperstore.Modeling.Statistics;
 using Hyperstore.Modeling.Utils;
 using Hyperstore.Modeling.HyperGraph;
 using Hyperstore.Modeling.Platform;
-using System.Collections.Immutable;
 
 #endregion
 
@@ -48,7 +47,7 @@ namespace Hyperstore.Modeling.MemoryStore
         private IStatisticCounter _statVaccumCount;
         private IStatisticCounter _statVaccumAverage;
 
-        private IStatisticCounter _statGetGraphNode;
+        private IStatisticCounter _statGeIGraphNode;
         private IStatisticCounter _statUpdateValue;
         private IStatisticCounter _statRemoveValue;
         private IStatisticCounter _statAddValue;
@@ -71,21 +70,15 @@ namespace Hyperstore.Modeling.MemoryStore
         /// <summary>
         ///     Stockage des slots
         /// </summary>
-        private IConcurrentDictionary<Identity, SlotList> _values;
+        private Dictionary<Identity, SlotList> _values = new Dictionary<Identity, SlotList>();
 
         /// <summary>
         ///     Gestionnaire des demandes de vaccum
         /// </summary>
         private JobScheduler _jobScheduler;
-        private IConcurrentQueue<SlotEntry> _involvedSlots;
+        private IConcurrentQueue<ISlot> _involvedSlots;
 
         #endregion
-
-        class SlotEntry
-        {
-            public SlotList Slots;
-            public Identity Id;
-        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -122,8 +115,6 @@ namespace Hyperstore.Modeling.MemoryStore
             DebugContract.RequiresNotEmpty(domainModelName);
             DebugContract.Requires(transactionManager);
 
-            _values = Platform.PlatformServices.Current.CreateConcurrentDictionary<Identity, SlotList>();
-
             _evictionPolicy = evictionPolicy;
             _trace = trace ?? new EmptyHyperstoreTrace();
             _transactionManager = transactionManager;
@@ -131,13 +122,13 @@ namespace Hyperstore.Modeling.MemoryStore
                 memoryStoreVacuumIntervalInSeconds = defaultInterval;
 
             _jobScheduler = new JobScheduler(Vacuum, TimeSpan.FromSeconds(memoryStoreVacuumIntervalInSeconds));
-            _involvedSlots = PlatformServices.Current.CreateConcurrentQueue<SlotEntry>();
+            _involvedSlots = PlatformServices.Current.CreateConcurrentQueue<ISlot>();
 
             if (stat == null)
                 stat = EmptyStatistics.DefaultInstance;
 
             _statAddValue = stat.RegisterCounter("MemoryStore", String.Format("#AddValue {0}", domainModelName), domainModelName, StatisticCounterType.Value);
-            _statGetGraphNode = stat.RegisterCounter("MemoryStore", String.Format("#GetGraphNode {0}", domainModelName), domainModelName, StatisticCounterType.Value);
+            _statGeIGraphNode = stat.RegisterCounter("MemoryStore", String.Format("#GeIGraphNode {0}", domainModelName), domainModelName, StatisticCounterType.Value);
             _statUpdateValue = stat.RegisterCounter("MemoryStore", String.Format("#UpdateValue {0}", domainModelName), domainModelName, StatisticCounterType.Value);
             _statRemoveValue = stat.RegisterCounter("MemoryStore", String.Format("#RemoveValue {0}", domainModelName), domainModelName, StatisticCounterType.Value);
             _statVaccumCount = stat.RegisterCounter("MemoryStore", String.Format("#Vaccum{0}", domainModelName), domainModelName, StatisticCounterType.Value);
@@ -148,12 +139,12 @@ namespace Hyperstore.Modeling.MemoryStore
         /// <summary>
         ///     Demande d'une execution du vaccum
         /// </summary>
-        private void NotifyVacuum(SlotList slots, Identity id)
+        private void NotifyVacuum(ISlot slot)
         {
 #if !DEBUG
             if (_jobScheduler != null)
             {
-                _involvedSlots.Enqueue(new SlotEntry { Slots = slots, Id = id });
+                _involvedSlots.Enqueue(slot);
                 _jobScheduler.RequestJob();
             }
 #endif
@@ -179,7 +170,6 @@ namespace Hyperstore.Modeling.MemoryStore
 
             _jobScheduler.Dispose();
             _evictionPolicy = null;
-            _involvedSlots = null;
 
             // On attend la fin du vaccum
             _valuesLock.EnterWriteLock();
@@ -259,69 +249,61 @@ namespace Hyperstore.Modeling.MemoryStore
                     // Purge des transactions
                     _transactionManager.Vacuum();
 
-                    while (!_involvedSlots.IsEmpty && !_disposed)
+                    while (!_involvedSlots.IsEmpty)
                     {
-                        SlotEntry entry;
-                        if (_involvedSlots.TryDequeue(out entry))
+                        ISlot v;
+                        if (_involvedSlots.TryDequeue(out v))
                         {
-                            var slots = entry.Slots;
-                            ISlot slot = null;
-                            while ((slot = slots.Peek()) != null) // TODO  Non c'est faux, il faut commerncer par la fin de la liste donc il faut implementer Slotlist en double list chainée
+                            // On élimine ceux qui ont été supprimées depuis longtemps
+                            // = Tuple qui a été supprimé par une transaction committée
+                            if (v.XMax != null)
                             {
-                                // On élimine ceux qui ont été supprimées depuis longtemps
-                                // = Tuple qui a été supprimé par une transaction committée
-                                if (slot.XMax != null)
+                                var tx = _transactionManager.GetTransaction(v.XMax.Value);
+                                // On supprime
+                                if (tx == null)
                                 {
-                                    var tx = _transactionManager.GetTransaction(slot.XMax.Value);
-                                    // On supprime
-                                    if (tx == null)
-                                    {
-                                        if (slot is IDisposable)
-                                            ((IDisposable)slot).Dispose();
-                                        slots.Pop();
-                                        continue;
-                                    }
+                                    v.Id = 0;
+                                    if (v is IDisposable)
+                                        ((IDisposable)v).Dispose();
                                 }
-
-                                break;
-                            }
-
-                            if (slot == null)
-                            {
-                                slots.Dispose();
-                                _values.TryRemove(entry.Id, out slots);
                             }
                         }
                     }
 
-                    //if (_evictionPolicy != null)
-                    //    _evictionPolicy.StartProcess(_values.Value.Count());
+                    if (_evictionPolicy != null)
+                        _evictionPolicy.StartProcess(_values.Count);
 
-                    //// On parcourt toutes les valeurs
-                    //foreach (var slots in _values.Value)
-                    //{
-                    //    if (_disposed)
-                    //        break;
+                    // Création d'un dictionnaire temporaire dans lequel on va copier les valeurs à conserver.
+                    // Comme un dictionnaire ne permet pas de récupérer la place qui n'est plus utilisé, on va ainsi optimiser
+                    // la mémoire.
+                    // On peut se permettre de le faire ici car le vaccum bloque toutes les transactions.
+                    var data = new Dictionary<Identity, SlotList>((int)(_values.Count * 0.1));
 
-                    //    // Si il n'y a plus rien dans le slot, on le supprime aussi
-                    //    if (slots.Value.Length == 0 || (_evictionPolicy != null && _evictionPolicy.ShouldEvictSlot(slots.Key, slots.Value)))
-                    //    {
-                    //        slots.Value.Dispose();
-                    //        _values.ExchangeValue(values => values.Remove(slots.Key));
-                    //    }
-                    //}
+                    // On parcourt toutes les valeurs
+                    foreach (var slots in _values)
+                    {
+                        if (_disposed)
+                            break;
 
+                        // Si il n'y a plus rien dans le slot, on le supprime aussi
+                        if (slots.Value.Length == 0 || (_evictionPolicy != null && _evictionPolicy.ShouldEvictSlot(slots.Key, slots.Value)))
+                            slots.Value.Dispose();
+                        else
+                            data.Add(slots.Key, new SlotList(slots.Value));
+                    }
+
+                    _values = data;
                 }
                 finally
                 {
-                    //try
-                    //{
-                    //    if (_evictionPolicy != null)
-                    //        _evictionPolicy.ProcessTerminated();
-                    //}
-                    //catch
-                    //{
-                    //}
+                    try
+                    {
+                        if (_evictionPolicy != null)
+                            _evictionPolicy.ProcessTerminated();
+                    }
+                    catch
+                    {
+                    }
 
                     sw.Stop();
                     _valuesLock.ExitWriteLock();
@@ -334,9 +316,9 @@ namespace Hyperstore.Modeling.MemoryStore
                 _statVaccumSkipped.Incr();
         }
 
-        private CommandContext CreateCommandContext(bool readOnly = false)
+        private CommandContext CreateCommandContext()
         {
-            return new CommandContext(_transactionManager, readOnly);
+            return new CommandContext(_transactionManager);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -369,8 +351,16 @@ namespace Hyperstore.Modeling.MemoryStore
                     {
                         // N'existe pas encore. On rajoute
                         slots = new SlotList(node.NodeType, ownerKey);
+                        _valuesLock.EnterWriteLock();
+                        try
+                        {
+                            _values.Add(node.Id, slots);
+                        }
+                        finally
+                        {
+                            _valuesLock.ExitWriteLock();
+                        }
 
-                        _values.TryAdd(node.Id, slots);
                         AddSlot(ctx, slots, currentSlot);
                     }
                     else
@@ -391,8 +381,7 @@ namespace Hyperstore.Modeling.MemoryStore
                     }
                     _trace.WriteTrace(TraceCategory.MemoryStore, "Add {0} - {1}", node.Id, node);
                     ctx.Complete();
-                    if (slots != null)
-                        NotifyVacuum(slots, node.Id);
+                    NotifyVacuum(currentSlot);
                 }
                 finally
                 {
@@ -440,7 +429,7 @@ namespace Hyperstore.Modeling.MemoryStore
                         slots.Mark();
                         _trace.WriteTrace(TraceCategory.MemoryStore, "Remove {0}", key);
                         _statRemoveValue.Incr();
-                        NotifyVacuum(slots, key);
+                        NotifyVacuum(currentSlot);
                         return true;
                     }
                 }
@@ -481,9 +470,9 @@ namespace Hyperstore.Modeling.MemoryStore
         {
             DebugContract.Requires(key);
 
-            using (var ctx = CreateCommandContext(true))
+            using (var ctx = CreateCommandContext())
             {
-                // _valuesLock.EnterReadLock();
+                _valuesLock.EnterReadLock();
                 try
                 {
                     var result = SelectSlot(key, ctx);
@@ -496,8 +485,8 @@ namespace Hyperstore.Modeling.MemoryStore
                 {
                     ctx.Complete();
                     //                NotifyVacuum();
-                    //     _valuesLock.ExitReadLock();
-                    _statGetGraphNode.Incr();
+                    _valuesLock.ExitReadLock();
+                    _statGeIGraphNode.Incr();
                 }
             }
         }
@@ -519,7 +508,7 @@ namespace Hyperstore.Modeling.MemoryStore
                     ctx.Complete();
                     //                NotifyVacuum();
                     _valuesLock.ExitReadLock();
-                    _statGetGraphNode.Incr();
+                    _statGeIGraphNode.Incr();
                 }
             }
         }
@@ -529,7 +518,7 @@ namespace Hyperstore.Modeling.MemoryStore
             DebugContract.Requires(id);
 
             SlotList slots;
-            if (_values.TryGetValue(id, out slots)) // TODO put values as volatile ???? (cf GetNode)
+            if (_values.TryGetValue(id, out slots))
             {
                 slots.Mark();
                 return slots.GetInSnapshot(ctx) as Slot<GraphNode>;
@@ -581,8 +570,8 @@ namespace Hyperstore.Modeling.MemoryStore
                             currentSlot.XMax = ctx.Transaction.Id;
                         }
 
-                        NotifyVacuum(tuples, node.Id);
-                        //Debug.Assert(tuples.Count(e => e.XMax == null) == 1);
+                        NotifyVacuum(currentSlot);
+                        Debug.Assert(tuples.Count(e => e.XMax == null) == 1);
                         _trace.WriteTrace(TraceCategory.MemoryStore, "Update {0} - {1}", node.Id, node);
                     }
                     else
@@ -610,49 +599,63 @@ namespace Hyperstore.Modeling.MemoryStore
         ///-------------------------------------------------------------------------------------------------
         public IEnumerable<GraphNode> GetAllNodes(NodeType elementType)
         {
-            // Démarrage d'une transaction afin de pouvoir initialiser le contexte 
-            // dans lequel va s'exécuter la lecture.
-            //using (var ctx = CreateCommandContext())
+            //// Sauvegarde du pointeur sur les valeurs qui sera protégé du vaccum (Le vaccum ne supprime pas mais recré un
+            //// tableau pour remplacer l'ancien)
+            //var values = _values;
+            //var ctx = CreateCommandContext();
+
+            //var iter = values.Where(s => s.Value.ElementType == elementType);
+
+            //foreach (var item in iter)
             //{
-            //    // Dans un 1er temps, la méthode utilisait un yield pour renvoyer le résultat à chaque itération.
-            //    // Mais cela générait une erreur si pendant l'itération une valeur était modifiée car il y avait un conflit 
-            //    // avec le _valuesLock (impossible de passer en write car on est en read).
-            //    // Pour éviter cela, on va lire toutes les valeurs et les renvoyer d"un coup.
-            //    // TODO voir si on peut pas faire mieux
-            //    var result = new List<GraphNode>(); // Stockage des résultats de l'itération
-            //    _valuesLock.EnterReadLock();
+            //    Slot<GraphNode> slot;
+            //    this._valuesLock.EnterReadLock();
             //    try
             //    {
-            //        var iter = _values.Values.Where(s => (s.ElementType & elementType) != 0);
-
-            //        foreach (var slots in iter)
-            //        {
-            //            var slot = slots.GetInSnapshot(ctx) as Slot<GraphNode>;
-            //            if (slot != null)
-            //                result.Add(slot.Value);
-            //        }
+            //        slot = item.Value.GetInSnapshot(ctx) as Slot<GraphNode>;
             //    }
             //    finally
             //    {
-            //        // On valide la transaction dans tous les cas pour qu'elle soit purgée par le vacuum
-            //        ctx.Complete();
-            //        _valuesLock.ExitReadLock();
-            //        _statGeIGraphNode.IncrBy(result.Count);
+            //        this._valuesLock.ExitReadLock();
             //    }
 
-            //    return result;
+            //    if (slot != null)
+            //        yield return slot.Value;
             //}
-            var ctx = CreateCommandContext(true);
-            var iter = _values.Values.Where(s => (s.ElementType & elementType) != 0);
 
-            foreach (var slots in iter)
+            //ctx.Complete();
+
+            // Démarrage d'une transaction afin de pouvoir initialiser le contexte 
+            // dans lequel va s'exécuter la lecture.
+            using (var ctx = CreateCommandContext())
             {
-                var slot = slots.GetInSnapshot(ctx) as Slot<GraphNode>;
-                if (slot != null)
+                // Dans un 1er temps, la méthode utilisait un yield pour renvoyer le résultat à chaque itération.
+                // Mais cela générait une erreur si pendant l'itération une valeur était modifiée car il y avait un conflit 
+                // avec le _valuesLock (impossible de passer en write car on est en read).
+                // Pour éviter cela, on va lire toutes les valeurs et les renvoyer d"un coup.
+                // TODO voir si on peut pas faire mieux
+                var result = new List<GraphNode>(); // Stockage des résultats de l'itération
+                _valuesLock.EnterReadLock();
+                try
                 {
-                    _statGetGraphNode.IncrBy(1);
-                    yield return slot.Value;
+                    var iter = _values.Values.Where(s => (s.ElementType & elementType) != 0);
+
+                    foreach (var slots in iter)
+                    {
+                        var slot = slots.GetInSnapshot(ctx) as Slot<GraphNode>;
+                        if (slot != null)
+                            result.Add(slot.Value);
+                    }
                 }
+                finally
+                {
+                    // On valide la transaction dans tous les cas pour qu'elle soit purgée par le vacuum
+                    ctx.Complete();
+                    _valuesLock.ExitReadLock();
+                    _statGeIGraphNode.IncrBy(result.Count);
+                }
+
+                return result;
             }
         }
 
