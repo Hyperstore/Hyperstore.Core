@@ -266,7 +266,7 @@ namespace Hyperstore.Modeling.MemoryStore
                         {
                             var slots = entry.Slots;
                             ISlot slot = null;
-                            while ((slot = slots.Peek()) != null)
+                            while ((slot = slots.Peek()) != null) // TODO  Non c'est faux, il faut commerncer par la fin de la liste donc il faut implementer Slotlist en double list chainée
                             {
                                 // On élimine ceux qui ont été supprimées depuis longtemps
                                 // = Tuple qui a été supprimé par une transaction committée
@@ -391,8 +391,8 @@ namespace Hyperstore.Modeling.MemoryStore
                     }
                     _trace.WriteTrace(TraceCategory.MemoryStore, "Add {0} - {1}", node.Id, node);
                     ctx.Complete();
-                    if( slots != null)
-                    NotifyVacuum(slots, node.Id);
+                    if (slots != null)
+                        NotifyVacuum(slots, node.Id);
                 }
                 finally
                 {

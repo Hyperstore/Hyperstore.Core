@@ -131,18 +131,19 @@ namespace Hyperstore.Modeling.Domain
         {
             DebugContract.Requires(instance);
 
-            if ((instance.SchemaInfo.Schema.Behavior & DomainBehavior.DisableL1Cache) == DomainBehavior.DisableL1Cache)
+            if ((instance.SchemaInfo.Schema.Behavior & DomainBehavior.DisableL1Cache) == DomainBehavior.DisableL1Cache
+                 || (Session.Current != null && (Session.Current.Mode & SessionMode.IgnoreCache) != SessionMode.IgnoreCache))
                 return instance;
 
-            var val = _cache.GetOrAdd(instance.Id, instance);
-            var mel = val as IModelElement;
-            if (mel != null)
-                return mel;
+            return _cache.GetOrAdd(instance.Id, instance);
+            //var mel = val as IModelElement;
+            //if (mel != null)
+            //    return mel;
 
-            val = instance;
-            // To ensure data was not removed after the last GetOrAdd
-            val = _cache.GetOrAdd(instance.Id, val);
-            return val as IModelElement;
+            //val = instance;
+            //// To ensure data was not removed after the last GetOrAdd
+            //val = _cache.GetOrAdd(instance.Id, val);
+            //return val as IModelElement;
         }
 
         internal IModelElement CreateEntity(Identity id, ISchemaEntity metaClass, IModelEntity instance)
