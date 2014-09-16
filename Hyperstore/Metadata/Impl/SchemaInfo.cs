@@ -25,6 +25,7 @@ using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.Metadata.Primitives;
 using Hyperstore.Modeling.Utils;
 using Hyperstore.Modeling.Platform;
+using Hyperstore.Modeling.Metadata.Constraints;
 
 #endregion
 
@@ -466,6 +467,12 @@ namespace Hyperstore.Modeling.Metadata
             var trace = DomainModel.Resolve<IHyperstoreTrace>(false);
             if (trace != null)
                 trace.WriteTrace(TraceCategory.Metadata, ExceptionMessages.CreatePropertyWithIdForMetaclassFormat, property.Name, property.Id, ((IModelElement)this).Id);
+
+            var constraint = property.PropertySchema as Hyperstore.Modeling.Metadata.Constraints.ICheckValueObjectConstraint;
+            if( constraint != null && this.Schema.Constraints is IConstraintManagerInternal)
+            {
+                (this.Schema.Constraints as IConstraintManagerInternal).AddConstraint(property, constraint);
+            }
             return property;
         }
 

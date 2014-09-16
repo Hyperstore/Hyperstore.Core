@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,11 +22,19 @@ using System.Text;
 using Hyperstore.Modeling;
 using Hyperstore.Modeling.Commands;
 using Hyperstore.Tests.Model;
+using Hyperstore.Modeling.Metadata.Constraints;
 
-namespace Hyperstore.Tests
+namespace Hyperstore.Tests.Model
 {
+    public partial class Library : ICheckConstraint<Library>
+    {
+        void ICheckConstraint<Library>.Check(Library mel, ConstraintContext ctx)
+        {
+         
+        }
+    }
 
-    public class EmailSchema : Hyperstore.Modeling.Metadata.SchemaValueObject<string>, Hyperstore.Modeling.Validations.IConstraint<string>
+    public class EmailSchema : Hyperstore.Modeling.Metadata.SchemaValueObject<string>, ICheckValueObjectConstraint<string>
     {
         public EmailSchema(ISchema schema)
             : base(schema)
@@ -43,12 +51,15 @@ namespace Hyperstore.Tests
             return Hyperstore.Modeling.Metadata.Primitives.StringPrimitive.SerializeString(data);
         }
 
-        void Modeling.Validations.IConstraint<string>.Apply(string element, ISessionContext context)
+        public void Check(string value, ConstraintContext ctx)
         {
-            
+
         }
     }
+}
 
+namespace Hyperstore.Tests
+{
     /// <summary>
     /// Creation d'une classe X dont le name est test
     /// </summary>
@@ -56,22 +67,23 @@ namespace Hyperstore.Tests
     {
         public XExtendsBaseClass Element { get; private set; }
 
-        public MyCommand( IDomainModel domainModel ) : base(domainModel)
+        public MyCommand(IDomainModel domainModel)
+            : base(domainModel)
         {
         }
 
-        public Modeling.Events.IEvent Handle( ExecutionCommandContext<MyCommand> context )
+        public Modeling.Events.IEvent Handle(ExecutionCommandContext<MyCommand> context)
         {
-            Element = new XExtendsBaseClass( DomainModel );
+            Element = new XExtendsBaseClass(DomainModel);
             Element.Name = "Test";
-            return new MyEvent( DomainModel, context.CurrentSession.SessionId );
+            return new MyEvent(DomainModel, context.CurrentSession.SessionId);
         }
     }
 
     public class MyEvent : Hyperstore.Modeling.Events.AbstractDomainEvent
     {
-        public MyEvent( IDomainModel domainModel, Guid correlationId )
-            : base( domainModel.Name, domainModel.ExtensionName, 1, correlationId )
+        public MyEvent(IDomainModel domainModel, Guid correlationId)
+            : base(domainModel.Name, domainModel.ExtensionName, 1, correlationId)
         {
 
         }

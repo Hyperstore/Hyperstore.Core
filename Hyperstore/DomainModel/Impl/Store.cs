@@ -29,7 +29,7 @@ using Hyperstore.Modeling.Container;
 using Hyperstore.Modeling.MemoryStore;
 using Hyperstore.Modeling.Messaging;
 using Hyperstore.Modeling.Metadata;
-using Hyperstore.Modeling.Validations;
+using Hyperstore.Modeling.Metadata.Constraints;
 
 #endregion
 

@@ -56,6 +56,8 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             ((PrimitivesSchema) domainModel).RegisterMetadata(this);
         }
 
+        public ISchemaInfo Owner { get { return null; } }
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Gets the name of the property.

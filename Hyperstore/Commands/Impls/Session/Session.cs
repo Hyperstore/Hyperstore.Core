@@ -25,8 +25,8 @@ using System.Threading.Tasks;
 using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.Events;
 using Hyperstore.Modeling.Utils;
-using Hyperstore.Modeling.Validations;
 using Hyperstore.Modeling.Platform;
+using Hyperstore.Modeling.Metadata.Constraints;
 
 #endregion
 
@@ -1046,13 +1046,12 @@ namespace Hyperstore.Modeling
         // Ces contraintes ne portent que sur les éléments impactés lors de l'exécution de la session.
         private void CheckConstraints(IEnumerable<IModelElement> involvedElements)
         {
-            var query =
+            var constraints =
                 involvedElements
-                .Where(e => e.SchemaInfo.Schema.Constraints is IImplicitDomainModelConstraints && (e.SchemaInfo.Schema.Constraints as IImplicitDomainModelConstraints).HasConstraints)
-                .Select(e => new { Element = e, Constraints = e.SchemaInfo.Schema.Constraints as IImplicitDomainModelConstraints });
+                .Where(e => e.SchemaInfo.Schema.Constraints is IConstraintManagerInternal && (e.SchemaInfo.Schema.Constraints as IConstraintManagerInternal).HasImplicitConstraints)
+                .GroupBy(e => e.SchemaInfo.Schema.Constraints as IConstraintManagerInternal);
 
-            var constraints = query.ToList();
-            if (constraints.Count == 0)
+            if (!constraints.Any())
                 return;
 
             try
@@ -1061,11 +1060,11 @@ namespace Hyperstore.Modeling
                 var idx = SessionIndex;
                 var threadId = ThreadHelper.CurrentThreadId;
 
-                PlatformServices.Current.Parallel_ForEach(constraints, tuple =>
+                PlatformServices.Current.Parallel_ForEach(constraints, group =>
                 {
                     using (new MultiThreadedSession(idx.Value, threadId)) // Partage de session
                     {
-                        tuple.Constraints.ImplicitValidation(this, tuple.Element);
+                        group.Key.CheckElements(group);
                     }
                 });
             }

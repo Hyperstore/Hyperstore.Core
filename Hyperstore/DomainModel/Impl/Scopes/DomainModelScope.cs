@@ -19,7 +19,6 @@
 
 using Hyperstore.Modeling.Domain;
 using Hyperstore.Modeling.HyperGraph;
-using Hyperstore.Modeling.Validations;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

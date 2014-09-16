@@ -24,7 +24,7 @@ using System.Text;
 
 #endregion
 
-namespace Hyperstore.Modeling.Validations
+namespace Hyperstore.Modeling.Metadata.Constraints
 {
     internal class ExecutionResult : IExecutionResult, IExecutionResultInternal
     {

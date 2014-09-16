@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 namespace Hyperstore.Modeling
 {
     ///-------------------------------------------------------------------------------------------------
@@ -25,6 +25,16 @@ namespace Hyperstore.Modeling
     ///-------------------------------------------------------------------------------------------------
     public interface ISchemaProperty : ISchemaInfo
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the owner.
+        /// </summary>
+        /// <value>
+        ///  The owner.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        ISchemaInfo Owner { get; }
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Gets the property schema.

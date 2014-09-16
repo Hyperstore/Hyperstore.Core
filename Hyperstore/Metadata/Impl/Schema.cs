@@ -23,8 +23,8 @@ using System.Linq;
 using System;
 using Hyperstore.Modeling.Domain;
 using Hyperstore.Modeling.HyperGraph;
-using Hyperstore.Modeling.Validations;
 using Hyperstore.Modeling.Platform;
+using Hyperstore.Modeling.Metadata.Constraints;
 
 #endregion
 
@@ -57,7 +57,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The constraints.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public DomainSchema(string name, IServicesContainer services, DomainBehavior behavior= DomainBehavior.DisableL1Cache, IConstraintsManager constraints = null)
+        public DomainSchema(string name, IServicesContainer services, DomainBehavior behavior = DomainBehavior.DisableL1Cache, IConstraintsManager constraints = null)
             : base(services, name)
         {
             Contract.Requires(services, "services");
@@ -153,14 +153,14 @@ namespace Hyperstore.Modeling.Metadata
                 disposable.Dispose();
             _constraints = null;
 
-            foreach(var kv in _elements)
+            foreach (var kv in _elements)
             {
                 disposable = kv.Value as IDisposable;
                 if (disposable != null)
                     disposable.Dispose();
             }
             _elements = null;
-            
+
             foreach (var kv in _relationships)
             {
                 disposable = kv.Value as IDisposable;
@@ -556,6 +556,7 @@ namespace Hyperstore.Modeling.Metadata
             Contract.Requires(metaclass, "metaclass");
 
             ((IUpdatableDomainModel)this).CreateEntity(id, metaclass);
+
         }
 
         void IUpdatableSchema.AddRelationshipSchema(Identity id, ISchemaRelationship metaclass, ISchemaElement start, ISchemaElement end)

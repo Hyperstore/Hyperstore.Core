@@ -27,7 +27,6 @@ using Hyperstore.Modeling.HyperGraph;
 using Hyperstore.Modeling.Messaging;
 using Hyperstore.Modeling.Metadata;
 using Hyperstore.Modeling.Statistics;
-using Hyperstore.Modeling.Validations;
 using Hyperstore.Modeling.Adapters;
 
 #endregion

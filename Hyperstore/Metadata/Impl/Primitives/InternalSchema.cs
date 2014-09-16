@@ -20,11 +20,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Hyperstore.Modeling.Validations;
 using Hyperstore.Modeling.HyperGraph;
 using Hyperstore.Modeling.Commands;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Hyperstore.Modeling.Metadata.Constraints;
 
 #endregion
 

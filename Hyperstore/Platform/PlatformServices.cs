@@ -209,5 +209,10 @@ namespace Hyperstore.Modeling.Platform
             return new Hyperstore.Modeling.Domain.ModelElementFactory();
         }
 
+
+        internal void Parallel_ForEach(List<IGrouping<Metadata.Constraints.IConstraintsManager, IModelElement>> constraints, Action<IGrouping<Metadata.Constraints.IConstraintsManager, IModelElement>> action)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

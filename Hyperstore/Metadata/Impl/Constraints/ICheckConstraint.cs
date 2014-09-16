@@ -14,24 +14,22 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
-namespace Hyperstore.Modeling.Validations
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Hyperstore.Modeling.Metadata.Constraints
 {
-    /// <summary>
-    /// </summary>
-    internal interface IImplicitDomainModelConstraints : IConstraintsManager
+    internal interface ICheckConstraint
     {
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Run implicit validation on an element.
-        /// </summary>
-        /// <param name="session">
-        ///  The current session.
-        /// </param>
-        /// <param name="mel">
-        ///  The element to validate.
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
-        void ImplicitValidation(ISession session, IModelElement mel);
+        void Check(IModelElement mel, ConstraintContext ctx);
+    }
+
+    public interface ICheckConstraint<T> where T : IModelElement
+    {
+        void Check(T mel, ConstraintContext ctx);
     }
 }

@@ -14,13 +14,12 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
 using Hyperstore.Modeling.Metadata;
-using Hyperstore.Modeling.Validations;
-
+using Hyperstore.Modeling.Metadata.Constraints;
 #endregion
 
 namespace Hyperstore.Modeling
@@ -30,18 +29,18 @@ namespace Hyperstore.Modeling
     ///  A model element metadata extensions.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
-    public static class ModelElementMetadataExtensions
+    public static class ConstraintExtensions
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   An ISchemaElement extension method that constraints the given metaclass. </summary>
         /// <param name="metaclass">    The metaclass to act on. </param>
         /// <param name="propertyName"> (Optional) name of the property. </param>
-        /// <returns>   An IConstraintBuilder&lt;IModelElement&gt; </returns>
+        /// <returns>   An ConstraintBuilder&lt;IModelElement&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static IConstraintBuilder<IModelElement> Constraints(this ISchemaElement metaclass, string propertyName = null)
+        public static ConstraintBuilder<IModelElement> Constraints(this ISchemaElement metaclass, string propertyName = null)
         {
             Contract.Requires(metaclass, "metaclass");
-            return ((ISchema)metaclass.DomainModel).Constraints.On(metaclass, propertyName);
+            return new ConstraintBuilder<IModelElement>(metaclass, propertyName);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -49,12 +48,12 @@ namespace Hyperstore.Modeling
         /// <typeparam name="T">    Generic type parameter. </typeparam>
         /// <param name="metaclass">    The metaclass to act on. </param>
         /// <param name="propertyName"> (Optional) name of the property. </param>
-        /// <returns>   An IConstraintBuilder&lt;T&gt; </returns>
+        /// <returns>   An ConstraintBuilder&lt;T&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static IConstraintBuilder<T> Constraints<T>(this ISchemaElement metaclass, string propertyName = null)
+        public static ConstraintBuilder<T> Constraints<T>(this ISchemaElement metaclass, string propertyName = null) where T : IModelEntity
         {
             Contract.Requires(metaclass, "metaclass");
-            return ((ISchema)metaclass.DomainModel).Constraints.On<T>(metaclass, propertyName);
+            return new ConstraintBuilder<T>(metaclass, propertyName);
         }
 
         #region ISchemaEntity
@@ -66,15 +65,14 @@ namespace Hyperstore.Modeling
         /// <param name="expression">   The expression. </param>
         /// <param name="message">      The message. </param>
         /// <param name="propertyName"> (Optional) name of the property. </param>
-        /// <returns>   An IConstraintBuilder&lt;T&gt; </returns>
+        /// <returns>   An ConstraintBuilder&lt;T&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static IConstraintBuilder<T> AddConstraint<T>(this ISchemaEntity metadata, Func<T, bool> expression, string message, string propertyName = null)
+        public static ConstraintBuilder<T> AddConstraint<T>(this ISchemaEntity metadata, Func<T, bool> expression, string message, string propertyName = null) where T : IModelEntity
         {
             Contract.Requires(metadata, "metadata");
             Contract.Requires(expression, "expression");
             Contract.Requires(message, "message");
-            return metadata.Schema.Constraints.On<T>(metadata, propertyName)
-                    .Check(expression, message);
+            return new ConstraintBuilder<T>(metadata, propertyName, expression, message);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -84,16 +82,14 @@ namespace Hyperstore.Modeling
         /// <param name="expression">   The expression. </param>
         /// <param name="message">      The message. </param>
         /// <param name="propertyName"> (Optional) name of the property. </param>
-        /// <returns>   An IConstraintBuilder&lt;T&gt; </returns>
+        /// <returns>   An ConstraintBuilder&lt;T&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static IConstraintBuilder<T> AddImplicitConstraint<T>(this ISchemaEntity metadata, Func<T, bool> expression, string message, string propertyName = null)
+        public static ConstraintBuilder<T> AddImplicitConstraint<T>(this ISchemaEntity metadata, Func<T, bool> expression, string message, string propertyName = null) where T : IModelEntity
         {
             Contract.Requires(metadata, "metadata");
             Contract.Requires(expression, "expression");
             Contract.Requires(message, "message");
-            return metadata.Schema.Constraints.On<T>(metadata, propertyName)
-                    .Check(expression, message)
-                    .Implicit();
+            return new ConstraintBuilder<T>(metadata, propertyName, expression, message, true);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -103,15 +99,14 @@ namespace Hyperstore.Modeling
         /// <param name="expression">   The expression. </param>
         /// <param name="message">      The message. </param>
         /// <param name="propertyName"> (Optional) name of the property. </param>
-        /// <returns>   An IConstraintBuilder&lt;T&gt; </returns>
+        /// <returns>   An ConstraintBuilder&lt;T&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static IConstraintBuilder<T> AddConstraint<T>(this ISchemaEntity metadata, Func<T, bool> expression, DiagnosticMessage message, string propertyName = null)
+        public static ConstraintBuilder<T> AddConstraint<T>(this ISchemaEntity metadata, Func<T, bool> expression, DiagnosticMessage message, string propertyName = null) where T : IModelEntity
         {
             Contract.Requires(metadata, "metadata");
             Contract.Requires(expression, "expression");
             Contract.Requires(message, "message");
-            return metadata.Schema.Constraints.On<T>(metadata, propertyName)
-                    .Check(expression, message);
+            return new ConstraintBuilder<T>(metadata, propertyName, expression, message);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -121,16 +116,14 @@ namespace Hyperstore.Modeling
         /// <param name="expression">   The expression. </param>
         /// <param name="message">      The message. </param>
         /// <param name="propertyName"> (Optional) name of the property. </param>
-        /// <returns>   An IConstraintBuilder&lt;T&gt; </returns>
+        /// <returns>   An ConstraintBuilder&lt;T&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static IConstraintBuilder<T> AddImplicitConstraint<T>(this ISchemaEntity metadata, Func<T, bool> expression, DiagnosticMessage message, string propertyName = null)
+        public static ConstraintBuilder<T> AddImplicitConstraint<T>(this ISchemaEntity metadata, Func<T, bool> expression, DiagnosticMessage message, string propertyName = null) where T : IModelEntity
         {
             Contract.Requires(metadata, "metadata");
             Contract.Requires(expression, "expression");
             Contract.Requires(message, "message");
-            return metadata.Schema.Constraints.On<T>(metadata, propertyName)
-                    .Check(expression, message)
-                    .Implicit();
+            return new ConstraintBuilder<T>(metadata, propertyName, expression, message, true);
         }
         #endregion
 
@@ -143,15 +136,14 @@ namespace Hyperstore.Modeling
         /// <param name="expression">   The expression. </param>
         /// <param name="message">      The message. </param>
         /// <param name="propertyName"> (Optional) name of the property. </param>
-        /// <returns>   An IConstraintBuilder&lt;T&gt; </returns>
+        /// <returns>   An ConstraintBuilder&lt;T&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static IConstraintBuilder<T> AddConstraint<T>(this SchemaEntity<T> metadata, Func<T, bool> expression, string message, string propertyName = null) where T : IModelEntity
+        public static ConstraintBuilder<T> AddConstraint<T>(this SchemaEntity<T> metadata, Func<T, bool> expression, string message, string propertyName = null) where T : IModelEntity
         {
             Contract.Requires(metadata, "metadata");
             Contract.Requires(expression, "expression");
             Contract.Requires(message, "message");
-            return metadata.Schema.Constraints.On<T>(metadata, propertyName)
-                    .Check(expression, message);
+            return new ConstraintBuilder<T>(metadata, propertyName, expression, message);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -161,16 +153,14 @@ namespace Hyperstore.Modeling
         /// <param name="expression">   The expression. </param>
         /// <param name="message">      The message. </param>
         /// <param name="propertyName"> (Optional) name of the property. </param>
-        /// <returns>   An IConstraintBuilder&lt;T&gt; </returns>
+        /// <returns>   An ConstraintBuilder&lt;T&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static IConstraintBuilder<T> AddImplicitConstraint<T>(this SchemaEntity<T> metadata, Func<T, bool> expression, string message, string propertyName = null) where T : IModelEntity
+        public static ConstraintBuilder<T> AddImplicitConstraint<T>(this SchemaEntity<T> metadata, Func<T, bool> expression, string message, string propertyName = null) where T : IModelEntity
         {
             Contract.Requires(metadata, "metadata");
             Contract.Requires(expression, "expression");
             Contract.Requires(message, "message");
-            return metadata.Schema.Constraints.On<T>(metadata, propertyName)
-                    .Check(expression, message)
-                    .Implicit();
+            return new ConstraintBuilder<T>(metadata, propertyName, expression, message, true);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -180,15 +170,14 @@ namespace Hyperstore.Modeling
         /// <param name="expression">   The expression. </param>
         /// <param name="message">      The message. </param>
         /// <param name="propertyName"> (Optional) name of the property. </param>
-        /// <returns>   An IConstraintBuilder&lt;T&gt; </returns>
+        /// <returns>   An ConstraintBuilder&lt;T&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static IConstraintBuilder<T> AddConstraint<T>(this SchemaEntity<T> metadata, Func<T, bool> expression, DiagnosticMessage message, string propertyName = null) where T : IModelEntity
+        public static ConstraintBuilder<T> AddConstraint<T>(this SchemaEntity<T> metadata, Func<T, bool> expression, DiagnosticMessage message, string propertyName = null) where T : IModelEntity
         {
             Contract.Requires(metadata, "metadata");
             Contract.Requires(expression, "expression");
             Contract.Requires(message, "message");
-            return metadata.Schema.Constraints.On<T>(metadata, propertyName)
-                    .Check(expression, message);
+            return new ConstraintBuilder<T>(metadata, propertyName, expression, message);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -198,16 +187,14 @@ namespace Hyperstore.Modeling
         /// <param name="expression">   The expression. </param>
         /// <param name="message">      The message. </param>
         /// <param name="propertyName"> (Optional) name of the property. </param>
-        /// <returns>   An IConstraintBuilder&lt;T&gt; </returns>
+        /// <returns>   An ConstraintBuilder&lt;T&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static IConstraintBuilder<T> AddImplicitConstraint<T>(this SchemaEntity<T> metadata, Func<T, bool> expression, DiagnosticMessage message, string propertyName = null) where T : IModelEntity
+        public static ConstraintBuilder<T> AddImplicitConstraint<T>(this SchemaEntity<T> metadata, Func<T, bool> expression, DiagnosticMessage message, string propertyName = null) where T : IModelEntity
         {
             Contract.Requires(metadata, "metadata");
             Contract.Requires(expression, "expression");
             Contract.Requires(message, "message");
-            return metadata.Schema.Constraints.On<T>(metadata, propertyName)
-                    .Check(expression, message)
-                    .Implicit();
+            return new ConstraintBuilder<T>(metadata, propertyName, expression, message, true);
         }
         #endregion
 
@@ -220,15 +207,14 @@ namespace Hyperstore.Modeling
         /// <param name="expression">   The expression. </param>
         /// <param name="message">      The message. </param>
         /// <param name="propertyName"> (Optional) name of the property. </param>
-        /// <returns>   An IConstraintBuilder&lt;T&gt; </returns>
+        /// <returns>   An ConstraintBuilder&lt;T&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static IConstraintBuilder<T> AddConstraint<T>(this ISchemaRelationship metadata, Func<T, bool> expression, string message, string propertyName = null)
+        public static ConstraintBuilder<T> AddConstraint<T>(this ISchemaRelationship metadata, Func<T, bool> expression, string message, string propertyName = null) where T : IModelRelationship
         {
             Contract.Requires(metadata, "metadata");
             Contract.Requires(expression, "expression");
             Contract.Requires(message, "message");
-            return metadata.Schema.Constraints.On<T>(metadata, propertyName)
-                    .Check(expression, message);
+            return new ConstraintBuilder<T>(metadata, propertyName, expression, message);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -238,16 +224,14 @@ namespace Hyperstore.Modeling
         /// <param name="expression">   The expression. </param>
         /// <param name="message">      The message. </param>
         /// <param name="propertyName"> (Optional) name of the property. </param>
-        /// <returns>   An IConstraintBuilder&lt;T&gt; </returns>
+        /// <returns>   An ConstraintBuilder&lt;T&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static IConstraintBuilder<T> AddImplicitConstraint<T>(this ISchemaRelationship metadata, Func<T, bool> expression, string message, string propertyName = null)
+        public static ConstraintBuilder<T> AddImplicitConstraint<T>(this ISchemaRelationship metadata, Func<T, bool> expression, string message, string propertyName = null) where T : IModelRelationship
         {
             Contract.Requires(metadata, "metadata");
             Contract.Requires(expression, "expression");
             Contract.Requires(message, "message");
-            return metadata.Schema.Constraints.On<T>(metadata, propertyName)
-                    .Check(expression, message)
-                    .Implicit();
+            return new ConstraintBuilder<T>(metadata, propertyName, expression, message, true);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -257,15 +241,14 @@ namespace Hyperstore.Modeling
         /// <param name="expression">   The expression. </param>
         /// <param name="message">      The message. </param>
         /// <param name="propertyName"> (Optional) name of the property. </param>
-        /// <returns>   An IConstraintBuilder&lt;T&gt; </returns>
+        /// <returns>   An ConstraintBuilder&lt;T&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static IConstraintBuilder<T> AddConstraint<T>(this ISchemaRelationship metadata, Func<T, bool> expression, DiagnosticMessage message, string propertyName = null)
+        public static ConstraintBuilder<T> AddConstraint<T>(this ISchemaRelationship metadata, Func<T, bool> expression, DiagnosticMessage message, string propertyName = null) where T : IModelRelationship
         {
             Contract.Requires(metadata, "metadata");
             Contract.Requires(expression, "expression");
             Contract.Requires(message, "message");
-            return metadata.Schema.Constraints.On<T>(metadata, propertyName)
-                    .Check(expression, message);
+            return new ConstraintBuilder<T>(metadata, propertyName, expression, message);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -275,16 +258,14 @@ namespace Hyperstore.Modeling
         /// <param name="expression">   The expression. </param>
         /// <param name="message">      The message. </param>
         /// <param name="propertyName"> (Optional) name of the property. </param>
-        /// <returns>   An IConstraintBuilder&lt;T&gt; </returns>
+        /// <returns>   An ConstraintBuilder&lt;T&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static IConstraintBuilder<T> AddImplicitConstraint<T>(this ISchemaRelationship metadata, Func<T, bool> expression, DiagnosticMessage message, string propertyName = null)
+        public static ConstraintBuilder<T> AddImplicitConstraint<T>(this ISchemaRelationship metadata, Func<T, bool> expression, DiagnosticMessage message, string propertyName = null) where T : IModelRelationship
         {
             Contract.Requires(metadata, "metadata");
             Contract.Requires(expression, "expression");
             Contract.Requires(message, "message");
-            return metadata.Schema.Constraints.On<T>(metadata, propertyName)
-                    .Check(expression, message)
-                    .Implicit();
+            return new ConstraintBuilder<T>(metadata, propertyName, expression, message, true);
         }
         #endregion
 
@@ -297,15 +278,15 @@ namespace Hyperstore.Modeling
         /// <param name="expression">   The expression. </param>
         /// <param name="message">      The message. </param>
         /// <param name="propertyName"> (Optional) name of the property. </param>
-        /// <returns>   An IConstraintBuilder&lt;T&gt; </returns>
+        /// <returns>   An ConstraintBuilder&lt;T&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static IConstraintBuilder<T> AddConstraint<T>(this SchemaRelationship<T> metadata, Func<T, bool> expression, string message, string propertyName = null) where T : IModelRelationship
+        public static ConstraintBuilder<T> AddConstraint<T>(this SchemaRelationship<T> metadata, Func<T, bool> expression, string message, string propertyName = null) 
+            where T : IModelRelationship
         {
             Contract.Requires(metadata, "metadata");
             Contract.Requires(expression, "expression");
             Contract.Requires(message, "message");
-            return metadata.Schema.Constraints.On<T>(metadata, propertyName)
-                    .Check(expression, message);
+            return new ConstraintBuilder<T>(metadata, propertyName, expression, message);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -315,16 +296,14 @@ namespace Hyperstore.Modeling
         /// <param name="expression">   The expression. </param>
         /// <param name="message">      The message. </param>
         /// <param name="propertyName"> (Optional) name of the property. </param>
-        /// <returns>   An IConstraintBuilder&lt;T&gt; </returns>
+        /// <returns>   An ConstraintBuilder&lt;T&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static IConstraintBuilder<T> AddImplicitConstraint<T>(this SchemaRelationship<T> metadata, Func<T, bool> expression, string message, string propertyName = null) where T : IModelRelationship
+        public static ConstraintBuilder<T> AddImplicitConstraint<T>(this SchemaRelationship<T> metadata, Func<T, bool> expression, string message, string propertyName = null) where T : IModelRelationship
         {
             Contract.Requires(metadata, "metadata");
             Contract.Requires(expression, "expression");
             Contract.Requires(message, "message");
-            return metadata.Schema.Constraints.On<T>(metadata, propertyName)
-                    .Check(expression, message)
-                    .Implicit();
+            return new ConstraintBuilder<T>(metadata, propertyName, expression, message, true);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -334,15 +313,14 @@ namespace Hyperstore.Modeling
         /// <param name="expression">   The expression. </param>
         /// <param name="message">      The message. </param>
         /// <param name="propertyName"> (Optional) name of the property. </param>
-        /// <returns>   An IConstraintBuilder&lt;T&gt; </returns>
+        /// <returns>   An ConstraintBuilder&lt;T&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static IConstraintBuilder<T> AddConstraint<T>(this SchemaRelationship<T> metadata, Func<T, bool> expression, DiagnosticMessage message, string propertyName = null) where T : IModelRelationship
+        public static ConstraintBuilder<T> AddConstraint<T>(this SchemaRelationship<T> metadata, Func<T, bool> expression, DiagnosticMessage message, string propertyName = null) where T : IModelRelationship
         {
             Contract.Requires(metadata, "metadata");
             Contract.Requires(expression, "expression");
             Contract.Requires(message, "message");
-            return metadata.Schema.Constraints.On<T>(metadata, propertyName)
-                    .Check(expression, message);
+            return new ConstraintBuilder<T>(metadata, propertyName, expression, message);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -352,16 +330,14 @@ namespace Hyperstore.Modeling
         /// <param name="expression">   The expression. </param>
         /// <param name="message">      The message. </param>
         /// <param name="propertyName"> (Optional) name of the property. </param>
-        /// <returns>   An IConstraintBuilder&lt;T&gt; </returns>
+        /// <returns>   An ConstraintBuilder&lt;T&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static IConstraintBuilder<T> AddImplicitConstraint<T>(this SchemaRelationship<T> metadata, Func<T, bool> expression, DiagnosticMessage message, string propertyName = null) where T : IModelRelationship
+        public static ConstraintBuilder<T> AddImplicitConstraint<T>(this SchemaRelationship<T> metadata, Func<T, bool> expression, DiagnosticMessage message, string propertyName = null) where T : IModelRelationship
         {
             Contract.Requires(metadata, "metadata");
             Contract.Requires(expression, "expression");
             Contract.Requires(message, "message");
-            return metadata.Schema.Constraints.On<T>(metadata, propertyName)
-                    .Check(expression, message)
-                    .Implicit();
+            return new ConstraintBuilder<T>(metadata, propertyName, expression, message, true);
         }
         #endregion
 
@@ -374,15 +350,14 @@ namespace Hyperstore.Modeling
         /// <param name="expression">   The expression. </param>
         /// <param name="message">      The message. </param>
         /// <param name="propertyName"> (Optional) name of the property. </param>
-        /// <returns>   An IConstraintBuilder&lt;T&gt; </returns>
+        /// <returns>   An ConstraintBuilder&lt;T&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static IConstraintBuilder<T> AddConstraint<T>(this ISchemaElement metadata, Func<T, bool> expression, DiagnosticMessage message, string propertyName = null) 
+        public static ConstraintBuilder<T> AddConstraint<T>(this ISchemaElement metadata, Func<T, bool> expression, DiagnosticMessage message, string propertyName = null) where T : IModelEntity
         {
             Contract.Requires(metadata, "metadata");
             Contract.Requires(expression, "expression");
             Contract.Requires(message, "message");
-            return metadata.Schema.Constraints.On<T>(metadata, propertyName)
-                    .Check(expression, message);
+            return new ConstraintBuilder<T>(metadata, propertyName, expression, message);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -392,16 +367,14 @@ namespace Hyperstore.Modeling
         /// <param name="expression">   The expression. </param>
         /// <param name="message">      The message. </param>
         /// <param name="propertyName"> (Optional) name of the property. </param>
-        /// <returns>   An IConstraintBuilder&lt;T&gt; </returns>
+        /// <returns>   An ConstraintBuilder&lt;T&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static IConstraintBuilder<T> AddImplicitConstraint<T>(this ISchemaElement metadata, Func<T, bool> expression, DiagnosticMessage message, string propertyName=null)
+        public static ConstraintBuilder<T> AddImplicitConstraint<T>(this ISchemaElement metadata, Func<T, bool> expression, DiagnosticMessage message, string propertyName = null) where T : IModelEntity
         {
             Contract.Requires(metadata, "metadata");
             Contract.Requires(expression, "expression");
             Contract.Requires(message, "message");
-            return metadata.Schema.Constraints.On<T>(metadata, propertyName)
-                    .Check(expression, message)
-                    .Implicit();
+            return new ConstraintBuilder<T>(metadata, propertyName, expression, message, true);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -411,15 +384,14 @@ namespace Hyperstore.Modeling
         /// <param name="expression">   The expression. </param>
         /// <param name="message">      The message. </param>
         /// <param name="propertyName"> (Optional) name of the property. </param>
-        /// <returns>   An IConstraintBuilder&lt;T&gt; </returns>
+        /// <returns>   An ConstraintBuilder&lt;T&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static IConstraintBuilder<T> AddConstraint<T>(this ISchemaElement metadata, Func<T, bool> expression, string message, string propertyName = null)
+        public static ConstraintBuilder<T> AddConstraint<T>(this ISchemaElement metadata, Func<T, bool> expression, string message, string propertyName = null) where T : IModelElement
         {
             Contract.Requires(metadata, "metadata");
             Contract.Requires(expression, "expression");
             Contract.Requires(message, "message");
-            return metadata.Schema.Constraints.On<T>(metadata, propertyName)
-                    .Check(expression, message);
+            return new ConstraintBuilder<T>(metadata, propertyName, expression, message);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -429,16 +401,14 @@ namespace Hyperstore.Modeling
         /// <param name="expression">   The expression. </param>
         /// <param name="message">      The message. </param>
         /// <param name="propertyName"> (Optional) name of the property. </param>
-        /// <returns>   An IConstraintBuilder&lt;T&gt; </returns>
+        /// <returns>   An ConstraintBuilder&lt;T&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static IConstraintBuilder<T> AddImplicitConstraint<T>(this ISchemaElement metadata, Func<T, bool> expression, string message, string propertyName = null) 
+        public static ConstraintBuilder<T> AddImplicitConstraint<T>(this ISchemaElement metadata, Func<T, bool> expression, string message, string propertyName = null) where T : IModelElement
         {
             Contract.Requires(metadata, "metadata");
             Contract.Requires(expression, "expression");
             Contract.Requires(message, "message");
-            return metadata.Schema.Constraints.On<T>(metadata, propertyName)
-                    .Check(expression, message)
-                    .Implicit();
+            return new ConstraintBuilder<T>(metadata, propertyName, expression, message, true);
         }
         #endregion
     }

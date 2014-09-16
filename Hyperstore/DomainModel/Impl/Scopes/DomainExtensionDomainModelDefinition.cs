@@ -89,10 +89,11 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         protected override ISchema CreateSchema(IServicesContainer services)
         {
-            return new Hyperstore.Modeling.Scopes.DomainSchemaExtension(_extendedSchema,
-                                                                              services,
-                                                                              Behavior,
-                                                                              new Hyperstore.Modeling.Scopes.DomainExtensionConstraintsManager(services, _extendedSchema, _mode));
+            throw new NotInTransactionException();
+            //return new Hyperstore.Modeling.Scopes.DomainSchemaExtension(_extendedSchema,
+            //                                                                  services,
+            //                                                                  Behavior,
+            //                                                                  new Hyperstore.Modeling.Scopes.DomainExtensionConstraintsManager(services, _extendedSchema, _mode));
         }
     }
 }

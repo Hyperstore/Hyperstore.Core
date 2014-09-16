@@ -83,6 +83,20 @@
     <Compile Include="Extensions\StoreBuilder.cs" />
     <Compile Include="Extensions\StoreExtensions.cs" />
     <Compile Include="HyperGraph\Impls\NodeInfo.cs" />
+    <Compile Include="Metadata\Impl\Constraints\CheckConstraintProxy.cs" />
+    <Compile Include="Metadata\Impl\Constraints\CheckPropertyConstraintProxy.cs" />
+    <Compile Include="Metadata\Impl\Constraints\CheckValueObjectConstraint.cs" />
+    <Compile Include="Metadata\Impl\Constraints\ConstraintBuilder.cs" />
+    <Compile Include="Metadata\Impl\Constraints\ConstraintContext.cs" />
+    <Compile Include="Metadata\Impl\Constraints\ConstraintsManager.cs" />
+    <Compile Include="Metadata\Impl\Constraints\CheckConstraint.cs" />
+    <Compile Include="Metadata\Impl\Constraints\ICheckValueObjectConstraint.cs" />
+    <Compile Include="Metadata\Impl\Constraints\IConstraintsManager.cs" />
+    <Compile Include="Metadata\Impl\Constraints\IValidatationConstraint.cs" />
+    <Compile Include="Metadata\Impl\Constraints\ICheckConstraint.cs" />
+    <Compile Include="Metadata\Impl\Constraints\MessageHelper.cs" />
+    <Compile Include="Metadata\Impl\Constraints\ValidateConstraint.cs" />
+    <Compile Include="Metadata\Impl\Constraints\ValidationConstraintProxy.cs" />
     <Compile Include="Metadata\Impl\Primitives\EnumPrimitiveInternal.cs" />
     <Compile Include="Metadata\PropertyKind.cs" />
     <Compile Include="Platform\IConcurrentDictionary.cs" />
@@ -96,7 +110,6 @@
       <Link>Properties\AssemblyVersion.cs</Link>
     </Compile>
     <Compile Include="HyperGraph\Impls\MemoryGraph\ConflictException.cs" />
-    <Compile Include="Commands\Constraints\Impls\MessageHelper.cs" />
     <Compile Include="Commands\ErrorContinuationStatus.cs" />
     <Compile Include="Commands\IExecutionResultInternal.cs" />
     <Compile Include="Commands\Impls\AbstractCommandInterceptor.cs" />
@@ -139,8 +152,6 @@
     <Compile Include="Metadata\Impl\SchemaExtensionMode.cs" />
     <Compile Include="Metadata\Impl\SchemaInfo.cs" />
     <Compile Include="Commands\BeforeContinuationStatus.cs" />
-    <Compile Include="Commands\Constraints\IImplicitDomainModelConstraints.cs" />
-    <Compile Include="Commands\Constraints\Impls\ConstraintsCategory.cs" />
     <Compile Include="Commands\ICommandHandler.cs" />
     <Compile Include="Commands\ICommandHandlerOf.cs" />
     <Compile Include="Commands\Impls\AddSchemaEntityCommand.cs" />
@@ -167,10 +178,7 @@
     <Compile Include="Commands\SessionMode.cs" />
     <Compile Include="Commands\UndoManager\IUndoManager.cs" />
     <Compile Include="Commands\UndoManager\UndoManager.cs" />
-    <Compile Include="Commands\Constraints\Impls\ConstraintBuilder.cs" />
-    <Compile Include="Commands\Constraints\Impls\ConstraintsManager.cs" />
-    <Compile Include="Commands\Constraints\Impls\CustomConstraint.cs" />
-    <Compile Include="Commands\Constraints\Impls\ModelElementMetadataExtensions.cs" />
+    <Compile Include="Metadata\Impl\Constraints\ConstraintsExtensions.cs" />
     <Compile Include="Commands\Impls\RemovePropertyCommand.cs" />
     <Compile Include="Container\Setting.cs" />
     <Compile Include="DomainModel\DomainPersistenceBehavior.cs" />
@@ -267,10 +275,6 @@
     <Compile Include="Metadata\Impl\SchemaRelationship.cs" />
     <Compile Include="Metadata\Impl\Schema.cs" />
     <Compile Include="DomainModel\Impl\Resolvers\ModelElementFactory.cs" />
-    <Compile Include="Commands\Constraints\IConstraint.cs" />
-    <Compile Include="Commands\Constraints\IConstraintBuilder.cs" />
-    <Compile Include="Commands\Constraints\IConstraintOf.cs" />
-    <Compile Include="Commands\Constraints\IConstraintsManager.cs" />
     <Compile Include="Commands\ICommandManager.cs" />
     <Compile Include="Commands\Impls\AddEntityCommand.cs" />
     <Compile Include="Commands\Impls\ChangePropertyValueCommand.cs" />
@@ -311,7 +315,7 @@
     <Compile Include="Events\IEventNotifier.cs" />
     <Compile Include="Commands\ICommandProcessor.cs" />
     <Compile Include="Commands\Impls\Session\Session.cs" />
-    <Compile Include="Commands\Impls\ExecutionResult.cs" />
+    <Compile Include="Metadata\Impl\Constraints\ExecutionResult.cs" />
     <Compile Include="Commands\ISession.cs" />
     <Compile Include="Commands\IExecutionResult.cs" />
     <Compile Include="Commands\DiagnosticMessage.cs" />

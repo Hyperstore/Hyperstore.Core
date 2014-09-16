@@ -18,10 +18,10 @@
 #region Imports
 
 using System.Collections.Generic;
-using Hyperstore.Modeling.Validations;
 using Hyperstore.Modeling.Statistics;
 using System;
 using System.Threading.Tasks;
+using Hyperstore.Modeling.Metadata.Constraints;
 
 #endregion
 

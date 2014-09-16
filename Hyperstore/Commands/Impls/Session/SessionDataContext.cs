@@ -21,7 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Hyperstore.Modeling.Events;
-using Hyperstore.Modeling.Validations;
+using Hyperstore.Modeling.Metadata.Constraints;
 
 #endregion
 

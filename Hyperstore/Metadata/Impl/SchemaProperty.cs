@@ -56,10 +56,15 @@ namespace Hyperstore.Modeling.Metadata
         private bool _defaultValueInitialized;
         private ISchemaProperty _defaultValueProperty;
         private PropertyKind? _kind;
-
+        private readonly ISchemaInfo _owner;
         #endregion Enums of MetaProperty (3)
 
         #region Properties of MetaProperty (3)
+
+        public ISchemaInfo Owner
+        {
+            get { return _owner; }
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -148,6 +153,7 @@ namespace Hyperstore.Modeling.Metadata
             Contract.Requires(owner, "owner");
             Contract.RequiresNotEmpty(propertyName, "propertyName");
 
+            _owner = owner;
             //if (InvalidPropertyNames.Any(p => String.Compare(p, propertyName, StringComparison.OrdinalIgnoreCase) == 0))
             //    throw new Exception(ExceptionMessages.InvalidPropertyNameCantBeAPropertyOfIModelElement);
 
