@@ -36,7 +36,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
             this._handler = CreateCheckHandler(constraintElementType);
         }
 
-        public void Check(IModelElement mel, ConstraintContext ctx)
+        public void ExecuteConstraint(IModelElement mel, ConstraintContext ctx)
         {
             var pv = mel.GetPropertyValue(_property);
             if (pv == null)
@@ -55,7 +55,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
             // Génération en dynamique d'un appel en utilisant un contexte typé
             var pvalue = Expression.Parameter(typeof(object));
             var pctx = Expression.Parameter(typeof(ConstraintContext));
-            var pconstraint = Expression.Parameter(constraintType);
+            var pconstraint = Expression.Parameter(typeof(object));
 
             // (mel, ctx, constraint) => constraint.Check((T)mel, ctx)
             var invocationExpression = Expression.Lambda(
@@ -63,7 +63,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
                                             Expression.Call(Expression.Convert(pconstraint, constraintType),
                                                         Hyperstore.Modeling.Utils.ReflectionHelper.GetMethod(constraintType, "Check").First(),
                                                             Expression.Convert(pvalue, elementType),
-                                                            Expression.Constant(pctx))),
+                                                            pctx)),
                                             pvalue, pctx, pconstraint);
 
             return (Action<object, ConstraintContext, object>)invocationExpression.Compile();

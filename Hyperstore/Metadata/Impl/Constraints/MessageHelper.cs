@@ -32,8 +32,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Helper to format a message with named item corresponding to a property element. Each item
-        ///  must be declared with a property name. The format to use is {propertyName[,
-        ///  length][:formatstring]}
+        ///  must be declared with a property name. The format to use is {propertyName[,length][:formatstring]}
         /// </summary>
         /// <param name="message">
         ///  Message to format.

@@ -48,6 +48,7 @@ namespace Hyperstore.Tests.DomainExtension
             {
                 lib = new Library(domain);
                 lib.Name = "My Library";
+                lib.Email = "toto";
                 for (int i = 1; i <= 10;i++)
                 {
                     var b = new Book(domain);

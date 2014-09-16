@@ -36,7 +36,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
 
         public void Validate(IModelElement mel, ConstraintContext ctx)
         {
-            _handler(mel, ctx, _constraint, Category );
+            _handler(mel, ctx, _constraint, Category);
         }
 
         public string Category
@@ -55,17 +55,17 @@ namespace Hyperstore.Modeling.Metadata.Constraints
             // Génération en dynamique d'un appel en utilisant un contexte typé
             var pmel = Expression.Parameter(typeof(IModelElement));
             var pctx = Expression.Parameter(typeof(ConstraintContext));
-            var pconstraint = Expression.Parameter(constraintType);
+            var pconstraint = Expression.Parameter(typeof(object));
             var pcat = Expression.Parameter(typeof(string));
 
             // (mel, ctx, constraint) => constraint.Check((T)mel, ctx)
             var invocationExpression = Expression.Lambda(
                                         Expression.Block(
                                             Expression.Call(Expression.Convert(pconstraint, constraintType),
-                                                            Hyperstore.Modeling.Utils.ReflectionHelper.GetMethod(constraintType, "Validate").First(),
+                                                            Hyperstore.Modeling.Utils.ReflectionHelper.GetMethod(constraintType, "CheckConstraint").First(),
                                                             Expression.Convert(pmel, elementType),
-                                                            Expression.Constant(pctx),
-                                                            Expression.Constant(pcat))),
+                                                            pctx,
+                                                            pcat)),
                                             pmel, pctx, pconstraint, pcat);
 
             return (Action<IModelElement, ConstraintContext, object, string>)invocationExpression.Compile();

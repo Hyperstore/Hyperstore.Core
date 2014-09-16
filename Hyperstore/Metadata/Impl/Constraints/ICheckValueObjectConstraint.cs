@@ -22,13 +22,12 @@ using System.Text;
 
 namespace Hyperstore.Modeling.Metadata.Constraints
 {
-    internal interface ICheckValueObjectConstraint
+    public interface ICheckValueObjectConstraint
     {
-        void Check(object value, ConstraintContext ctx);
     }
 
 
-    public interface ICheckValueObjectConstraint<T> 
+    public interface ICheckValueObjectConstraint<T> : ICheckValueObjectConstraint 
     {
         void Check(T value, ConstraintContext ctx);
     }

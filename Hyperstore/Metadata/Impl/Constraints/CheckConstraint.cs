@@ -38,7 +38,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
             this.isWarning = isWarning;
         }
 
-        void ICheckConstraint<T>.Check(T mel, ConstraintContext ctx)
+        void ICheckConstraint<T>.ExecuteConstraint(T mel, ConstraintContext ctx)
         {
             if (!expression(mel))
             {

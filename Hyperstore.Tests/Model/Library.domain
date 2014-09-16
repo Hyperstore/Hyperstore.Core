@@ -1,11 +1,11 @@
 ﻿[observable]
 domain Hyperstore.Tests.Model.Library
 {
-	//extern System.String as Email;
+	extern System.String as Email;
 	 
     def entity NamedElement {
         Name : string check error "Name is required" {return !String.IsNullOrEmpty(self.Name);};
-	//	Email : Email;
+		Email : Email;
     } 	 
 
     def entity Library extends NamedElement

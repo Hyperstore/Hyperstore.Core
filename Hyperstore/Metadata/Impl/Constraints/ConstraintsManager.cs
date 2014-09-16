@@ -57,6 +57,10 @@ namespace Hyperstore.Modeling.Metadata.Constraints
         #region Register
         public void AddConstraint(ISchemaProperty property, ICheckValueObjectConstraint constraint)
         {
+            var owner = property.Owner as ISchemaElement;
+            if (owner == null)
+                return;
+
             var interfaces = ReflectionHelper.GetInterfaces(constraint.GetType());
 
             var constraintElementType = interfaces.Where(i => ReflectionHelper.IsGenericType(i, typeof(ICheckValueObjectConstraint<>)))
@@ -64,7 +68,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
                                             .FirstOrDefault();
             if (constraintElementType != null)
             {
-                AddConstraint(property.Owner.SchemaInfo, new CheckPropertyConstraintProxy(property, constraintElementType, constraint));
+                AddConstraint(owner, new CheckPropertyConstraintProxy(property, constraintElementType, constraint));
             }
 
             constraintElementType = interfaces.Where(i => ReflectionHelper.IsGenericType(i, typeof(IValidationConstraint<>)))
@@ -72,8 +76,8 @@ namespace Hyperstore.Modeling.Metadata.Constraints
                                     .FirstOrDefault();
             if (constraintElementType != null)
             {
-              // AddConstraint(schema, new ValidationConstraintProxy(schema, CreateValidationHandler(constraintElementType, schema), ""));
-            }        
+                // AddConstraint(schema, new ValidationConstraintProxy(schema, CreateValidationHandler(constraintElementType, schema), ""));
+            }
         }
 
         public void AddConstraint<T>(ISchemaElement schema, ICheckConstraint<T> constraint) where T : IModelElement
@@ -121,7 +125,6 @@ namespace Hyperstore.Modeling.Metadata.Constraints
         {
             DebugContract.Requires(category != null || kind == ValidationKind.Validate);
 
-            elements = elements.ToList();
             if (!elements.Any())
                 return ExecutionResult.Empty;
 
@@ -179,19 +182,19 @@ namespace Hyperstore.Modeling.Metadata.Constraints
                     if (Session.Current.CancellationToken.IsCancellationRequested)
                         break;
 
-                    constraint.Check(mel, ctx);
-                    var parentSchema = schema.SuperClass;
-                    if (parentSchema != null && !parentSchema.IsPrimitive)
-                    {
-                        CheckElement(ctx, mel, parentSchema);
-                    }
+                    constraint.ExecuteConstraint(mel, ctx);
                 }
+            }
+            var parentSchema = schema.SuperClass;
+            if (parentSchema != null && !parentSchema.IsPrimitive)
+            {
+                CheckElement(ctx, mel, parentSchema);
             }
         }
 
         public IExecutionResult ValidateElements(IEnumerable<IModelElement> elements, string category = null)
         {
-            return CheckOrValidateElements(elements, ValidationKind.Validate, category);
+            return CheckOrValidateElements(elements.ToList(), ValidationKind.Validate, category);
         }
 
         private void ValidateElement(ConstraintContext ctx, IModelElement mel, ISchemaElement schema, string category)
@@ -205,13 +208,14 @@ namespace Hyperstore.Modeling.Metadata.Constraints
                         break;
 
                     if (category == null || String.Compare(category, constraint.Category, StringComparison.OrdinalIgnoreCase) == 0)
-                        constraint.Validate(mel, ctx);
-                    var parentSchema = schema.SuperClass;
-                    if (parentSchema != null && !parentSchema.IsPrimitive)
-                    {
-                        ValidateElement(ctx, mel, parentSchema, category);
-                    }
+                        constraint.ExecuteConstraint(mel, ctx);
                 }
+            }
+
+            var parentSchema = schema.SuperClass;
+            if (parentSchema != null && !parentSchema.IsPrimitive)
+            {
+                ValidateElement(ctx, mel, parentSchema, category);
             }
         }
 

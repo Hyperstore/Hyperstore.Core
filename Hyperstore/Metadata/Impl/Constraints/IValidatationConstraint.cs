@@ -23,16 +23,13 @@ using System.Threading.Tasks;
 
 namespace Hyperstore.Modeling.Metadata.Constraints
 {
-    internal interface IValidationConstraint
+    internal interface IValidationConstraint : ICheckConstraint
     {
-        void Validate(IModelElement mel, ConstraintContext ctx);
-
         string Category { get; }
     }
 
-    public interface IValidationConstraint<T> where T : IModelElement
+    public interface IValidationConstraint<T> : ICheckConstraint<T> where T : IModelElement
     {
-        void Validate(T mel, ConstraintContext ctx);
         string Category { get; }
     }
 }

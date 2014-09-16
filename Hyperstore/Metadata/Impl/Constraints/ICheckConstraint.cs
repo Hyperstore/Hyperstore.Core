@@ -25,11 +25,11 @@ namespace Hyperstore.Modeling.Metadata.Constraints
 {
     internal interface ICheckConstraint
     {
-        void Check(IModelElement mel, ConstraintContext ctx);
+        void ExecuteConstraint(IModelElement mel, ConstraintContext ctx);
     }
 
     public interface ICheckConstraint<T> where T : IModelElement
     {
-        void Check(T mel, ConstraintContext ctx);
+        void ExecuteConstraint(T mel, ConstraintContext ctx);
     }
 }

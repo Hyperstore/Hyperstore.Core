@@ -53,7 +53,14 @@ namespace Hyperstore.Tests.Model
 
         public void Check(string value, ConstraintContext ctx)
         {
-
+            try
+            {
+                new System.Net.Mail.MailAddress(value);
+            }
+            catch(Exception)
+            {
+                ctx.CreateErrorMessage("Invalid email address {Email} for {Name}");
+            }
         }
     }
 }
