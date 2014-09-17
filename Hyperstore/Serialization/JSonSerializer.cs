@@ -159,6 +159,15 @@ namespace Hyperstore.Modeling.Serialization
             return Serialize(domain, new JSonSerializationSettings { Options = option });
         }
 
+        public static void Serialize(Stream stream, IDomainModel domain, JSonSerializationOption option = JSonSerializationOption.Json)
+        {
+            using (var sw = new StreamWriter(stream))
+            {
+                var ser = new JSonSerializer(sw, new JSonSerializationSettings { Options = option });
+                ser.Serialize( domain.GetElements());
+            }
+        }
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  true this instance to the given stream.
@@ -243,6 +252,7 @@ namespace Hyperstore.Modeling.Serialization
         public static string Serialize(IEnumerable<IModelElement> elements, JSonSerializationSettings settings)
         {
             Contract.Requires(elements, "elements");
+            Contract.Requires(settings, "settings");
 
             StringBuilder sb = new StringBuilder(256);
             StringWriter sw = new StringWriter(sb, CultureInfo.InvariantCulture);
@@ -395,24 +405,24 @@ namespace Hyperstore.Modeling.Serialization
 
         private void Write(string text, bool indent = true)
         {
-            WriteIndent(indent);
-            _writer.Write(text);
+             WriteIndent(indent);
+             _writer.Write(text);
         }
 
         private void Write(char ch, bool indent = false)
         {
-            WriteIndent(indent);
-            _writer.Write(ch);
+             WriteIndent(indent);
+             _writer.Write(ch);
         }
 
         private void WriteIndent(bool indent)
         {
             if (HasOption(JSonSerializationOption.Indent))
             {
-                _writer.WriteLine();
+                 _writer.WriteLine();
                 for (int i = 0; i < _depth * 2; i++)
                 {
-                    _writer.Write(' ');
+                     _writer.Write(' ');
                 }
             }
         }
