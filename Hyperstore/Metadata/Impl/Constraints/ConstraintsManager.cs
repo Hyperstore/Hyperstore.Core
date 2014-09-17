@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 
 namespace Hyperstore.Modeling.Metadata.Constraints
 {
-    enum ConstraintKind
+    public enum ConstraintKind
     {
         Check,
         Validate
@@ -118,7 +118,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
                     session = Store.BeginSession(new SessionConfiguration { Readonly = true });
                 }
 
-                var ctx = new ConstraintContext(((ISessionInternal)Session.Current).SessionContext, categoryTitle);
+                var ctx = new ConstraintContext(((ISessionInternal)Session.Current).SessionContext, categoryTitle, kind);
                 try
                 {
                     foreach (var mel in elements)
@@ -173,7 +173,13 @@ namespace Hyperstore.Modeling.Metadata.Constraints
             }
         }
 
-        public virtual ISessionResult ValidateElements(IEnumerable<IModelElement> elements, string category = null)
+        public ISessionResult Validate(IDomainModel domain, string category = null)
+        {
+            Contract.Requires(domain, "domain");
+            return Validate(domain.GetElements());
+        }
+
+        public virtual ISessionResult Validate(IEnumerable<IModelElement> elements, string category = null)
         {
             return CheckOrValidateElements(elements.ToList(), ConstraintKind.Validate, category);
         }

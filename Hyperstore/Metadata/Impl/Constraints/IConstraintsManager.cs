@@ -30,7 +30,9 @@ namespace Hyperstore.Modeling.Metadata.Constraints
     public interface IConstraintsManager
     {
         void AddConstraint<T>(Hyperstore.Modeling.ISchemaElement schema, Hyperstore.Modeling.Metadata.Constraints.ICheckConstraint<T> constraint) where T : Hyperstore.Modeling.IModelElement;
-        Hyperstore.Modeling.ISessionResult ValidateElements(System.Collections.Generic.IEnumerable<Hyperstore.Modeling.IModelElement> elements, string category = null);
+        Hyperstore.Modeling.ISessionResult Validate(System.Collections.Generic.IEnumerable<Hyperstore.Modeling.IModelElement> elements, string category = null);
+
+        Hyperstore.Modeling.ISessionResult Validate(IDomainModel domain, string category = null);
 
     }
 }

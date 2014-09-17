@@ -54,7 +54,12 @@ namespace Hyperstore.Modeling.Metadata.Constraints
         ///-------------------------------------------------------------------------------------------------
         public bool HasErrors
         {
-            get { return !_silentMode && _messages.Any(m => m.MessageType == MessageType.Error); }
+            get { return _messages.Any(m => m.MessageType == MessageType.Error); }
+        }
+
+        public bool HasWarnings
+        {
+            get { return _messages.Any(m => m.MessageType == MessageType.Warning); }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -148,6 +153,11 @@ namespace Hyperstore.Modeling.Metadata.Constraints
                 var mel = msg.Element.DomainModel.Store.GetElement(msg.Element.Id, msg.Element.SchemaInfo); // ensures getting it in the L1Cache
                 ((Hyperstore.Modeling.Domain.IDataErrorNotifier)mel).NotifyDataErrors(this);
             }
+        }
+
+        internal bool ShouldRaiseException()
+        {
+            return !_silentMode && HasErrors;
         }
     }
 }

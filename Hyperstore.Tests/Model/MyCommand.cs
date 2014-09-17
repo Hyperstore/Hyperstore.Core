@@ -43,12 +43,12 @@ namespace Hyperstore.Tests.Model
 
         protected override object Deserialize(SerializationContext ctx)
         {
-            return Hyperstore.Modeling.Metadata.Primitives.StringPrimitive.DeserializeString(ctx);
+            return Hyperstore.Modeling.Metadata.Primitives.StringPrimitive.DeserializeValue(ctx);
         }
 
         protected override string Serialize(object data, IJsonSerializer serializer)
         {
-            return Hyperstore.Modeling.Metadata.Primitives.StringPrimitive.SerializeString(data);
+            return Hyperstore.Modeling.Metadata.Primitives.StringPrimitive.SerializeValue(data);
         }
 
         public void ExecuteConstraint(string value, ConstraintContext ctx)

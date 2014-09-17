@@ -24,7 +24,7 @@ using System.Globalization;
 
 namespace Hyperstore.Modeling.Metadata.Primitives
 {
-    internal class Int64Primitive : PrimitiveMetaValue
+    public sealed class Int64Primitive : PrimitiveMetaValue
     {
         protected Int64Primitive()
         {
@@ -38,7 +38,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public Int64Primitive(ISchema domainModel)
+        internal Int64Primitive(ISchema domainModel)
             : base(domainModel, typeof(Int64))
         {
         }
@@ -55,6 +55,11 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
         public override object Deserialize(SerializationContext ctx)
+        {
+            return DeserializeValue(ctx);
+        }
+
+        public static object DeserializeValue(SerializationContext ctx)
         {
             DebugContract.Requires(ctx);
 
@@ -80,6 +85,11 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
         public override string Serialize(object data, IJsonSerializer serializer)
+        {
+            return SerializeValue(data);
+        }
+
+        public static string SerializeValue(object data)
         {
             if (data == null)
                 return null;

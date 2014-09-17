@@ -64,7 +64,7 @@ namespace Hyperstore.Tests.Commands
                 session.AcceptChanges();
             }
 
-            var json = JSonDomainModelSerializer.Serialize(lib, JSonSerializationOption.Json );
+            var json = JSonSerializer.Serialize(lib, JSonSerializationOption.Json );
             Assert.IsTrue(!String.IsNullOrEmpty( json) );
 
             var newton = Newtonsoft.Json.JsonConvert.SerializeObject(lib, new Newtonsoft.Json.JsonSerializerSettings { PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects });

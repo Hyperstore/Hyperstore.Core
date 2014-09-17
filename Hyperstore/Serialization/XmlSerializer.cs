@@ -54,7 +54,9 @@ namespace Hyperstore.Modeling.Serialization
         /// <summary>
         ///  Specifies the compress all= 3 option.
         /// </summary>
-        CompressAll=3
+        CompressAll=3,
+
+        Fluent=4
     }
 
     ///-------------------------------------------------------------------------------------------------
@@ -196,18 +198,26 @@ namespace Hyperstore.Modeling.Serialization
         private string GetSchemaMoniker(IModelElement mel)
         {
             MonikerEntry moniker;
-            if (_monikers != null)
+            if (!HasOption(XmlSerializationOption.Normal))
             {
-                if (_monikers.TryGetValue(mel.SchemaInfo.Id, out moniker))
+                if (_monikers.TryGetValue(mel.SchemaInfo.Id, out moniker))                 
                     return moniker.Moniker;
             }
 
             var schemaInfo = GetSchemaInfo(mel, false);
-            if (_monikers != null)
+
+            if (!HasOption(XmlSerializationOption.Normal))
             {
                 MonikerEntry entry;
-                _monikerSequence++;
-                entry.Moniker = _monikerSequence.ToString();
+                if (HasOption(XmlSerializationOption.Fluent))
+                {
+                    entry.Moniker = schemaInfo.Id.Key;
+                }
+                else
+                {
+                    _monikerSequence++;
+                    entry.Moniker = _monikerSequence.ToString();
+                }
                 entry.Schema = schemaInfo;
                 _monikers[mel.SchemaInfo.Id] = entry;
                 return entry.Moniker;

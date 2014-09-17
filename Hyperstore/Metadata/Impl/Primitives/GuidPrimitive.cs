@@ -23,7 +23,7 @@ using System;
 
 namespace Hyperstore.Modeling.Metadata.Primitives
 {
-    internal class GuidPrimitive : PrimitiveMetaValue
+    public sealed class GuidPrimitive : PrimitiveMetaValue
     {
         protected GuidPrimitive()
         {
@@ -37,7 +37,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public GuidPrimitive(ISchema domainModel)
+        internal GuidPrimitive(ISchema domainModel)
             : base(domainModel, typeof(Guid))
         {
         }
@@ -55,10 +55,15 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///-------------------------------------------------------------------------------------------------
         public override object Deserialize(SerializationContext ctx)
         {
+            return DeserializeValue(ctx);
+        }
+
+        public static object DeserializeValue(SerializationContext ctx)
+        {
             DebugContract.Requires(ctx);
 
             if (ctx.Value == null)
-                return false;
+                return Guid.Empty;
 
             if (ctx.Value is Guid)
                 return ctx.Value;
@@ -81,6 +86,11 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
         public override string Serialize(object data, IJsonSerializer serializer)
+        {
+            return SerializeValue(data);
+        }
+
+        public static string SerializeValue(object data)
         {
             if (data == null)
                 return null;

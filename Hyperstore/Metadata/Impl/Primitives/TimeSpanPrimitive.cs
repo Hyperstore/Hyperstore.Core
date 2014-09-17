@@ -24,7 +24,7 @@ using System.Globalization;
 
 namespace Hyperstore.Modeling.Metadata.Primitives
 {
-    internal class TimeSpanPrimitive : PrimitiveMetaValue
+    public sealed class TimeSpanPrimitive : PrimitiveMetaValue
     {
         protected TimeSpanPrimitive()
         {
@@ -38,7 +38,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public TimeSpanPrimitive(ISchema domainModel)
+        internal TimeSpanPrimitive(ISchema domainModel)
             : base(domainModel, typeof(TimeSpan))
         {
         }
@@ -56,10 +56,15 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///-------------------------------------------------------------------------------------------------
         public override object Deserialize(SerializationContext ctx)
         {
+            return DeserializeValue(ctx);
+        }
+
+        private static object DeserializeValue(SerializationContext ctx)
+        {
             DebugContract.Requires(ctx);
 
             if (ctx.Value == null)
-                return TimeSpan.MinValue; // TODO null??
+                return default(TimeSpan);
             if (ctx.Value is TimeSpan)
                 return ctx.Value;
             return TimeSpan.Parse((string)ctx.Value, CultureInfo.InvariantCulture);
@@ -80,6 +85,11 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
         public override string Serialize(object data, IJsonSerializer serializer)
+        {
+            return SerializeValue(data);
+        }
+
+        public static string SerializeValue(object data)
         {
             if (data == null)
                 return null;

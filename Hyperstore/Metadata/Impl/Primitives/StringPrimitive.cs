@@ -52,10 +52,10 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///-------------------------------------------------------------------------------------------------
         public override object Deserialize(SerializationContext ctx)
         {
-            return DeserializeString(ctx);
+            return DeserializeValue(ctx);
         }
 
-        public static object DeserializeString(SerializationContext ctx)
+        public static object DeserializeValue(SerializationContext ctx)
         {
             DebugContract.Requires(ctx);
 
@@ -85,10 +85,10 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///-------------------------------------------------------------------------------------------------
         public override string Serialize(object data, IJsonSerializer serializer)
         {
-            return SerializeString(data);
+            return SerializeValue(data);
         }
 
-        public static string SerializeString(object data)
+        public static string SerializeValue(object data)
         {
             var str = data as string;
             if (str == null)

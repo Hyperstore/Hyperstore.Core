@@ -125,16 +125,16 @@ namespace Hyperstore.Tests.DomainExtension
                     session.AcceptChanges();
                 }
 
-                var result = schema.Constraints.ValidateElements(domain.GetElements());
+                var result = schema.Constraints.Validate(domain.GetElements());
                 Assert.AreEqual(1, result.Messages.Count());
                 Assert.AreEqual("error for element abcd (lib:1).", result.Messages.First().Message);
 
-                result = schema.Constraints.ValidateElements(domain.GetElements(), "test"); // With a valid category
+                result = schema.Constraints.Validate(domain.GetElements(), "test"); // With a valid category
                 Assert.AreEqual(1, result.Messages.Count());
                 Assert.AreEqual("error for element abcd (lib:1).", result.Messages.First().Message);
 
 
-                result = schema.Constraints.ValidateElements(domain.GetElements(), "test2"); // Unknow category
+                result = schema.Constraints.Validate(domain.GetElements(), "test2"); // Unknow category
                 Assert.AreEqual(0, result.Messages.Count());
         }
     }

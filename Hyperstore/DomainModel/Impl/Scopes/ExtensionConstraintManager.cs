@@ -66,14 +66,14 @@ namespace Hyperstore.Modeling.Scopes
             return result2.Merge(result);
         }
 
-        public override ISessionResult ValidateElements(IEnumerable<IModelElement> elements, string category = null)
+        public override ISessionResult Validate(IEnumerable<IModelElement> elements, string category = null)
         {
-            var result = base.ValidateElements(elements) as IExecutionResultInternal ;
+            var result = base.Validate(elements) as IExecutionResultInternal ;
 
             if (IsInMode(SchemaConstraintExtensionMode.Replace))
                 return result;
 
-            var result2 = _extendedSchema.Constraints.ValidateElements(elements) as IExecutionResultInternal;
+            var result2 = _extendedSchema.Constraints.Validate(elements) as IExecutionResultInternal;
             return result2.Merge(result);
         }
 

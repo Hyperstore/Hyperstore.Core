@@ -537,7 +537,7 @@ namespace Hyperstore.Modeling
             {
                 ((ISessionInternal)this).PopExecutionScope();
                 // Sinon si on est dans une session englobante, il faut générer directement l'exception.
-                if (result.HasErrors && (((ISessionInternal)this).Mode & SessionMode.SilentMode) != SessionMode.SilentMode)
+                if (result.ShouldRaiseException() && (((ISessionInternal)this).Mode & SessionMode.SilentMode) != SessionMode.SilentMode)
                     throw new SessionException(result.Messages);
             }
             return result;
@@ -895,7 +895,7 @@ namespace Hyperstore.Modeling
             }
             finally
             {
-                if (disposing && messages.HasErrors && (currentMode & SessionMode.SilentMode) != SessionMode.SilentMode)
+                if (disposing && messages.ShouldRaiseException() && (currentMode & SessionMode.SilentMode) != SessionMode.SilentMode)
                     throw new SessionException(messages.Messages);
             }
         }

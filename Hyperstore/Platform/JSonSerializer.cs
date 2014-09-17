@@ -33,7 +33,7 @@ namespace Hyperstore.Modeling.Platform
                 return (string)data;
 
             if (data is IModelElement)
-                return Hyperstore.Modeling.Serialization.JSonDomainModelSerializer.Serialize(data as IModelElement);
+                return Hyperstore.Modeling.Serialization.JSonSerializer.Serialize(data as IModelElement);
 
             using (MemoryStream stream = new MemoryStream())
             {

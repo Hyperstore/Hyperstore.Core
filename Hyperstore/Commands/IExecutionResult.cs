@@ -33,13 +33,23 @@ namespace Hyperstore.Modeling
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets a value indicating whether there is no error messages and silent Mode is false.
+        ///  Gets a value indicating whether there is no error messages.
         /// </summary>
         /// <value>
         ///  <c>true</c> if [has errors]; otherwise, <c>false</c>.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         bool HasErrors { get; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets a value indicating whether this instance has warnings.
+        /// </summary>
+        /// <value>
+        ///  true if this instance has warnings, false if not.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        bool HasWarnings { get; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

@@ -126,7 +126,7 @@ namespace Hyperstore.Modeling.Serialization
     ///  A Json domain model serializer.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
-    public class JSonDomainModelSerializer
+    public class JSonSerializer
     {
         private readonly TextWriter _writer;
         private IJsonSerializer _serializer;
@@ -246,7 +246,7 @@ namespace Hyperstore.Modeling.Serialization
 
             StringBuilder sb = new StringBuilder(256);
             StringWriter sw = new StringWriter(sb, CultureInfo.InvariantCulture);
-            var ser = new JSonDomainModelSerializer(sw, settings);
+            var ser = new JSonSerializer(sw, settings);
             ser.Serialize(elements);
             return sw.ToString();
         }
@@ -293,7 +293,7 @@ namespace Hyperstore.Modeling.Serialization
         }
         #endregion
 
-        private JSonDomainModelSerializer(TextWriter writer, JSonSerializationSettings settings = null)
+        private JSonSerializer(TextWriter writer, JSonSerializationSettings settings = null)
         {
             Contract.Requires(writer, "writer");
 

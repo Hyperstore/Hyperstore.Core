@@ -394,7 +394,6 @@
     <Compile Include="Messaging\IEventProcessor.cs" />
     <Compile Include="Messaging\EventProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Adapters\EntityUpdaters\AbstractPersistenceProvider.cs" />
     <Compile Include="Serialization\JSonDeserializer.cs" />
     <Compile Include="Serialization\JsonReader.cs" />
     <Compile Include="Serialization\XmlDeserializer.cs" />

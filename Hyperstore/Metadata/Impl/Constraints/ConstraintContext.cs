@@ -28,7 +28,9 @@ namespace Hyperstore.Modeling.Metadata.Constraints
         private ISessionContext _sessionContext;
         private readonly string _category;
 
-        internal ConstraintContext(ISessionContext sessionContext, string category)
+        public ConstraintKind ConstraintKind { get; private set; }
+
+        internal ConstraintContext(ISessionContext sessionContext, string category, ConstraintKind kind)
         {
             DebugContract.Requires(sessionContext);
             DebugContract.RequiresNotEmpty(category);
@@ -36,6 +38,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
             this._sessionContext = sessionContext;
             this._messages = _sessionContext.Result;
             this._category = category;
+            this.ConstraintKind = kind;
         }
 
         public void CreateErrorMessage(string message, string propertyName = null, Exception ex=null)

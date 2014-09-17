@@ -24,7 +24,7 @@ using System.Globalization;
 
 namespace Hyperstore.Modeling.Metadata.Primitives
 {
-    internal class DateTimePrimitive : PrimitiveMetaValue
+    public sealed class DateTimePrimitive : PrimitiveMetaValue
     {
         protected DateTimePrimitive()
         {
@@ -38,7 +38,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public DateTimePrimitive(ISchema domainModel)
+        internal DateTimePrimitive(ISchema domainModel)
             : base(domainModel, typeof(DateTime))
         {
         }
@@ -56,12 +56,19 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///-------------------------------------------------------------------------------------------------
         public override object Deserialize(SerializationContext ctx)
         {
+            return DeserializeValue(ctx);
+        }
+
+        public static object DeserializeValue(SerializationContext ctx)
+        {
             DebugContract.Requires(ctx);
 
             if (ctx.Value == null)
-                return DateTime.MinValue; // TODO null??
+                return default(DateTime);
+
             if (ctx.Value is DateTime)
                 return ctx.Value;
+
             return DateTime.Parse((string)ctx.Value, CultureInfo.InvariantCulture);
         }
 
@@ -80,6 +87,11 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
         public override string Serialize(object data, IJsonSerializer serializer)
+        {
+            return SerializeValue(data);
+        }
+
+        public static string SerializeValue(object data)
         {
             if (data == null)
                 return null;

@@ -54,7 +54,7 @@ namespace Hyperstore.Tests.Commands
             // TODO est ce qu'une contrainte implicite est aussi une contrainte explicite ?? Je dirais oui
             try
             {
-                schema.Constraints.ValidateElements(domain.GetElements());
+                schema.Constraints.Validate(domain.GetElements());
             }
             catch (SessionException ex)
             {
