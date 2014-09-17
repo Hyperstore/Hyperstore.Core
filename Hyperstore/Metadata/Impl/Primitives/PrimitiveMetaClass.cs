@@ -44,6 +44,12 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         }
     }
 
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  A primitive meta entity.
+    /// </summary>
+    /// <seealso cref="T:Hyperstore.Modeling.ISchemaEntity"/>
+    ///-------------------------------------------------------------------------------------------------
     [DebuggerDisplay("Primitive {_name} Id={_id}")]
     public class PrimitiveMetaEntity : ISchemaEntity
     {
@@ -397,12 +403,19 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             get { return PrimitivesSchema.SchemaEntitySchema; }
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the schema.
+        /// </summary>
+        /// <value>
+        ///  The schema.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public ISchema Schema
         {
             [DebuggerStepThrough]
             get { return _domainModel as ISchema; }
         }
-
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -444,7 +457,6 @@ namespace Hyperstore.Modeling.Metadata.Primitives
                 //return null;
             }
         }
-
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -519,7 +531,6 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         {
             throw new NotImplementedException();
         }
-
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

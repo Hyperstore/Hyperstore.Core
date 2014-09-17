@@ -146,5 +146,29 @@ namespace Hyperstore.Modeling
             var store = new Store(_services, _options, _id);
             return store;
         }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Create a new domain and load the specified schema
+        /// </summary>
+        /// <typeparam name="T">
+        ///  The definition of the schema to load
+        /// </typeparam>
+        /// <param name="name">
+        ///  Name of the new domain
+        /// </param>
+        /// <returns>
+        ///  A new domain instance.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        public async Task<IDomainModel> CreateDomain<T>(string name) where T : ISchemaDefinition, new()
+        {
+            Contract.RequiresNotEmpty(name, "name");
+
+            var store = await StoreBuilder.New().CreateAsync();
+            var schema = await store.Schemas.New<T>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync(name);
+            return domain;
+        }
     }
 }

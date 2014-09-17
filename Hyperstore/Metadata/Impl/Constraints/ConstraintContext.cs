@@ -22,12 +22,25 @@ using System.Text;
 
 namespace Hyperstore.Modeling.Metadata.Constraints
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  A constraint context.
+    /// </summary>
+    ///-------------------------------------------------------------------------------------------------
     public sealed class ConstraintContext 
     {
         private ISessionResult _messages;
         private ISessionContext _sessionContext;
         private readonly string _category;
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the constraint kind.
+        /// </summary>
+        /// <value>
+        ///  The constraint kind.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public ConstraintKind ConstraintKind { get; private set; }
 
         internal ConstraintContext(ISessionContext sessionContext, string category, ConstraintKind kind)
@@ -41,27 +54,76 @@ namespace Hyperstore.Modeling.Metadata.Constraints
             this.ConstraintKind = kind;
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Creates error message.
+        /// </summary>
+        /// <param name="message">
+        ///  The message.
+        /// </param>
+        /// <param name="propertyName">
+        ///  (Optional) The name of the property.
+        /// </param>
+        /// <param name="ex">
+        ///  (Optional) the ex.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         public void CreateErrorMessage(string message, string propertyName = null, Exception ex=null)
         {
             _sessionContext.Log(new DiagnosticMessage(MessageType.Error, MessageHelper.CreateMessage(message, Element), _category, true, Element, ex, propertyName ?? PropertyName));
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Creates warning message.
+        /// </summary>
+        /// <param name="message">
+        ///  The message.
+        /// </param>
+        /// <param name="propertyName">
+        ///  (Optional) The name of the property.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         public void CreateWarningMessage(string message,  string propertyName = null)
         {
             _sessionContext.Log(new DiagnosticMessage(MessageType.Warning, MessageHelper.CreateMessage(message, Element), _category, true, Element, null, propertyName ?? PropertyName));
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the messages.
+        /// </summary>
+        /// <value>
+        ///  The messages.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public ISessionResult Messages
         {
             get { return _messages; }
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the name of the property.
+        /// </summary>
+        /// <value>
+        ///  The name of the property.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public string PropertyName
         {
             get;
             internal set;
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the element.
+        /// </summary>
+        /// <value>
+        ///  The element.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public IModelElement Element
         {
             get;

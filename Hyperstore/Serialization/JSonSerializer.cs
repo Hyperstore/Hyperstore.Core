@@ -159,6 +159,20 @@ namespace Hyperstore.Modeling.Serialization
             return Serialize(domain, new JSonSerializationSettings { Options = option });
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  true this instance to the given stream.
+        /// </summary>
+        /// <param name="stream">
+        ///  The stream.
+        /// </param>
+        /// <param name="domain">
+        ///  The domain.
+        /// </param>
+        /// <param name="option">
+        ///  (Optional) the option.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         public static void Serialize(Stream stream, IDomainModel domain, JSonSerializationOption option = JSonSerializationOption.Json)
         {
             using (var sw = new StreamWriter(stream))

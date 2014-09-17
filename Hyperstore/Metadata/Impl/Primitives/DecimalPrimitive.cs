@@ -24,11 +24,26 @@ using System.Globalization;
 
 namespace Hyperstore.Modeling.Metadata.Primitives
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  A decimal primitive.
+    /// </summary>
+    /// <seealso cref="T:Hyperstore.Modeling.Metadata.Primitives.PrimitiveMetaValue"/>
+    ///-------------------------------------------------------------------------------------------------
     public sealed class DecimalPrimitive : PrimitiveMetaValue
     {
+        #pragma warning disable 0628 // Hyperstore deserialization need a protected parameterless constructeur
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Specialised default constructor for use only by derived classes.
+        /// </summary>
+        ///-------------------------------------------------------------------------------------------------
         protected DecimalPrimitive()
         {
         }
+        #pragma warning restore 0628
+
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -59,6 +74,17 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             return DeserializeValue(ctx);
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Deserialize value.
+        /// </summary>
+        /// <param name="ctx">
+        ///  The context.
+        /// </param>
+        /// <returns>
+        ///  An object.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public static object DeserializeValue(SerializationContext ctx)
         {
             DebugContract.Requires(ctx);
@@ -89,6 +115,17 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             return SerializeValue(data);
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Serialize value.
+        /// </summary>
+        /// <param name="data">
+        ///  The data.
+        /// </param>
+        /// <returns>
+        ///  A string.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public static string SerializeValue(object data)
         {
             if (data == null)

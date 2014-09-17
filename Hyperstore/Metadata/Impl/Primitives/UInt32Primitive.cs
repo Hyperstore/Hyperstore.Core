@@ -24,11 +24,26 @@ using System.Globalization;
 
 namespace Hyperstore.Modeling.Metadata.Primitives
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  An int 32 primitive.
+    /// </summary>
+    /// <seealso cref="T:Hyperstore.Modeling.Metadata.Primitives.PrimitiveMetaValue"/>
+    ///-------------------------------------------------------------------------------------------------
     public sealed class UInt32Primitive : PrimitiveMetaValue
     {
+        #pragma warning disable 0628 // Hyperstore deserialization need a protected parameterless constructeur
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Specialised default constructor for use only by derived classes.
+        /// </summary>
+        ///-------------------------------------------------------------------------------------------------
         protected UInt32Primitive()
         {
         }
+        #pragma warning restore 0628
+
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -89,6 +104,17 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             return SerializeValue(data);
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Serialize value.
+        /// </summary>
+        /// <param name="data">
+        ///  The data.
+        /// </param>
+        /// <returns>
+        ///  A string.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public static string SerializeValue(object data)
         {
             if (data == null)

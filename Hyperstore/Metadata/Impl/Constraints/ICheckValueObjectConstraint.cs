@@ -22,20 +22,69 @@ using System.Text;
 
 namespace Hyperstore.Modeling.Metadata.Constraints
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  Interface for check value object constraint.
+    /// </summary>
+    ///-------------------------------------------------------------------------------------------------
     public interface ICheckValueObjectConstraint
     {
     }
 
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  Interface for validation value object constraint.
+    /// </summary>
+    /// <seealso cref="T:ICheckValueObjectConstraint"/>
+    ///-------------------------------------------------------------------------------------------------
     public interface IValidationValueObjectConstraint : ICheckValueObjectConstraint
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the category.
+        /// </summary>
+        /// <value>
+        ///  The category.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         string Category { get; }
     }
 
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  Interface for check value object constraint.
+    /// </summary>
+    /// <typeparam name="T">
+    ///  Generic type parameter.
+    /// </typeparam>
+    /// <seealso cref="T:ICheckValueObjectConstraint"/>
+    ///-------------------------------------------------------------------------------------------------
     public interface ICheckValueObjectConstraint<T> : ICheckValueObjectConstraint
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Executes the constraint operation.
+        /// </summary>
+        /// <param name="value">
+        ///  The value.
+        /// </param>
+        /// <param name="ctx">
+        ///  The context.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         void ExecuteConstraint(T value, ConstraintContext ctx);
     }
 
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  Interface for validation value object constraint.
+    /// </summary>
+    /// <typeparam name="T">
+    ///  Generic type parameter.
+    /// </typeparam>
+    /// <seealso cref="T:ICheckValueObjectConstraint{T}"/>
+    /// <seealso cref="T:IValidationValueObjectConstraint"/>
+    ///-------------------------------------------------------------------------------------------------
     public interface IValidationValueObjectConstraint<T> : ICheckValueObjectConstraint<T>, IValidationValueObjectConstraint
     {
     }

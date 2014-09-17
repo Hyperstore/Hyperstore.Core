@@ -61,6 +61,14 @@ namespace Hyperstore.Modeling.Metadata
 
         #region Properties of MetaProperty (3)
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the owner.
+        /// </summary>
+        /// <value>
+        ///  The owner.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public ISchemaInfo Owner
         {
             get { return _owner; }

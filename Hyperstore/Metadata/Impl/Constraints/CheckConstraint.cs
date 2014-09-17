@@ -22,13 +22,40 @@ using System.Text;
 
 namespace Hyperstore.Modeling.Metadata.Constraints
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  A check constraint.
+    /// </summary>
+    /// <typeparam name="T">
+    ///  Generic type parameter.
+    /// </typeparam>
+    /// <seealso cref="T:Hyperstore.Modeling.Metadata.Constraints.ICheckConstraint{T}"/>
+    ///-------------------------------------------------------------------------------------------------
     public class CheckConstraint<T> : ICheckConstraint<T> where T : IModelElement
     {
         private readonly Func<T, bool> expression;
         private readonly bool isWarning;
         private readonly string _message;
+        private readonly string _propertyName;
 
-        public CheckConstraint(string message, Func<T, bool> expression, bool isWarning)
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Constructor.
+        /// </summary>
+        /// <param name="message">
+        ///  The message.
+        /// </param>
+        /// <param name="expression">
+        ///  The expression.
+        /// </param>
+        /// <param name="isWarning">
+        ///  true if this instance is warning.
+        /// </param>
+        /// <param name="propertyName">
+        ///  (Optional) name of the property.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
+        public CheckConstraint(string message, Func<T, bool> expression, bool isWarning, string propertyName=null)
         {
             Contract.RequiresNotEmpty(message, "message");
             Contract.Requires(expression, "expression");
@@ -36,6 +63,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
             this._message = message;
             this.expression = expression;
             this.isWarning = isWarning;
+            this._propertyName = propertyName;
         }
 
         void ICheckConstraint<T>.ExecuteConstraint(T mel, ConstraintContext ctx)
@@ -44,11 +72,11 @@ namespace Hyperstore.Modeling.Metadata.Constraints
             {
                 if (isWarning)
                 {
-                    ctx.CreateWarningMessage(_message);
+                    ctx.CreateWarningMessage(_message, _propertyName);
                 }
                 else
                 {
-                    ctx.CreateErrorMessage(_message);
+                    ctx.CreateErrorMessage(_message, _propertyName);
                 }
             }
         }

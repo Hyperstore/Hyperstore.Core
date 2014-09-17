@@ -49,14 +49,17 @@ namespace Hyperstore.Modeling.Serialization
         /// <summary>
         ///  Specifies the compress id= 2 option.
         /// </summary>
-        CompressId=2,
+        CompressId = 2,
 
         /// <summary>
         ///  Specifies the compress all= 3 option.
         /// </summary>
-        CompressAll=3,
+        CompressAll = 3,
 
-        Fluent=4
+        /// <summary>
+        ///  reserved
+        /// </summary>
+        Fluent = 4
     }
 
     ///-------------------------------------------------------------------------------------------------
@@ -118,6 +121,7 @@ namespace Hyperstore.Modeling.Serialization
         {
             public string Moniker;
             public ISchemaElement Schema;
+            public string SchemaName;
         }
 
         private readonly XmlSerializationOption _options;
@@ -198,15 +202,15 @@ namespace Hyperstore.Modeling.Serialization
         private string GetSchemaMoniker(IModelElement mel)
         {
             MonikerEntry moniker;
-            if (!HasOption(XmlSerializationOption.Normal))
+            if (HasOption(XmlSerializationOption.CompressSchemaId) || HasOption(XmlSerializationOption.Fluent))
             {
-                if (_monikers.TryGetValue(mel.SchemaInfo.Id, out moniker))                 
+                if (_monikers.TryGetValue(mel.SchemaInfo.Id, out moniker))
                     return moniker.Moniker;
             }
 
             var schemaInfo = GetSchemaInfo(mel, false);
 
-            if (!HasOption(XmlSerializationOption.Normal))
+            if (HasOption(XmlSerializationOption.CompressSchemaId) || HasOption(XmlSerializationOption.Fluent))
             {
                 MonikerEntry entry;
                 if (HasOption(XmlSerializationOption.Fluent))
@@ -219,6 +223,7 @@ namespace Hyperstore.Modeling.Serialization
                     entry.Moniker = _monikerSequence.ToString();
                 }
                 entry.Schema = schemaInfo;
+                entry.SchemaName = schemaInfo.Id.DomainModelName;
                 _monikers[mel.SchemaInfo.Id] = entry;
                 return entry.Moniker;
             }
@@ -226,7 +231,7 @@ namespace Hyperstore.Modeling.Serialization
             return schemaInfo.Id.ToString();
         }
 
-        private ISchemaElement GetSchemaInfo(IModelElement mel, bool findInMoniker=false)
+        private ISchemaElement GetSchemaInfo(IModelElement mel, bool findInMoniker = false)
         {
             if (_monikers != null && findInMoniker)
             {
@@ -247,20 +252,26 @@ namespace Hyperstore.Modeling.Serialization
         {
             try
             {
-                if (HasOption(XmlSerializationOption.CompressSchemaId))
-                {
-                    _monikers = new Dictionary<Identity, MonikerEntry>();
-                }
+                _monikers = new Dictionary<Identity, MonikerEntry>();
 
                 var entities = SerializeEntities();
                 var relationships = SerializeRelationships();
                 XElement schemasElement = null;
-                if (HasOption(XmlSerializationOption.CompressSchemaId))
+                if (HasOption(XmlSerializationOption.CompressSchemaId) || HasOption(XmlSerializationOption.Fluent))
                 {
                     var schemas = new List<XElement>();
-                    foreach (var entry in _monikers.Values)
+                    foreach (var entries in _monikers.Values.GroupBy(s => s.SchemaName))
                     {
-                        schemas.Add(new XElement("schema", new XAttribute("id", entry.Moniker), new XAttribute("name", entry.Schema.Id.ToString())));
+                        var schemaNode = new XElement("schema", new XAttribute("name", entries.Key));
+                        schemas.Add(schemaNode);
+
+                        foreach (var entry in entries)
+                        {
+                            var node = new XElement("add", new XAttribute("name", entry.Schema.Id.Key));
+                            schemaNode.Add(node);
+                            if (HasOption(XmlSerializationOption.CompressSchemaId))
+                                node.Add(new XAttribute("id", entry.Moniker));
+                        }
                     }
                     if (schemas.Any())
                     {
@@ -270,10 +281,10 @@ namespace Hyperstore.Modeling.Serialization
 
                 using (var writer = XmlWriter.Create(stream))
                 {
-                    var root = new XElement("domain", 
-                                    _domain.ExtensionName != null ? new XAttribute("extension", _domain.ExtensionName) : null, 
-                                    schemasElement, 
-                                    entities, 
+                    var root = new XElement("domain",
+                                    _domain.ExtensionName != null ? new XAttribute("extension", _domain.ExtensionName) : null,
+                                    schemasElement,
+                                    entities,
                                     relationships); // Order are important
 
                     root.WriteTo(writer);
@@ -291,10 +302,22 @@ namespace Hyperstore.Modeling.Serialization
             var elements = new List<XElement>();
             foreach (var relationship in _domain.GetRelationships())
             {
-                elements.Add(new XElement("relationship", new XAttribute("id", GetId(relationship)), new XAttribute("schema", GetSchemaMoniker(relationship)),
-                             new XAttribute("start", GetId(relationship.Start)), new XAttribute("startSchema", GetSchemaMoniker(relationship.Start)),
-                             new XAttribute("end", GetId(relationship.End)), new XAttribute("endSchema", GetSchemaMoniker(relationship.End)),
-                             SerializeProperties(relationship)));
+                XElement node;
+                if (HasOption(XmlSerializationOption.Fluent))
+                {
+                    node = new XElement(GetSchemaMoniker(relationship), new XAttribute("id", GetId(relationship)),
+                                  new XAttribute("start", GetId(relationship.Start)), new XAttribute("startSchema", GetSchemaMoniker(relationship.Start)),
+                                  new XAttribute("end", GetId(relationship.End)), new XAttribute("endSchema", GetSchemaMoniker(relationship.End)),
+                                  SerializeProperties(relationship));
+                }
+                else
+                {
+                    node = new XElement("relationship", new XAttribute("id", GetId(relationship)), new XAttribute("schema", GetSchemaMoniker(relationship)),
+                                 new XAttribute("start", GetId(relationship.Start)), new XAttribute("startSchema", GetSchemaMoniker(relationship.Start)),
+                                 new XAttribute("end", GetId(relationship.End)), new XAttribute("endSchema", GetSchemaMoniker(relationship.End)),
+                                 SerializeProperties(relationship));
+                }
+                elements.Add(node);
             }
 
             if (!elements.Any())
@@ -305,7 +328,7 @@ namespace Hyperstore.Modeling.Serialization
 
         private string GetId(IModelElement element)
         {
-            if( HasOption( XmlSerializationOption.CompressId) && String.Compare(element.Id.DomainModelName, _domain.Name)==0)
+            if (HasOption(XmlSerializationOption.CompressId) && String.Compare(element.Id.DomainModelName, _domain.Name) == 0)
             {
                 return element.Id.Key;
             }
@@ -318,7 +341,16 @@ namespace Hyperstore.Modeling.Serialization
             var elements = new List<XElement>();
             foreach (var entity in _domain.GetEntities())
             {
-                elements.Add(new XElement("entity", new XAttribute("id", GetId(entity)), new XAttribute("schema", GetSchemaMoniker(entity)), SerializeProperties(entity)));
+                XElement node;
+                if (HasOption(XmlSerializationOption.Fluent))
+                {
+                    node = new XElement(GetSchemaMoniker(entity), new XAttribute("id", GetId(entity)), SerializeProperties(entity));
+                }
+                else
+                {
+                    node = new XElement("entity", new XAttribute("id", GetId(entity)), new XAttribute("schema", GetSchemaMoniker(entity)), SerializeProperties(entity));
+                }
+                elements.Add(node);
             }
 
             if (!elements.Any())
@@ -336,7 +368,17 @@ namespace Hyperstore.Modeling.Serialization
                 var value = element.GetPropertyValue(prop);
                 if (value.HasValue)
                 {
-                    elements.Add(new XElement("property", new XAttribute("name", prop.Name), new XElement("value", prop.Serialize(value.Value, _serializer))));
+                    XElement node;
+                    if (HasOption(XmlSerializationOption.Fluent))
+                    {
+                        node = new XElement(prop.Name, new XElement("value", prop.Serialize(value.Value, _serializer)));
+                    }
+                    else
+                    {
+                        node = new XElement("property", new XAttribute("name", prop.Name), new XElement("value", prop.Serialize(value.Value, _serializer)));
+
+                    }
+                    elements.Add(node);
                 }
             }
             if (!elements.Any())

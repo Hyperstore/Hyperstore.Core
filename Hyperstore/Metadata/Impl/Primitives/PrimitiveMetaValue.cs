@@ -23,6 +23,13 @@ using System;
 
 namespace Hyperstore.Modeling.Metadata.Primitives
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  A primitive meta value.
+    /// </summary>
+    /// <seealso cref="T:Hyperstore.Modeling.Metadata.Primitives.PrimitiveMetaEntity"/>
+    /// <seealso cref="T:Hyperstore.Modeling.ISchemaValueObject"/>
+    ///-------------------------------------------------------------------------------------------------
     public abstract class PrimitiveMetaValue : PrimitiveMetaEntity, ISchemaValueObject
     {
         ///-------------------------------------------------------------------------------------------------

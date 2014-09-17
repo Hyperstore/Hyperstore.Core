@@ -25,9 +25,20 @@ using System.Threading.Tasks;
 
 namespace Hyperstore.Modeling.Metadata.Constraints
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  Values that represent ConstraintKind.
+    /// </summary>
+    ///-------------------------------------------------------------------------------------------------
     public enum ConstraintKind
     {
+        /// <summary>
+        ///  Specifies the check option.
+        /// </summary>
         Check,
+        /// <summary>
+        ///  Specifies the validate option.
+        /// </summary>
         Validate
     }
 
@@ -37,6 +48,14 @@ namespace Hyperstore.Modeling.Metadata.Constraints
 
         private IHyperstore Store { get; set; }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets a value indicating whether this instance has implicit constraints.
+        /// </summary>
+        /// <value>
+        ///  true if this instance has implicit constraints, false if not.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public bool HasImplicitConstraints
         {
             get { return _checkConstraints.Any(); }
@@ -53,6 +72,18 @@ namespace Hyperstore.Modeling.Metadata.Constraints
         }
 
         #region Register
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Adds a constraint to 'constraint'.
+        /// </summary>
+        /// <param name="property">
+        ///  The property.
+        /// </param>
+        /// <param name="constraint">
+        ///  The constraint.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         public void AddConstraint(ISchemaProperty property, ICheckValueObjectConstraint constraint)
         {
             var owner = property.Owner as ISchemaElement;
@@ -78,6 +109,20 @@ namespace Hyperstore.Modeling.Metadata.Constraints
             }
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Adds a constraint to 'constraint'.
+        /// </summary>
+        /// <typeparam name="T">
+        ///  Generic type parameter.
+        /// </typeparam>
+        /// <param name="schema">
+        ///  The schema.
+        /// </param>
+        /// <param name="constraint">
+        ///  The constraint.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         public void AddConstraint<T>(ISchemaElement schema, ICheckConstraint<T> constraint) where T : IModelElement
         {
             var validation = constraint as IValidationConstraint<T>;
@@ -98,7 +143,17 @@ namespace Hyperstore.Modeling.Metadata.Constraints
         }
         #endregion
 
-
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Check elements.
+        /// </summary>
+        /// <param name="elements">
+        ///  The elements.
+        /// </param>
+        /// <returns>
+        ///  An ISessionResult.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public virtual ISessionResult CheckElements(IEnumerable<IModelElement> elements)
         {
             return CheckOrValidateElements(elements, ConstraintKind.Check, null);
@@ -173,12 +228,40 @@ namespace Hyperstore.Modeling.Metadata.Constraints
             }
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Validates.
+        /// </summary>
+        /// <param name="domain">
+        ///  The domain.
+        /// </param>
+        /// <param name="category">
+        ///  (Optional) the category.
+        /// </param>
+        /// <returns>
+        ///  An ISessionResult.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public ISessionResult Validate(IDomainModel domain, string category = null)
         {
             Contract.Requires(domain, "domain");
             return Validate(domain.GetElements());
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Validates.
+        /// </summary>
+        /// <param name="elements">
+        ///  The elements.
+        /// </param>
+        /// <param name="category">
+        ///  (Optional) the category.
+        /// </param>
+        /// <returns>
+        ///  An ISessionResult.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public virtual ISessionResult Validate(IEnumerable<IModelElement> elements, string category = null)
         {
             return CheckOrValidateElements(elements.ToList(), ConstraintKind.Validate, category);

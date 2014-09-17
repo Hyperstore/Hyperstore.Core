@@ -177,10 +177,14 @@ namespace Hyperstore.Modeling.Serialization
                         {
                             while ((elem = ReadNextElement()) == "schema")
                             {
-                                var name = ReadAttribute("name");
-                                var moniker = ReadAttribute("id");
-                                var schema = GetSchemaInfo(name);
-                                _monikers.Add(moniker, schema);
+                                var schemaName = ReadAttribute("name");
+                                while ((elem = ReadNextElement()) == "add")
+                                {
+                                    var name = new Identity(schemaName, ReadAttribute("name")).ToString();
+                                    var moniker = ReadAttribute("id");
+                                    var schema = GetSchemaInfo(name);
+                                    _monikers.Add(moniker ?? name, schema);
+                                }
                             }
                         }
 
