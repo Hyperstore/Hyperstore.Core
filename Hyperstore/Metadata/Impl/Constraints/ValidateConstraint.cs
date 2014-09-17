@@ -40,7 +40,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
             this._category = category;
         }
 
-        void IValidationConstraint<T>.Validate(T mel, ConstraintContext ctx)
+        void ICheckConstraint<T>.ExecuteConstraint(T mel, ConstraintContext ctx)
         {
             if (!expression(mel))
             {

@@ -56,7 +56,7 @@ namespace Hyperstore.Modeling
         ///  An IExecutionResult.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IExecutionResult Execute(params Hyperstore.Modeling.Commands.IDomainCommand[] command);
+        ISessionResult Execute(params Hyperstore.Modeling.Commands.IDomainCommand[] command);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

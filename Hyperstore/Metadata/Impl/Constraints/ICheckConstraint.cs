@@ -32,4 +32,9 @@ namespace Hyperstore.Modeling.Metadata.Constraints
     {
         void ExecuteConstraint(T mel, ConstraintContext ctx);
     }
+
+    public interface IValidationConstraint<T> : ICheckConstraint<T> where T : IModelElement
+    {
+        string Category { get; }
+    }
 }

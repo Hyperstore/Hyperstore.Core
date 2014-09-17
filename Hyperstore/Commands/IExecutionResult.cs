@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System.Collections.Generic;
@@ -25,11 +25,11 @@ namespace Hyperstore.Modeling
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  Interface for execution result.
+    ///  Session result
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     [PublicAPI]
-    public interface IExecutionResult
+    public interface ISessionResult
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -60,7 +60,7 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Notifies the data errors.
+        ///  Raises the NotifyDataError event for all element involved during this execution process.
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
         void NotifyDataErrors();

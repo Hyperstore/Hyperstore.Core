@@ -25,19 +25,19 @@ namespace Hyperstore.Modeling
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  Bitfield of flags for specifying SchemaConstraintExtensionMode.
+    ///  Specifies how the schema is extended
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     [Flags]
     public enum SchemaConstraintExtensionMode
     {
         /// <summary>
-        ///  Specifies the inherit= 1 option.
+        ///  Constraints are added with the constraint of the extended schema
         /// </summary>
-        Inherit=1,
+        Inherit = 1,
         /// <summary>
-        ///  Specifies the replace= 2 option.
+        ///  Constraints replace the constraint of the extended schema
         /// </summary>
-        Replace=2
+        Replace = 2
     }
 }

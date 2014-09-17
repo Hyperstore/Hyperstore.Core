@@ -41,7 +41,7 @@ namespace Hyperstore.Modeling.Commands
         ///  An IExecutionResult.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IExecutionResult ProcessCommands(IEnumerable<IDomainCommand> commands);
+        ISessionResult ProcessCommands(IEnumerable<IDomainCommand> commands);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -54,7 +54,7 @@ namespace Hyperstore.Modeling.Commands
         ///  An IExecutionResult.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IExecutionResult ProcessCommands(IDomainCommand command);
+        ISessionResult ProcessCommands(IDomainCommand command);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

@@ -24,7 +24,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
 {
     public sealed class ConstraintContext 
     {
-        private IExecutionResult _messages;
+        private ISessionResult _messages;
         private ISessionContext _sessionContext;
         private readonly string _category;
 
@@ -48,7 +48,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
             _sessionContext.Log(new DiagnosticMessage(MessageType.Warning, MessageHelper.CreateMessage(message, Element), _category, true, Element, null, propertyName ?? PropertyName));
         }
 
-        public IExecutionResult Messages
+        public ISessionResult Messages
         {
             get { return _messages; }
         }

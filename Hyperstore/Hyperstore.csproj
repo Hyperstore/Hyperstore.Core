@@ -83,7 +83,7 @@
     <Compile Include="Extensions\StoreBuilder.cs" />
     <Compile Include="Extensions\StoreExtensions.cs" />
     <Compile Include="HyperGraph\Impls\NodeInfo.cs" />
-    <Compile Include="Metadata\Impl\Constraints\CheckConstraintProxy.cs" />
+    <Compile Include="Metadata\Impl\Constraints\ConstraintProxy.cs" />
     <Compile Include="Metadata\Impl\Constraints\CheckPropertyConstraintProxy.cs" />
     <Compile Include="Metadata\Impl\Constraints\CheckValueObjectConstraint.cs" />
     <Compile Include="Metadata\Impl\Constraints\ConstraintBuilder.cs" />
@@ -92,11 +92,9 @@
     <Compile Include="Metadata\Impl\Constraints\CheckConstraint.cs" />
     <Compile Include="Metadata\Impl\Constraints\ICheckValueObjectConstraint.cs" />
     <Compile Include="Metadata\Impl\Constraints\IConstraintsManager.cs" />
-    <Compile Include="Metadata\Impl\Constraints\IValidatationConstraint.cs" />
     <Compile Include="Metadata\Impl\Constraints\ICheckConstraint.cs" />
     <Compile Include="Metadata\Impl\Constraints\MessageHelper.cs" />
     <Compile Include="Metadata\Impl\Constraints\ValidateConstraint.cs" />
-    <Compile Include="Metadata\Impl\Constraints\ValidationConstraintProxy.cs" />
     <Compile Include="Metadata\Impl\Primitives\EnumPrimitiveInternal.cs" />
     <Compile Include="Metadata\PropertyKind.cs" />
     <Compile Include="Platform\IConcurrentDictionary.cs" />
@@ -193,9 +191,9 @@
     <Compile Include="DomainModel\Impl\Scopes\Controler\ExtensionInfos.cs" />
     <Compile Include="DomainModel\Impl\Scopes\Controler\IDomainInfos.cs" />
     <Compile Include="DomainModel\Impl\Scopes\Controler\ScopeInfo.cs" />
-    <Compile Include="DomainModel\Impl\Scopes\DomainExtensionConstraintsManager.cs" />
+    <Compile Include="DomainModel\Impl\Scopes\ExtensionConstraintManager.cs" />
     <Compile Include="DomainModel\Impl\Scopes\DomainModelScope.cs" />
-    <Compile Include="DomainModel\Impl\Scopes\DomainExtensionDomainModelDefinition.cs" />
+    <Compile Include="DomainModel\Impl\Scopes\ExtensionSchemaDefinition.cs" />
     <Compile Include="DomainModel\Impl\Scopes\ScopeHyperGraph.cs" />
     <Compile Include="DomainModel\Impl\Scopes\DomainExtensionSchema.cs" />
     <Compile Include="DomainModel\Impl\IdGenerators\LongIdGenerator.cs" />

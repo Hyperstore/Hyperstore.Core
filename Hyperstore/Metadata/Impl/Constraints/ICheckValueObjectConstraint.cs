@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,9 +26,17 @@ namespace Hyperstore.Modeling.Metadata.Constraints
     {
     }
 
-
-    public interface ICheckValueObjectConstraint<T> : ICheckValueObjectConstraint 
+    public interface IValidationValueObjectConstraint : ICheckValueObjectConstraint
     {
-        void Check(T value, ConstraintContext ctx);
+        string Category { get; }
+    }
+
+    public interface ICheckValueObjectConstraint<T> : ICheckValueObjectConstraint
+    {
+        void ExecuteConstraint(T value, ConstraintContext ctx);
+    }
+
+    public interface IValidationValueObjectConstraint<T> : ICheckValueObjectConstraint<T>, IValidationValueObjectConstraint
+    {
     }
 }

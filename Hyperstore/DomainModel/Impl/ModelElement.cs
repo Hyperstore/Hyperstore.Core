@@ -407,7 +407,7 @@ namespace Hyperstore.Modeling
             }
         }
 
-        void IDataErrorNotifier.NotifyDataErrors(IExecutionResult result)
+        void IDataErrorNotifier.NotifyDataErrors(ISessionResult result)
         {
             var set = BeginDataErrorNotifications();
             foreach (var msg in result.Messages)

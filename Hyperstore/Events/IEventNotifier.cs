@@ -70,7 +70,7 @@ namespace Hyperstore.Modeling
         ///  The log.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        void NotifyMessages(ISessionInformation session, IExecutionResult log);
+        void NotifyMessages(ISessionInformation session, ISessionResult log);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

@@ -84,7 +84,7 @@ namespace Hyperstore.Modeling.Events
         private readonly ISubjectWrapper<EventContext<AddEntityEvent>> _elementAdding;
         private readonly ISubjectWrapper<EventContext<RemoveEntityEvent>> _elementRemoved;
         private readonly ISubjectWrapper<EventContext<RemoveEntityEvent>> _elementRemoving;
-        private readonly ISubjectWrapper<IExecutionResult> _messageOccurs;
+        private readonly ISubjectWrapper<ISessionResult> _messageOccurs;
         private readonly ISubjectWrapper<EventContext<AddSchemaEntityEvent>> _metadataAdded;
         private readonly ISubjectWrapper<EventContext<AddSchemaEntityEvent>> _metadataAdding;
         private readonly ISubjectWrapper<EventContext<AddRelationshipEvent>> _relationshipAdded;
@@ -371,7 +371,7 @@ namespace Hyperstore.Modeling.Events
         ///  The on errors.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IObservable<IExecutionResult> OnErrors
+        public IObservable<ISessionResult> OnErrors
         {
             get { return _messageOccurs; }
         }
@@ -392,7 +392,7 @@ namespace Hyperstore.Modeling.Events
         {
             var factory = services.Resolve<ISubjectFactory>() ?? new DefaultSubjectFactory(services);
 
-            _messageOccurs = factory.CreateSubject<IExecutionResult>();
+            _messageOccurs = factory.CreateSubject<ISessionResult>();
             _sessionCompleted = factory.CreateSubject<ISessionInformation>();
             _sessionCompleting = factory.CreateSubject<ISessionInformation>();
 
@@ -754,7 +754,7 @@ namespace Hyperstore.Modeling.Events
         ///  The result.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void NotifyMessages(ISessionInformation session, IExecutionResult result)
+        public void NotifyMessages(ISessionInformation session, ISessionResult result)
         {
             Contract.Requires(session, "session");
             Contract.Requires(result, "result");

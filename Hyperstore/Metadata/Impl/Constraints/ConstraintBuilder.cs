@@ -41,7 +41,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
         public ConstraintBuilder(ISchemaElement metadata, string propertyName, Func<T, bool> expression = null, DiagnosticMessage message = null, bool isImplicit = false)
             : this(metadata, propertyName, expression, isImplicit)
         {
-            WithMessage(message);
+            Message(message);
         }
 
         public ConstraintBuilder(ISchemaElement metadata, string propertyName, Func<T, bool> expression, string message = null, bool isImplicit = false)
@@ -50,7 +50,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
             this._message = message;
         }
 
-        public ConstraintBuilder<T> WithMessage(DiagnosticMessage message)
+        public ConstraintBuilder<T> Message(DiagnosticMessage message)
         {
             Contract.Requires(message, "message");
             this._message = message.Message;
@@ -59,20 +59,20 @@ namespace Hyperstore.Modeling.Metadata.Constraints
             return this;
         }
 
-        public ConstraintBuilder<T> SetExpression(Func<T, bool> expression)
+        public ConstraintBuilder<T> Verify(Func<T, bool> expression)
         {
             Contract.Requires(expression, "expression");
             this.expression = expression;
             return this;
         }
 
-        public ConstraintBuilder<T> SetCategory(string category)
+        public ConstraintBuilder<T> Category(string category)
         {
             this.category = category;
             return this;
         }
 
-        public ConstraintBuilder<T> WithMessage(string message)
+        public ConstraintBuilder<T> Message(string message)
         {
             Contract.RequiresNotEmpty(message, "message");
             this._message = message;

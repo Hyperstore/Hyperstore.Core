@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -75,8 +75,15 @@ namespace Hyperstore.Modeling
         {
             get
             {
+                bool first = true;
                 var sb = new StringBuilder();
-                Messages.Aggregate(sb, (s, m) => s.AppendLine(m.ToString()));
+                foreach (var m in Messages)
+                {
+                    if (!first)
+                        sb.AppendLine();
+                    first = false;
+                    sb.Append(m.ToString());
+                }
                 return sb.ToString();
             }
         }

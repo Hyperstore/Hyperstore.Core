@@ -19,6 +19,6 @@ namespace Hyperstore.Modeling.Domain
 {
     internal interface IDataErrorNotifier
     {
-        void NotifyDataErrors(IExecutionResult result);
+        void NotifyDataErrors(ISessionResult result);
     }
 }

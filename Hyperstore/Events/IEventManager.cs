@@ -239,7 +239,7 @@ namespace Hyperstore.Modeling
         ///  The on errors.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        IObservable<IExecutionResult> OnErrors { get; }
+        IObservable<ISessionResult> OnErrors { get; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

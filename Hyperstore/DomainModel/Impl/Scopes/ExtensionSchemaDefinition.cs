@@ -14,9 +14,10 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
+using Hyperstore.Modeling.Metadata.Constraints;
 using Hyperstore.Modeling.Scopes;
 
 #endregion
@@ -29,7 +30,7 @@ namespace Hyperstore.Modeling
         private readonly ISchemaDefinition _definition;
         private readonly SchemaConstraintExtensionMode _mode;
 
-        internal ExtensionSchemaDefinition(ISchemaDefinition definition, ISchema extendedSchema, SchemaConstraintExtensionMode mode) 
+        internal ExtensionSchemaDefinition(ISchemaDefinition definition, ISchema extendedSchema, SchemaConstraintExtensionMode mode)
             : base(definition.SchemaName)
         {
             DebugContract.Requires(extendedSchema, "extendedSchema");
@@ -89,11 +90,10 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         protected override ISchema CreateSchema(IServicesContainer services)
         {
-            throw new NotInTransactionException();
-            //return new Hyperstore.Modeling.Scopes.DomainSchemaExtension(_extendedSchema,
-            //                                                                  services,
-            //                                                                  Behavior,
-            //                                                                  new Hyperstore.Modeling.Scopes.DomainExtensionConstraintsManager(services, _extendedSchema, _mode));
+            return new Hyperstore.Modeling.Scopes.DomainSchemaExtension(_extendedSchema,
+                                                                              services,
+                                                                              Behavior,
+                                                                              new ExtensionConstraintManager(services, _extendedSchema, _mode));
         }
     }
 }

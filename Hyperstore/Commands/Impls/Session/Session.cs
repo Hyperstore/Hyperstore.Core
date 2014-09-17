@@ -489,7 +489,7 @@ namespace Hyperstore.Modeling
         ///  An IExecutionResult.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IExecutionResult Execute(params IDomainCommand[] commands)
+        public ISessionResult Execute(params IDomainCommand[] commands)
         {
             if (commands == null || commands.Length == 0)
                 return ExecutionResult.Empty;
@@ -811,7 +811,7 @@ namespace Hyperstore.Modeling
         ///  The result.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IExecutionResult Result
+        public ISessionResult Result
         {
             get { return SessionDataContext.MessageList; }
         }

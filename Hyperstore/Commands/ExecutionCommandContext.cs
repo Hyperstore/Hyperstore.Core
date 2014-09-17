@@ -75,7 +75,7 @@ namespace Hyperstore.Modeling.Commands
         ///  The message list.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IExecutionResult Result
+        public ISessionResult Result
         {
             get { return _log.Result; }
         }

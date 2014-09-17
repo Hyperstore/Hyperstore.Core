@@ -25,16 +25,15 @@ using System.Threading.Tasks;
 
 namespace Hyperstore.Modeling.Metadata.Constraints
 {
-    internal sealed class ConstraintsManager : IDomainService, IConstraintsManager, IDisposable, IConstraintManagerInternal
+    enum ConstraintKind
     {
-        enum ValidationKind
-        {
-            Check,
-            Validate
-        }
+        Check,
+        Validate
+    }
 
-        private Dictionary<Identity, List<ICheckConstraint>> _checkConstraints;
-        private Dictionary<Identity, List<IValidationConstraint>> _validationConstraints;
+    internal class ConstraintsManager : IDomainService, IConstraintsManager, IDisposable, IConstraintManagerInternal
+    {
+        private Dictionary<Identity, List<ConstraintProxy>> _checkConstraints;
 
         private IHyperstore Store { get; set; }
 
@@ -50,8 +49,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
         void IDomainService.SetDomain(IDomainModel domainModel)
         {
             Store = domainModel.Store;
-            _checkConstraints = new Dictionary<Identity, List<ICheckConstraint>>();
-            _validationConstraints = new Dictionary<Identity, List<IValidationConstraint>>();
+            _checkConstraints = new Dictionary<Identity, List<ConstraintProxy>>();
         }
 
         #region Register
@@ -63,72 +61,55 @@ namespace Hyperstore.Modeling.Metadata.Constraints
 
             var interfaces = ReflectionHelper.GetInterfaces(constraint.GetType());
 
-            var constraintElementType = interfaces.Where(i => ReflectionHelper.IsGenericType(i, typeof(ICheckValueObjectConstraint<>)))
-                                            .Select(i => ReflectionHelper.GetGenericArguments(i).First())
-                                            .FirstOrDefault();
+            var constraintElementType = interfaces.Where(i => ReflectionHelper.IsGenericType(i, typeof(IValidationValueObjectConstraint<>)))
+                        .Select(i => ReflectionHelper.GetGenericArguments(i).First())
+                        .FirstOrDefault();
             if (constraintElementType != null)
             {
-                AddConstraint(owner, new CheckPropertyConstraintProxy(property, constraintElementType, constraint));
+                var category = ((IValidationValueObjectConstraint)constraint).Category;
+                AddConstraint(owner, new CheckPropertyConstraintProxy(property, constraintElementType, constraint, ConstraintKind.Validate, category));
             }
-
-            constraintElementType = interfaces.Where(i => ReflectionHelper.IsGenericType(i, typeof(IValidationConstraint<>)))
-                                    .Select(i => ReflectionHelper.GetGenericArguments(i).First())
-                                    .FirstOrDefault();
-            if (constraintElementType != null)
+            else
             {
-                // AddConstraint(schema, new ValidationConstraintProxy(schema, CreateValidationHandler(constraintElementType, schema), ""));
+                constraintElementType = interfaces.Where(i => ReflectionHelper.IsGenericType(i, typeof(ICheckValueObjectConstraint<>)))
+                                                .Select(i => ReflectionHelper.GetGenericArguments(i).First())
+                                                .FirstOrDefault();
+                AddConstraint(owner, new CheckPropertyConstraintProxy(property, constraintElementType, constraint, ConstraintKind.Check, null));
             }
         }
 
         public void AddConstraint<T>(ISchemaElement schema, ICheckConstraint<T> constraint) where T : IModelElement
         {
-            var proxy = new CheckConstraintProxy(typeof(T), constraint);
+            var validation = constraint as IValidationConstraint<T>;
+            var category = validation != null ? validation.Category : null;
+            var proxy = new ConstraintProxy(typeof(T), constraint, validation != null ? ConstraintKind.Validate : ConstraintKind.Check, category);
             AddConstraint(schema, proxy);
         }
 
-        private void AddConstraint(ISchemaElement schema, CheckConstraintProxy proxy)
+        private void AddConstraint(ISchemaElement schema, ConstraintProxy proxy)
         {
-            List<ICheckConstraint> constraints;
+            List<ConstraintProxy> constraints;
             if (!_checkConstraints.TryGetValue(schema.Id, out constraints))
             {
-                constraints = new List<ICheckConstraint>();
+                constraints = new List<ConstraintProxy>();
                 _checkConstraints.Add(schema.Id, constraints);
-            }
-            constraints.Add(proxy);
-        }
-
-        public void AddConstraint<T>(ISchemaElement schema, IValidationConstraint<T> constraint) where T : IModelElement
-        {
-            var proxy = new ValidationConstraintProxy(typeof(T), constraint, constraint.Category);
-            AddConstraint(schema, proxy);
-        }
-
-        private void AddConstraint(ISchemaElement schema, ValidationConstraintProxy proxy)
-        {
-            List<IValidationConstraint> constraints;
-            if (!_validationConstraints.TryGetValue(schema.Id, out constraints))
-            {
-                constraints = new List<IValidationConstraint>();
-                _validationConstraints.Add(schema.Id, constraints);
             }
             constraints.Add(proxy);
         }
         #endregion
 
 
-        public IExecutionResult CheckElements(IEnumerable<IModelElement> elements)
+        public virtual ISessionResult CheckElements(IEnumerable<IModelElement> elements)
         {
-            return CheckOrValidateElements(elements, ValidationKind.Check, "CheckConstraints");
+            return CheckOrValidateElements(elements, ConstraintKind.Check, null);
         }
 
-        private IExecutionResult CheckOrValidateElements(IEnumerable<IModelElement> elements, ValidationKind kind, string category)
+        private ISessionResult CheckOrValidateElements(IEnumerable<IModelElement> elements, ConstraintKind kind, string category)
         {
-            DebugContract.Requires(category != null || kind == ValidationKind.Validate);
-
             if (!elements.Any())
                 return ExecutionResult.Empty;
 
-            var categoryTitle = category ?? "ValidationConstraints";
+            var categoryTitle = category ?? (kind == ConstraintKind.Check ? "CheckConstraints" : "ValidationConstraints");
             using (CodeMarker.MarkBlock("ConstraintsManager." + categoryTitle))
             {
                 ISession session = null;
@@ -146,7 +127,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
                         var schema = mel.SchemaInfo;
                         try
                         {
-                            if (kind == ValidationKind.Check)
+                            if (kind == ConstraintKind.Check)
                             {
                                 CheckElement(ctx, mel, schema);
                             }
@@ -174,10 +155,10 @@ namespace Hyperstore.Modeling.Metadata.Constraints
 
         private void CheckElement(ConstraintContext ctx, IModelElement mel, ISchemaElement schema)
         {
-            List<ICheckConstraint> constraints;
+            List<ConstraintProxy> constraints;
             if (_checkConstraints.TryGetValue(schema.Id, out constraints))
             {
-                foreach (ICheckConstraint constraint in constraints)
+                foreach (var constraint in constraints.Where(c => c.Kind == ConstraintKind.Check))
                 {
                     if (Session.Current.CancellationToken.IsCancellationRequested)
                         break;
@@ -192,17 +173,17 @@ namespace Hyperstore.Modeling.Metadata.Constraints
             }
         }
 
-        public IExecutionResult ValidateElements(IEnumerable<IModelElement> elements, string category = null)
+        public virtual ISessionResult ValidateElements(IEnumerable<IModelElement> elements, string category = null)
         {
-            return CheckOrValidateElements(elements.ToList(), ValidationKind.Validate, category);
+            return CheckOrValidateElements(elements.ToList(), ConstraintKind.Validate, category);
         }
 
         private void ValidateElement(ConstraintContext ctx, IModelElement mel, ISchemaElement schema, string category)
         {
-            List<IValidationConstraint> constraints;
-            if (_validationConstraints.TryGetValue(schema.Id, out constraints))
+            List<ConstraintProxy> constraints;
+            if (_checkConstraints.TryGetValue(schema.Id, out constraints))
             {
-                foreach (IValidationConstraint constraint in constraints)
+                foreach (var constraint in constraints)
                 {
                     if (Session.Current.CancellationToken.IsCancellationRequested)
                         break;
@@ -222,7 +203,6 @@ namespace Hyperstore.Modeling.Metadata.Constraints
         void IDisposable.Dispose()
         {
             _checkConstraints.Clear();
-            _validationConstraints.Clear();
         }
     }
 }

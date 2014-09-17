@@ -23,7 +23,7 @@ namespace Hyperstore.Modeling
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
 
-    internal interface IExecutionResultInternal
+    internal interface IExecutionResultInternal : ISessionResult 
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -36,6 +36,6 @@ namespace Hyperstore.Modeling
         ///  An IExecutionResult.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IExecutionResult Merge(IExecutionResult messageList);
+        ISessionResult Merge(ISessionResult messageList);
     }
 }

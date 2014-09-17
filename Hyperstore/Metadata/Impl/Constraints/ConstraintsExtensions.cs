@@ -67,11 +67,10 @@ namespace Hyperstore.Modeling
         /// <param name="propertyName"> (Optional) name of the property. </param>
         /// <returns>   An ConstraintBuilder&lt;T&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static ConstraintBuilder<T> AddConstraint<T>(this ISchemaEntity metadata, Func<T, bool> expression, string message, string propertyName = null) where T : IModelEntity
+        public static ConstraintBuilder<T> AddConstraint<T>(this ISchemaEntity metadata, Func<T, bool> expression, string message=null, string propertyName = null) where T : IModelEntity
         {
             Contract.Requires(metadata, "metadata");
             Contract.Requires(expression, "expression");
-            Contract.Requires(message, "message");
             return new ConstraintBuilder<T>(metadata, propertyName, expression, message);
         }
 
@@ -84,11 +83,10 @@ namespace Hyperstore.Modeling
         /// <param name="propertyName"> (Optional) name of the property. </param>
         /// <returns>   An ConstraintBuilder&lt;T&gt; </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static ConstraintBuilder<T> AddImplicitConstraint<T>(this ISchemaEntity metadata, Func<T, bool> expression, string message, string propertyName = null) where T : IModelEntity
+        public static ConstraintBuilder<T> AddImplicitConstraint<T>(this ISchemaEntity metadata, Func<T, bool> expression, string message=null, string propertyName = null) where T : IModelEntity
         {
             Contract.Requires(metadata, "metadata");
             Contract.Requires(expression, "expression");
-            Contract.Requires(message, "message");
             return new ConstraintBuilder<T>(metadata, propertyName, expression, message, true);
         }
 

@@ -28,7 +28,7 @@ namespace Hyperstore.Tests.Model
 {
     public partial class Library : ICheckConstraint<Library>
     {
-        void ICheckConstraint<Library>.Check(Library mel, ConstraintContext ctx)
+        void ICheckConstraint<Library>.ExecuteConstraint(Library mel, ConstraintContext ctx)
         {
          
         }
@@ -51,8 +51,10 @@ namespace Hyperstore.Tests.Model
             return Hyperstore.Modeling.Metadata.Primitives.StringPrimitive.SerializeString(data);
         }
 
-        public void Check(string value, ConstraintContext ctx)
+        public void ExecuteConstraint(string value, ConstraintContext ctx)
         {
+            if (value == null)
+                return;
             try
             {
                 new System.Net.Mail.MailAddress(value);

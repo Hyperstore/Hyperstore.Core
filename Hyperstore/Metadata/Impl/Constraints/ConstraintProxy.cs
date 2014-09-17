@@ -23,44 +23,54 @@ using System.Text;
 
 namespace Hyperstore.Modeling.Metadata.Constraints
 {
-    internal class CheckConstraintProxy : ICheckConstraint
+    internal class ConstraintProxy : ICheckConstraint
     {
-        private readonly Action<IModelElement, ConstraintContext, object> _handler;
-        private readonly object _constraint;
+        protected Action<object, ConstraintContext, object> CheckHandler { get; private set; }
+        protected object Constraint { get; private set; }
 
-        public CheckConstraintProxy(Type implementedType, object constraint)
+        public ConstraintKind Kind { get; private set; }
+        public string Category { get; private set; }
+
+        public ConstraintProxy(Type implementedType, object constraint, ConstraintKind kind, string category)
         {
-            _handler = CreateCheckHandler(implementedType);
-            _constraint = constraint;
+
+            CheckHandler = CreateCheckHandler(implementedType);
+
+            Constraint = constraint;
+            Kind = kind;
+            Category = category;
         }
 
-        public void ExecuteConstraint(IModelElement mel, ConstraintContext ctx)
+        public virtual void ExecuteConstraint(IModelElement mel, ConstraintContext ctx)
         {
-            _handler(mel, ctx, _constraint);
+            CheckHandler(mel, ctx, Constraint);
         }
 
-        private Action<IModelElement, ConstraintContext, object> CreateCheckHandler(Type elementType)
+        private Action<object, ConstraintContext, object> CreateCheckHandler(Type elementType)
         {
             DebugContract.Requires(elementType);
 
-            var constraintType = typeof(ICheckConstraint<>).MakeGenericType(elementType);
+            var constraintType = MakeGenericType(elementType);
 
 
-            // Génération en dynamique d'un appel en utilisant un contexte typé
-            var pmel = Expression.Parameter(typeof(IModelElement));
+            var pmel = Expression.Parameter(typeof(object));
             var pctx = Expression.Parameter(typeof(ConstraintContext));
             var pconstraint = Expression.Parameter(typeof(object));
 
             // (mel, ctx, constraint) => constraint.Check((T)mel, ctx)
             var invocationExpression = Expression.Lambda(
-                                        Expression.Block(
                                             Expression.Call(Expression.Convert(pconstraint, constraintType),
-                                                        Hyperstore.Modeling.Utils.ReflectionHelper.GetMethod(constraintType, "CheckConstraint").First(),
+                                                        Hyperstore.Modeling.Utils.ReflectionHelper.GetMethod(constraintType, "ExecuteConstraint").First(),
                                                             Expression.Convert(pmel, elementType),
-                                                            pctx)),
+                                                            pctx),
                                             pmel, pctx, pconstraint);
 
-            return (Action<IModelElement, ConstraintContext, object>)invocationExpression.Compile();
+            return (Action<object, ConstraintContext, object>)invocationExpression.Compile();
+        }
+
+        protected virtual Type MakeGenericType(Type elementType)
+        {
+            return typeof(ICheckConstraint<>).MakeGenericType(elementType);
         }
     }
 }

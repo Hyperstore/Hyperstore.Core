@@ -20,7 +20,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
 {
     internal interface IConstraintManagerInternal
     {
-        Hyperstore.Modeling.IExecutionResult CheckElements(System.Collections.Generic.IEnumerable<Hyperstore.Modeling.IModelElement> elements);
+        Hyperstore.Modeling.ISessionResult CheckElements(System.Collections.Generic.IEnumerable<Hyperstore.Modeling.IModelElement> elements);
 
         bool HasImplicitConstraints { get; }
 
@@ -30,8 +30,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
     public interface IConstraintsManager
     {
         void AddConstraint<T>(Hyperstore.Modeling.ISchemaElement schema, Hyperstore.Modeling.Metadata.Constraints.ICheckConstraint<T> constraint) where T : Hyperstore.Modeling.IModelElement;
-        void AddConstraint<T>(Hyperstore.Modeling.ISchemaElement schema, Hyperstore.Modeling.Metadata.Constraints.IValidationConstraint<T> constraint) where T : Hyperstore.Modeling.IModelElement;
-        Hyperstore.Modeling.IExecutionResult ValidateElements(System.Collections.Generic.IEnumerable<Hyperstore.Modeling.IModelElement> elements, string category = null);
+        Hyperstore.Modeling.ISessionResult ValidateElements(System.Collections.Generic.IEnumerable<Hyperstore.Modeling.IModelElement> elements, string category = null);
 
     }
 }

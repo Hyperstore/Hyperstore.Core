@@ -26,7 +26,7 @@ using System.Text;
 
 namespace Hyperstore.Modeling.Metadata.Constraints
 {
-    internal class ExecutionResult : IExecutionResult, IExecutionResultInternal
+    internal class ExecutionResult : ISessionResult, IExecutionResultInternal
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -84,7 +84,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
             _silentMode = true;
         }
 
-        IExecutionResult IExecutionResultInternal.Merge(IExecutionResult other)
+        ISessionResult IExecutionResultInternal.Merge(ISessionResult other)
         {
             DebugContract.Requires(other);
             _messages.AddRange(other.Messages);
@@ -118,17 +118,21 @@ namespace Hyperstore.Modeling.Metadata.Constraints
         ///-------------------------------------------------------------------------------------------------
         public override string ToString()
         {
+            bool first = true;
             var sb = new StringBuilder();
             foreach (var m in _messages)
             {
-                sb.AppendLine(m.ToString());
+                if (!first)
+                    sb.AppendLine();
+                first = false;
+                sb.Append(m.ToString());
             }
             return sb.ToString();
         }
 
         #endregion
 
-        internal void AddMessages(IExecutionResult list)
+        internal void AddMessages(ISessionResult list)
         {
             foreach (var msg in list.Messages)
             {

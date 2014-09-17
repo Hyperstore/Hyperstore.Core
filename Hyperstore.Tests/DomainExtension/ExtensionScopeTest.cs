@@ -30,7 +30,7 @@ namespace Hyperstore.Tests.DomainExtension
     public class ExtensionScopeTest
     {
         [TestMethod]
-        public async Task TestMethod1()
+        public async Task TestScope()
         {
             var store = await StoreBuilder.New().EnableScoping().CreateAsync();
 
@@ -48,7 +48,6 @@ namespace Hyperstore.Tests.DomainExtension
             {
                 lib = new Library(domain);
                 lib.Name = "My Library";
-                lib.Email = "toto";
                 for (int i = 1; i <= 10;i++)
                 {
                     var b = new Book(domain);

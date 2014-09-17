@@ -128,7 +128,7 @@ namespace Hyperstore.Modeling.Commands
         ///  An IExecutionResult.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IExecutionResult ICommandManager.ProcessCommands(IDomainCommand command)
+        ISessionResult ICommandManager.ProcessCommands(IDomainCommand command)
         {
             Contract.Requires(command, "command");
             return ((ICommandManager)this).ProcessCommands(new[] { command });
@@ -151,7 +151,7 @@ namespace Hyperstore.Modeling.Commands
         ///  An IExecutionResult.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IExecutionResult ICommandManager.ProcessCommands(IEnumerable<IDomainCommand> commands)
+        ISessionResult ICommandManager.ProcessCommands(IEnumerable<IDomainCommand> commands)
         {
             Contract.Requires(commands != null, "commands");
 
