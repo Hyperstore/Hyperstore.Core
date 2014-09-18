@@ -221,6 +221,7 @@ namespace Hyperstore.Modeling
                 return ctx.Enlistment;
             }
         }
+
         /// <summary>
         ///     Liste des éléments impactés par les commandes lors de la session. Si plusieurs commandes opérent sur un même
         ///     élément, il
@@ -813,7 +814,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public ISessionResult Result
         {
-            get { return SessionDataContext.MessageList; }
+            get { return SessionDataContext != null ? SessionDataContext.MessageList : null; }
         }
 
         internal static void ResetSessionIndex(bool releaseIndex)
@@ -924,7 +925,7 @@ namespace Hyperstore.Modeling
                 {
                     using (CodeMarker.MarkBlock("Session.OnSessionCompleted"))
                     {
-                        sessionInfo = OnSessionCompleted(currentInfo, notifiers);
+                        sessionInfo = OnSessionCompleted(currentInfo, notifiers, messages);
                     }
                 }
 
@@ -1077,12 +1078,12 @@ namespace Hyperstore.Modeling
         /// <summary>
         ///     Notification de la fin de la session
         /// </summary>
-        private ISessionInformation OnSessionCompleted(SessionLocalInfo info, IEnumerable<IEventNotifier> notifiers)
+        private ISessionInformation OnSessionCompleted(SessionLocalInfo info, IEnumerable<IEventNotifier> notifiers, IExecutionResultInternal messages)
         {
             DebugContract.Requires(notifiers != null, "notifiers");
             // On fait une copie de la session car les événements peuvent 
             // être souscrits dans un autre thread
-            var sessionContext = new SessionInformation(this, info, SessionDataContext.TrackingData);
+            var sessionContext = new SessionInformation(this, info, SessionDataContext.TrackingData, messages);
 
             try
             {
@@ -1170,6 +1171,50 @@ namespace Hyperstore.Modeling
                 var trackers = ctx != null ? ctx.Trackers : null;
                 return trackers != null && trackers.Count > 0 ? trackers.Peek() : null;
             }
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Session has completed correctly
+        /// </summary>
+        /// <value>
+        ///  true if succeed, false if not.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public bool Succeed
+        {
+            get
+            {
+                var r = Result; if (r == null)
+                    return false;
+                return !(r.HasErrors || r.HasWarnings || IsAborted);
+            }
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets a value indicating whether this instance has errors.
+        /// </summary>
+        /// <value>
+        ///  true if this instance has errors, false if not.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public bool HasErrors
+        {
+            get { return Result != null ? Result.HasErrors : false; }
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets a value indicating whether this instance has warnings.
+        /// </summary>
+        /// <value>
+        ///  true if this instance has warnings, false if not.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public bool HasWarnings
+        {
+            get { return Result != null ? Result.HasWarnings : false; }
         }
     }
 }

@@ -66,6 +66,36 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
+        ///  Gets a value indicating whether this session has errors.
+        /// </summary>
+        /// <value>
+        ///  true if this instance has errors, false if not.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        bool HasErrors { get; }  
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets a value indicating whether this session has warnings.
+        /// </summary>
+        /// <value>
+        ///  true if this instance has warnings, false if not.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        bool HasWarnings { get; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Session has completed correctly (no errors, no warnings and not aborted)
+        /// </summary>
+        /// <value>
+        ///  true if succeed, false if not.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        bool Succeed { get; }  
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
         ///  Gets the store.
         /// </summary>
         /// <value>

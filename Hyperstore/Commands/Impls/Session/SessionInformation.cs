@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 #region Imports
 
 using System;
@@ -107,6 +107,19 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
+        ///  Session has completed correctly
+        /// </summary>
+        /// <value>
+        ///  true if succeed, false if not.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public bool Succeed
+        {
+            get { return !(HasErrors || HasWarnings || IsAborted); }
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
         ///  Gets the event list.
         /// </summary>
         /// <value>
@@ -124,6 +137,26 @@ namespace Hyperstore.Modeling
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         public bool IsNested { get; private set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets a value indicating whether this instance has errors.
+        /// </summary>
+        /// <value>
+        ///  true if this instance has errors, false if not.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public bool HasErrors { get; private set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets a value indicating whether this instance has warnings.
+        /// </summary>
+        /// <value>
+        ///  true if this instance has warnings, false if not.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public bool HasWarnings { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -159,13 +192,7 @@ namespace Hyperstore.Modeling
 
         #region Constructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="SessionInformation" /> class.
-        /// </summary>
-        /// <param name="session">The session.</param>
-        /// <param name="info"></param>
-        /// <param name="trackingData"></param>
-        internal SessionInformation(Session session, SessionLocalInfo info, ISessionTrackingData trackingData)
+        internal SessionInformation(Session session, SessionLocalInfo info, ISessionTrackingData trackingData, IExecutionResultInternal messages)
         {
             DebugContract.Requires(session, "session");
             DebugContract.Requires(trackingData);
@@ -183,6 +210,8 @@ namespace Hyperstore.Modeling
             DefaultDomainModel = info.DefaultDomainModel;
             _contextInfos = session.GetInfos();
             Events = session.Events.ToList();
+            HasErrors = messages.HasErrors;
+            HasWarnings = messages.HasWarnings;
         }
 
         #endregion
@@ -223,7 +252,7 @@ namespace Hyperstore.Modeling
 
             object result;
             if (_contextInfos.TryGetValue(key, out result))
-                return (T) result;
+                return (T)result;
 
             return default(T);
         }
