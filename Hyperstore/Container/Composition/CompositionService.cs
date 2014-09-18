@@ -23,15 +23,18 @@ using System.Linq;
 using System.Reflection;
 using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.Events;
+using Hyperstore.Modeling.Metadata.Constraints;
 #endregion
 
 namespace Hyperstore.Modeling.Container.Composition
 {
     internal class CompositionContainer : ICompositionService
     {
-        private readonly List<Lazy<ICommandHandler, ICommandHandlerMetadata>> _commands = new List<Lazy<ICommandHandler, ICommandHandlerMetadata>>();
+        private readonly List<Lazy<ICommandHandler, ICompositionMetadata>> _commands = new List<Lazy<ICommandHandler, ICompositionMetadata>>();
         private readonly List<Lazy<ICommandInterceptor, ICommandInterceptorMetadata>> _interceptors = new List<Lazy<ICommandInterceptor, ICommandInterceptorMetadata>>();
-        private readonly List<Lazy<IEventHandler, IEventHandlerMetadata>> _eventHandlers = new List<Lazy<IEventHandler, IEventHandlerMetadata>>();
+        private readonly List<Lazy<IEventHandler, ICompositionMetadata>> _eventHandlers = new List<Lazy<IEventHandler, ICompositionMetadata>>();
+        private readonly List<Lazy<IConstraint, ICompositionMetadata>> _constraints = new List<Lazy<IConstraint, ICompositionMetadata>>();
+
 
         public void Compose(params Assembly[] assemblies)
         {            
@@ -47,7 +50,7 @@ namespace Hyperstore.Modeling.Container.Composition
                 {
                     if (attr is CommandHandlerAttribute)
                     {
-                        _commands.Add(new Lazy<ICommandHandler, ICommandHandlerMetadata>( () => (ICommandHandler)Activator.CreateInstance(typeInfo.AsType()), (ICommandHandlerMetadata)attr));
+                        _commands.Add(new Lazy<ICommandHandler, ICompositionMetadata>(() => (ICommandHandler)Activator.CreateInstance(typeInfo.AsType()), (ICompositionMetadata)attr));
                     }
                     else if (attr is CommandInterceptorAttribute)
                     {
@@ -55,25 +58,28 @@ namespace Hyperstore.Modeling.Container.Composition
                     }
                     else if (attr is EventHandlerAttribute)
                     {
-                        _eventHandlers.Add(new Lazy<IEventHandler, IEventHandlerMetadata>(() => (IEventHandler)Activator.CreateInstance(typeInfo.AsType()), (IEventHandlerMetadata)attr));
+                        _eventHandlers.Add(new Lazy<IEventHandler, ICompositionMetadata>(() => (IEventHandler)Activator.CreateInstance(typeInfo.AsType()), (ICompositionMetadata)attr));
+                    }
+                    else if(attr is ConstraintAttribute)
+                    {
+                        _constraints.Add(new Lazy<IConstraint, ICompositionMetadata>(() => (IConstraint)Activator.CreateInstance(typeInfo.AsType()), (ICompositionMetadata)attr));
                     }
                 }
             }
         }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the command handlers for domain models in this collection.
-        /// </summary>
-        /// <param name="domainModel">
-        ///  The domain model.
-        /// </param>
-        /// <returns>
-        ///  An enumerator that allows foreach to be used to process the command handlers for domain
-        ///  models in this collection.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<Lazy<ICommandHandler, ICommandHandlerMetadata>> GetCommandHandlersForDomainModel(IDomainModel domainModel)
+        IEnumerable<Lazy<IConstraint, ICompositionMetadata>> ICompositionService.GetConstraintsForDomainModel(IDomainModel domainModel)
+        {
+            Contract.Requires(domainModel, "domainModel");
+            foreach (var constraint in _constraints)
+            {
+                if ((constraint.Metadata.DomainModel == null || String.Compare(constraint.Metadata.DomainModel, domainModel.Name, StringComparison.OrdinalIgnoreCase) == 0))
+                    yield return constraint;
+            }
+        }
+
+
+        IEnumerable<Lazy<ICommandHandler, ICompositionMetadata>> ICompositionService.GetCommandHandlersForDomainModel(IDomainModel domainModel)
         {
             Contract.Requires(domainModel, "domainModel");
             foreach (var handler in _commands)
@@ -83,19 +89,7 @@ namespace Hyperstore.Modeling.Container.Composition
             }
         }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the interceptors for domain models in this collection.
-        /// </summary>
-        /// <param name="domainModel">
-        ///  The domain model.
-        /// </param>
-        /// <returns>
-        ///  An enumerator that allows foreach to be used to process the interceptors for domain models in
-        ///  this collection.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<Lazy<ICommandInterceptor, ICommandInterceptorMetadata>> GetInterceptorsForDomainModel(IDomainModel domainModel)
+        IEnumerable<Lazy<ICommandInterceptor, ICommandInterceptorMetadata>> ICompositionService.GetInterceptorsForDomainModel(IDomainModel domainModel)
         {
             Contract.Requires(domainModel, "domainModel");
             foreach (var rule in _interceptors)
@@ -105,15 +99,7 @@ namespace Hyperstore.Modeling.Container.Composition
             }
         }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the event handlers in this collection.
-        /// </summary>
-        /// <returns>
-        ///  An enumerator that allows foreach to be used to process the event handlers in this collection.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<Lazy<IEventHandler, IEventHandlerMetadata>> GetEventHandlers()
+        IEnumerable<Lazy<IEventHandler, ICompositionMetadata>> ICompositionService.GetEventHandlers()
         {
             foreach (var handler in _eventHandlers)
             {

@@ -64,15 +64,15 @@
     <Compile Include="Adapters\AbstractGraphAdapter.cs" />
     <Compile Include="Adapters\IGraphAdapter.cs" />
     <Compile Include="Adapters\GraphPropertiesNode.cs" />
+    <Compile Include="Container\Composition\ConstraintAttribute.cs" />
     <Compile Include="Container\Composition\CommandHandlerAttribute.cs" />
     <Compile Include="Container\Composition\CommandInterceptorAttribute.cs" />
     <Compile Include="Container\Composition\EventHandlerAttribute.cs" />
-    <Compile Include="Container\Composition\ICommandHandlerMetadata.cs" />
     <Compile Include="Container\Composition\ICommandInterceptorMetadata.cs" />
     <Compile Include="Container\Composition\HyperstoreAttribute.cs" />
     <Compile Include="Container\ServiceDescriptor.cs" />
     <Compile Include="Container\ServicesContainer.cs" />
-    <Compile Include="Container\IEventHandlerMetadata.cs" />
+    <Compile Include="Container\Composition\ICompositionMetadata.cs" />
     <Compile Include="DomainModel\IHyperGraphProvider.cs" />
     <Compile Include="DomainModel\Impl\CalculatedProperty.cs" />
     <Compile Include="DomainModel\IDataErrorNotifier.cs" />

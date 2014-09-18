@@ -1237,7 +1237,10 @@ namespace Hyperstore.Modeling
 
             _domainControler.ActivateScope(domainModel);
             _notifiersCache = null;
-
+            if (domainModel is DomainModel)
+            {
+                ((DomainModel)domainModel).OnDomainLoaded();
+            }
             return domainModel;
         }
 
@@ -1281,7 +1284,10 @@ namespace Hyperstore.Modeling
                 _schemaControler.ActivateScope(schema);
                 _notifiersCache = null;
                 session.AcceptChanges();
-
+                if (schema is DomainModel)
+                {
+                    ((DomainModel)schema).OnDomainLoaded();
+                }
                 return schema;
             }
         }
@@ -1421,7 +1427,7 @@ namespace Hyperstore.Modeling
             if (manager == null)
                 throw new Exception("Current store must implement IDomainManager");
 
-            if( System.Threading.Interlocked.CompareExchange( ref _initialized, 1, 0) == 0)
+            if (System.Threading.Interlocked.CompareExchange(ref _initialized, 1, 0) == 0)
             {
                 await manager.LoadSchemaAsync(new PrimitivesSchemaDefinition());
             }

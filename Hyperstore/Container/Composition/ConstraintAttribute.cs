@@ -15,24 +15,33 @@
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
  
-namespace Hyperstore.Modeling
+#region Imports
+using System;
+#endregion
+
+namespace Hyperstore.Modeling.Commands
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  Interface for command handler metadata.
+    ///  Attribute for constraint.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     [PublicAPI]
-    public interface ICommandHandlerMetadata
+    [AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
+    public sealed class ConstraintAttribute : Hyperstore.Modeling.Container.Composition.HyperstoreAttribute, ICompositionMetadata
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the domain model.
+        ///  Constructor.
         /// </summary>
-        /// <value>
+        /// <param name="domainModel">
         ///  The domain model.
-        /// </value>
+        /// </param>
         ///-------------------------------------------------------------------------------------------------
-        string DomainModel { get; }
+        public ConstraintAttribute(string domainModel=null)
+            : base(domainModel)
+        {
+        }
     }
 }
+

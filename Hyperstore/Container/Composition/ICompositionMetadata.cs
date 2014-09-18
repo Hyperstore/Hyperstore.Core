@@ -19,11 +19,11 @@ namespace Hyperstore.Modeling
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  Interface for event handler metadata.
+    ///  Generic composition metadata
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     [PublicAPI]
-    public interface IEventHandlerMetadata
+    public interface ICompositionMetadata
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

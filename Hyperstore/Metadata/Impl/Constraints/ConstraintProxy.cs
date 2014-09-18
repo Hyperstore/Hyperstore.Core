@@ -23,7 +23,7 @@ using System.Text;
 
 namespace Hyperstore.Modeling.Metadata.Constraints
 {
-    internal class ConstraintProxy : ICheckConstraint
+    internal class ConstraintProxy
     {
         protected Action<object, ConstraintContext, object> CheckHandler { get; private set; }
         protected object Constraint { get; private set; }

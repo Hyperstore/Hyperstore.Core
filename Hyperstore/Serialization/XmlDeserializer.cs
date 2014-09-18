@@ -175,7 +175,8 @@ namespace Hyperstore.Modeling.Serialization
                         elem = ReadNextElement();
                         if (elem == "schemas")
                         {
-                            while ((elem = ReadNextElement()) == "schema")
+                            elem = ReadNextElement();
+                            while (elem == "schema")
                             {
                                 var schemaName = ReadAttribute("name");
                                 while ((elem = ReadNextElement()) == "add")

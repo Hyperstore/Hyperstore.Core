@@ -54,7 +54,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
         ///  The constraint.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        void AddConstraint(ISchemaProperty property, ICheckValueObjectConstraint constraint);
+        void AddConstraint(ISchemaProperty property, IConstraint constraint);
     }
 
     ///-------------------------------------------------------------------------------------------------

@@ -225,7 +225,7 @@ namespace Hyperstore.Modeling.Metadata
         {
             Contract.RequiresNotEmpty(name, "name");
 
-            var id = new Identity(Name, Conventions.NormalizeMetaElementName(this.Name, name));
+            var id = new Identity(Name, Conventions.ExtractMetaElementName(this.Name, name));
             return GetSchemaInfo(id, throwErrorIfNotExists);
         }
 
@@ -273,7 +273,7 @@ namespace Hyperstore.Modeling.Metadata
         ///-------------------------------------------------------------------------------------------------
         public virtual ISchemaEntity GetSchemaEntity<T>(bool throwErrorIfNotExists = true) where T : IModelEntity
         {
-            var id = new Identity(Name, Conventions.NormalizeMetaElementName(this.Name, typeof(T).FullName));
+            var id = new Identity(Name, Conventions.ExtractMetaElementName(this.Name, typeof(T).FullName));
             return GetSchemaEntity(id, throwErrorIfNotExists);
         }
 
@@ -295,7 +295,7 @@ namespace Hyperstore.Modeling.Metadata
         {
             Contract.RequiresNotEmpty(name, "name");
 
-            var id = new Identity(Name, Conventions.NormalizeMetaElementName(this.Name, name));
+            var id = new Identity(Name, Conventions.ExtractMetaElementName(this.Name, name));
             return GetSchemaEntity(id, throwErrorIfNotExists);
         }
 
@@ -317,7 +317,7 @@ namespace Hyperstore.Modeling.Metadata
         {
             Contract.RequiresNotEmpty(name, "name");
 
-            var id = new Identity(Name, Conventions.NormalizeMetaElementName(this.Name, name));
+            var id = new Identity(Name, Conventions.ExtractMetaElementName(this.Name, name));
             return GetSchemaElement(id, throwErrorIfNotExists);
         }
 
@@ -410,7 +410,7 @@ namespace Hyperstore.Modeling.Metadata
         ///-------------------------------------------------------------------------------------------------
         public virtual ISchemaRelationship GetSchemaRelationship<T>(bool throwErrorIfNotExists = true) where T : IModelRelationship
         {
-            var id = new Identity(Name, Conventions.NormalizeMetaElementName(this.Name, typeof(T).FullName));
+            var id = new Identity(Name, Conventions.ExtractMetaElementName(this.Name, typeof(T).FullName));
             return GetSchemaRelationship(id, throwErrorIfNotExists);
         }
 
@@ -459,7 +459,7 @@ namespace Hyperstore.Modeling.Metadata
         {
             Contract.RequiresNotEmpty(name, "name");
 
-            var id = new Identity(Name, Conventions.NormalizeMetaElementName(this.Name, name));
+            var id = new Identity(Name, Conventions.ExtractMetaElementName(this.Name, name));
             return GetSchemaRelationship(id, throwErrorIfNotExists);
         }
 

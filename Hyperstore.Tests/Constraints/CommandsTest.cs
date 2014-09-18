@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,19 +26,57 @@ using Hyperstore.Modeling.HyperGraph.Index;
 using Hyperstore.Tests.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
+using Hyperstore.Modeling.Metadata.Constraints;
 
 namespace Hyperstore.Tests.Commands
 {
     [TestClass()]
-    public class ConstraintsTest 
+    public class ConstraintsTest
     {
+        [Constraint]
+        class Constraint : IValidationConstraint<XExtendsBaseClass>
+        {
+            public string Category
+            {
+                get { return null; }
+            }
+
+            public void ExecuteConstraint(XExtendsBaseClass self, ConstraintContext ctx)
+            {
+                if (!(self.Name == "momo"))
+                {
+                    ctx.CreateErrorMessage("Invalid value", "Name");
+                }
+            }
+        }
+
         [TestMethod]
-        [TestCategory("Commands")]
+        [TestCategory("Constraints")]
+        public async Task ConstraintByComposition()
+        {
+            var store = await StoreBuilder.New().ComposeWith(typeof(ConstraintsTest).Assembly).CreateAsync();
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New().CreateAsync("Test");
+
+            using (var s = store.BeginSession())
+            {
+                var a = new XExtendsBaseClass(domain);
+                a.Name = "mama";
+                s.AcceptChanges();
+            } // Pas d'erreur
+
+
+            var result = schema.Constraints.Validate(domain.GetElements());
+            Assert.IsTrue(result.Messages.Count() == 1);
+        }
+
+        [TestMethod]
+        [TestCategory("Constraints")]
         public async Task ExplicitConstraint()
         {
             var store = await StoreBuilder.New().CreateAsync();
             var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
-            var domain = await store.DomainModels.New().CreateAsync("Test"); 
+            var domain = await store.DomainModels.New().CreateAsync("Test");
 
             TestDomainDefinition.XExtendsBaseClass.AddConstraint(self =>
                 self.Name == "momo"
@@ -51,24 +89,18 @@ namespace Hyperstore.Tests.Commands
                 s.AcceptChanges();
             } // Pas d'erreur
 
-            // TODO est ce qu'une contrainte implicite est aussi une contrainte explicite ?? Je dirais oui
-            try
-            {
-                schema.Constraints.Validate(domain.GetElements());
-            }
-            catch (SessionException ex)
-            {
-                Assert.IsTrue(ex.Messages.Count() == 1);
-            }
+            var result = schema.Constraints.Validate(domain.GetElements());
+            Assert.IsTrue(result.Messages.Count() == 1);
+
         }
 
         [TestMethod]
-        [TestCategory("Commands")]
+        [TestCategory("Constraints")]
         public async Task ImplicitConstraint()
         {
             var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
-            var domain = await store.DomainModels.New().CreateAsync("Test"); 
+            var domain = await store.DomainModels.New().CreateAsync("Test");
 
             TestDomainDefinition.XExtendsBaseClass.AddImplicitConstraint(self =>
                 self.Name == "momo"
@@ -92,7 +124,7 @@ namespace Hyperstore.Tests.Commands
         }
 
         [TestMethod]
-        [TestCategory("Commands")]
+        [TestCategory("Constraints")]
         public async Task Contraint_Error_Notification()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -101,7 +133,7 @@ namespace Hyperstore.Tests.Commands
 
             TestDomainDefinition.XExtendsBaseClass.AddImplicitConstraint(self => self.Name != null, "Not null").Create();
             bool sawError = false;
-            domain.Events.OnErrors.Subscribe( m => { sawError = true; });
+            domain.Events.OnErrors.Subscribe(m => { sawError = true; });
 
             try
             {
@@ -121,7 +153,7 @@ namespace Hyperstore.Tests.Commands
         }
 
         [TestMethod]
-        [TestCategory("Commands")]
+        [TestCategory("Constraints")]
         public async Task EatConstraintException()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -129,7 +161,7 @@ namespace Hyperstore.Tests.Commands
             var domain = await store.DomainModels.New().CreateAsync("Test");
 
             TestDomainDefinition.XExtendsBaseClass.AddImplicitConstraint(self => self.Name != null, "Not null").Create();
-            domain.Events.OnErrors.Subscribe( m => { m.SetSilentMode(); });
+            domain.Events.OnErrors.Subscribe(m => { m.SetSilentMode(); });
 
             using (var s = domain.Store.BeginSession())
             {
@@ -139,15 +171,15 @@ namespace Hyperstore.Tests.Commands
         }
 
         [TestMethod]
-        [TestCategory("Commands")]
+        [TestCategory("Constraints")]
         public async Task MultiConstraints()
         {
             var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
-            var domain = await store.DomainModels.New().CreateAsync("Test"); 
+            var domain = await store.DomainModels.New().CreateAsync("Test");
 
             // Loading domain
-            using(var session = store.BeginSession(new SessionConfiguration{Mode=SessionMode.Loading | SessionMode.SkipConstraints}))
+            using (var session = store.BeginSession(new SessionConfiguration { Mode = SessionMode.Loading | SessionMode.SkipConstraints }))
             {
                 /// loading data
                 session.AcceptChanges();
@@ -159,8 +191,9 @@ namespace Hyperstore.Tests.Commands
             for (int i = 0; i < max; i++)
             {
                 var x = i;
-                TestDomainDefinition.XExtendsBaseClass.AddImplicitConstraint(self => {
-                    System.Threading.Interlocked.Decrement(ref cx); 
+                TestDomainDefinition.XExtendsBaseClass.AddImplicitConstraint(self =>
+                {
+                    System.Threading.Interlocked.Decrement(ref cx);
                     return self.Value > x;
                 }, "error").Create();
             }
@@ -179,7 +212,7 @@ namespace Hyperstore.Tests.Commands
         }
 
         [TestMethod]
-        [TestCategory("Commands")]
+        [TestCategory("Constraints")]
         public async Task Constraint_Cannot_modify_the_model()
         {
             await AssertHelper.ThrowsException<SessionException>(async () =>
@@ -187,7 +220,7 @@ namespace Hyperstore.Tests.Commands
                 Identity aid = null;
                 var store = await StoreBuilder.New().CreateAsync();
                 await store.Schemas.New<TestDomainDefinition>().CreateAsync();
-                var domain = await store.DomainModels.New().CreateAsync("Test"); 
+                var domain = await store.DomainModels.New().CreateAsync("Test");
 
                 TestDomainDefinition.XExtendsBaseClass.AddImplicitConstraint(self =>
                     {
@@ -206,14 +239,14 @@ namespace Hyperstore.Tests.Commands
         }
 
         [TestMethod]
-        [TestCategory("Commands")]
+        [TestCategory("Constraints")]
         public async Task Inherited_constraint()
         {
             await AssertHelper.ThrowsException<SessionException>(async () =>
             {
                 var store = await StoreBuilder.New().CreateAsync();
                 await store.Schemas.New<TestDomainDefinition>().CreateAsync();
-                var domain = await store.DomainModels.New().CreateAsync("Test"); 
+                var domain = await store.DomainModels.New().CreateAsync("Test");
 
                 TestDomainDefinition.XExtendsBaseClass.AddImplicitConstraint(self =>
                 {
@@ -235,7 +268,7 @@ namespace Hyperstore.Tests.Commands
         {
             var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
-            var domain = await store.DomainModels.New().CreateAsync("Test"); 
+            var domain = await store.DomainModels.New().CreateAsync("Test");
 
             TestDomainDefinition.XReferencesY.AddImplicitConstraint(r => r.Weight > 0, "error").Create();
 

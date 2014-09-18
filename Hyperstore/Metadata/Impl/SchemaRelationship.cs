@@ -149,7 +149,7 @@ namespace Hyperstore.Modeling.Metadata
             _start = start;
             _end = end;
 
-            name = Conventions.NormalizeMetaElementName(start.DomainModel.Name, name);
+            name = Conventions.ExtractMetaElementName(start.DomainModel.Name, name);
             ConstructInternal(start.DomainModel, implementedType, new Identity(start.Schema.Name, name), name, inheritedSchema, PrimitivesSchema.SchemaRelationshipSchema,
                     (dm, melId, mid) => new AddSchemaRelationshipCommand(dm as ISchema, melId, (ISchemaRelationship)mid, start, end));
 

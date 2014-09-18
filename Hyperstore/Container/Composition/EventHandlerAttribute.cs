@@ -30,7 +30,7 @@ namespace Hyperstore.Modeling.Events
     ///-------------------------------------------------------------------------------------------------
     [PublicAPI]
     [AttributeUsage(AttributeTargets.Class, Inherited = true)]
-    public sealed class EventHandlerAttribute : Hyperstore.Modeling.Container.Composition.HyperstoreAttribute, IEventHandlerMetadata
+    public sealed class EventHandlerAttribute : Hyperstore.Modeling.Container.Composition.HyperstoreAttribute, ICompositionMetadata
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

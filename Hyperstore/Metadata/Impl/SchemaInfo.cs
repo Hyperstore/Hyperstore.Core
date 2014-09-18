@@ -217,7 +217,7 @@ namespace Hyperstore.Modeling.Metadata
             if (implementedType == null)
                 implementedType = typeof(DynamicModelEntity);
 
-            name = Conventions.NormalizeMetaElementName(schema.Name, name ?? implementedType.FullName);
+            name = Conventions.ExtractMetaElementName(schema.Name, name ?? implementedType.FullName);
 
             if (id == null)
                 id = new Identity(schema.Name, name);
@@ -468,7 +468,7 @@ namespace Hyperstore.Modeling.Metadata
             if (trace != null)
                 trace.WriteTrace(TraceCategory.Metadata, ExceptionMessages.CreatePropertyWithIdForMetaclassFormat, property.Name, property.Id, ((IModelElement)this).Id);
 
-            var constraint = property.PropertySchema as Hyperstore.Modeling.Metadata.Constraints.ICheckValueObjectConstraint;
+            var constraint = property.PropertySchema as Hyperstore.Modeling.Metadata.Constraints.IConstraint;
             if( constraint != null && this.Schema.Constraints is IConstraintManagerInternal)
             {
                 (this.Schema.Constraints as IConstraintManagerInternal).AddConstraint(property, constraint);

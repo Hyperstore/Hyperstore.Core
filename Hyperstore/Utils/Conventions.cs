@@ -49,7 +49,7 @@ namespace Hyperstore.Modeling
             }
         }
 
-        internal static string NormalizeMetaElementName(string domainName, string name)
+        internal static string ExtractMetaElementName(string domainName, string name)
         {
             if (domainName != PrimitivesSchema.DomainModelName && name.StartsWith(domainName, StringComparison.OrdinalIgnoreCase))
                 return name.Substring(domainName.Length + 1);

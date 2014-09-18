@@ -27,7 +27,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
     ///  Interface for check value object constraint.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
-    public interface ICheckValueObjectConstraint
+    public interface IConstraint
     {
     }
 
@@ -37,7 +37,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
     /// </summary>
     /// <seealso cref="T:ICheckValueObjectConstraint"/>
     ///-------------------------------------------------------------------------------------------------
-    public interface IValidationValueObjectConstraint : ICheckValueObjectConstraint
+    public interface IValidationValueObjectConstraint : IConstraint
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -59,20 +59,20 @@ namespace Hyperstore.Modeling.Metadata.Constraints
     /// </typeparam>
     /// <seealso cref="T:ICheckValueObjectConstraint"/>
     ///-------------------------------------------------------------------------------------------------
-    public interface ICheckValueObjectConstraint<T> : ICheckValueObjectConstraint
+    public interface ICheckValueObjectConstraint<T> : IConstraint
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Executes the constraint operation.
         /// </summary>
-        /// <param name="value">
-        ///  The value.
+        /// <param name="self">
+        ///  The value to test.
         /// </param>
         /// <param name="ctx">
         ///  The context.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        void ExecuteConstraint(T value, ConstraintContext ctx);
+        void ExecuteConstraint(T self, ConstraintContext ctx);
     }
 
     ///-------------------------------------------------------------------------------------------------

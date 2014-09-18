@@ -28,7 +28,7 @@ namespace Hyperstore.Modeling.Commands
     ///-------------------------------------------------------------------------------------------------
     [PublicAPI]
     [AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
-    public sealed class CommandHandlerAttribute : Hyperstore.Modeling.Container.Composition.HyperstoreAttribute, ICommandHandlerMetadata
+    public sealed class CommandHandlerAttribute : Hyperstore.Modeling.Container.Composition.HyperstoreAttribute, ICompositionMetadata
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

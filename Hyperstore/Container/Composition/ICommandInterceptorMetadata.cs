@@ -14,7 +14,7 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Hyperstore.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 namespace Hyperstore.Modeling
 {
     ///-------------------------------------------------------------------------------------------------
@@ -23,18 +23,8 @@ namespace Hyperstore.Modeling
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     [PublicAPI]
-    public interface ICommandInterceptorMetadata
+    public interface ICommandInterceptorMetadata : ICompositionMetadata
     {
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the domain model.
-        /// </summary>
-        /// <value>
-        ///  The domain model.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        string DomainModel { get; }
-
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Gets the priority.

@@ -86,7 +86,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
             }
         }
 
-        string IValidationConstraint<T>.Category
+        string IValidationConstraint.Category
         {
             get { return _category; }
         }

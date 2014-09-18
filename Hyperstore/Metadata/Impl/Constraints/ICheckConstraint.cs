@@ -23,22 +23,6 @@ using System.Threading.Tasks;
 
 namespace Hyperstore.Modeling.Metadata.Constraints
 {
-    internal interface ICheckConstraint
-    {
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Executes the constraint operation.
-        /// </summary>
-        /// <param name="mel">
-        ///  The mel.
-        /// </param>
-        /// <param name="ctx">
-        ///  The context.
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
-        void ExecuteConstraint(IModelElement mel, ConstraintContext ctx);
-    }
-
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
     ///  Interface for check constraint.
@@ -47,20 +31,38 @@ namespace Hyperstore.Modeling.Metadata.Constraints
     ///  Generic type parameter.
     /// </typeparam>
     ///-------------------------------------------------------------------------------------------------
-    public interface ICheckConstraint<T> where T : IModelElement
+    public interface ICheckConstraint<T> : IConstraint where T : IModelElement
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Executes the constraint operation.
         /// </summary>
-        /// <param name="mel">
-        ///  The mel.
+        /// <param name="self">
+        ///  IModelElement instance to test
         /// </param>
         /// <param name="ctx">
         ///  The context.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        void ExecuteConstraint(T mel, ConstraintContext ctx);
+        void ExecuteConstraint(T self, ConstraintContext ctx);
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  Dot not use this interface directly
+    /// </summary>
+    ///-------------------------------------------------------------------------------------------------
+    public interface IValidationConstraint
+    {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the category.
+        /// </summary>
+        /// <value>
+        ///  The category.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        string Category { get; }
     }
 
     ///-------------------------------------------------------------------------------------------------
@@ -72,16 +74,8 @@ namespace Hyperstore.Modeling.Metadata.Constraints
     /// </typeparam>
     /// <seealso cref="T:ICheckConstraint{T}"/>
     ///-------------------------------------------------------------------------------------------------
-    public interface IValidationConstraint<T> : ICheckConstraint<T> where T : IModelElement
+    public interface IValidationConstraint<T> : IValidationConstraint, ICheckConstraint<T> where T : IModelElement
     {
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the category.
-        /// </summary>
-        /// <value>
-        ///  The category.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        string Category { get; }
+
     }
 }

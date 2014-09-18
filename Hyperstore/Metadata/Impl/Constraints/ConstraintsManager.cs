@@ -46,7 +46,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
     {
         private Dictionary<Identity, List<ConstraintProxy>> _checkConstraints;
 
-        private IHyperstore Store { get; set; }
+        private IDomainModel Domain { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -67,11 +67,49 @@ namespace Hyperstore.Modeling.Metadata.Constraints
 
         void IDomainService.SetDomain(IDomainModel domainModel)
         {
-            Store = domainModel.Store;
+            Domain = domainModel;
             _checkConstraints = new Dictionary<Identity, List<ConstraintProxy>>();
+            Domain.DomainLoaded += OnDomainLoaded;
         }
 
+        private void OnDomainLoaded(object sender, EventArgs e)
+        {
+            Domain.DomainLoaded -= OnDomainLoaded;
+            RegisterFromComposition();
+        }
+        
         #region Register
+        private void RegisterFromComposition()
+        {
+            var compositionService = Domain.Store.Services.Resolve<ICompositionService>();
+            if (compositionService == null)
+                return;
+
+            foreach (var constraint in compositionService.GetConstraintsForDomainModel(Domain))
+            {
+                var ruleType = constraint.Value.GetType();
+                var interfaces = ReflectionHelper.GetInterfaces(ruleType);
+
+                var constraintType = interfaces.Where(i => ReflectionHelper.IsGenericType(i, typeof(ICheckConstraint<>)))
+                                                .Select(i =>  ReflectionHelper.GetGenericArguments(i).First() )
+                                                .FirstOrDefault();
+                if (constraintType == null)
+                    continue;
+
+                var schemaName = new Identity(Domain.Name, Conventions.ExtractMetaElementName(Domain.Name, constraintType.FullName)).ToString();
+                var schemaElement = Domain.Store.GetSchemaElement(schemaName, false);
+                if (schemaElement == null)
+                {
+                    Session.Current.Log(new DiagnosticMessage(MessageType.Warning, String.Format("Composition error - Unknow schema element {0} when trying to add a constraint.", constraintType.FullName), "Composition"));
+                    continue;
+                }
+
+                var validation = constraint.Value as IValidationConstraint;
+
+                var proxy = validation == null ? new ConstraintProxy(constraintType, constraint.Value, ConstraintKind.Check, null) : new ConstraintProxy(constraintType, constraint.Value, ConstraintKind.Validate, validation.Category);
+                AddConstraint(schemaElement, proxy);
+            }
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -84,7 +122,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
         ///  The constraint.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void AddConstraint(ISchemaProperty property, ICheckValueObjectConstraint constraint)
+        public void AddConstraint(ISchemaProperty property, IConstraint constraint)
         {
             var owner = property.Owner as ISchemaElement;
             if (owner == null)
@@ -95,6 +133,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
             var constraintElementType = interfaces.Where(i => ReflectionHelper.IsGenericType(i, typeof(IValidationValueObjectConstraint<>)))
                         .Select(i => ReflectionHelper.GetGenericArguments(i).First())
                         .FirstOrDefault();
+
             if (constraintElementType != null)
             {
                 var category = ((IValidationValueObjectConstraint)constraint).Category;
@@ -105,7 +144,14 @@ namespace Hyperstore.Modeling.Metadata.Constraints
                 constraintElementType = interfaces.Where(i => ReflectionHelper.IsGenericType(i, typeof(ICheckValueObjectConstraint<>)))
                                                 .Select(i => ReflectionHelper.GetGenericArguments(i).First())
                                                 .FirstOrDefault();
-                AddConstraint(owner, new CheckPropertyConstraintProxy(property, constraintElementType, constraint, ConstraintKind.Check, null));
+                if (constraintElementType != null)
+                {
+                    AddConstraint(owner, new CheckPropertyConstraintProxy(property, constraintElementType, constraint, ConstraintKind.Check, null));
+                }
+                else
+                {
+                    throw new Exception("Invalid constraint type for property " + property.Name);
+                }
             }
         }
 
@@ -170,7 +216,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
                 ISession session = null;
                 if (Session.Current == null)
                 {
-                    session = Store.BeginSession(new SessionConfiguration { Readonly = true });
+                    session = Domain.Store.BeginSession(new SessionConfiguration { Readonly = true });
                 }
 
                 var ctx = new ConstraintContext(((ISessionInternal)Session.Current).SessionContext, categoryTitle, kind);

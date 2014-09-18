@@ -17,6 +17,7 @@
  
 using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.Events;
+using Hyperstore.Modeling.Metadata.Constraints;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace Hyperstore.Modeling
     /// </summary>
     /// <seealso cref="T:IDisposable"/>
     ///-------------------------------------------------------------------------------------------------
-    public interface ICompositionService : IDisposable 
+    internal interface ICompositionService : IDisposable 
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -39,7 +40,7 @@ namespace Hyperstore.Modeling
         ///  An enumerator that allows foreach to be used to process the event handlers in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<Lazy<IEventHandler, IEventHandlerMetadata>> GetEventHandlers();
+        IEnumerable<Lazy<IEventHandler, ICompositionMetadata>> GetEventHandlers();
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -67,6 +68,20 @@ namespace Hyperstore.Modeling
         ///  models in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<Lazy<ICommandHandler, ICommandHandlerMetadata>> GetCommandHandlersForDomainModel(IDomainModel domainModel);
+        IEnumerable<Lazy<ICommandHandler, ICompositionMetadata>> GetCommandHandlersForDomainModel(IDomainModel domainModel);
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the constraints for domain models in this collection.
+        /// </summary>
+        /// <param name="domainModel">
+        ///  The domain model.
+        /// </param>
+        /// <returns>
+        ///  An enumerator that allows foreach to be used to process the constraints for domain models in
+        ///  this collection.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        IEnumerable<Lazy<IConstraint, ICompositionMetadata>> GetConstraintsForDomainModel(IDomainModel domainModel);
     }
 }

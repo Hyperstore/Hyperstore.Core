@@ -67,11 +67,6 @@ namespace Hyperstore.Tests.Commands
 
             using (var writer = new FileStream("test.xml", FileMode.Create))
             {
-                Hyperstore.Modeling.Serialization.XmlSerializer.Serialize(writer, domain, XmlSerializationOption.Fluent);
-            }
-
-            using (var writer = new FileStream("test.xml", FileMode.Create))
-            {
                 Hyperstore.Modeling.Serialization.XmlSerializer.Serialize(writer, domain, XmlSerializationOption.CompressAll);
             }
             Assert.AreEqual(11, domain.GetEntities().Count());

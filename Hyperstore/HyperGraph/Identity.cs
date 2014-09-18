@@ -44,12 +44,12 @@ namespace Hyperstore.Modeling
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
         public static readonly Identity Empty = new Identity
-                                                {
-                                                    _key = null,
-                                                    _domainModelName = null,
-                                                    _value = EmptyId,
-                                                    _hash = 0
-                                                };
+            {
+                _key = null,
+                _domainModelName = null,
+                _value = EmptyId,
+                _hash = 0
+            };
         private string _domainModelName;
 
         private int _hash;
@@ -80,8 +80,8 @@ namespace Hyperstore.Modeling
 
             _key = key;
             _domainModelName = domainModelName;
-            _value = _domainModelName + Separator + _key;
-            _hash = _value.ToLowerInvariant().GetHashCode();
+            _value = (_domainModelName + Separator + _key).ToLowerInvariant();
+            _hash = _value.GetHashCode();
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -224,7 +224,7 @@ namespace Hyperstore.Modeling
             var dm = str.Substring(0, pos);
             var key = str.Substring(pos + 1);
 
-            key = Conventions.NormalizeMetaElementName(dm, key);
+            key = Conventions.ExtractMetaElementName(dm, key);
 
             return new Identity(dm, key);
         }
