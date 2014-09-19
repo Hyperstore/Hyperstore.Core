@@ -433,8 +433,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />
-    <None Include="Metadata\ClassDiagram1.cd" />
     <None Include="Hyperstore.licenseheader" />
+    <None Include="Metadata\ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

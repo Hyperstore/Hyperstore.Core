@@ -115,6 +115,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UIDispatcher.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Hyperstore.Platform.WinRT.licenseheader" />
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>
