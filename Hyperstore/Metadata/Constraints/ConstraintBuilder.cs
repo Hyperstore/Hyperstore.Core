@@ -23,7 +23,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  A constraint builder.
+    ///  Create a constraint builder.
     /// </summary>
     /// <typeparam name="T">
     ///  Generic type parameter.
@@ -49,62 +49,62 @@ namespace Hyperstore.Modeling.Metadata.Constraints
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Constructor.
+        ///  Initialize a new constraint builder. You must call its Register method to create an dregister the constraint
         /// </summary>
-        /// <param name="metadata">
-        ///  The metadata.
+        /// <param name="schemaElement">
+        ///  The schema element associates to the constraint
         /// </param>
         /// <param name="propertyName">
-        ///  Name of the property.
+        ///  Property name if any (Used to personalize the message and to send a data error info if the domain is observable)
         /// </param>
         /// <param name="expression">
-        ///  (Optional) The expression.
+        ///  Expression used to validate the constraint
         /// </param>
         /// <param name="message">
-        ///  (Optional) The message.
+        ///  (Optional) Message to display when the constraint is not respected
         /// </param>
         /// <param name="isImplicit">
         ///  (Optional) true if this instance is implicit.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public ConstraintBuilder(ISchemaElement metadata, string propertyName, Func<T, bool> expression = null, DiagnosticMessage message = null, bool isImplicit = false)
-            : this(metadata, propertyName, expression, isImplicit)
+        public ConstraintBuilder(ISchemaElement schemaElement, string propertyName, Func<T, bool> expression = null, DiagnosticMessage message = null, bool isImplicit = false)
+            : this(schemaElement, propertyName, expression, isImplicit)
         {
             Message(message);
         }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Constructor.
+        ///  Initialize a new constraint builder. You must call its Register method to create an dregister the constraint
         /// </summary>
-        /// <param name="metadata">
-        ///  The metadata.
+        /// <param name="schemaElement">
+        ///  The schema element associates to the constraint
         /// </param>
         /// <param name="propertyName">
-        ///  Name of the property.
+        ///  Property name if any (Used to personalize the message and to send a data error info if the domain is observable)
         /// </param>
         /// <param name="expression">
-        ///  The expression.
+        ///  Expression used to validate the constraint
         /// </param>
         /// <param name="message">
-        ///  (Optional) The message.
+        ///  (Optional) Message to display when the constraint is not respected
         /// </param>
         /// <param name="isImplicit">
         ///  (Optional) true if this instance is implicit.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public ConstraintBuilder(ISchemaElement metadata, string propertyName, Func<T, bool> expression, string message = null, bool isImplicit = false)
-            : this(metadata, propertyName, expression, isImplicit)
+        public ConstraintBuilder(ISchemaElement schemaElement, string propertyName, Func<T, bool> expression, string message = null, bool isImplicit = false)
+            : this(schemaElement, propertyName, expression, isImplicit)
         {
             this._message = message;
         }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Messages.
+        ///  Configure the constraint from a diagnostic message properties.
         /// </summary>
         /// <param name="message">
-        ///  The message.
+        ///  A diagnostic message
         /// </param>
         /// <returns>
         ///  A ConstraintBuilder&lt;T&gt;
@@ -121,10 +121,10 @@ namespace Hyperstore.Modeling.Metadata.Constraints
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Verifies the given expression.
+        ///  Expression used to validate the constraint
         /// </summary>
         /// <param name="expression">
-        ///  The expression.
+        ///  The expression must return true to validate the constraint.
         /// </param>
         /// <returns>
         ///  A ConstraintBuilder&lt;T&gt;
@@ -139,7 +139,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Categories.
+        ///  Define a category used when a validation is called
         /// </summary>
         /// <param name="category">
         ///  The category.
@@ -156,10 +156,10 @@ namespace Hyperstore.Modeling.Metadata.Constraints
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Messages.
+        ///  Set the message to display when the constraint is not respected
         /// </summary>
         /// <param name="message">
-        ///  The message.
+        ///  Text Message : Can contain property pattern like {Name}, {Id}...
         /// </param>
         /// <returns>
         ///  A ConstraintBuilder&lt;T&gt;
@@ -174,7 +174,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Converts this instance to a warning.
+        ///  This constraint will raise a warning message (The session wil not be aborted)
         /// </summary>
         /// <returns>
         ///  A ConstraintBuilder&lt;T&gt;
@@ -188,7 +188,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Converts this instance to an implicit.
+        ///  Set this constraint as implicit (run on every change)
         /// </summary>
         /// <returns>
         ///  A ConstraintBuilder&lt;T&gt;
@@ -202,10 +202,10 @@ namespace Hyperstore.Modeling.Metadata.Constraints
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Creates this instance.
+        ///  Register this constraint in the constraint manager
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
-        public void Create()
+        public void Register()
         {
             var schema = _metadata.Schema;
 

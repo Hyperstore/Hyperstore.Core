@@ -64,14 +64,14 @@ namespace Hyperstore.Modeling.Metadata.Constraints
         /// <summary>
         ///  Executes the constraint operation.
         /// </summary>
-        /// <param name="self">
+        /// <param name="value">
         ///  The value to test.
         /// </param>
         /// <param name="ctx">
         ///  The context.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        void ExecuteConstraint(T self, ConstraintContext ctx);
+        void ExecuteConstraint(T value, ConstraintContext ctx);
     }
 
     ///-------------------------------------------------------------------------------------------------

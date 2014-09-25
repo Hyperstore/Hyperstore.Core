@@ -55,7 +55,7 @@ namespace Hyperstore.Bench
                 for (int i = 0; i < nbc; i++)
                     TestDomainDefinition.XExtendsBaseClass.AddImplicitConstraint(self =>
                         System.Threading.Interlocked.Increment(ref nb) > 0,
-                        "OK");
+                        "OK").Register();
             }
 
             Console.WriteLine("Running...");

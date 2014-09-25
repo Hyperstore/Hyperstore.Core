@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System.Collections;
@@ -37,51 +37,35 @@ namespace Hyperstore.Modeling.MemoryStore
         private readonly NodeType _elementType;
         private readonly object _ownerKey;
         private readonly List<ISlot> _slots;
-        private int _hits;
-        private long _lastAccess;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Constructor.
+        ///  Gets or sets the identifier.
         /// </summary>
-        /// <param name="clone">
-        ///  The clone.
-        /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public SlotList(SlotList clone)
+        public Identity Id { get; private set; }
+
+        internal SlotList(SlotList clone)
         {
             DebugContract.Requires(clone, "clone");
 
             _ownerKey = clone._ownerKey;
             _elementType = clone._elementType;
-            _hits = clone._hits;
-            _lastAccess = clone.LastAccess;
-
+            Id = clone.Id;
             _ownerKey = clone._ownerKey;
             _slots = new List<ISlot>(Length + 2);
             _slots.AddRange(clone._slots.Where(s => s.Id > 0));
             Length = _slots.Count;
         }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Constructor.
-        /// </summary>
-        /// <param name="elementType">
-        ///  The type of the element.
-        /// </param>
-        /// <param name="ownerKey">
-        ///  (Optional) The owner key.
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
-        public SlotList(NodeType elementType, object ownerKey = null)
+        internal SlotList(Identity id, NodeType elementType, object ownerKey = null)
         {
             DebugContract.Requires(elementType != NodeType.Property || ownerKey != null);
 
+            Id = id;
             _ownerKey = ownerKey;
             _elementType = elementType;
             _slots = new List<ISlot>(12);
-            Mark();
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -136,32 +120,6 @@ namespace Hyperstore.Modeling.MemoryStore
         public NodeType ElementType
         {
             get { return _elementType; }
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Nombre de fois ou cette valeur a été accédée.
-        /// </summary>
-        /// <value>
-        ///  The hits.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public int Hits
-        {
-            get { return _hits; }
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Date (en nombre de ticks) du dernier accés.
-        /// </summary>
-        /// <value>
-        ///  The last access.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public long LastAccess
-        {
-            get { return _lastAccess; }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -269,12 +227,6 @@ namespace Hyperstore.Modeling.MemoryStore
                 //    this._lock.ExitReadLock();
             }
             return null;
-        }
-
-        internal void Mark()
-        {
-            _lastAccess = PreciseClock.GetCurrent();
-            Interlocked.Increment(ref _hits);
         }
 
         #region IDisposable Members

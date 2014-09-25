@@ -1,4 +1,5 @@
-﻿//	Copyright © 2013 - 2014, Alain Metge. All rights reserved.
+﻿using Hyperstore.Modeling;
+//	Copyright © 2013 - 2014, Alain Metge. All rights reserved.
 //
 //		This file is part of Hyperstore (http://www.hyperstore.org)
 //

@@ -79,7 +79,7 @@ namespace Hyperstore.Tests.Commands
 
             TestDomainDefinition.XExtendsBaseClass.AddConstraint(self =>
                 self.Name == "momo"
-                , "Not null").Create();
+                , "Not null").Register();
 
             using (var s = store.BeginSession())
             {
@@ -103,7 +103,7 @@ namespace Hyperstore.Tests.Commands
 
             TestDomainDefinition.XExtendsBaseClass.AddImplicitConstraint(self =>
                 self.Name == "momo"
-                , "Not null").Create();
+                , "Not null").Register();
 
             try
             {
@@ -130,7 +130,7 @@ namespace Hyperstore.Tests.Commands
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
 
-            TestDomainDefinition.XExtendsBaseClass.AddImplicitConstraint(self => self.Name != null, "Not null").Create();
+            TestDomainDefinition.XExtendsBaseClass.AddImplicitConstraint(self => self.Name != null, "Not null").Register();
             bool sawError = false;
             domain.Events.OnErrors.Subscribe(m => { sawError = true; });
 
@@ -159,7 +159,7 @@ namespace Hyperstore.Tests.Commands
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
 
-            TestDomainDefinition.XExtendsBaseClass.AddImplicitConstraint(self => self.Name != null, "Not null").Create();
+            TestDomainDefinition.XExtendsBaseClass.AddImplicitConstraint(self => self.Name != null, "Not null").Register();
             domain.Events.OnErrors.Subscribe(m => { m.SetSilentMode(); });
 
             using (var s = domain.Store.BeginSession())
@@ -194,7 +194,7 @@ namespace Hyperstore.Tests.Commands
                 {
                     System.Threading.Interlocked.Decrement(ref cx);
                     return self.Value > x;
-                }, "error").Create();
+                }, "error").Register();
             }
 
             using (var s = domain.Store.BeginSession())
@@ -226,7 +226,7 @@ namespace Hyperstore.Tests.Commands
                         self.Name = "xxx"; // Forbidden
                         return true;
                     }
-                , "Not null").Create();
+                , "Not null").Register();
 
                 using (var s = domain.Store.BeginSession())
                 {
@@ -251,7 +251,7 @@ namespace Hyperstore.Tests.Commands
                 {
                     return self.Name != "xxx";
                 }
-                , "Not null").Create();
+                , "Not null").Register();
 
                 using (var s = domain.Store.BeginSession())
                 {
@@ -269,7 +269,7 @@ namespace Hyperstore.Tests.Commands
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
 
-            TestDomainDefinition.XReferencesY.AddImplicitConstraint(r => r.Weight > 0, "error").Create();
+            TestDomainDefinition.XReferencesY.AddImplicitConstraint(r => r.Weight > 0, "error").Register();
 
             AssertHelper.ThrowsException<SessionException>(
                 () =>

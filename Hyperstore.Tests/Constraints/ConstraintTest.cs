@@ -113,7 +113,7 @@ namespace Hyperstore.Tests.DomainExtension
         public async Task TestValidateConstraint()
         {
             await CreateDomain();
-            LibraryDefinition.Library.AddConstraint<Library>(self => self.Name != "abcd").Message("error").Category("test").Create();
+            LibraryDefinition.Library.AddConstraint<Library>(self => self.Name != "abcd").Message("error").Category("test").Register();
 
                 Library lib;
                 using (var session = store.BeginSession())

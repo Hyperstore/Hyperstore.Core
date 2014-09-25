@@ -31,7 +31,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod]
         public void AddItem()
         {
-            SlotList list = new SlotList(NodeType.Node);
+            SlotList list = new SlotList(null, NodeType.Node);
             list.Add(new Slot<int>(1));
             Assert.IsTrue(list.Length == 1);
         }
@@ -40,7 +40,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod]
         public void Enumerate()
         {
-            SlotList list = new SlotList(NodeType.Node);
+            SlotList list = new SlotList(null, NodeType.Node);
             list.Add(new Slot<int>(1));
             list.Add(new Slot<int>(1));
             Assert.AreEqual(2, list.Sum(i => ((Slot<int>)i).Value));
@@ -50,7 +50,7 @@ namespace Hyperstore.Tests.MemoryStore
         [TestMethod]
         public void Garbage()
         {
-            SlotList list = new SlotList(NodeType.Node);
+            SlotList list = new SlotList(null, NodeType.Node);
             var a = new Slot<int>(1);
             list.Add(a);
             a = new Slot<int>(1);
@@ -60,11 +60,11 @@ namespace Hyperstore.Tests.MemoryStore
             list.Dispose();
             AssertHelper.IsGarbageCollected(ref list);
 
-            list = new SlotList(NodeType.Node);
+            list = new SlotList(null, NodeType.Node);
             list.Dispose();
             AssertHelper.IsGarbageCollected(ref list);
 
-            list = new SlotList(NodeType.Node);
+            list = new SlotList(null, NodeType.Node);
             a = new Slot<int>(1);
             list.Add(a);
             list.Dispose();
