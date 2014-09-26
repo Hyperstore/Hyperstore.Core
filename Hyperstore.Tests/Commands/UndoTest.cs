@@ -25,6 +25,7 @@ using Hyperstore.Modeling.HyperGraph.Index;
 using Hyperstore.Tests.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
+using Hyperstore.Modeling.Domain;
 
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -40,16 +41,37 @@ namespace Hyperstore.Tests.Commands
         public async Task Undo()
         {
             var store = await StoreBuilder.New().CreateAsync();
-            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
-            var domain = await store.DomainModels.New().CreateAsync("Test");
+            await store.Schemas.New<LibraryDefinition>().CreateAsync();
+            var domain = await store.DomainModels.New()
+                                .UsingIdGenerator(r => new LongIdGenerator())
+                                .Using<IHyperstoreTrace>( r=> new DebugHyperstoreTrace(TraceCategory.Hypergraph))
+                                .CreateAsync("Test");
+
             var undoManager = new UndoManager(store);
-            CreateGraph(domain);
+            Library lib;
+            using (var session = store.BeginSession())
+            {
+                lib = new Library(domain);
+                lib.Name = "Lib1";
+                for (int i = 0; i < 5; i++)
+                {
+                    var b = new Book(domain);
+                    b.Title = "Book \"book\" " + i.ToString();
+                    b.Copies = i + 1;
+                    lib.Books.Add(b);
+
+                    var m = new Member(domain);
+                    m.Name = "Book " + i.ToString();
+                    lib.Members.Add(m);
+
+                }
+                session.AcceptChanges();
+            }
             undoManager.RegisterDomain(domain);
 
-            IModelElement a = store.GetElement<XExtendsBaseClass>(Id(1));
             using (var s = store.BeginSession())
             {
-                a.Remove(); // Supprime tout le graphe
+                s.Execute(new RemoveEntityCommand(lib));
                 s.AcceptChanges();
             }
 

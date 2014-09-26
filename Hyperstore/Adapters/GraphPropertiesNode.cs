@@ -107,7 +107,7 @@ namespace Hyperstore.Modeling.Adapters
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="metadataId">
+        /// <param name="schemaRelationship">
         ///  Identifier for the metadata.
         /// </param>
         /// <param name="direction">
@@ -123,7 +123,7 @@ namespace Hyperstore.Modeling.Adapters
         ///  A GraphNode.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public override GraphNode AddEdge(Identity id, Identity metadataId, Direction direction, Identity endId, Identity endSchemaId)
+        public override GraphNode AddEdge(Identity id, ISchemaRelationship schemaRelationship, Direction direction, Identity endId, Identity endSchemaId)
         {
             throw new NotImplementedException("Uses constructor instead");
         }

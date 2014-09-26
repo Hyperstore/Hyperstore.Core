@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -24,6 +24,7 @@ using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.Container;
 using System.Linq;
 using Hyperstore.Modeling.Adapters;
+using Hyperstore.Modeling.Traversal;
 
 #endregion
 
@@ -269,19 +270,21 @@ namespace Hyperstore.Modeling.HyperGraph
                 // Mise à jour des infos sur les relations propres à un noeud
                 if (startId == endId)
                 {
-                    start = start.AddEdge(id, metaRelationship.Id, Direction.Both, startId, startSchema.Id);
+                    start = start.AddEdge(id, metaRelationship, Direction.Both, startId, startSchema.Id);
                     _storage.UpdateNode(start);
                 }
                 else
                 {
-                    start = start.AddEdge(id, metaRelationship.Id, Direction.Outgoing, endId, endSchema.Id);
+                    start = start.AddEdge(id, metaRelationship, Direction.Outgoing, endId, endSchema.Id);
                     _storage.UpdateNode(start);
 
                     // Relation uni-directionnelle entre domaine.
                     if (end != null)
                     {
-                        end = end.AddEdge(id, metaRelationship.Id, Direction.Incoming, startId, startSchema.Id);
-                        _storage.UpdateNode(end);
+                        var tmp = end.AddEdge(id, metaRelationship, Direction.Incoming, startId, startSchema.Id);
+                        if (tmp == null)
+                            throw new Exception(String.Format("Element {0} can not have multi parent", end.Id));
+                        _storage.UpdateNode(tmp);
                     }
                 }
 
@@ -694,8 +697,8 @@ namespace Hyperstore.Modeling.HyperGraph
 
             Session.Current.AcquireLock(LockType.Exclusive, id);
 
-            GraphNode node;            
-            if (!GetGraphNode(id, NodeType.Node, schemaEntity, out node ))
+            GraphNode node;
+            if (!GetGraphNode(id, NodeType.Node, schemaEntity, out node))
             {
                 if (!throwExceptionIfNotExists)
                     return false;
@@ -705,14 +708,18 @@ namespace Hyperstore.Modeling.HyperGraph
 
             _trace.WriteTrace(TraceCategory.Hypergraph, "Remove element {0}", id);
 
+            var commands = RemoveDependencies(node, schemaEntity, originEmbeddedRelationship);
+            if (commands.Count > 0)
+                Session.Current.Execute(commands.ToArray());
+
             using (var tx = BeginTransaction())
             {
                 if (_storage.RemoveNode(node.Id))
                 {
-                    foreach (var prop in schemaEntity.GetProperties(true))
-                    {
-                        _storage.RemoveNode(node.Id.CreateAttributeIdentity(prop.Name));
-                    }
+                    //foreach (var prop in schemaEntity.GetProperties(true))
+                    //{
+                    //    _storage.RemoveNode(node.Id.CreateAttributeIdentity(prop.Name));
+                    //}
 
                     // Informe qu'il faudra mettre à jour les index
                     DeferRemoveIndex(schemaEntity, node.Id);
@@ -722,10 +729,6 @@ namespace Hyperstore.Modeling.HyperGraph
                 }
                 tx.Commit();
             }
-
-            var commands = RemoveDependencies(node, schemaEntity, originEmbeddedRelationship);
-            if (commands.Count > 0)
-                Session.Current.Execute(commands.ToArray());
 
             return true;
         }
@@ -773,6 +776,19 @@ namespace Hyperstore.Modeling.HyperGraph
             Session.Current.AcquireLock(LockType.Exclusive, edge.EndId);
 
             _trace.WriteTrace(TraceCategory.Hypergraph, "Remove relationship {0}", id);
+
+            var commands = RemoveDependencies(edge, schemaRelationship, originEmbeddedRelationship);
+            if (schemaRelationship.IsEmbedded && String.Compare(edge.EndId.DomainModelName, DomainModel.Name, StringComparison.OrdinalIgnoreCase) == 0)
+            {
+                var endSchema = _domainModel.Store.GetSchemaElement(edge.EndSchemaId);
+                if (endSchema is ISchemaRelationship)
+                    commands.Add(new RemoveRelationshipCommand(_domainModel, edge.EndId, edge.EndSchemaId, id));
+                else
+                    commands.Add(new RemoveEntityCommand(_domainModel, edge.EndId, edge.EndSchemaId, id));
+            }
+
+            if (commands.Count > 0)
+                Session.Current.Execute(commands.ToArray());
 
             using (var tx = BeginTransaction())
             {
@@ -830,19 +846,6 @@ namespace Hyperstore.Modeling.HyperGraph
                 }
                 tx.Commit();
             }
-
-            var commands = RemoveDependencies(edge, schemaRelationship, originEmbeddedRelationship);
-            if (schemaRelationship.IsEmbedded && edge.EndId.DomainModelName == DomainModel.Name)
-            {
-                var endSchema = _domainModel.Store.GetSchemaElement(edge.EndSchemaId);
-                if( endSchema is ISchemaRelationship )
-                    commands.Add(new RemoveRelationshipCommand(_domainModel, edge.EndId, edge.EndSchemaId, id));
-                else
-                    commands.Add(new RemoveEntityCommand(_domainModel, edge.EndId, edge.EndSchemaId, id));
-            }
-
-            if (commands.Count > 0)
-                Session.Current.Execute(commands.ToArray());
 
             return true;
         }
@@ -1076,9 +1079,10 @@ namespace Hyperstore.Modeling.HyperGraph
                 if (incoming == null || incoming.Id == originEmbeddedRelationship)
                     continue;
 
-                Debug.Assert(String.Compare( _domainModel.Name, incoming.Id.DomainModelName, StringComparison.OrdinalIgnoreCase) == 0);
+                Debug.Assert(String.Compare(_domainModel.Name, incoming.Id.DomainModelName, StringComparison.OrdinalIgnoreCase) == 0);
 
                 // Génére la commande de suppression.
+                _trace.WriteTrace(TraceCategory.Hypergraph, "Remove incoming relationship {0}", incoming.Id);
                 commands.Add(new RemoveRelationshipCommand(_domainModel, incoming.Id, incoming.SchemaId));
             }
 
@@ -1089,6 +1093,7 @@ namespace Hyperstore.Modeling.HyperGraph
                 if (outgoing == null)
                     continue;
 
+                _trace.WriteTrace(TraceCategory.Hypergraph, "Remove outgoing relationship {0}", outgoing.Id);
                 commands.Add(new RemoveRelationshipCommand(_domainModel, outgoing.Id, outgoing.SchemaId));
             }
 
@@ -1101,7 +1106,10 @@ namespace Hyperstore.Modeling.HyperGraph
 
                 var pnode = GetPropertyValue(node.Id, schemaElement, prop);
                 if (pnode != null)
+                {
+                    _trace.WriteTrace(TraceCategory.Hypergraph, "Remove property {0}.{1}", node.Id, prop.Name);
                     commands.Add(new RemovePropertyCommand(_domainModel, node.Id, schemaElement, prop));
+                }
             }
 
             return commands;
@@ -1182,11 +1190,13 @@ namespace Hyperstore.Modeling.HyperGraph
                         {
                             foreach (var edge in result.Outgoings)
                             {
-                                node = node.AddEdge(edge.Id, edge.SchemaId, Direction.Outgoing, edge.EndId, edge.EndSchemaId);
+                                var edgeSchema = _domainModel.Store.GetSchemaRelationship(edge.SchemaId);
+                                node = node.AddEdge(edge.Id, edgeSchema, Direction.Outgoing, edge.EndId, edge.EndSchemaId);
                             }
                             foreach (var edge in result.Incomings)
                             {
-                                node = node.AddEdge(edge.Id, edge.SchemaId, Direction.Incoming, edge.EndId, edge.EndSchemaId);
+                                var edgeSchema = _domainModel.Store.GetSchemaRelationship(edge.SchemaId);
+                                node = node.AddEdge(edge.Id, edgeSchema, Direction.Incoming, edge.EndId, edge.EndSchemaId);
                             }
                         }
 

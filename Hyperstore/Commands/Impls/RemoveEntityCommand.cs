@@ -90,7 +90,7 @@ namespace Hyperstore.Modeling.Commands
 
             var metadata = domainModel.Store.GetSchemaEntity(schemaEntityId);
             Entity = domainModel.Store.GetEntity(id, metadata);
-            if (Entity == null)
+            if (Entity == null && throwExceptionIfNotExists)
                 throw new InvalidElementException(id);
             _throwExceptionIfNotExists = throwExceptionIfNotExists;
         }

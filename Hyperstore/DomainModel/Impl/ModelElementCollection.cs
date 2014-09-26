@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -38,7 +38,7 @@ namespace Hyperstore.Modeling
     /// <seealso cref="T:Hyperstore.Modeling.ModelElementCollection{TElement}"/>
     ///-------------------------------------------------------------------------------------------------
     public class ModelElementCollection<TRelationship, TElement> : ModelElementCollection<TElement>
-        where TElement : IModelElement
+        where TElement : class, IModelElement
         where TRelationship : IModelRelationship
     {
         ///-------------------------------------------------------------------------------------------------
@@ -71,10 +71,8 @@ namespace Hyperstore.Modeling
     /// <seealso cref="T:Hyperstore.Modeling.ModelElementList{T}"/>
     /// <seealso cref="T:System.Collections.Generic.ICollection{T}"/>
     ///-------------------------------------------------------------------------------------------------
-    public class ModelElementCollection<T> : ModelElementList<T>, ICollection<T> where T : IModelElement
+    public class ModelElementCollection<T> : AbstractModelElementCollection<T>, ICollection<T> where T : class, IModelElement
     {
-        private readonly bool _readOnly;
-
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Constructor.
@@ -93,15 +91,54 @@ namespace Hyperstore.Modeling
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         public ModelElementCollection(IModelElement element, string schemaRelationshipName, bool opposite = false, bool readOnly = false)
-            : this(element, element.DomainModel.Store.GetSchemaRelationship(schemaRelationshipName), opposite, readOnly)
+            : base(element, element.DomainModel.Store.GetSchemaRelationship(schemaRelationshipName), opposite, readOnly)
         {
             Contract.Requires(element, "element");
             Contract.RequiresNotEmpty(schemaRelationshipName, "schemaRelationshipName");
         }
 
+        public ModelElementCollection(IModelElement element, ISchemaRelationship schemaRelationship, bool opposite = false, bool readOnly = false)
+            : base(element, schemaRelationship, opposite, readOnly)
+        {
+        }
+
+        public void Add(T item)
+        {
+            AddInternal(item);
+        }
+
+        public void Clear()
+        {
+            ClearInternal();
+        }
+
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            CopyToInternal(array, arrayIndex);
+        }
+
+        public bool Remove(T item)
+        {
+            return RemoveInternal(item);
+        }
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  Collection of abstract model elements.
+    /// </summary>
+    /// <typeparam name="T">
+    ///  Generic type parameter.
+    /// </typeparam>
+    /// <seealso cref="T:Hyperstore.Modeling.ModelElementList{T}"/>
+    ///-------------------------------------------------------------------------------------------------
+    public abstract class AbstractModelElementCollection<T> : ModelElementList<T> where T : class, IModelElement
+    {
+        private readonly bool _readOnly;
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Constructor.
+        ///  Specialised constructor for use only by derived classes.
         /// </summary>
         /// <param name="element">
         ///  The element.
@@ -116,7 +153,7 @@ namespace Hyperstore.Modeling
         ///  (Optional) true to read only.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public ModelElementCollection(IModelElement element, ISchemaRelationship schemaRelationship, bool opposite = false, bool readOnly = false)
+        protected AbstractModelElementCollection(IModelElement element, ISchemaRelationship schemaRelationship, bool opposite = false, bool readOnly = false)
             : base(element, schemaRelationship, opposite)
         {
             _readOnly = readOnly;
@@ -136,7 +173,7 @@ namespace Hyperstore.Modeling
         ///  The item to add.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void Add(T item)
+        protected void AddInternal(T item)
         {
             if (IsReadOnly)
                 throw new ReadOnlyException();
@@ -200,7 +237,7 @@ namespace Hyperstore.Modeling
         ///  true if it succeeds, false if it fails.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public bool Remove(T item)
+        protected bool RemoveInternal(T item)
         {
             if (IsReadOnly)
                 throw new ReadOnlyException();
@@ -240,7 +277,7 @@ namespace Hyperstore.Modeling
         ///  Thrown when a Read Only error condition occurs.
         /// </exception>
         ///-------------------------------------------------------------------------------------------------
-        public virtual void Clear()
+        protected virtual void ClearInternal()
         {
             if (IsReadOnly)
                 throw new ReadOnlyException();
@@ -282,7 +319,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public virtual bool Contains(T item)
         {
-            throw new NotImplementedException();
+            return IndexOfCore(item.Id) != -1;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -296,7 +333,7 @@ namespace Hyperstore.Modeling
         ///  Zero-based index of the array.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void CopyTo(T[] array, int arrayIndex)
+        protected void CopyToInternal(T[] array, int arrayIndex)
         {
             Contract.Requires(array, "array");
 

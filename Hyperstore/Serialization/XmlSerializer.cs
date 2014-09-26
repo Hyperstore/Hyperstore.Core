@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 using Hyperstore.Modeling.Platform;
 using Hyperstore.Modeling.Traversal;
 using System;
@@ -327,7 +327,7 @@ namespace Hyperstore.Modeling.Serialization
 
         private string GetId(IModelElement element)
         {
-            if (HasOption(XmlSerializationOption.CompressId) && String.Compare(element.Id.DomainModelName, _domain.Name) == 0)
+            if (HasOption(XmlSerializationOption.CompressId) && String.Compare(element.Id.DomainModelName, _domain.Name, StringComparison.OrdinalIgnoreCase) == 0)
             {
                 return element.Id.Key;
             }

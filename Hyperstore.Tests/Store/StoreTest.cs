@@ -53,7 +53,7 @@ namespace Hyperstore.Tests
             {
                 var start = new XExtendsBaseClass(domain);
                 var start2 = new XExtendsBaseClass(domain);
-                start.OthersX.Add(start);
+                start.OthersX.Add(start2);
                 var end = new YClass(domain);
                 rel = new XReferencesY(start, end);
                 s.AcceptChanges();

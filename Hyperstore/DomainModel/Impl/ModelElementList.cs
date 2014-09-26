@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -39,7 +39,7 @@ namespace Hyperstore.Modeling
     /// <seealso cref="T:Hyperstore.Modeling.ModelElementCollection{TElement}"/>
     ///-------------------------------------------------------------------------------------------------
     public class ModelElementList<TRelationship, TElement> : ModelElementList<TElement>
-        where TElement : IModelElement
+        where TElement : class, IModelElement
         where TRelationship : IModelRelationship
     {
         ///-------------------------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ namespace Hyperstore.Modeling
     /// </typeparam>
     /// <seealso cref="T:System.Collections.Generic.IEnumerable{T}"/>
     ///-------------------------------------------------------------------------------------------------
-    public class ModelElementList<T> : IDisposable, IEnumerable<T> where T : IModelElement
+    public class ModelElementList<T> : IDisposable, IEnumerable<T> where T : class, IModelElement
     {
         private Func<T, bool> _whereClause;
 
@@ -127,7 +127,22 @@ namespace Hyperstore.Modeling
             Source = opposite ? null : element;
             End = opposite ? element : null;
             DomainModel = element.DomainModel;
+
+            Query = from link in DomainModel.GetRelationships(SchemaRelationship, start: Source, end: End)
+                    let mel = (T)(Source != null ? link.End : link.Start)
+                    where _whereClause== null || WhereClause(mel)
+                    select mel;
         }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the query.
+        /// </summary>
+        /// <value>
+        ///  The query.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        protected IEnumerable<T> Query { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -213,8 +228,20 @@ namespace Hyperstore.Modeling
         {
             get
             {
-                return DomainModel.GetRelationships(SchemaRelationship, start: Source, end: End).Count();
+                return Query.Count();
             }
+        }
+
+        protected int IndexOfCore(Identity id)
+        {
+            var index = 0;
+            foreach (var mel in Query)
+            {
+                if (mel != null && mel.Id == id)
+                    return index;
+                index++;
+            }
+            return -1;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -227,12 +254,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public virtual IEnumerator<T> GetEnumerator()
         {
-            foreach (var link in DomainModel.GetRelationships(SchemaRelationship, start: Source, end: End))
-            {
-                var mel = (T)(Source != null ? link.End : link.Start);
-                if (WhereClause == null || WhereClause(mel))
-                    yield return mel;
-            }
+            return Query.GetEnumerator();
         }
 
         ///-------------------------------------------------------------------------------------------------

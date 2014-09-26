@@ -511,7 +511,7 @@ namespace Hyperstore.Modeling.Events
             DebugContract.Requires(log, "log");
             DebugContract.Requires(ev, "ev");
 
-            if (ev.DomainModel != _domainModel.Name)
+            if (String.Compare(ev.DomainModel, _domainModel.Name, StringComparison.OrdinalIgnoreCase) != 0)
                 return;
 
             // Event for extendee domain will be raised to its extension
@@ -555,7 +555,7 @@ namespace Hyperstore.Modeling.Events
             DebugContract.Requires(session, "session");
             DebugContract.Requires(log, "log");
 
-            if (!session.Events.Any(e => e.DomainModel == _domainModel.Name && (e.ExtensionName == null || e.ExtensionName == _domainModel.ExtensionName)))
+            if (!session.Events.Any(e => String.Compare(e.DomainModel, _domainModel.Name, StringComparison.OrdinalIgnoreCase) == 0 && (e.ExtensionName == null || e.ExtensionName == _domainModel.ExtensionName)))
                 return;
 
             try
@@ -573,7 +573,7 @@ namespace Hyperstore.Modeling.Events
                 var notifiedProperties = new HashSet<Identity>();
                 var notifications = PrepareNotificationList(session);
 
-                foreach (var ev in session.Events.Where(e => e.DomainModel == _domainModel.Name))
+                foreach (var ev in session.Events.Where(e => String.Compare(e.DomainModel, _domainModel.Name, StringComparison.OrdinalIgnoreCase) == 0))
                 {
                     // Utiliser plutot le eventbus
                     // this._eventDispatcher.HandleEvent(ev);

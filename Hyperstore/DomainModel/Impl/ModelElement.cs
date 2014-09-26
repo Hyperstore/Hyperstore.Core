@@ -347,7 +347,7 @@ namespace Hyperstore.Modeling
 
             Session.Current.AcquireLock(LockType.ExclusiveWait, name);
 
-            metadata = domainModel.Store.GetSchemaElement(name, false) ?? new GeneratedSchemaEntity(domainModel as ISchema, name, GetType());
+            metadata = domainModel.Store.GetSchemaElement(name, !(domainModel is ISchema)) ?? new GeneratedSchemaEntity(domainModel as ISchema, name, GetType());
             return metadata;
         }
 

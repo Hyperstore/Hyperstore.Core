@@ -13,33 +13,21 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Hyperstore.Modeling
 {
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary>   List of observable model elements. </summary>
-    ///
-    /// <typeparam name="T">    Generic type parameter. </typeparam>
-    ///-------------------------------------------------------------------------------------------------
-
-    public class ObservableModelElementList<T> : ModelElementList<T>, INotifyCollectionChanged where T : IModelElement
+    public class ObservableModelElementList<T> : AbstractModelElementCollection<T>, INotifyCollectionChanged where T : class, IModelElement
     {
         private readonly ISynchronizationContext _synchronizationContext;
-        private readonly List<T> _items;
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>   Constructor. </summary>
-        ///
-        /// <param name="element">                  The element. </param>
-        /// <param name="schemaRelationshipName">   Name of the schema relationship. </param>
-        /// <param name="opposite">                 (Optional) true to opposite. </param>
-        ///-------------------------------------------------------------------------------------------------
+        private readonly object _sync = new object();
 
         public ObservableModelElementList(IModelElement element, string schemaRelationshipName, bool opposite = false)
             : this(element, element.DomainModel.Store.GetSchemaRelationship(schemaRelationshipName), opposite)
@@ -48,61 +36,51 @@ namespace Hyperstore.Modeling
             Contract.RequiresNotEmpty(schemaRelationshipName, "schemaRelationshipName");
         }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>   Constructor. </summary>
-        ///
-        /// <param name="source">              The source element. </param>
-        /// <param name="schemaRelationship">   The schema relationship. </param>
-        /// <param name="opposite">             (Optional) true to opposite. </param>
-        ///-------------------------------------------------------------------------------------------------
 
-        public ObservableModelElementList(IModelElement source, ISchemaRelationship schemaRelationship, bool opposite = false) :
-            base(source, schemaRelationship, opposite)
+        public ObservableModelElementList(IModelElement source, ISchemaRelationship schemaRelationship, bool opposite = false, bool readOnly = false)
+            : base(source, schemaRelationship, opposite, readOnly)
         {
-            var query = DomainModel.Events.RelationshipAdded;
-            var query2 = DomainModel.Events.RelationshipRemoved;
-            var query3 = DomainModel.Events.PropertyChanged;
+            Contract.Requires(source, "source");
+            Contract.Requires(schemaRelationship, "schemaRelationship");
 
             _synchronizationContext = source.DomainModel.Services.Resolve<ISynchronizationContext>();
             if (_synchronizationContext == null)
                 throw new Exception("No synchronizationContext founded. You can define a synchronization context in the store with store.Register<ISynchronizationContext>.");
 
-            var initialQuery = DomainModel.GetRelationships(SchemaRelationship, Source, End)
-                                          .Select(link => Source != null ? (T)link.End : (T)link.Start);
-            if( WhereClause != null)
-                initialQuery = initialQuery.Where(WhereClause);
-
-            _items = initialQuery.ToList();
+            var query = DomainModel.Events.RelationshipAdded;
+            var query2 = DomainModel.Events.RelationshipRemoved;
+            var query3 = DomainModel.Events.PropertyChanged;
 
             query.Subscribe(a => Notify(
-                Source != null ? a.Event.End : a.Event.Start, 
-                Source != null ? a.Event.EndSchema : a.Event.StartSchema, 
+                Source != null ? a.Event.End : a.Event.Start,
+                Source != null ? a.Event.EndSchema : a.Event.StartSchema,
                 Source != null ? a.Event.Start : a.Event.End,
-                a.Event.SchemaRelationshipId, 
+                a.Event.SchemaRelationshipId,
                 NotifyCollectionChangedAction.Add));
 
             query2.Subscribe(a => Notify(
-                Source != null ? a.Event.End : a.Event.Start, 
-                Source != null ? a.Event.EndSchema : a.Event.StartSchema, 
+                Source != null ? a.Event.End : a.Event.Start,
+                Source != null ? a.Event.EndSchema : a.Event.StartSchema,
                 Source != null ? a.Event.Start : a.Event.End,
-                a.Event.SchemaRelationshipId, 
+                a.Event.SchemaRelationshipId,
                 NotifyCollectionChangedAction.Remove));
 
             query3.Subscribe(a => NotifyChange(
                 a.Event.ElementId,
                 a.Event.SchemaElementId));
+
         }
 
         private void NotifyChange(Identity elementId, Identity schemaId)
         {
             var schema = DomainModel.Store.GetSchemaElement(schemaId);
             var valid = Source == null ? schema.IsA(SchemaRelationship.Start) : schema.IsA(SchemaRelationship.End);
-            if( valid)
+            if (valid)
             {
                 var index = IndexOfCore(elementId);
                 var item = (T)DomainModel.Store.GetElement(elementId, schema);
 
-                if ( item == null || (Source != null && !item.DomainModel.SameAs(Source.DomainModel)) || (End != null && !item.DomainModel.SameAs(End.DomainModel)))
+                if (item == null || (Source != null && !item.DomainModel.SameAs(Source.DomainModel)) || (End != null && !item.DomainModel.SameAs(End.DomainModel)))
                     return;
 
                 if (index >= 0)
@@ -110,26 +88,21 @@ namespace Hyperstore.Modeling
                     // Already in the list: check if the query is always valid else remove item from list
                     if (WhereClause != null && !WhereClause((T)item))
                     {
-                        lock (_items)
-                        {
-                            _items.Remove(item);
-                        }
                         _synchronizationContext.Send(() => OnCollectionChanged(item, NotifyCollectionChangedAction.Remove, index));
                     }
                     return;
                 }
 
                 // Not in the list : Is it include in the current relationship ?
-                if (End != null && item.DomainModel != End.DomainModel )
+                if (End != null && item.DomainModel != End.DomainModel)
                     return; // Inter domain not supported
 
-                if((Source != null && Source.GetRelationships(SchemaRelationship, item).Any()) || (End != null && End.DomainModel.GetRelationships(SchemaRelationship, item, End).Any()))
+                if ((Source != null && Source.GetRelationships(SchemaRelationship, item).Any()) || (End != null && End.DomainModel.GetRelationships(SchemaRelationship, item, End).Any()))
                 {
                     // Yes, if query is valid, add it to the list
                     if (WhereClause == null || WhereClause((T)item))
                     {
-                        _items.Add(item);
-                        index = _items.Count - 1;  
+                        index = Count + 1;
                         _synchronizationContext.Send(() => OnCollectionChanged(item, NotifyCollectionChangedAction.Add, index));
                     }
                 }
@@ -160,23 +133,11 @@ namespace Hyperstore.Modeling
             {
                 if ((WhereClause != null && !WhereClause((T)item)) || defaultAction == NotifyCollectionChangedAction.Remove)
                 {
-                    lock (_items)
-                    {
-                        _items.Remove(item);
-                    }
                     _synchronizationContext.Send(() => OnCollectionChanged(item, NotifyCollectionChangedAction.Remove, index));
                 }
                 else
                 {
-                    lock (_items)
-                    {
-                        index = IndexOfCore(item.Id);
-                        if (index >= 0)
-                            return;
-
-                            _items.Add(item);
-                            index = _items.Count - 1;                        
-                    }
+                    index = Count + 1;
                     _synchronizationContext.Send(() => OnCollectionChanged(item, NotifyCollectionChangedAction.Add, index));
                 }
             }
@@ -189,33 +150,6 @@ namespace Hyperstore.Modeling
                 tmp(this, new NotifyCollectionChangedEventArgs(action, item, index));
         }
 
-        private int IndexOfCore(Identity id)
-        {
-            lock (_items)
-            {
-                // TODO optim
-                for (var i = 0; i < _items.Count; i++)
-                {
-                    if (_items[i].Id == id)
-                        return i;
-                }
-            }
-            return -1;
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the enumerator.
-        /// </summary>
-        /// <returns>
-        ///  The enumerator.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override IEnumerator<T> GetEnumerator()
-        {
-            foreach (var item in _items)
-                yield return item;
-        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -223,5 +157,50 @@ namespace Hyperstore.Modeling
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
         public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+        #region Ilist<T>
+        public int IndexOf(T item)
+        {
+            return base.IndexOfCore(item.Id);
+        }
+
+
+        #endregion
+
+        #region IList
+
+
+
+        public int IndexOf(object value)
+        {
+            var mel = value as T;
+            if (mel == null)
+                return -1;
+            return base.IndexOfCore(mel.Id);
+        }
+
+        public bool IsFixedSize
+        {
+            get { return false; }
+        }
+
+        public bool IsSynchronized
+        {
+            get { return true; }
+        }
+
+        public object SyncRoot
+        {
+            get { return _sync; }
+        }
+
+        public bool Contains(object value)
+        {
+            var mel = value as T;
+            if (mel == null)
+                return false;
+            return base.Contains(mel);
+        }
+        #endregion
     }
 }

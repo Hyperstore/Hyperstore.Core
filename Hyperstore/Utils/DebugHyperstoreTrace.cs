@@ -48,7 +48,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         protected override void WriteMessage(string message)
         {
-            Debug.WriteLine(message);
+            Debug.WriteLine(message);            
         }
     }
 }

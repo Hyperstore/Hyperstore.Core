@@ -286,5 +286,35 @@ namespace Hyperstore.Tests
             Assert.AreEqual( x.GetRelationships<XReferencesY>().Count(), 0 );
 
         }
+
+        [TestMethod]
+        public async Task EmbeddedRelationship()
+        {
+            var store = await StoreBuilder.New().CreateAsync();
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var dm = await store.DomainModels.New().CreateAsync("Test");
+            XExtendsBaseClass x = null;
+            XExtendsBaseClass x2 = null;
+            Identity id;
+
+            using (var s = store.BeginSession())
+            {
+                x = new XExtendsBaseClass(dm);
+                x2 = new XExtendsBaseClass(dm);
+                x.OthersX.Add(x2);
+                s.AcceptChanges();
+                id = ((IModelElement)x2).Id;
+            }
+
+            var rel = x.GetRelationships<XReferencesX>().FirstOrDefault();
+            using (var s = store.BeginSession())
+            {
+                x.OthersX.Remove(x2);
+                s.AcceptChanges();
+            }
+
+            Assert.IsNull(dm.GetElement<XExtendsBaseClass>(id));
+            Assert.AreEqual(0, x.OthersX.Count());
+        }
     }
 }

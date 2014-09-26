@@ -76,6 +76,7 @@
     <Compile Include="DomainModel\IHyperGraphProvider.cs" />
     <Compile Include="DomainModel\Impl\CalculatedProperty.cs" />
     <Compile Include="DomainModel\IDataErrorNotifier.cs" />
+    <Compile Include="DomainModel\Impl\ObervableModelElementCollection2.cs" />
     <Compile Include="Extensions\DomainExtensions.cs" />
     <Compile Include="DomainModel\Impl\Scopes\IScopeHypergraph.cs" />
     <Compile Include="DomainModel\Impl\Scopes\ISchemaExtension.cs" />

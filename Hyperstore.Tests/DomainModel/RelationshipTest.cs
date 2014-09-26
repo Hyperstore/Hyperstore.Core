@@ -65,7 +65,7 @@ namespace Hyperstore.Tests.Relationships
         {
             base.Initialize(metadata, domainModel);
             var observable = metadata.Schema.Behavior == DomainBehavior.Observable;
-            _products = observable ? new ObservableModelElementCollection<Product>(this, "CustomerReferencesProducts") : new ModelElementCollection<Product>(this, "CustomerReferencesProducts");
+            _products = observable ? (ICollection<Product>)new ObservableModelElementCollection<Product>(this, "CustomerReferencesProducts") : (ICollection<Product>)new ModelElementCollection<Product>(this, "CustomerReferencesProducts");
             _products2 = observable ? new ObservableModelElementList<Product>(this, "CustomerReferencesProducts") : new ModelElementList<Product>(this, "CustomerReferencesProducts");
             ((ModelElementList<Product>)_products2).WhereClause = item => item.Name.EndsWith("0");
         }
@@ -99,7 +99,7 @@ namespace Hyperstore.Tests.Relationships
         {
             base.Initialize(metadata, domainModel);
             var observable = metadata.Schema.Behavior == DomainBehavior.Observable;
-            _customers = observable ? new ObservableModelElementCollection<Customer>(this, "CustomerReferencesProducts", true) : new ModelElementCollection<Customer>(this, "CustomerReferencesProducts", true);
+            _customers = observable ? (ICollection<Customer>)new ObservableModelElementCollection<Customer>(this, "CustomerReferencesProducts", true) : (ICollection<Customer>)new ModelElementCollection<Customer>(this, "CustomerReferencesProducts", true);
         }
 
         public ICollection<Customer> Customers

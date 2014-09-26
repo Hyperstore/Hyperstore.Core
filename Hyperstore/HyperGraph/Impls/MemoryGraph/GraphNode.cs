@@ -231,6 +231,9 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <summary>
         ///  Adds an edge.
         /// </summary>
+        /// <exception cref="Exception">
+        ///  Thrown when an exception error condition occurs.
+        /// </exception>
         /// <param name="id">
         ///  The identifier.
         /// </param>
@@ -246,19 +249,30 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="endSchemaId">
         ///  The identifier of the end schema.
         /// </param>
+        /// <param name="isEmbedded">
+        ///  true if this instance is embedded.
+        /// </param>
+        /// <returns>
+        ///  A GraphNode.
+        /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual GraphNode AddEdge(Identity id, Identity metadataId, Direction direction, Identity endId, Identity endSchemaId)
+        public virtual GraphNode AddEdge(Identity id, ISchemaRelationship schemaRelationship, Direction direction, Identity endId, Identity endSchemaId)
         {
             DebugContract.Requires(id, "id");
-            DebugContract.Requires(metadataId, "metadataId");
+            DebugContract.Requires(schemaRelationship, "schemaRelationship");
             DebugContract.Requires(endId, "endId");
             DebugContract.Requires(endSchemaId, "endSchemaId");
 
             if ((direction & Direction.Outgoing) == Direction.Outgoing && _outgoings.ContainsKey(id)
                 || (direction & Direction.Incoming) == Direction.Incoming && _incomings.ContainsKey(id))
-                return this;
+                throw new Exception("Duplicate relationship");
 
-            var edge = new EdgeInfo(id, metadataId, endId, endSchemaId);
+            if( (direction & Direction.Incoming) == Direction.Incoming && schemaRelationship.IsEmbedded)
+            {
+                if (_incomings.Any(r => r.Value.SchemaId == schemaRelationship.Id))
+                    return null;
+            }
+            var edge = new EdgeInfo(id, schemaRelationship.Id, endId, endSchemaId);
 
             return new GraphNode(this,
                     (direction & Direction.Outgoing) == Direction.Outgoing ? _outgoings.Add(id, edge) : _outgoings,

@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -253,7 +253,10 @@ namespace Hyperstore.Modeling
                     {
                         // TODO create a proxy for enumerable to take into account extensions (convert First() to Enumerable.First(..)) - proxy for Observablecollection should implement inotifycollectionchanged
                         var isObservable = this is INotifyPropertyChanged && (((IModelElement)this).SchemaInfo.Schema.Behavior & DomainBehavior.Observable) != DomainBehavior.Observable;
-                        refer = isObservable ? new ObservableModelElementCollection<IModelElement>(this, relationship) : new ModelElementCollection<IModelElement>(this, relationship);
+                        if (isObservable)
+                            refer = new ObservableModelElementCollection<IModelElement>(this, relationship);
+                        else
+                            refer = new ModelElementCollection<IModelElement>(this, relationship);
                         _references.TryAdd(propertyName, refer);
                     }
                 }
@@ -283,7 +286,7 @@ namespace Hyperstore.Modeling
         {
             base.Dispose(disposing);
 
-            foreach(var r in _references)
+            foreach (var r in _references)
             {
                 var disposable = r.Value as IDisposable;
                 if (disposable != null)
