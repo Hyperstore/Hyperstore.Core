@@ -34,11 +34,11 @@ namespace Hyperstore.Modeling.Traversal
     /// </summary>
     /// <seealso cref="T:Hyperstore.Modeling.Traversal.IGraphTraversalConfiguration"/>
     ///-------------------------------------------------------------------------------------------------
-    public class TraversalQuery : ITraversalQuery
+    internal class TraversalQuery : ITraversalQuery
     {
         #region Classes of TraversalQuery (3)
 
-        private class ActionsEvaluator : IGraphTraversalEvaluator
+        private class ActionsEvaluator : ITraversalVisitor
         {
             #region Properties of ActionsEvaluator (2)
 
@@ -67,7 +67,7 @@ namespace Hyperstore.Modeling.Traversal
             ///  A GraphTraversalEvaluatorResult.
             /// </returns>
             ///-------------------------------------------------------------------------------------------------
-            public GraphTraversalEvaluatorResult Evaluate(GraphPath path)
+            public GraphTraversalEvaluatorResult Visit(GraphPath path)
             {
                 if (PathEvaluator == null)
                     return GraphTraversalEvaluatorResult.IncludeAndContinue;
@@ -78,7 +78,7 @@ namespace Hyperstore.Modeling.Traversal
             #endregion Methods of ActionsEvaluator (2)
         }
 
-        private class AllEvaluator : IGraphTraversalEvaluator
+        private class AllEvaluator : ITraversalVisitor
         {
             #region Methods of AllEvaluator (2)
 
@@ -93,25 +93,9 @@ namespace Hyperstore.Modeling.Traversal
             ///  A GraphTraversalEvaluatorResult.
             /// </returns>
             ///-------------------------------------------------------------------------------------------------
-            public GraphTraversalEvaluatorResult Evaluate(GraphPath path)
+            public GraphTraversalEvaluatorResult Visit(GraphPath path)
             {
                 return GraphTraversalEvaluatorResult.IncludeAndContinue;
-            }
-
-            ///-------------------------------------------------------------------------------------------------
-            /// <summary>
-            ///  Evaluates the given relative.
-            /// </summary>
-            /// <param name="rel">
-            ///  The relative.
-            /// </param>
-            /// <returns>
-            ///  true if it succeeds, false if it fails.
-            /// </returns>
-            ///-------------------------------------------------------------------------------------------------
-            public bool Evaluate(IModelRelationship rel)
-            {
-                return true;
             }
 
             #endregion Methods of AllEvaluator (2)
@@ -189,8 +173,6 @@ namespace Hyperstore.Modeling.Traversal
 
         #region Enums of TraversalQuery (2)
 
-        private readonly IDomainModel _domainModel;
-
         #endregion Enums of TraversalQuery (2)
 
         #region Properties of TraversalQuery (7)
@@ -220,15 +202,6 @@ namespace Hyperstore.Modeling.Traversal
         {
             Contract.Requires(startNode, "startNode");
 
-            ISession session = null;
-            if (Session.Current == null)
-            {
-                session = startNode.DomainModel.Store.BeginSession(new SessionConfiguration
-                                                                   {
-                                                                           Readonly = true
-                                                                   });
-            }
-
             try
             {
                 PathTraverser.Initialize(this);
@@ -242,25 +215,7 @@ namespace Hyperstore.Modeling.Traversal
             finally
             {
                 UnicityPolicy.Reset();
-                if (session != null)
-                {
-                    session.AcceptChanges();
-                    session.Dispose();
-                }
             }
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the domain model.
-        /// </summary>
-        /// <value>
-        ///  The domain model.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public IDomainModel DomainModel
-        {
-            get { return _domainModel; }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -271,7 +226,7 @@ namespace Hyperstore.Modeling.Traversal
         ///  The evaluator.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IGraphTraversalEvaluator Evaluator { get; set; }
+        public ITraversalVisitor Evaluator { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -315,11 +270,8 @@ namespace Hyperstore.Modeling.Traversal
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public TraversalQuery(IDomainModel domainModel)
+        public TraversalQuery()
         {
-            Contract.Requires(domainModel, "domainModel");
-
-            _domainModel = domainModel;
             PathTraverser = new GraphBreadthFirstTraverser();
             Evaluator = new AllEvaluator();
             UnicityPolicy = new GlobalNodeUnicity();

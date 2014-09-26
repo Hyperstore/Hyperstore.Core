@@ -38,7 +38,7 @@ namespace Hyperstore.Modeling.Traversal
         ///  The evaluator.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        IGraphTraversalEvaluator Evaluator { get; set; }
+        ITraversalVisitor Evaluator { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

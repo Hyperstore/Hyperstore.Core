@@ -21,7 +21,7 @@ namespace Hyperstore.Modeling.Traversal
     ///  Path evaluator.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
-    public interface IGraphTraversalEvaluator
+    public interface ITraversalVisitor
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -34,6 +34,6 @@ namespace Hyperstore.Modeling.Traversal
         ///  A GraphTraversalEvaluatorResult.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        GraphTraversalEvaluatorResult Evaluate(GraphPath path);
+        GraphTraversalEvaluatorResult Visit(GraphPath path);
     }
 }

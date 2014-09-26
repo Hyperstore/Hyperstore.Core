@@ -42,7 +42,7 @@ namespace Hyperstore.Modeling.Traversal
         ///  The query.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void Initialize(ITraversalQuery query)
+        void IGraphPathTraverser.Initialize(ITraversalQuery query)
         {
             Contract.Requires(query, "query");
             _query = query;
@@ -92,7 +92,7 @@ namespace Hyperstore.Modeling.Traversal
                 _query.UnicityPolicy.MarkVisited(path);
 
                 // Filtrage du chemin courant pour savoir si on continue
-                var result = _query.Evaluator.Evaluate(path);
+                var result = _query.Evaluator.Visit(path);
 
                 // Le chemin courant est à prendre en compte
                 if ((GraphTraversalEvaluatorResult.Include & result) == GraphTraversalEvaluatorResult.Include)

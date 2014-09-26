@@ -84,6 +84,7 @@
     <Compile Include="Extensions\StoreBuilder.cs" />
     <Compile Include="Extensions\StoreExtensions.cs" />
     <Compile Include="HyperGraph\Impls\NodeInfo.cs" />
+    <Compile Include="HyperGraph\Impls\Traversal\TraversalBuilder.cs" />
     <Compile Include="Metadata\Constraints\ConstraintProxy.cs" />
     <Compile Include="Metadata\Constraints\AbstractConstraintProxy.cs" />
     <Compile Include="Metadata\Constraints\CheckPropertyConstraintProxy.cs" />
@@ -241,7 +242,7 @@
     <Compile Include="HyperGraph\Traversal\INodeIncidenceIterator.cs" />
     <Compile Include="HyperGraph\Impls\Traversal\TraversalQuery.cs" />
     <Compile Include="HyperGraph\Traversal\IGraphTraversalConfiguration.cs" />
-    <Compile Include="HyperGraph\Traversal\IGraphTraversalEvaluator.cs" />
+    <Compile Include="HyperGraph\Traversal\ITraversalVisitor.cs" />
     <Compile Include="HyperGraph\Traversal\IGraphTraversalUnicityPolicy.cs" />
     <Compile Include="MemoryStore\ElementEvictedEventArgs.cs" />
     <Compile Include="MemoryStore\EvictionProcess.cs" />
