@@ -24,6 +24,7 @@ namespace Hyperstore.Modeling
 {
     internal interface IScopeHyperGraph
     {
+        System.Collections.Generic.IEnumerable<PropertyValue> GetUpdatedProperties();
         IEnumerable<IModelElement> GetExtensionElements(ISchemaElement schemaElement = null);
         IEnumerable<GraphNode> GetDeletedElements();
     }

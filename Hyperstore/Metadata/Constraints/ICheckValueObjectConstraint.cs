@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,11 +67,14 @@ namespace Hyperstore.Modeling.Metadata.Constraints
         /// <param name="value">
         ///  The value to test.
         /// </param>
+        /// <param name="oldValue">
+        ///  The old value.
+        /// </param>
         /// <param name="ctx">
         ///  The context.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        void ExecuteConstraint(T value, ConstraintContext ctx);
+        void ExecuteConstraint(T value, T oldValue, ConstraintContext ctx);
     }
 
     ///-------------------------------------------------------------------------------------------------

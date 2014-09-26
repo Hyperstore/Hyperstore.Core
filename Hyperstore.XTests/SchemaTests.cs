@@ -27,53 +27,11 @@ namespace Hyperstore.XTests
 {
     public class SchemaTests
     {
-        class CultureInfoSchema : SchemaValueObject<CultureInfo>
-        {
-            public CultureInfoSchema(ISchema schema)
-                : base(schema)
-            {
-
-            }
-            protected override string Serialize(object data, IJsonSerializer serializer)
-            {
-                if (data == null)
-                    return null;
-                return ((CultureInfo)data).DisplayName;
-            }
-
-            protected override object Deserialize(SerializationContext ctx)
-            {
-                if (ctx.Value == null)
-                    return DefaultValue;
-                return new CultureInfo((string)ctx.Value);
-            }
-        }
-
-        class MySchemaDefinition : SchemaDefinition
-        {
-            public bool IsSchemaLoaded { get; private set; }
-
-            public MySchemaDefinition()
-                : base("Hyperstore.XTests")
-            {
-            }
-
-            protected override void DefineSchema(ISchema schema)
-            {
-                new CultureInfoSchema(schema);
-            }
-
-            protected override void OnSchemaLoaded(ISchema schema)
-            {
-                base.OnSchemaLoaded(schema);
-                IsSchemaLoaded = true;
-            }
-        }
-
         [Fact]
         public async Task CheckPrimitives()
         {
-            var store = await StoreBuilder.New().CreateAsync();
+            var domain = await StoreBuilder.CreateDomain<MySchemaDefinition>("Test");
+            var store = domain.Store;
             Assert.NotNull(store.GetSchemaInfo<string>());
             Assert.NotNull(store.GetSchemaInfo<int>());
             Assert.NotNull(store.GetSchemaInfo<double>());
@@ -113,7 +71,8 @@ namespace Hyperstore.XTests
         [Fact]
         public async Task UnloadPrimitivesSchemaMustFailed()
         {
-            var store = await StoreBuilder.New().CreateAsync();
+            var domain = await StoreBuilder.CreateDomain<MySchemaDefinition>("Test");
+            var store = domain.Store;
             var schema = store.Schemas.First();
             Assert.NotNull(schema);
             Assert.IsType<PrimitivesSchema>(schema);

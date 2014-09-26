@@ -141,7 +141,7 @@ namespace Hyperstore.Tests.HyperGraph
 
             using (var session = domain.Store.BeginSession())
             {
-                Graph.RemoveEntity(aid, metadata, true);
+                Graph.RemoveEntity(aid, metadata, true, null);
                 session.AcceptChanges();
             }
 

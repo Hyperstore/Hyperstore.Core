@@ -170,9 +170,10 @@ namespace Hyperstore.Modeling
             _options = options;
             Id = id ?? Guid.NewGuid();
             _statistics = new Statistics.Statistics();
-            _services = services;
 
-            ConfigureServices();
+            var container = new ServicesContainer();
+            ConfigureServices(container);
+            _services = container.Merge(services);
 
             DefaultSessionConfiguration.IsolationLevel = SessionIsolationLevel.ReadCommitted;
             DefaultSessionConfiguration.SessionTimeout = TimeSpan.FromMinutes(1);
@@ -184,7 +185,7 @@ namespace Hyperstore.Modeling
             EventBus = _services.Resolve<IEventBus>();
         }
 
-        private void ConfigureServices()
+        private void ConfigureServices(IServicesContainer services)
         {
             var platformfactoryType = Type.GetType(platformTypeName, false);
             if (platformfactoryType != null)
@@ -193,25 +194,25 @@ namespace Hyperstore.Modeling
             }
 
             // Store instance
-            _services.Register<IHyperstore>(this);
-            _services.Register<Hyperstore.Modeling.Statistics.IStatistics>(this.Statistics);
+            services.Register<IHyperstore>(this);
+            services.Register<Hyperstore.Modeling.Statistics.IStatistics>(this.Statistics);
             // Global
-            _services.Register<ITransactionManager>(new TransactionManager(_services));
-            _services.Register<Hyperstore.Modeling.HyperGraph.IIdGenerator>(r => new GuidIdGenerator());
+            services.Register<ITransactionManager>(new TransactionManager(services));
+            services.Register<Hyperstore.Modeling.HyperGraph.IIdGenerator>(r => new GuidIdGenerator());
 
             // Par domain et par metamodel => Nouvelle instance à chaque fois
-            _services.Register<Hyperstore.Modeling.HyperGraph.IHyperGraph>(r => new HyperGraph.HyperGraph(r));
-            _services.Register<IEventManager>(r => new Hyperstore.Modeling.Events.EventManager(r));
-            _services.Register<IModelElementFactory>(r => Hyperstore.Modeling.Platform.PlatformServices.Current.CreateModelElementFactory());
-            _services.Register<ICommandManager>(r => new CommandManager());
-            _services.Register<IEventBus>(r => new EventBus(r));
-            _services.Register<IConstraintsManager>(r => new ConstraintsManager(r));
-            _services.Register<Hyperstore.Modeling.Events.IEventDispatcher>(r => new Hyperstore.Modeling.Events.EventDispatcher(r, true));
+            services.Register<Hyperstore.Modeling.HyperGraph.IHyperGraph>(r => new HyperGraph.HyperGraph(r));
+            services.Register<IEventManager>(r => new Hyperstore.Modeling.Events.EventManager(r));
+            services.Register<IModelElementFactory>(r => Hyperstore.Modeling.Platform.PlatformServices.Current.CreateModelElementFactory());
+            services.Register<ICommandManager>(r => new CommandManager());
+            services.Register<IEventBus>(r => new EventBus(r));
+            services.Register<IConstraintsManager>(r => new ConstraintsManager(r));
+            services.Register<Hyperstore.Modeling.Events.IEventDispatcher>(r => new Hyperstore.Modeling.Events.EventDispatcher(r, true));
             var ctx = System.Threading.SynchronizationContext.Current;
             if (ctx != null)
-                _services.Register(ctx);
+                services.Register(ctx);
 
-            _services.Register<ISynchronizationContext>(Hyperstore.Modeling.Platform.PlatformServices.Current.CreateDispatcher());
+            services.Register<ISynchronizationContext>(Hyperstore.Modeling.Platform.PlatformServices.Current.CreateDispatcher());
 
             // découverte automatique (sans mef) de l'extension rx
             const string typeName = "Hyperstore.ReactiveExtension.SubjectFactory, Hyperstore.ReactiveExtension";
@@ -219,7 +220,7 @@ namespace Hyperstore.Modeling
             if (rxfactoryType != null)
             {
                 var factory = (ISubjectFactory)Activator.CreateInstance(rxfactoryType);
-                _services.Register(factory);
+                services.Register(factory);
             }
         }
 

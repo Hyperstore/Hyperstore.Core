@@ -79,7 +79,7 @@ namespace Hyperstore.Modeling.Scopes
             return ExtendedDomainModel.IdGenerator;
         }
 
-        public IEnumerable<IModelElement> GetExtensionElements(ISchemaElement schemaElement = null)
+        public IEnumerable<IModelElement> GetScopeElements(ISchemaElement schemaElement = null)
         {
             var graph = InnerGraph as IScopeHyperGraph;
             Debug.Assert(graph != null);
@@ -96,6 +96,13 @@ namespace Hyperstore.Modeling.Scopes
         public IEnumerable<IModelRelationship> GetExtensionRelationships(ISchemaRelationship schemaRelationship = null, IModelElement start = null, IModelElement end = null)
         {
             return base.GetRelationships(schemaRelationship, start, end);
+        }
+
+        public System.Collections.Generic.IEnumerable<PropertyValue> GetUpdatedProperties()
+        {
+            var graph = InnerGraph as IScopeHyperGraph;
+            Debug.Assert(graph != null);
+            return graph.GetUpdatedProperties();
         }
 
         public override System.Threading.Tasks.Task<IDomainScope> CreateScopeAsync(string extensionName, IDomainConfiguration configuration = null)

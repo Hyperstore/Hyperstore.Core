@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -790,9 +790,9 @@ namespace Hyperstore.Modeling.Domain
             private set;
         }
 
-        bool IUpdatableDomainModel.RemoveEntity(Identity id, ISchemaEntity metadata, bool throwExceptionIfNotExists)
+        bool IUpdatableDomainModel.RemoveEntity(Identity id, ISchemaEntity metadata, bool throwExceptionIfNotExists, Identity originEmbeddedRelationship)
         {
-            return RemoveEntityCore(id, metadata, throwExceptionIfNotExists);
+            return RemoveEntityCore(id, metadata, throwExceptionIfNotExists, originEmbeddedRelationship);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -808,11 +808,14 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="throwExceptionIfNotExists">
         ///  true to throw exception if not exists.
         /// </param>
+        /// <param name="originEmbeddedRelationship">
+        ///  The origin embedded relationship.
+        /// </param>
         /// <returns>
         ///  true if it succeeds, false if it fails.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected virtual bool RemoveEntityCore(Identity id, ISchemaEntity metadata, bool throwExceptionIfNotExists)
+        protected virtual bool RemoveEntityCore(Identity id, ISchemaEntity metadata, bool throwExceptionIfNotExists, Identity originEmbeddedRelationship)
         {
             Contract.Requires(id, "id");
             Contract.Requires(metadata, "metadata");
@@ -820,7 +823,7 @@ namespace Hyperstore.Modeling.Domain
 
             using (var session = EnsuresRunInSession())
             {
-                var r = InnerGraph.RemoveEntity(id, metadata, throwExceptionIfNotExists);
+                var r = InnerGraph.RemoveEntity(id, metadata, throwExceptionIfNotExists, originEmbeddedRelationship);
                 if (session != null)
                     session.AcceptChanges();
                 return r;
@@ -1093,9 +1096,9 @@ namespace Hyperstore.Modeling.Domain
             }
         }
 
-        bool IUpdatableDomainModel.RemoveRelationship(Identity id, ISchemaRelationship metadata, bool throwExceptionIfNotExists)
+        bool IUpdatableDomainModel.RemoveRelationship(Identity id, ISchemaRelationship metadata, bool throwExceptionIfNotExists, Identity originEmbeddedRelationship)
         {
-            return RemoveRelationshipCore(id, metadata, throwExceptionIfNotExists);
+            return RemoveRelationshipCore(id, metadata, throwExceptionIfNotExists, originEmbeddedRelationship);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -1111,11 +1114,14 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="throwExceptionIfNotExists">
         ///  true to throw exception if not exists.
         /// </param>
+        /// <param name="originEmbeddedRelationship">
+        ///  The origin embedded relationship.
+        /// </param>
         /// <returns>
         ///  true if it succeeds, false if it fails.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected virtual bool RemoveRelationshipCore(Identity id, ISchemaRelationship metadata, bool throwExceptionIfNotExists)
+        protected virtual bool RemoveRelationshipCore(Identity id, ISchemaRelationship metadata, bool throwExceptionIfNotExists, Identity originEmbeddedRelationship)
         {
             Contract.Requires(id, "id");
             Contract.Requires(metadata, "metadata");
@@ -1123,7 +1129,7 @@ namespace Hyperstore.Modeling.Domain
             CheckInitialized();
             using (var session = EnsuresRunInSession())
             {
-                var r = InnerGraph.RemoveRelationship(id, metadata, throwExceptionIfNotExists);
+                var r = InnerGraph.RemoveRelationship(id, metadata, throwExceptionIfNotExists, originEmbeddedRelationship);
                 if (session != null)
                     session.AcceptChanges();
                 return r;

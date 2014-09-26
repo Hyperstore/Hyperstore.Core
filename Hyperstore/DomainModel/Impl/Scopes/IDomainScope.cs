@@ -36,25 +36,33 @@ namespace Hyperstore.Modeling
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the extension elements in this collection.
+        ///  Gets updated properties.
+        /// </summary>
+        /// <returns>
+        ///  The updated properties.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        System.Collections.Generic.IEnumerable<PropertyValue> GetUpdatedProperties();
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Get elements created in the scope
         /// </summary>
         /// <param name="schemaElement">
         ///  (Optional) the schema element.
         /// </param>
         /// <returns>
-        ///  An enumerator that allows foreach to be used to process the extension elements in this
-        ///  collection.
+        ///  List of elements created (or updated) in the scope
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<IModelElement> GetExtensionElements(ISchemaElement schemaElement = null);
+        IEnumerable<IModelElement> GetScopeElements(ISchemaElement schemaElement = null);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the deleted elements in this collection.
+        ///  Get deleted elements
         /// </summary>
         /// <returns>
-        ///  An enumerator that allows foreach to be used to process the deleted elements in this
-        ///  collection.
+        ///  List of elements deleted in the scope
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
         IEnumerable<GraphNode> GetDeletedElements();

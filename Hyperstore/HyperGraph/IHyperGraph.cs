@@ -69,11 +69,14 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="throwExceptionIfNotExists">
         ///  if set to <c>true</c> [throw exception if not exists].
         /// </param>
+        /// <param name="originEmbeddedRelationship">
+        ///  The origin embedded relationship.
+        /// </param>
         /// <returns>
         ///  true if it succeeds, false if it fails.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        bool RemoveEntity(Identity id, ISchemaEntity schemaEntity, bool throwExceptionIfNotExists);
+        bool RemoveEntity(Identity id, ISchemaEntity schemaEntity, bool throwExceptionIfNotExists, Identity originEmbeddedRelationship);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -148,11 +151,14 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="throwExceptionIfNotExists">
         ///  if set to <c>true</c> [throw exception if not exists].
         /// </param>
+        /// <param name="originEmbeddedRelationship">
+        ///  The origin embedded relationship.
+        /// </param>
         /// <returns>
         ///  true if it succeeds, false if it fails.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        bool RemoveRelationship(Identity id, ISchemaRelationship schemaRelationship, bool throwExceptionIfNotExists);
+        bool RemoveRelationship(Identity id, ISchemaRelationship schemaRelationship, bool throwExceptionIfNotExists, Identity originEmbeddedRelationship);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

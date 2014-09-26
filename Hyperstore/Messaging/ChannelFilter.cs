@@ -94,7 +94,8 @@ namespace Hyperstore.Modeling.Messaging
         public virtual bool ShouldBePropagated(IEvent evt)
         {
             return OutputProperty != null 
-                && (DomainModel == null || String.Compare(DomainModel.Name, evt.DomainModel, StringComparison.OrdinalIgnoreCase) == 0) 
+                && (DomainModel == null || String.Compare(DomainModel.Name, evt.DomainModel, StringComparison.OrdinalIgnoreCase) == 0)
+                && (String.Compare(DomainModel.ExtensionName, evt.ExtensionName, StringComparison.OrdinalIgnoreCase) == 0)
                 && OutputProperty.ShouldBePropagated(evt);
         }
 
@@ -111,7 +112,10 @@ namespace Hyperstore.Modeling.Messaging
         ///-------------------------------------------------------------------------------------------------
         public virtual bool CanReceive(IEvent evt)
         {
-            return InputProperty != null && (DomainModel == null || String.Compare(DomainModel.Name, evt.DomainModel, StringComparison.OrdinalIgnoreCase) == 0) && InputProperty.CanReceive(evt);
+            return InputProperty != null 
+                && (DomainModel == null || String.Compare(DomainModel.Name, evt.DomainModel, StringComparison.OrdinalIgnoreCase) == 0)
+                && (String.Compare(DomainModel.ExtensionName, evt.ExtensionName, StringComparison.OrdinalIgnoreCase) == 0)
+                && InputProperty.CanReceive(evt);
         }
     }
 }

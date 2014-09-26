@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -96,11 +96,14 @@ namespace Hyperstore.Modeling
         /// <param name="throwExceptionIfNotExists">
         ///  if set to <c>true</c> [throw exception if not exists].
         /// </param>
+        /// <param name="originEmbeddedRelationship">
+        ///  The origin embedded relationship.
+        /// </param>
         /// <returns>
         ///  true if it succeeds, false if it fails.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        bool RemoveRelationship(Identity id, ISchemaRelationship relationshipSchema, bool throwExceptionIfNotExists);
+        bool RemoveRelationship(Identity id, ISchemaRelationship relationshipSchema, bool throwExceptionIfNotExists, Identity originEmbeddedRelationship);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -115,11 +118,14 @@ namespace Hyperstore.Modeling
         /// <param name="throwExceptionIfNotExists">
         ///  if set to <c>true</c> [throw exception if not exists].
         /// </param>
+        /// <param name="originEmbeddedRelationship">
+        ///  The origin embedded relationship.
+        /// </param>
         /// <returns>
         ///  true if it succeeds, false if it fails.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        bool RemoveEntity(Identity id, ISchemaEntity entitySchema, bool throwExceptionIfNotExists);
+        bool RemoveEntity(Identity id, ISchemaEntity entitySchema, bool throwExceptionIfNotExists, Identity originEmbeddedRelationship);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -142,6 +148,6 @@ namespace Hyperstore.Modeling
         ///  A Hyperstore.Modeling.HyperGraph.PropertyValue.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        PropertyValue SetPropertyValue(IModelElement owner, ISchemaProperty propertySchema, object value, long? version=null);
+        PropertyValue SetPropertyValue(IModelElement owner, ISchemaProperty propertySchema, object value, long? version = null);
     }
 }

@@ -22,14 +22,17 @@ using System.Text;
 
 namespace Hyperstore.Modeling.Metadata.Constraints
 {
-    internal sealed class CheckPropertyConstraintProxy : ConstraintProxy
+    internal sealed class CheckPropertyConstraintProxy : AbstractConstraintProxy
     {
+        protected Action<object, object, ConstraintContext, object> CheckHandler { get; private set; }
+
         private ISchemaProperty _property;
 
         public CheckPropertyConstraintProxy(ISchemaProperty property, Type constraintElementType, object constraint, ConstraintKind kind, string category)
-            : base(constraintElementType, constraint, kind, category)
+            : base(constraint, kind, category)
         {
             this._property = property;
+            CheckHandler = CreateCheckHandler(constraintElementType);
         }
 
         public override void ExecuteConstraint(IModelElement mel, ConstraintContext ctx)
@@ -39,10 +42,33 @@ namespace Hyperstore.Modeling.Metadata.Constraints
                 return;
 
             ctx.PropertyName = _property.Name;
-            CheckHandler(pv.Value, ctx, Constraint);
+            CheckHandler(pv.Value, pv.OldValue, ctx, Constraint);
         }
 
-        protected override Type MakeGenericType(Type elementType)
+        private Action<object, object, ConstraintContext, object> CreateCheckHandler(Type elementType)
+        {
+            DebugContract.Requires(elementType);
+
+            var constraintType = MakeGenericType(elementType);
+
+            var pval = Expression.Parameter(typeof(object));
+            var poldVal = Expression.Parameter(typeof(object));
+            var pctx = Expression.Parameter(typeof(ConstraintContext));
+            var pconstraint = Expression.Parameter(typeof(object));
+
+            // (val, oldVal, ctx, constraint) => constraint.Check((T)val, (T)oldVal, ctx)
+            var invocationExpression = Expression.Lambda(
+                                            Expression.Call(Expression.Convert(pconstraint, constraintType),
+                                                        Hyperstore.Modeling.Utils.ReflectionHelper.GetMethod(constraintType, "ExecuteConstraint").First(),
+                                                            Expression.Convert(pval, elementType),
+                                                            Expression.Convert(poldVal, elementType),
+                                                            pctx),
+                                            pval, poldVal, pctx, pconstraint);
+
+            return (Action<object, object, ConstraintContext, object>)invocationExpression.Compile();
+        }
+
+        private Type MakeGenericType(Type elementType)
         {
             return typeof(ICheckValueObjectConstraint<>).MakeGenericType(elementType);
         }

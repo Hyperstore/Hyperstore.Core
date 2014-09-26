@@ -80,6 +80,7 @@
     <Compile Include="Commands\InterceptorsTest.cs" />
     <Compile Include="Constraints\ConstraintTest.cs" />
     <Compile Include="DomainExtension\ExtensionScopeTest.cs" />
+    <Compile Include="DomainExtension\ModelsComparaison.cs" />
     <Compile Include="DomainModel\RelationshipTest.cs" />
     <Compile Include="DomainModel\DynamicDomainTest.cs" />
     <Compile Include="Events\EventBusTest.cs" />

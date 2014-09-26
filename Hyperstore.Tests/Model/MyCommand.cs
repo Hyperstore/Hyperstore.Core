@@ -50,7 +50,7 @@ namespace Hyperstore.Tests.Model
             return Hyperstore.Modeling.Metadata.Primitives.StringPrimitive.SerializeValue(data);
         }
 
-        public void ExecuteConstraint(string value, ConstraintContext ctx)
+        public void ExecuteConstraint(string value, string oldValue, ConstraintContext ctx)
         {
             if (value == null)
                 return;

@@ -183,5 +183,29 @@ namespace Hyperstore.Modeling.Container
                 disposable.Dispose();
             }
         }
+
+        internal IServicesContainer Merge(IServicesContainer serviceContainer)
+        {
+            var container = serviceContainer as ServicesContainer;
+            if( container == null || !container._services.HasValue)
+                return this;
+
+            _services.ExchangeValue(services =>
+            {
+                foreach (var descriptor in container._services.Value.Values)
+                {
+                    ServiceDescriptor desc;
+                    if (!services.TryGetValue(descriptor.ServiceType, out desc))
+                    {
+                        return services.Add(descriptor.ServiceType, descriptor);
+                    }
+
+                    descriptor.Next = desc;
+                    services = services.SetItem(descriptor.ServiceType, descriptor);
+                }
+                return services;
+            });
+            return this;
+        }
     }
 }

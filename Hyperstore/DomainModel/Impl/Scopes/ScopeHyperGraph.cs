@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -42,7 +42,8 @@ namespace Hyperstore.Modeling.Scopes
         ///  The extended domain.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public ScopeHyperGraph(IServicesContainer services, IHyperGraphProvider extendedDomain) : base(services)
+        public ScopeHyperGraph(IServicesContainer services, IHyperGraphProvider extendedDomain)
+            : base(services)
         {
             DebugContract.Requires(services);
             DebugContract.Requires(extendedDomain);
@@ -83,7 +84,7 @@ namespace Hyperstore.Modeling.Scopes
         internal override IEnumerable<GraphNode> GetGraphNodes(NodeType nodetype)
         {
             HashSet<Identity> set = new HashSet<Identity>();
-            foreach(var node in base.GetGraphNodes(nodetype))
+            foreach (var node in base.GetGraphNodes(nodetype))
             {
                 set.Add(node.Id);
                 if (IsDeleted(node.Id))
@@ -93,7 +94,7 @@ namespace Hyperstore.Modeling.Scopes
 
             foreach (var node in _extendedGraph.GetGraphNodes(nodetype))
             {
-                if( !set.Add(node.Id) || IsDeleted(node.Id))
+                if (!set.Add(node.Id) || IsDeleted(node.Id))
                     continue;
                 yield return node;
             }
@@ -174,11 +175,11 @@ namespace Hyperstore.Modeling.Scopes
             return flag;
         }
 
-        public override bool RemoveEntity(Identity id, ISchemaEntity schemaEntity, bool throwExceptionIfNotExists)
+        public override bool RemoveEntity(Identity id, ISchemaEntity schemaEntity, bool throwExceptionIfNotExists, Identity originEmbeddedRelationship)
         {
-            var flag = base.RemoveEntity(id, schemaEntity, false);
+            var flag = base.RemoveEntity(id, schemaEntity, false, originEmbeddedRelationship);
             _deletedElements.AddNode(new GraphNode(id, schemaEntity.Id, NodeType.Node));
-            return flag;
+            return true;
         }
 
 
@@ -189,11 +190,11 @@ namespace Hyperstore.Modeling.Scopes
             return flag;
         }
 
-        public override bool RemoveRelationship(Identity id, ISchemaRelationship schemaRelationship, bool throwExceptionIfNotExists)
+        public override bool RemoveRelationship(Identity id, ISchemaRelationship schemaRelationship, bool throwExceptionIfNotExists, Identity originEmbeddedRelationship)
         {
-            var flag = base.RemoveRelationship(id, schemaRelationship, false);
+            var flag = base.RemoveRelationship(id, schemaRelationship, false, originEmbeddedRelationship);
             _deletedElements.AddNode(new GraphNode(id, schemaRelationship.Id, NodeType.Node));
-            return flag;
+            return true;
         }
 
         IEnumerable<IModelElement> IScopeHyperGraph.GetExtensionElements(ISchemaElement schemaElement)
@@ -207,6 +208,17 @@ namespace Hyperstore.Modeling.Scopes
             return _deletedElements.GetAllNodes(NodeType.EdgeOrNode);
         }
 
+        System.Collections.Generic.IEnumerable<PropertyValue> IScopeHyperGraph.GetUpdatedProperties()
+        {
+            foreach (var prop in base.GetGraphNodes(NodeType.Property))
+            {
+                GraphNode oldNode;
+                _extendedGraph.GetGraphNode(prop.Id, NodeType.Property, null, out oldNode);
+                yield return new PropertyValue { CurrentVersion = prop.Version, Value = prop.Value, OldValue = oldNode != null ? oldNode.Value : null };
+            }
+        }
+
+
         public override PropertyValue SetPropertyValue(IModelElement owner, ISchemaProperty property, object value, long? version)
         {
             if (!GraphNodeExists(owner.Id, owner.SchemaInfo))
@@ -215,6 +227,12 @@ namespace Hyperstore.Modeling.Scopes
             var pid = owner.Id.CreateAttributeIdentity(property.Name);
             GraphNode propertyNode;
             _extendedGraph.GetGraphNode(pid, NodeType.Property, property, out propertyNode); // Potential old value
+
+            if (propertyNode != null && Equals(propertyNode.Value, value))
+            {
+                // Value already exists with the same value in the extendeed domain
+                return null;
+            }
 
             if (!base.GraphNodeExists(owner.Id, owner.SchemaInfo))
             {

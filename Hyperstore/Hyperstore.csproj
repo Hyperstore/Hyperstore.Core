@@ -84,6 +84,7 @@
     <Compile Include="Extensions\StoreExtensions.cs" />
     <Compile Include="HyperGraph\Impls\NodeInfo.cs" />
     <Compile Include="Metadata\Constraints\ConstraintProxy.cs" />
+    <Compile Include="Metadata\Constraints\AbstractConstraintProxy.cs" />
     <Compile Include="Metadata\Constraints\CheckPropertyConstraintProxy.cs" />
     <Compile Include="Metadata\Constraints\CheckValueObjectConstraint.cs" />
     <Compile Include="Metadata\Constraints\ConstraintBuilder.cs" />

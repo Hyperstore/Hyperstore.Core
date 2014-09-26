@@ -33,6 +33,8 @@ namespace Hyperstore.Modeling.Commands
     public class RemoveRelationshipCommand : PrimitiveCommand, ICommandHandler<RemoveRelationshipCommand>
     {
         private readonly bool _throwExceptionIfNotExists;
+        // Set if an entity is removed because a embedded relationship has been removed.
+        private readonly Identity _originEmbeddedRelationship;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -69,6 +71,12 @@ namespace Hyperstore.Modeling.Commands
             if (Relationship == null)
                 throw new InvalidElementException(id);
             _throwExceptionIfNotExists = throwExceptionIfNotExists;
+        }
+
+        internal RemoveRelationshipCommand(IDomainModel domainModel, Identity id, Identity schemaEntityId, Identity originEmbeddedRelationship)
+            : this(domainModel, id, schemaEntityId, false)
+        {
+            _originEmbeddedRelationship = originEmbeddedRelationship;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -136,7 +144,7 @@ namespace Hyperstore.Modeling.Commands
 
             using (CodeMarker.MarkBlock("RemoveRelationshipCommand.Handle"))
             {
-                if (!dm.RemoveRelationship(Relationship.Id, Relationship.SchemaInfo as ISchemaRelationship, _throwExceptionIfNotExists))
+                if (!dm.RemoveRelationship(Relationship.Id, Relationship.SchemaInfo as ISchemaRelationship, _throwExceptionIfNotExists, _originEmbeddedRelationship))
                     return null;
             }
             return @event;

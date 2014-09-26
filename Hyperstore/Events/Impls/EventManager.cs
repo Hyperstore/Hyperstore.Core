@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -511,7 +511,11 @@ namespace Hyperstore.Modeling.Events
             DebugContract.Requires(log, "log");
             DebugContract.Requires(ev, "ev");
 
-            if (ev.DomainModel != _domainModel.Name && ev.ExtensionName != _domainModel.ExtensionName)
+            if (ev.DomainModel != _domainModel.Name)
+                return;
+
+            // Event for extendee domain will be raised to its extension
+            if (ev.ExtensionName != null && ev.ExtensionName != _domainModel.ExtensionName)
                 return;
 
             try
@@ -551,7 +555,7 @@ namespace Hyperstore.Modeling.Events
             DebugContract.Requires(session, "session");
             DebugContract.Requires(log, "log");
 
-            if (!session.Events.Any(e => e.DomainModel == _domainModel.Name))
+            if (!session.Events.Any(e => e.DomainModel == _domainModel.Name && (e.ExtensionName == null || e.ExtensionName == _domainModel.ExtensionName)))
                 return;
 
             try

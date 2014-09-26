@@ -22,25 +22,18 @@ using System.Text;
 
 namespace Hyperstore.Modeling.Metadata.Constraints
 {
-    internal class ConstraintProxy
+    internal sealed class ConstraintProxy : AbstractConstraintProxy 
     {
         protected Action<object, ConstraintContext, object> CheckHandler { get; private set; }
-        protected object Constraint { get; private set; }
-
-        public ConstraintKind Kind { get; private set; }
-        public string Category { get; private set; }
 
         public ConstraintProxy(Type implementedType, object constraint, ConstraintKind kind, string category)
+            : base(constraint, kind, category)
         {
 
             CheckHandler = CreateCheckHandler(implementedType);
-
-            Constraint = constraint;
-            Kind = kind;
-            Category = category;
         }
 
-        public virtual void ExecuteConstraint(IModelElement mel, ConstraintContext ctx)
+        public override void ExecuteConstraint(IModelElement mel, ConstraintContext ctx)
         {
             CheckHandler(mel, ctx, Constraint);
         }
@@ -67,7 +60,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
             return (Action<object, ConstraintContext, object>)invocationExpression.Compile();
         }
 
-        protected virtual Type MakeGenericType(Type elementType)
+        private Type MakeGenericType(Type elementType)
         {
             return typeof(ICheckConstraint<>).MakeGenericType(elementType);
         }

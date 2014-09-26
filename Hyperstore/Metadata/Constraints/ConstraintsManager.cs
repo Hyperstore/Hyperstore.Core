@@ -43,7 +43,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
 
     internal class ConstraintsManager : IDomainService, IConstraintsManager, IDisposable, IConstraintManagerInternal
     {
-        private Dictionary<Identity, List<ConstraintProxy>> _checkConstraints;
+        private Dictionary<Identity, List<AbstractConstraintProxy>> _checkConstraints;
 
         private IDomainModel Domain { get; set; }
 
@@ -67,7 +67,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
         void IDomainService.SetDomain(IDomainModel domainModel)
         {
             Domain = domainModel;
-            _checkConstraints = new Dictionary<Identity, List<ConstraintProxy>>();
+            _checkConstraints = new Dictionary<Identity, List<AbstractConstraintProxy>>();
             Domain.DomainLoaded += OnDomainLoaded;
         }
 
@@ -176,12 +176,12 @@ namespace Hyperstore.Modeling.Metadata.Constraints
             AddConstraint(schema, proxy);
         }
 
-        private void AddConstraint(ISchemaElement schema, ConstraintProxy proxy)
+        private void AddConstraint(ISchemaElement schema, AbstractConstraintProxy proxy)
         {
-            List<ConstraintProxy> constraints;
+            List<AbstractConstraintProxy> constraints;
             if (!_checkConstraints.TryGetValue(schema.Id, out constraints))
             {
-                constraints = new List<ConstraintProxy>();
+                constraints = new List<AbstractConstraintProxy>();
                 _checkConstraints.Add(schema.Id, constraints);
             }
             constraints.Add(proxy);
@@ -255,7 +255,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
 
         private void CheckElement(ConstraintContext ctx, IModelElement mel, ISchemaElement schema)
         {
-            List<ConstraintProxy> constraints;
+            List<AbstractConstraintProxy> constraints;
             if (_checkConstraints.TryGetValue(schema.Id, out constraints))
             {
                 foreach (var constraint in constraints.Where(c => c.Kind == ConstraintKind.Check))
@@ -314,7 +314,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
 
         private void ValidateElement(ConstraintContext ctx, IModelElement mel, ISchemaElement schema, string category)
         {
-            List<ConstraintProxy> constraints;
+            List<AbstractConstraintProxy> constraints;
             if (_checkConstraints.TryGetValue(schema.Id, out constraints))
             {
                 foreach (var constraint in constraints)

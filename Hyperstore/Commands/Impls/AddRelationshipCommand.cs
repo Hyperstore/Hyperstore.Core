@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -112,6 +112,9 @@ namespace Hyperstore.Modeling.Commands
             Id = id ?? DomainModel.IdGenerator.NextValue(relationshipSchema);
             if (String.Compare(Id.DomainModelName, domainModel.Name, StringComparison.OrdinalIgnoreCase) != 0)
                 throw new Exception("The id must be an id of the specified domain model.");
+
+            if (relationshipSchema.IsEmbedded && startId == endId)
+                throw new Exception("An element can not contain itself.");
 
             SchemaRelationship = relationshipSchema;
         }
