@@ -32,6 +32,7 @@ namespace Hyperstore.Modeling
         private IDisposable relationshipAddedSubscription;
         private IDisposable relationshipRemovedSubscription;
         private IDisposable propertyChangedSubscription;
+        private readonly List<Identity> _items = new List<Identity>();
 
         public ObservableModelElementList(IModelElement element, string schemaRelationshipName, bool opposite = false)
             : this(element, element.DomainModel.Store.GetSchemaRelationship(schemaRelationshipName), opposite)
@@ -51,7 +52,7 @@ namespace Hyperstore.Modeling
             if (_synchronizationContext == null)
                 throw new Exception("No synchronizationContext founded. You can define a synchronization context in the store with store.Register<ISynchronizationContext>.");
 
-            var query  = DomainModel.Events.RelationshipAdded;
+            var query = DomainModel.Events.RelationshipAdded;
             var query2 = DomainModel.Events.RelationshipRemoved;
             var query3 = DomainModel.Events.PropertyChanged;
 
@@ -69,7 +70,7 @@ namespace Hyperstore.Modeling
                 a.Event.SchemaRelationshipId,
                 NotifyCollectionChangedAction.Remove));
 
-            propertyChangedSubscription = query3.Subscribe(a => NotifyChange(
+            propertyChangedSubscription = query3.Subscribe(a => NotifyPropertyChanged(
                 a.Event.ElementId,
                 a.Event.SchemaElementId));
         }
@@ -83,82 +84,65 @@ namespace Hyperstore.Modeling
             propertyChangedSubscription.Dispose();
         }
 
-        private void NotifyChange(Identity elementId, Identity schemaId)
+        private void NotifyPropertyChanged(Identity elementId, Identity schemaId)
         {
-            if (DomainModel == null)
+            if (DomainModel == null || WhereClause == null)
                 return;
 
             var schema = DomainModel.Store.GetSchemaElement(schemaId);
             var valid = Source == null ? schema.IsA(SchemaRelationship.Start) : schema.IsA(SchemaRelationship.End);
-            if (valid)
+            if (!valid)
+                return;
+
+            var item = (T)DomainModel.Store.GetElement(elementId, schema);
+            if (_items.Contains(elementId))
             {
-                var index = IndexOfCore(elementId);
-                var item = (T)DomainModel.Store.GetElement(elementId, schema);
-
-                if (item == null || (Source != null && !item.DomainModel.SameAs(Source.DomainModel)) || (End != null && !item.DomainModel.SameAs(End.DomainModel)))
-                    return;
-
-                if (index >= 0)
-                {
-                    // Already in the list: check if the query is always valid else remove item from list
-                    if (WhereClause != null && !WhereClause((T)item))
-                    {
-                        _synchronizationContext.Send(() => OnCollectionChanged(item, NotifyCollectionChangedAction.Remove, index));
-                    }
-                    return;
-                }
-
-                // Not in the list : Is it include in the current relationship ?
-                if (End != null && item.DomainModel != End.DomainModel)
-                    return; // Inter domain not supported
-
-                if ((Source != null && Source.GetRelationships(SchemaRelationship, item).Any()) || (End != null && End.DomainModel.GetRelationships(SchemaRelationship, item, End).Any()))
-                {
-                    // Yes, if query is valid, add it to the list
-                    if (WhereClause == null || WhereClause((T)item))
-                    {
-                        index = Count + 1;
-                        _synchronizationContext.Send(() => OnCollectionChanged(item, NotifyCollectionChangedAction.Add, index));
-                    }
-                }
-
+                if (!WhereClause((T)item))
+                    NotifyChange(elementId, schemaId, NotifyCollectionChangedAction.Remove, item);
+                return;
             }
+
+            if (WhereClause((T)item))
+                NotifyChange(elementId, schemaId, NotifyCollectionChangedAction.Add, item);
         }
 
         private void Notify(Identity elementId, Identity schemaId, Identity startId, Identity rid, NotifyCollectionChangedAction defaultAction)
         {
-            if (DomainModel == null)
+            if (DomainModel == null || rid != SchemaRelationship.Id || (Source != null && startId != Source.Id) || (End != null && startId != End.Id))
                 return;
 
-            if (rid != SchemaRelationship.Id || (Source != null && startId != Source.Id) || (End != null && startId != End.Id))
-                return;
+            NotifyChange(elementId, schemaId, defaultAction, null);
+        }
 
-            var index = -1;
-            if (defaultAction != NotifyCollectionChangedAction.Add)
+        private void NotifyChange(Identity elementId, Identity schemaId, NotifyCollectionChangedAction defaultAction, IModelElement item)
+        {
+            int index = _items.IndexOf(elementId);
+            if (defaultAction == NotifyCollectionChangedAction.Remove)
             {
-                index = IndexOfCore(elementId);
-                if (index == -1)
-                    return;
-            }
-
-            var schema = DomainModel.Store.GetSchemaElement(schemaId);
-            var item = (T)DomainModel.Store.GetElement(elementId, schema);
-
-            if (item == null || (Source != null && !item.DomainModel.SameAs(Source.DomainModel)) || (End != null && !item.DomainModel.SameAs(End.DomainModel)))
-                return;
-
-            if (item != null)
-            {
-                if ((WhereClause != null && !WhereClause((T)item)) || defaultAction == NotifyCollectionChangedAction.Remove)
+                if (index >= 0)
                 {
+                    _items.RemoveAt(index);
                     _synchronizationContext.Send(() => OnCollectionChanged(item, NotifyCollectionChangedAction.Remove, index));
                 }
-                else
-                {
-                    index = Count + 1;
-                    _synchronizationContext.Send(() => OnCollectionChanged(item, NotifyCollectionChangedAction.Add, index));
-                }
+                return;
             }
+
+            if (index >= 0)
+                return;
+
+            var schema = DomainModel.Store.GetSchemaElement(schemaId);
+            if( item == null)
+                item = (T)DomainModel.Store.GetElement(elementId, schema);
+
+            if (item == null || WhereClause != null && !WhereClause((T)item))
+                return;
+
+            index = IndexOfCore(elementId);
+            if (index == -1)
+                return;
+
+            _items.Add(elementId);
+            _synchronizationContext.Send(() => OnCollectionChanged(item, NotifyCollectionChangedAction.Add, index));
         }
 
         private void OnCollectionChanged(object item, NotifyCollectionChangedAction action, int index = -1)

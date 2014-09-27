@@ -4,7 +4,7 @@ domain Hyperstore.Tests.Model.Library
 	extern System.String as Email;
 	 
     def entity NamedElement {
-        Name : string check error "Name is required" {return !String.IsNullOrEmpty(self.Name);};
+        Name : string check error "Name is required" { !String.IsNullOrEmpty(self.Name)};
 		Email : Email;
     } 	 
 
@@ -13,6 +13,7 @@ domain Hyperstore.Tests.Model.Library
         Books   => Book*   : LibraryHasBooks;			
         Members => Member* : LibraryHasMembers;
         Loans   => Loan*   : LibraryHasLoans;
+		BooksA  : LibraryHasBooks where { item.Title.StartsWith("a")};
     }
 
     def entity Book {

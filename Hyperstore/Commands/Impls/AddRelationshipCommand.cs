@@ -34,6 +34,7 @@ namespace Hyperstore.Modeling.Commands
     {
         private readonly IDomainModel _domainModel;
         private readonly IModelElement _start;
+        private readonly IModelElement _end; 
         private IModelRelationship _element;
 
         ///-------------------------------------------------------------------------------------------------
@@ -147,6 +148,7 @@ namespace Hyperstore.Modeling.Commands
             Contract.Requires(relationshipSchema, "relationshipSchema");
 
             _start = start;
+            _end = end;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -250,7 +252,7 @@ namespace Hyperstore.Modeling.Commands
 
             if( String.Compare(start.Id.DomainModelName, EndId.DomainModelName, StringComparison.OrdinalIgnoreCase) == 0)
             {
-                if (DomainModel.Store.GetElement(EndId, EndSchema) == null)
+                if ((_end ?? DomainModel.Store.GetElement(EndId, EndSchema) ) == null)
                     throw new InvalidElementException(EndId, "Target element must exists to create a relationship.");
             }
 
