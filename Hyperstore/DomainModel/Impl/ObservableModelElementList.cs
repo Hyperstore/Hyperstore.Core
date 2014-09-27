@@ -137,12 +137,12 @@ namespace Hyperstore.Modeling
             if (item == null || WhereClause != null && !WhereClause((T)item))
                 return;
 
-            index = IndexOfCore(elementId);
-            if (index == -1)
-                return;
+            //index = IndexOfCore(elementId);
+            //if (index == -1)
+            //    return;
 
             _items.Add(elementId);
-            _synchronizationContext.Send(() => OnCollectionChanged(item, NotifyCollectionChangedAction.Add, index));
+            _synchronizationContext.Send(() => OnCollectionChanged(item, NotifyCollectionChangedAction.Add, _items.Count));
         }
 
         private void OnCollectionChanged(object item, NotifyCollectionChangedAction action, int index = -1)
@@ -163,22 +163,18 @@ namespace Hyperstore.Modeling
         #region Ilist<T>
         public int IndexOf(T item)
         {
-            return base.IndexOfCore(item.Id);
+            return _items.IndexOf(item.Id);
         }
-
 
         #endregion
 
         #region IList
-
-
-
         public int IndexOf(object value)
         {
             var mel = value as T;
             if (mel == null)
                 return -1;
-            return base.IndexOfCore(mel.Id);
+            return _items.IndexOf(mel.Id);
         }
 
         public bool IsFixedSize
