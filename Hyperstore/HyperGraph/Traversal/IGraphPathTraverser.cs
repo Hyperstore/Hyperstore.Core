@@ -16,6 +16,7 @@
  
 #region Imports
 
+using Hyperstore.Modeling.HyperGraph;
 using System.Collections.Generic;
 
 #endregion
@@ -43,13 +44,13 @@ namespace Hyperstore.Modeling.Traversal
         /// <summary>
         ///  Enumerates the items in this collection that meet given criteria.
         /// </summary>
-        /// <param name="start">
+        /// <param name="node">
         ///  The start.
         /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the matched items.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<GraphPath> Traverse(Identity nodeId, Identity schemaElementId);
+        IEnumerable<GraphPath> Traverse(NodeInfo node);
     }
 }

@@ -15,7 +15,7 @@ domain Hyperstore.Tests.Model.TestDomain
         Value : int;
         [modifier("public virtual")]
         YRelation => YClass : XReferencesY;
-        OthersX => XExtendsBaseClass* : XReferencesX;
+        OthersX -> XExtendsBaseClass* : XReferencesX;
     }
 
     def entity YClass {
@@ -31,6 +31,6 @@ domain Hyperstore.Tests.Model.TestDomain
         Weight:int;
     }
 
-    def relationship XReferencesX (XExtendsBaseClass => XExtendsBaseClass*) {
+    def relationship XReferencesX (XExtendsBaseClass -> XExtendsBaseClass*) {
     }
 }

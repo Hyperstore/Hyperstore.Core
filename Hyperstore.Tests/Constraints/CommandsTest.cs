@@ -169,7 +169,7 @@ namespace Hyperstore.Tests.Commands
             }
         }
 
-        [TestMethod]
+       // [TestMethod]
         [TestCategory("Constraints")]
         public async Task MultiConstraints()
         {

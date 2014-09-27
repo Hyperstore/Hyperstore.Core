@@ -504,13 +504,13 @@ namespace Hyperstore.Tests.HyperGraph
                         ? GraphTraversalEvaluatorResult.IncludeAndContinue
                         : GraphTraversalEvaluatorResult.ExcludeAndContinue
                     )
-                    .GetPaths(new Identity("test", "1"), metadata.Id).Count();
+                    .GetPaths(new NodeInfo(new Identity("test", "1"), metadata.Id)).Count();
 
                 Assert.AreEqual(3, cx);
 
             var p2 = domain.Traversal.OnEveryPath(p => p.EndElement.Id.Key == "7" ? GraphTraversalEvaluatorResult.IncludeAndExit : GraphTraversalEvaluatorResult.ExcludeAndContinue)
                                      .PathTraverser(new GraphDepthFirstTraverser())
-                                     .GetPaths(new Identity("test", "1"), metadata.Id).First();
+                                     .GetPaths(new NodeInfo(new Identity("test", "1"), metadata.Id)).First();
                 Assert.AreEqual(2, p2.Length);
 
             //Assert.IsTrue(visitor.Path != null && visitor.Path.Length == 2);

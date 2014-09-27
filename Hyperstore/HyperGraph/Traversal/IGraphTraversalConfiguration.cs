@@ -16,6 +16,7 @@
  
 #region Imports
 
+using Hyperstore.Modeling.HyperGraph;
 using System;
 using System.Collections.Generic;
 
@@ -77,13 +78,13 @@ namespace Hyperstore.Modeling.Traversal
         /// <summary>
         ///  Gets the paths in this collection.
         /// </summary>
-        /// <param name="startNode">
+        /// <param name="node">
         ///  The start node.
         /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the paths in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<GraphPath> GetPaths(Identity nodeId, Identity schemaElementId);
+        IEnumerable<GraphPath> GetPaths(NodeInfo node);
     }
 }

@@ -51,8 +51,6 @@ namespace Hyperstore.Modeling.HyperGraph
         {
             Contract.Requires(id, "id");
             Contract.Requires(schemaId, "schemaId");
-            Contract.Requires(endId, "endId");
-            Contract.Requires(endSchemaId, "endSchemaId");
 
             EndId = endId;
             EndSchemaId = endSchemaId;

@@ -29,6 +29,10 @@ namespace Hyperstore.Modeling
         private readonly ISynchronizationContext _synchronizationContext;
         private readonly object _sync = new object();
 
+        private IDisposable relationshipAddedSubscription;
+        private IDisposable relationshipRemovedSubscription;
+        private IDisposable propertyChangedSubscription;
+
         public ObservableModelElementList(IModelElement element, string schemaRelationshipName, bool opposite = false)
             : this(element, element.DomainModel.Store.GetSchemaRelationship(schemaRelationshipName), opposite)
         {
@@ -47,32 +51,43 @@ namespace Hyperstore.Modeling
             if (_synchronizationContext == null)
                 throw new Exception("No synchronizationContext founded. You can define a synchronization context in the store with store.Register<ISynchronizationContext>.");
 
-            var query = DomainModel.Events.RelationshipAdded;
+            var query  = DomainModel.Events.RelationshipAdded;
             var query2 = DomainModel.Events.RelationshipRemoved;
             var query3 = DomainModel.Events.PropertyChanged;
 
-            query.Subscribe(a => Notify(
+            relationshipAddedSubscription = query.Subscribe(a => Notify(
                 Source != null ? a.Event.End : a.Event.Start,
                 Source != null ? a.Event.EndSchema : a.Event.StartSchema,
                 Source != null ? a.Event.Start : a.Event.End,
                 a.Event.SchemaRelationshipId,
                 NotifyCollectionChangedAction.Add));
 
-            query2.Subscribe(a => Notify(
+            relationshipRemovedSubscription = query2.Subscribe(a => Notify(
                 Source != null ? a.Event.End : a.Event.Start,
                 Source != null ? a.Event.EndSchema : a.Event.StartSchema,
                 Source != null ? a.Event.Start : a.Event.End,
                 a.Event.SchemaRelationshipId,
                 NotifyCollectionChangedAction.Remove));
 
-            query3.Subscribe(a => NotifyChange(
+            propertyChangedSubscription = query3.Subscribe(a => NotifyChange(
                 a.Event.ElementId,
                 a.Event.SchemaElementId));
+        }
 
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            relationshipAddedSubscription.Dispose();
+            relationshipRemovedSubscription.Dispose();
+            propertyChangedSubscription.Dispose();
         }
 
         private void NotifyChange(Identity elementId, Identity schemaId)
         {
+            if (DomainModel == null)
+                return;
+
             var schema = DomainModel.Store.GetSchemaElement(schemaId);
             var valid = Source == null ? schema.IsA(SchemaRelationship.Start) : schema.IsA(SchemaRelationship.End);
             if (valid)
@@ -112,6 +127,9 @@ namespace Hyperstore.Modeling
 
         private void Notify(Identity elementId, Identity schemaId, Identity startId, Identity rid, NotifyCollectionChangedAction defaultAction)
         {
+            if (DomainModel == null)
+                return;
+
             if (rid != SchemaRelationship.Id || (Source != null && startId != Source.Id) || (End != null && startId != End.Id))
                 return;
 

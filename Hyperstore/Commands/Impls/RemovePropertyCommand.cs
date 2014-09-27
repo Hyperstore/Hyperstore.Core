@@ -136,7 +136,7 @@ namespace Hyperstore.Modeling.Commands
                 var pv = DomainModel.GetPropertyValue(ElementId, SchemaElement, SchemaProperty);
                 if (pv != null)
                 {
-                    OldValue = pv.OldValue;
+                    OldValue = pv.Value;
                     OldVersion = pv.CurrentVersion;
                     return new RemovePropertyEvent(DomainModel.Name, DomainModel.ExtensionName, ElementId, SchemaElement.Id, SchemaProperty.Id, SchemaProperty.Name, SchemaProperty.PropertySchema.Serialize(OldValue), context.CurrentSession.SessionId, OldVersion);
                 }

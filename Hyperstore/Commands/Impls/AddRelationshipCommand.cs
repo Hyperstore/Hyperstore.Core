@@ -248,6 +248,12 @@ namespace Hyperstore.Modeling.Commands
             if (start == null)
                 throw new InvalidElementException(StartId, "Source element must exists to create a relationship");
 
+            if( String.Compare(start.Id.DomainModelName, EndId.DomainModelName, StringComparison.OrdinalIgnoreCase) == 0)
+            {
+                if (DomainModel.Store.GetElement(EndId, EndSchema) == null)
+                    throw new InvalidElementException(EndId, "Target element must exists to create a relationship.");
+            }
+
             using (CodeMarker.MarkBlock("AddRelationshipCommand.Handle"))
             {
                 dm.CreateRelationship(Id, SchemaRelationship, start, EndId, EndSchema, _element);

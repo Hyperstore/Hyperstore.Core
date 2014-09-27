@@ -39,6 +39,8 @@ namespace Hyperstore.Modeling.Traversal
         {
             DebugContract.Requires(pos, "pos");
 
+            DomainModel = domain;
+
             Elements = new List<NodeInfo>();
             Relationships = new List<EdgeInfo>();
 
@@ -48,7 +50,7 @@ namespace Hyperstore.Modeling.Traversal
                 Relationships.AddRange(basePath.Relationships);
             }
 
-            Push(pos);
+            Push(pos.Node, pos.FromEdge);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -94,7 +96,8 @@ namespace Hyperstore.Modeling.Traversal
         ///-------------------------------------------------------------------------------------------------
         public NodeInfo EndElement
         {
-            get { return Elements.Last(); }
+            get;
+            private set;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -120,24 +123,25 @@ namespace Hyperstore.Modeling.Traversal
         ///-------------------------------------------------------------------------------------------------
         public EdgeInfo LastTraversedRelationship
         {
-            get { return Relationships.Count > 0 ? Relationships.Last() : null; }
+            get;
+            private set;
         }
 
-        internal void Push(GraphPosition pos)
+        internal void Push(NodeInfo node, EdgeInfo fromEdge)
         {
-            DebugContract.Requires(pos, "pos");
+            DebugContract.Requires(node);
+            EndElement = node;
+            LastTraversedRelationship = fromEdge; 
+            if (node != null)
+            {
+                Elements.Add(node);
+            }
 
-            Elements.Add(pos.Node);
-            if (pos.FromEdge != null)
-                Relationships.Add(pos.FromEdge);
-            _hash = 0;
-        }
+            if (fromEdge != null)
+            {
+                Relationships.Add(fromEdge);             
+            }
 
-        internal void Pop()
-        {
-            Elements.Remove(EndElement);
-            if (Length > 0)
-                Relationships.Remove(Relationships.Last());
             _hash = 0;
         }
 

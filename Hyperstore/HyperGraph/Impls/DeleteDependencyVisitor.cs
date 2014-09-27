@@ -16,26 +16,36 @@ namespace Hyperstore.Modeling.HyperGraph
 
         GraphTraversalEvaluatorResult ITraversalVisitor.Visit(GraphPath path)
         {
+            var end = path.EndElement;
             var relationship = path.LastTraversedRelationship;
-            if (relationship == null)
-                return GraphTraversalEvaluatorResult.Continue;
+            if (relationship != null)
+            {
+                _commands.Add(new RemoveRelationshipCommand(path.DomainModel, relationship.Id, relationship.SchemaId));
+                if (end == null)
+                    return GraphTraversalEvaluatorResult.IncludeAndNextPath;
+            }
+            else
+            {
+                // Traverse begins by a relationship ?
+                relationship = path.EndElement as EdgeInfo;
 
-            _commands.Add(new RemoveRelationshipCommand(path.DomainModel, relationship.Id, relationship.SchemaId));
+                if (relationship == null || relationship.EndId == null)
+                    return GraphTraversalEvaluatorResult.Continue;
+
+                end = new NodeInfo(relationship.EndId, relationship.EndSchemaId);
+            }
+
             var schemaRelationship = path.DomainModel.Store.GetSchemaRelationship(relationship.SchemaId);
-
-            if (!schemaRelationship.IsEmbedded || String.Compare(path.EndElement.Id.DomainModelName, path.DomainModel.Name, StringComparison.OrdinalIgnoreCase) != 0)
+            if (!schemaRelationship.IsEmbedded || String.Compare(end.Id.DomainModelName, path.DomainModel.Name, StringComparison.OrdinalIgnoreCase) != 0)
                 return GraphTraversalEvaluatorResult.IncludeAndNextPath;
 
-            if (path.EndElement != null)
-            {
-                var endSchema = path.DomainModel.Store.GetSchemaElement(relationship.EndSchemaId);
-                if (endSchema is ISchemaRelationship)
-                    _commands.Add(new RemoveRelationshipCommand(path.DomainModel, path.EndElement.Id, path.EndElement.SchemaId));
-                else
-                    _commands.Add(new RemoveEntityCommand(path.DomainModel, path.EndElement.Id, path.EndElement.SchemaId));
-                return GraphTraversalEvaluatorResult.Continue;
-            }
-            return GraphTraversalEvaluatorResult.IncludeAndNextPath;
+            var endSchema = path.DomainModel.Store.GetSchemaElement(relationship.EndSchemaId);
+            if (endSchema is ISchemaRelationship)
+                _commands.Add(new RemoveRelationshipCommand(path.DomainModel, end.Id, end.SchemaId));
+            else
+                _commands.Add(new RemoveEntityCommand(path.DomainModel, end.Id, end.SchemaId));
+
+            return GraphTraversalEvaluatorResult.Continue;
         }
     }
 }

@@ -39,7 +39,7 @@ namespace Hyperstore.Modeling.Domain
         private IConcurrentDictionary<Identity, IModelElement> _cache;
         private IHyperGraphProvider _domain;
 
-        private IHyperGraph InnerGraph { get { return _domain.InnerGraph; } }
+        private IHyperGraph InnerGraph { get { if (_domain == null) throw new Exception("Cannot access an element from an unloaded domain"); return _domain.InnerGraph; } }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

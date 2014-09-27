@@ -707,22 +707,8 @@ namespace Hyperstore.Modeling.HyperGraph
             {
                 _trace.WriteTrace(TraceCategory.Hypergraph, "Remove element {0}", id);
                 var visitor = new DeleteDependencyVisitor();
-                _domainModel.Traversal.WithVisitor(visitor).Traverse(id, schemaEntity.Id);
+                _domainModel.Traversal.WithVisitor(visitor).Traverse(node);
 
-                // Suppression des propriétés 
-                foreach (var prop in schemaEntity.GetProperties(true))
-                {
-                    // Pour chaque propriété qui n'est pas une relation, on va générer un événement spécifique
-                    if (prop.PropertySchema is ISchemaRelationship)
-                        continue;
-
-                    var pnode = GetPropertyValue(id, schemaEntity, prop);
-                    if (pnode != null)
-                    {
-                        _trace.WriteTrace(TraceCategory.Hypergraph, "Remove property {0}.{1}", id, prop.Name);
-                        visitor.Commands.Add(new RemovePropertyCommand(_domainModel, node.Id, schemaEntity, prop));
-                    }
-                }
                 if (visitor.Commands.Count > 0)
                 {
                     using (var session = _domainModel.Store.BeginSession())
@@ -733,6 +719,8 @@ namespace Hyperstore.Modeling.HyperGraph
                     }
                 }
             }
+
+            RemoveProperties(id, schemaEntity);
 
             using (var tx = BeginTransaction())
             {
@@ -753,6 +741,30 @@ namespace Hyperstore.Modeling.HyperGraph
             }
 
             return true;
+        }
+
+        private void RemoveProperties(Identity id, ISchemaElement schemaEntity)
+        {
+            List<IDomainCommand> commands = new List<IDomainCommand>();
+
+            // Suppression des propriétés 
+            foreach (var prop in schemaEntity.GetProperties(true))
+            {
+                // Pour chaque propriété qui n'est pas une relation, on va générer un événement spécifique
+                if (prop.PropertySchema is ISchemaRelationship)
+                    continue;
+
+                var pnode = GetPropertyValue(id, schemaEntity, prop);
+                if (pnode != null)
+                {
+                    _trace.WriteTrace(TraceCategory.Hypergraph, "Remove property {0}.{1}", id, prop.Name);
+                    commands.Add(new RemovePropertyCommand(_domainModel, id, schemaEntity, prop));
+                }
+            }
+            if (commands.Count > 0)
+            {
+                Session.Current.Execute(commands.ToArray());
+            }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -799,21 +811,8 @@ namespace Hyperstore.Modeling.HyperGraph
             if (Session.Current.GetContextInfo<bool>("$$remove$$") == false)
             {
                 var visitor = new DeleteDependencyVisitor();
-                _domainModel.Traversal.WithVisitor(visitor).Traverse(id, schemaRelationship.Id);
-                // Suppression des propriétés 
-                foreach (var prop in schemaRelationship.GetProperties(true))
-                {
-                    // Pour chaque propriété qui n'est pas une relation, on va générer un événement spécifique
-                    if (prop.PropertySchema is ISchemaRelationship)
-                        continue;
+                _domainModel.Traversal.WithVisitor(visitor).Traverse(edge);
 
-                    var pnode = GetPropertyValue(id, schemaRelationship, prop);
-                    if (pnode != null)
-                    {
-                        _trace.WriteTrace(TraceCategory.Hypergraph, "Remove property {0}.{1}", id, prop.Name);
-                        visitor.Commands.Add(new RemovePropertyCommand(_domainModel, id, schemaRelationship, prop));
-                    }
-                }
                 if (visitor.Commands.Count > 0)
                 {
                     using (var session = _domainModel.Store.BeginSession())
@@ -824,6 +823,8 @@ namespace Hyperstore.Modeling.HyperGraph
                     }
                 }
             }
+
+            RemoveProperties(id, schemaRelationship);
 
             using (var tx = BeginTransaction())
             {

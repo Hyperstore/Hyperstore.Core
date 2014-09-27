@@ -19,6 +19,7 @@
 using System.Collections.Generic;
 using Hyperstore.Modeling.Container;
 using Hyperstore.Modeling.HyperGraph;
+using System;
 
 #endregion
 
@@ -59,9 +60,9 @@ namespace Hyperstore.Modeling.Traversal
         ///  An enumerator that allows foreach to be used to process the matched items.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual IEnumerable<GraphPath> Traverse(Identity nodeId, Identity schemaElementId)
+        public virtual IEnumerable<GraphPath> Traverse(NodeInfo node)
         {
-            DebugContract.Requires(nodeId);
+            DebugContract.Requires(node);
 
             // Création du container de stockage des noeuds (ou plutot des chemins jusqu'à ce noeud) restant à traverser
             // Le type est tributaire de l'algorithme de traversé (Queue pour BreadthFirst et Stack pour DepthFirst)
@@ -69,11 +70,11 @@ namespace Hyperstore.Modeling.Traversal
             var paths = CreatePathContainer();
 
             // Lecture du noeud de départ            
-            if (nodeId == null)
+            if (node == null)
                 yield break;
 
             // Constitution du Path courant
-            var path = CreatePath(new GraphPosition { Node = new NodeInfo(nodeId, schemaElementId), IsStartPosition = true });
+            var path = CreatePath(new GraphPosition { Node = node, IsStartPosition = true });
 
             // Initialisation du container avec le 1er noeud
             paths.Insert(new[] { path });
@@ -111,13 +112,17 @@ namespace Hyperstore.Modeling.Traversal
                     {
   //                      _trace.WriteTrace(TraceCategory.Traverser, "Visit : {1} for {0}", path, rel.Id);
 
+                        NodeInfo childNode = null;
+                        if (String.Compare(rel.EndId.DomainModelName, _query.DomainModel.Name, StringComparison.OrdinalIgnoreCase) == 0)
+                            childNode = new NodeInfo(rel.EndId, rel.EndSchemaId);
+
                         // OK on la prend, on génére un nouveau chemin
-                        var childNode = new NodeInfo( rel.EndId, rel.EndSchemaId);
                         var pos = new GraphPosition
                                   {
                                       Node = childNode,
                                       FromEdge = rel
                                   };
+                        
                         var p = CreatePath(pos, path);
                         // Si ce chemin n'a pas dèjà été traité, on l'ajoute dans la liste des chemins à traiter
                         if (!_query.UnicityPolicy.IsVisited(p))

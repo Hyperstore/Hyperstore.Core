@@ -170,30 +170,30 @@ namespace Hyperstore.Modeling.Scopes
 
         public override GraphNode CreateEntity(Identity id, ISchemaEntity schemaEntity)
         {
-            var flag = base.CreateEntity(id, schemaEntity);
-            _deletedElements.RemoveNode(id);
-            return flag;
+            var node = base.CreateEntity(id, schemaEntity);
+            if (node != null) _deletedElements.RemoveNode(id);
+            return node;
         }
 
         public override bool RemoveEntity(Identity id, ISchemaEntity schemaEntity, bool throwExceptionIfNotExists)
         {
             var flag = base.RemoveEntity(id, schemaEntity, false);
-            _deletedElements.AddNode(new GraphNode(id, schemaEntity.Id, NodeType.Node));
+            if( flag) _deletedElements.AddNode(new GraphNode(id, schemaEntity.Id, NodeType.Node));
             return true;
         }
 
 
         public override GraphNode CreateRelationship(Identity id, ISchemaRelationship metaRelationship, Identity startId, ISchemaElement startSchema, Identity endId, ISchemaElement endSchema)
         {
-            var flag = base.CreateRelationship(id, metaRelationship, startId, startSchema, endId, endSchema);
-            _deletedElements.RemoveNode(id);
-            return flag;
+            var node = base.CreateRelationship(id, metaRelationship, startId, startSchema, endId, endSchema);
+            if (node != null) _deletedElements.RemoveNode(id);
+            return node;
         }
 
         public override bool RemoveRelationship(Identity id, ISchemaRelationship schemaRelationship, bool throwExceptionIfNotExists)
         {
             var flag = base.RemoveRelationship(id, schemaRelationship, false);
-            _deletedElements.AddNode(new GraphNode(id, schemaRelationship.Id, NodeType.Node));
+            if (flag) _deletedElements.AddNode(new GraphNode(id, schemaRelationship.Id, NodeType.Node));
             return true;
         }
 

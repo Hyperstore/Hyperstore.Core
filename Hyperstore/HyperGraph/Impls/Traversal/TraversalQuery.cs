@@ -130,17 +130,16 @@ namespace Hyperstore.Modeling.Traversal
         ///  An enumerator that allows foreach to be used to process the paths in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<GraphPath> GetPaths(Identity nodeId, Identity schemaElementId)
+        public IEnumerable<GraphPath> GetPaths(NodeInfo node)
         {
-            Contract.Requires(nodeId, "nodeId");
-            Contract.Requires(schemaElementId, "schemaElementId");
+            Contract.Requires(node, "node");
 
             try
             {
                 PathTraverser.Initialize(this);
                 UnicityPolicy.Reset();
 
-                foreach (var p in PathTraverser.Traverse(nodeId, schemaElementId))
+                foreach (var p in PathTraverser.Traverse(node))
                 {
                     yield return p;
                 }

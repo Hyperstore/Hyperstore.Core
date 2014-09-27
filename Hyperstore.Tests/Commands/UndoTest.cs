@@ -78,7 +78,7 @@ namespace Hyperstore.Tests.Commands
             Assert.AreEqual(0, store.GetElements().Count());
             undoManager.Undo();
 
-            Assert.AreEqual(7, store.GetEntities().Count());
+            Assert.AreEqual(11, store.GetEntities().Count());
             undoManager.Redo();
             Assert.AreEqual(0, store.GetElements().Count());
 

@@ -35,7 +35,7 @@ namespace Hyperstore.Modeling.HyperGraph
     /// <seealso cref="T:Hyperstore.Modeling.HyperGraph.GraphNode"/>
     ///-------------------------------------------------------------------------------------------------
     [DebuggerDisplay("{DebuggerDisplayString,nq}")]
-    public class GraphNode : NodeInfo
+    public class GraphNode : EdgeInfo
     {
         private readonly ImmutableDictionary<Identity, EdgeInfo> _incomings = ImmutableDictionary<Identity, EdgeInfo>.Empty;
         private readonly ImmutableDictionary<Identity, EdgeInfo> _outgoings = ImmutableDictionary<Identity, EdgeInfo>.Empty;
@@ -89,7 +89,7 @@ namespace Hyperstore.Modeling.HyperGraph
                             object value = null, long? version = null,
                             IEnumerable<EdgeInfo> outgoings = null, IEnumerable<EdgeInfo> incomings = null
             )
-            : base(id, schemaId)
+            : base(id, schemaId, end, endSchema)
         {
             DebugContract.Requires(id, "id");
             DebugContract.Requires(schemaId, "schemaId");
@@ -99,8 +99,7 @@ namespace Hyperstore.Modeling.HyperGraph
 
             StartId = start;
             StartSchemaId = startSchema;
-            EndId = end;
-            EndSchemaId = endSchema;
+
             Value = value;
             Version = version ?? DateTime.UtcNow.Ticks;
             NodeType = nodetype;
@@ -151,25 +150,6 @@ namespace Hyperstore.Modeling.HyperGraph
         ///-------------------------------------------------------------------------------------------------
         public Identity StartSchemaId { get; private set; }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the end.
-        /// </summary>
-        /// <value>
-        ///  The identifier of the end.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public Identity EndId { get; private set; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the end meta class id.
-        /// </summary>
-        /// <value>
-        ///  The identifier of the end schema.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public Identity EndSchemaId { get; private set; }
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Gets the incomings.

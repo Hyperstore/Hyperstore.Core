@@ -87,23 +87,21 @@ namespace Hyperstore.Modeling.HyperGraph
             return this;
         }
 
-        public void Traverse(Identity id, Identity schemaElementId)
+        public void Traverse(NodeInfo node)
         {
-            Contract.Requires(id, "id");
-            Contract.Requires(schemaElementId, "schemaElementId"); 
+            Contract.Requires(node, "node");
             
             if (_query.Evaluator == null)
                 throw new Exception("You must define a visitor");
 
-            _query.GetPaths(id, schemaElementId).ToList();
+            _query.GetPaths(node).ToList();
         }
 
-        public IEnumerable<GraphPath> GetPaths(Identity id, Identity schemaElementId)
+        public IEnumerable<GraphPath> GetPaths(NodeInfo node)
         {
-            Contract.Requires(id, "id");
-            Contract.Requires(schemaElementId, "schemaElementId"); 
+            Contract.Requires(node, "node");
 
-            return _query.GetPaths(id, schemaElementId);
+            return _query.GetPaths(node);
         }
     }
 }

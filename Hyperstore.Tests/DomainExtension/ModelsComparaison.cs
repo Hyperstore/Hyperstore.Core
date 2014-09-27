@@ -80,7 +80,7 @@ namespace Hyperstore.Tests.DomainExtension
                 lib2.Books.Add(b);
 
                 // Change one book property
-                lib2.Books.First().Title = "Updated book";
+                lib2.Books.Last().Title = "Updated book";
 
                 session.AcceptChanges();
             }
