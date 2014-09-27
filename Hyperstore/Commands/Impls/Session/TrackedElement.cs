@@ -37,6 +37,26 @@ namespace Hyperstore.Modeling.Commands
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
+        ///  Gets or sets the name of the domain.
+        /// </summary>
+        /// <value>
+        ///  The name of the domain.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public string DomainName { get; internal set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the extension.
+        /// </summary>
+        /// <value>
+        ///  The extension.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public string Extension { get; internal set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
         ///  This is an element of a schema.
         /// </summary>
         /// <value>

@@ -68,8 +68,9 @@ namespace Hyperstore.Modeling
     /// <typeparam name="T">
     ///  Generic type parameter.
     /// </typeparam>
-    /// <seealso cref="T:Hyperstore.Modeling.ModelElementList{T}"/>
+    /// <seealso cref="T:Hyperstore.Modeling.AbstractModelElementCollection{T}"/>
     /// <seealso cref="T:System.Collections.Generic.ICollection{T}"/>
+    /// <seealso cref="T:Hyperstore.Modeling.ModelElementList{T}"/>
     ///-------------------------------------------------------------------------------------------------
     public class ModelElementCollection<T> : AbstractModelElementCollection<T>, ICollection<T> where T : class, IModelElement
     {
@@ -97,26 +98,78 @@ namespace Hyperstore.Modeling
             Contract.RequiresNotEmpty(schemaRelationshipName, "schemaRelationshipName");
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Constructor.
+        /// </summary>
+        /// <param name="element">
+        ///  The element.
+        /// </param>
+        /// <param name="schemaRelationship">
+        ///  The schema relationship.
+        /// </param>
+        /// <param name="opposite">
+        ///  (Optional) true to opposite.
+        /// </param>
+        /// <param name="readOnly">
+        ///  (Optional) true to read only.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         public ModelElementCollection(IModelElement element, ISchemaRelationship schemaRelationship, bool opposite = false, bool readOnly = false)
             : base(element, schemaRelationship, opposite, readOnly)
         {
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Adds item.
+        /// </summary>
+        /// <param name="item">
+        ///  The item to add.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         public void Add(T item)
         {
             AddInternal(item);
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Clears this instance to its blank/initial state.
+        /// </summary>
+        ///-------------------------------------------------------------------------------------------------
         public void Clear()
         {
             ClearInternal();
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Copies to.
+        /// </summary>
+        /// <param name="array">
+        ///  The array.
+        /// </param>
+        /// <param name="arrayIndex">
+        ///  Zero-based index of the array.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         public void CopyTo(T[] array, int arrayIndex)
         {
             CopyToInternal(array, arrayIndex);
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Removes the given item.
+        /// </summary>
+        /// <param name="item">
+        ///  The item to remove.
+        /// </param>
+        /// <returns>
+        ///  true if it succeeds, false if it fails.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public bool Remove(T item)
         {
             return RemoveInternal(item);
@@ -307,9 +360,6 @@ namespace Hyperstore.Modeling
         /// <summary>
         ///  Query if this instance contains the given item.
         /// </summary>
-        /// <exception cref="NotImplementedException">
-        ///  Thrown when the requested operation is unimplemented.
-        /// </exception>
         /// <param name="item">
         ///  The T to test for containment.
         /// </param>

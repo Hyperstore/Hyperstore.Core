@@ -33,6 +33,7 @@ namespace Hyperstore.Modeling
         private IDisposable relationshipRemovedSubscription;
         private IDisposable propertyChangedSubscription;
         private readonly List<Identity> _items = new List<Identity>();
+        private bool _loaded;
 
         public ObservableModelElementList(IModelElement element, string schemaRelationshipName, bool opposite = false)
             : this(element, element.DomainModel.Store.GetSchemaRelationship(schemaRelationshipName), opposite)
@@ -141,8 +142,9 @@ namespace Hyperstore.Modeling
             //if (index == -1)
             //    return;
 
+            index = _items.Count;
             _items.Add(elementId);
-            _synchronizationContext.Send(() => OnCollectionChanged(item, NotifyCollectionChangedAction.Add, _items.Count));
+            _synchronizationContext.Send(() => OnCollectionChanged(item, NotifyCollectionChangedAction.Add, index));
         }
 
         private void OnCollectionChanged(object item, NotifyCollectionChangedAction action, int index = -1)
@@ -152,6 +154,42 @@ namespace Hyperstore.Modeling
                 tmp(this, new NotifyCollectionChangedEventArgs(action, item, index));
         }
 
+        protected T GetItem(int index)
+        {
+            if (index < 0 || index >= _items.Count)
+                return null;
+
+            LoadItems();
+            var id = _items[index];
+            return Query.FirstOrDefault(e => e.Id == id);
+        }
+
+        public override int Count
+        {
+            get
+            {
+                LoadItems();
+                return _items.Count;
+            }
+        }
+
+        private void LoadItems()
+        {
+            if (_loaded)
+                return;
+
+            lock(_sync)
+            {
+                if (_loaded)
+                    return;
+
+                foreach(var mel in Query)
+                {
+                    NotifyChange(mel.Id, mel.SchemaInfo.Id, NotifyCollectionChangedAction.Add, mel);
+                }
+                _loaded = true;
+            }
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -194,10 +232,7 @@ namespace Hyperstore.Modeling
 
         public bool Contains(object value)
         {
-            var mel = value as T;
-            if (mel == null)
-                return false;
-            return base.Contains(mel);
+            return IndexOf(value) != -1;
         }
         #endregion
     }

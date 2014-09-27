@@ -134,6 +134,8 @@ namespace Hyperstore.Modeling.Commands
             {
                 var entity = new TrackedElement
                              {
+                                 DomainName = @event.DomainModel,
+                                 Extension = @event.ExtensionName,
                                  State = TrackingState.Added,
                                  Id = addEvent.Id,
                                  SchemaId = addEvent.SchemaEntityId,
@@ -154,6 +156,8 @@ namespace Hyperstore.Modeling.Commands
                 {
                     entity = new TrackedElement
                              {
+                                 DomainName = @event.DomainModel,
+                                 Extension = @event.ExtensionName,
                                  State = TrackingState.Removed,
                                  Id = removeEvent.Id,
                                  SchemaId = removeEvent.SchemaEntityId
@@ -174,6 +178,8 @@ namespace Hyperstore.Modeling.Commands
             {
                 var entity = new TrackedElement
                              {
+                                 DomainName = @event.DomainModel,
+                                 Extension = @event.ExtensionName,
                                  State = TrackingState.Added,
                                  Id = addMetadataEvent.Id,
                                  SchemaId = addMetadataEvent.SchemaEntityId,
@@ -195,6 +201,8 @@ namespace Hyperstore.Modeling.Commands
                 {
                     entity = new TrackedElement
                              {
+                                 DomainName = @event.DomainModel,
+                                 Extension = @event.ExtensionName,
                                  State = TrackingState.Updated,
                                  Id = changeEvent.ElementId,
                                  SchemaId = changeEvent.SchemaElementId
@@ -221,6 +229,8 @@ namespace Hyperstore.Modeling.Commands
             {
                 var entity = new TrackedRelationship
                              {
+                                 DomainName = @event.DomainModel,
+                                 Extension = @event.ExtensionName,
                                  State = TrackingState.Added,
                                  Id = addRelationEvent.RelationshipId,
                                  SchemaId = addRelationEvent.SchemaRelationshipId,
@@ -245,6 +255,8 @@ namespace Hyperstore.Modeling.Commands
                 {
                     entity = new TrackedRelationship
                              {
+                                 DomainName = @event.DomainModel,
+                                 Extension = @event.ExtensionName,
                                  State = TrackingState.Removed,
                                  Id = removeRelationshipEvent.RelationshipId,
                                  SchemaId = removeRelationshipEvent.SchemaRelationshipId,
@@ -268,6 +280,8 @@ namespace Hyperstore.Modeling.Commands
             {
                 var entity = new TrackedRelationship
                              {
+                                 DomainName = @event.DomainModel,
+                                 Extension = @event.ExtensionName,
                                  State = TrackingState.Added,
                                  Id = addRelationMetadataEvent.Id,
                                  SchemaId = addRelationMetadataEvent.SchemaRelationshipId,

@@ -36,6 +36,7 @@ namespace Hyperstore.Modeling
     /// <typeparam name="TElement">
     ///  Type of the element.
     /// </typeparam>
+    /// <seealso cref="T:Hyperstore.Modeling.ModelElementList{TElement}"/>
     /// <seealso cref="T:Hyperstore.Modeling.ModelElementCollection{TElement}"/>
     ///-------------------------------------------------------------------------------------------------
     public class ModelElementList<TRelationship, TElement> : ModelElementList<TElement>
@@ -63,6 +64,7 @@ namespace Hyperstore.Modeling
     /// <typeparam name="T">
     ///  Generic type parameter.
     /// </typeparam>
+    /// <seealso cref="T:System.IDisposable"/>
     /// <seealso cref="T:System.Collections.Generic.IEnumerable{T}"/>
     ///-------------------------------------------------------------------------------------------------
     public class ModelElementList<T> : IDisposable, IEnumerable<T> where T : class, IModelElement
@@ -218,7 +220,7 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the number of. 
+        ///  Gets the number of.
         /// </summary>
         /// <value>
         ///  The count.
@@ -232,6 +234,17 @@ namespace Hyperstore.Modeling
             }
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Searches for the first core.
+        /// </summary>
+        /// <param name="id">
+        ///  The identifier.
+        /// </param>
+        /// <returns>
+        ///  The zero-based index of the found core, or -1 if no match was found.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         protected int IndexOfCore(Identity id)
         {
             var index = 0;

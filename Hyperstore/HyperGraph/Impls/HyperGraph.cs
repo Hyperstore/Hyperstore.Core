@@ -1123,12 +1123,13 @@ namespace Hyperstore.Modeling.HyperGraph
             if (adapter == null)
                 adapter = _loader;
 
-            if (adapter == null)
-                throw new Exception("No adapter available to load nodes");
-
             var tcs = new TaskCompletionSource<int>();
             var cx = 0;
-
+            if (adapter == null)
+            {
+                tcs.TrySetResult(cx);
+                return tcs.Task;
+            }
             var oldLazyLoader = _lazyLoader;
             try
             {
@@ -1215,6 +1216,7 @@ namespace Hyperstore.Modeling.HyperGraph
             {
                 _lazyLoader = oldLazyLoader;
             }
+
             return tcs.Task;
         }
         #endregion Methods of HyperGraph (21)

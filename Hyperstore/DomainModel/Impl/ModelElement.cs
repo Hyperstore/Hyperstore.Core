@@ -111,7 +111,7 @@ namespace Hyperstore.Modeling
 
             SetCalculatedPropertySource(propertyName);
 
-            var session = EnsuresRunInSession();
+            var session = EnsuresRunInSession(true);
             try
             {
                 var tracker = (session ?? Session.Current) as ISupportsCalculatedPropertiesTracking;
@@ -168,7 +168,7 @@ namespace Hyperstore.Modeling
         {
             get
             {
-                if (_domainModel == null)
+                if (_domainModel == null || _domainModel.IsDisposed)
                     throw new Exception(ExceptionMessages.CantUseElementFromUnloadedDomain);
                 return _domainModel;
             }
@@ -501,6 +501,8 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         protected void SetCalculatedPropertySource([CallerMemberName]string propertyName = null)
         {
+            var domain = this.DomainModel; // Check domain model
+
             var tracker = Session.Current as ISupportsCalculatedPropertiesTracking;
             if (tracker != null)
             {
@@ -645,7 +647,7 @@ namespace Hyperstore.Modeling
         ///  An ISession.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected ISession EnsuresRunInSession()
+        protected ISession EnsuresRunInSession(bool readOnly=false)
         {
             if (Session.Current != null)
                 return null;
@@ -653,7 +655,7 @@ namespace Hyperstore.Modeling
             if (!(this is INotifyPropertyChanged) || (_schema.Schema.Behavior & DomainBehavior.Observable) != DomainBehavior.Observable)
                 throw new SessionRequiredException();
 
-            return _store.BeginSession();
+            return _store.BeginSession(new SessionConfiguration { Readonly = readOnly });
         }
 
 

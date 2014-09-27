@@ -153,11 +153,12 @@ namespace Hyperstore.Modeling
         {
             throw new NotImplementedException();
         }
+
         object IList.this[int index]
         {
             get
             {
-                return Query.Skip(index).FirstOrDefault();
+                return GetItem(index);
             }
             set
             {
@@ -180,13 +181,14 @@ namespace Hyperstore.Modeling
         {
             get
             {
-                return Query.Skip(index).FirstOrDefault();
+                return GetItem(index);
             }
             set
             {
                 throw new NotImplementedException();
             }
         }
+
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

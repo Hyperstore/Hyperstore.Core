@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -34,12 +34,15 @@ namespace Hyperstore.Modeling.Domain
     /// </summary>
     /// <seealso cref="T:System.IDisposable"/>
     ///-------------------------------------------------------------------------------------------------
-    public sealed class Level1Cache : IDisposable
+    internal sealed class Level1Cache : IDisposable
     {
         private IConcurrentDictionary<Identity, IModelElement> _cache;
         private IHyperGraphProvider _domain;
 
-        private IHyperGraph InnerGraph { get { if (_domain == null) throw new Exception("Cannot access an element from an unloaded domain"); return _domain.InnerGraph; } }
+        private IHyperGraph InnerGraph
+        {
+            get { if (_domain == null) throw new Exception("Cannot access an element from an unloaded domain"); return _domain.InnerGraph; }
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -49,7 +52,7 @@ namespace Hyperstore.Modeling.Domain
         ///  The domain.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public Level1Cache(IHyperGraphProvider domain)
+        public Level1Cache(DomainModel domain)
         {
             DebugContract.Requires(domain);
 
@@ -97,18 +100,21 @@ namespace Hyperstore.Modeling.Domain
             DebugContract.Requires(id);
             IModelElement elem;
 
-            var cacheEnabled = (metaclass.Schema.Behavior & DomainBehavior.DisableL1Cache) != DomainBehavior.DisableL1Cache 
+            var cacheEnabled = (metaclass.Schema.Behavior & DomainBehavior.DisableL1Cache) != DomainBehavior.DisableL1Cache
                                 || (Session.Current != null && (Session.Current.Mode & SessionMode.IgnoreCache) != SessionMode.IgnoreCache);
 
-            if (cacheEnabled && _cache.TryGetValue(id, out elem))
+            if (cacheEnabled)
             {
-                if (InnerGraph.IsDeleted(id))
-                    return null;
+                if (TryGetFromCache(id, out elem))
+                {
+                    if (InnerGraph.IsDeleted(id))
+                        return null;
 
-                if (Session.Current != null && Session.Current.TrackingData.GetTrackedElementState(elem.Id) == TrackingState.Removed)
-                    return null;
+                    if (Session.Current != null && Session.Current.TrackingData.GetTrackedElementState(elem.Id) == TrackingState.Removed)
+                        return null;
 
-                return elem;
+                    return elem;
+                }
             }
 
             elem = InnerGraph.GetElement(id, metaclass);
@@ -117,14 +123,17 @@ namespace Hyperstore.Modeling.Domain
 
             if (cacheEnabled && elem != null)
             {
-                if (!_cache.TryAdd(id, elem))
-                {
-                    _cache.TryGetValue(id, out elem);
-                }
+                _cache.TryAdd(id, elem);
             }
 
             return elem;
         }
+
+        internal bool TryGetFromCache(Identity id, out IModelElement elem)
+        {
+            return _cache.TryGetValue(id, out elem);
+        }
+
 
         private IModelElement AddElement(IModelElement instance)
         {

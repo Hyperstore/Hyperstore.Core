@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -37,6 +37,14 @@ namespace Hyperstore.Modeling
     [PublicAPI]
     public interface IDomainModel : IDisposable
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the traversal.
+        /// </summary>
+        /// <value>
+        ///  The traversal.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         Hyperstore.Modeling.HyperGraph.TraversalBuilder Traversal { get; }
 
         ///-------------------------------------------------------------------------------------------------

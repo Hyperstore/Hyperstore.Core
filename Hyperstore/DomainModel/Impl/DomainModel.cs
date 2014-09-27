@@ -62,7 +62,7 @@ namespace Hyperstore.Modeling.Domain
         ///  The l 1 cache.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        protected Level1Cache L1Cache { get; private set; }
+        internal Level1Cache L1Cache { get; private set; }
 
         private ICommandManager _commandManager;
         private IEventManager _eventManager;
@@ -730,7 +730,14 @@ namespace Hyperstore.Modeling.Domain
 
         #region IDomainModel Members
 
-
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the traversal.
+        /// </summary>
+        /// <value>
+        ///  The traversal.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public Hyperstore.Modeling.HyperGraph.TraversalBuilder Traversal
         {
             get { return new Hyperstore.Modeling.HyperGraph.TraversalBuilder(this); }
