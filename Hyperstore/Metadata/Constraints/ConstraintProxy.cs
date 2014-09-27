@@ -24,7 +24,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
 {
     internal sealed class ConstraintProxy : AbstractConstraintProxy 
     {
-        protected Action<object, ConstraintContext, object> CheckHandler { get; private set; }
+        private Action<object, ConstraintContext, object> CheckHandler { get; set; }
 
         public ConstraintProxy(Type implementedType, object constraint, ConstraintKind kind, string category)
             : base(constraint, kind, category)

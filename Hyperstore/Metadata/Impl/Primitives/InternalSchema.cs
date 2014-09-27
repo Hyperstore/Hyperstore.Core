@@ -724,6 +724,17 @@ namespace Hyperstore.Modeling.Metadata
             return domainModel == this;
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the traversal.
+        /// </summary>
+        /// <exception cref="NotImplementedException">
+        ///  Thrown when the requested operation is unimplemented.
+        /// </exception>
+        /// <value>
+        ///  The traversal.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public TraversalBuilder Traversal
         {
             get { throw new NotImplementedException(); }

@@ -24,6 +24,11 @@ using System.Threading.Tasks;
 
 namespace Hyperstore.Modeling.HyperGraph
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  A traversal builder.
+    /// </summary>
+    ///-------------------------------------------------------------------------------------------------
     public sealed class TraversalBuilder
     {
         private class Evaluator : ITraversalVisitor
@@ -53,6 +58,17 @@ namespace Hyperstore.Modeling.HyperGraph
             _query = new TraversalQuery(domain);
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Unicity policy.
+        /// </summary>
+        /// <param name="policy">
+        ///  The policy.
+        /// </param>
+        /// <returns>
+        ///  A TraversalBuilder.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public TraversalBuilder UnicityPolicy(IGraphTraversalUnicityPolicy policy)
         {
             Contract.Requires(policy, "policy");
@@ -60,6 +76,17 @@ namespace Hyperstore.Modeling.HyperGraph
             return this;
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Node iterator.
+        /// </summary>
+        /// <param name="iterator">
+        ///  The iterator.
+        /// </param>
+        /// <returns>
+        ///  A TraversalBuilder.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public TraversalBuilder NodeIterator(INodeIncidenceIterator iterator)
         {
             Contract.Requires(iterator, "iterator");
@@ -67,12 +94,35 @@ namespace Hyperstore.Modeling.HyperGraph
             return this;
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Executes the every path action.
+        /// </summary>
+        /// <param name="visitor">
+        ///  The visitor.
+        /// </param>
+        /// <returns>
+        ///  A TraversalBuilder.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public TraversalBuilder OnEveryPath(Func<GraphPath, GraphTraversalEvaluatorResult> visitor)
         {
             Contract.Requires(visitor, "visitor");
             _query.Evaluator = new Evaluator(visitor);
             return this;
         }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  With visitor.
+        /// </summary>
+        /// <param name="visitor">
+        ///  The visitor.
+        /// </param>
+        /// <returns>
+        ///  A TraversalBuilder.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public TraversalBuilder WithVisitor(ITraversalVisitor visitor)
         {
             Contract.Requires(visitor, "visitor");
@@ -80,6 +130,17 @@ namespace Hyperstore.Modeling.HyperGraph
             return this;
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Path traverser.
+        /// </summary>
+        /// <param name="traverser">
+        ///  The traverser.
+        /// </param>
+        /// <returns>
+        ///  A TraversalBuilder.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public TraversalBuilder PathTraverser(IGraphPathTraverser traverser)
         {
             Contract.Requires(traverser, "traverser");
@@ -87,6 +148,17 @@ namespace Hyperstore.Modeling.HyperGraph
             return this;
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Traverses the given node.
+        /// </summary>
+        /// <exception cref="Exception">
+        ///  Thrown when an exception error condition occurs.
+        /// </exception>
+        /// <param name="node">
+        ///  The node.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         public void Traverse(NodeInfo node)
         {
             Contract.Requires(node, "node");
@@ -97,6 +169,17 @@ namespace Hyperstore.Modeling.HyperGraph
             _query.GetPaths(node).ToList();
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the paths in this collection.
+        /// </summary>
+        /// <param name="node">
+        ///  The node.
+        /// </param>
+        /// <returns>
+        ///  An enumerator that allows foreach to be used to process the paths in this collection.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public IEnumerable<GraphPath> GetPaths(NodeInfo node)
         {
             Contract.Requires(node, "node");

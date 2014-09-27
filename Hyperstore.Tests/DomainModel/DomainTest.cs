@@ -208,7 +208,7 @@ namespace Hyperstore.Tests
             }
 
             Assert.AreEqual(x.YRelation, null);
-            Assert.AreEqual(y.X, null);
+            Assert.AreEqual(((IModelElement)y).Status, ModelElementStatus.Disposed);
             Assert.AreEqual(x.GetRelationships<XReferencesY>().Count(), 0);
         }
 
@@ -236,7 +236,7 @@ namespace Hyperstore.Tests
             }
 
             Assert.AreEqual(x.YRelation, null);
-            Assert.AreEqual(y.X, null);
+            Assert.AreEqual(((IModelElement)y).Status, ModelElementStatus.Disposed);
             Assert.AreEqual(x.GetRelationships<XReferencesY>().Count(), 0);
         }
 
@@ -282,7 +282,7 @@ namespace Hyperstore.Tests
             }
 
             Assert.AreEqual(x.YRelation, null);
-            Assert.AreEqual(y.X, null);
+            Assert.AreEqual(((IModelElement)y).Status, ModelElementStatus.Disposed);
             Assert.AreEqual(x.GetRelationships<XReferencesY>().Count(), 0);
 
         }

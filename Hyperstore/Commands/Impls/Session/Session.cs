@@ -1097,18 +1097,17 @@ namespace Hyperstore.Modeling
 
             try
             {
+                // Notifications via RX.
+                foreach (var notifier in notifiers)
+                {
+                    notifier.NotifySessionCompleted(sessionContext, SessionContext);
+                }
 
                 // Déclenchement des événements
                 // D'abord évenement hard
                 var tmp = Completing;
                 if (tmp != null)
                     tmp(this, new SessionCompletingEventArgs(sessionContext));
-
-                // Notifications via RX.
-                foreach (var notifier in notifiers)
-                {
-                    notifier.NotifySessionCompleted(sessionContext, SessionContext);
-                }
             }
             catch (Exception ex)
             {

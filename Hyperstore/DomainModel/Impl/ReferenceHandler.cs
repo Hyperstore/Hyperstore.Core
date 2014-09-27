@@ -167,7 +167,7 @@ namespace Hyperstore.Modeling
         {
             if (value != null && !value.SchemaInfo.IsA(_opposite ? RelationshipSchema.Start : RelationshipSchema.End))
                 throw new Exception(ExceptionMessages.InvalidValue);
-
+            CheckOwner();
             _owner.SetReference(ref _id, SchemaRelationship, value, _opposite);
         }
 
@@ -181,8 +181,15 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public IModelElement GetReference()
         {
+            CheckOwner();
             var mel = _owner.GetReference(ref _id, SchemaRelationship, _opposite);
             return mel;
+        }
+
+        private void CheckOwner()
+        {
+            if (_owner == null)
+                throw new Exception("Cannot use disposed element");
         }
 
         ///-------------------------------------------------------------------------------------------------

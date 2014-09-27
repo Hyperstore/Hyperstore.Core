@@ -89,7 +89,7 @@ namespace Hyperstore.Tests.Commands
             Assert.IsTrue(undoManager.CanRedo);
             Assert.IsFalse(undoManager.CanUndo);
 
-            AssertHelper.ThrowsException<SessionException>(() =>
+            AssertHelper.ThrowsException<Exception>(() =>
             {
                 using (var s = store.BeginSession())
                 {

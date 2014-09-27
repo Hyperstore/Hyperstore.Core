@@ -24,6 +24,16 @@ using System.Threading.Tasks;
 
 namespace Hyperstore.Modeling
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  List of observable model elements.
+    /// </summary>
+    /// <typeparam name="T">
+    ///  Generic type parameter.
+    /// </typeparam>
+    /// <seealso cref="T:Hyperstore.Modeling.AbstractModelElementCollection{T}"/>
+    /// <seealso cref="T:System.Collections.Specialized.INotifyCollectionChanged"/>
+    ///-------------------------------------------------------------------------------------------------
     public class ObservableModelElementList<T> : AbstractModelElementCollection<T>, INotifyCollectionChanged where T : class, IModelElement
     {
         private readonly ISynchronizationContext _synchronizationContext;
@@ -35,6 +45,20 @@ namespace Hyperstore.Modeling
         private readonly List<Identity> _items = new List<Identity>();
         private bool _loaded;
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Constructor.
+        /// </summary>
+        /// <param name="element">
+        ///  The element.
+        /// </param>
+        /// <param name="schemaRelationshipName">
+        ///  Name of the schema relationship.
+        /// </param>
+        /// <param name="opposite">
+        ///  (Optional) true to opposite.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         public ObservableModelElementList(IModelElement element, string schemaRelationshipName, bool opposite = false)
             : this(element, element.DomainModel.Store.GetSchemaRelationship(schemaRelationshipName), opposite)
         {
@@ -42,7 +66,26 @@ namespace Hyperstore.Modeling
             Contract.RequiresNotEmpty(schemaRelationshipName, "schemaRelationshipName");
         }
 
-
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Constructor.
+        /// </summary>
+        /// <exception cref="Exception">
+        ///  Thrown when an exception error condition occurs.
+        /// </exception>
+        /// <param name="source">
+        ///  Source for the.
+        /// </param>
+        /// <param name="schemaRelationship">
+        ///  The schema relationship.
+        /// </param>
+        /// <param name="opposite">
+        ///  (Optional) true to opposite.
+        /// </param>
+        /// <param name="readOnly">
+        ///  (Optional) true to read only.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         public ObservableModelElementList(IModelElement source, ISchemaRelationship schemaRelationship, bool opposite = false, bool readOnly = false)
             : base(source, schemaRelationship, opposite, readOnly)
         {
@@ -76,6 +119,12 @@ namespace Hyperstore.Modeling
                 a.Event.SchemaElementId));
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged
+        ///  resources.
+        /// </summary>
+        ///-------------------------------------------------------------------------------------------------
         public override void Dispose()
         {
             base.Dispose();
@@ -96,6 +145,9 @@ namespace Hyperstore.Modeling
                 return;
 
             var item = (T)DomainModel.Store.GetElement(elementId, schema);
+            if (item == null)
+                return;
+
             if (_items.Contains(elementId))
             {
                 if (!WhereClause((T)item))
@@ -122,8 +174,12 @@ namespace Hyperstore.Modeling
             {
                 if (index >= 0)
                 {
-                    _items.RemoveAt(index);
+                    if (item == null && DomainModel is Hyperstore.Modeling.Domain.ICacheAccessor)
+                    {
+                        item = ((Hyperstore.Modeling.Domain.ICacheAccessor)DomainModel).TryGetFromCache(elementId);
+                    }
                     _synchronizationContext.Send(() => OnCollectionChanged(item, NotifyCollectionChangedAction.Remove, index));
+                    _items.RemoveAt(index);
                 }
                 return;
             }
@@ -132,7 +188,7 @@ namespace Hyperstore.Modeling
                 return;
 
             var schema = DomainModel.Store.GetSchemaElement(schemaId);
-            if( item == null)
+            if (item == null)
                 item = (T)DomainModel.Store.GetElement(elementId, schema);
 
             if (item == null || WhereClause != null && !WhereClause((T)item))
@@ -154,6 +210,17 @@ namespace Hyperstore.Modeling
                 tmp(this, new NotifyCollectionChangedEventArgs(action, item, index));
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets an item.
+        /// </summary>
+        /// <param name="index">
+        ///  Zero-based index of the.
+        /// </param>
+        /// <returns>
+        ///  The item.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         protected T GetItem(int index)
         {
             if (index < 0 || index >= _items.Count)
@@ -164,6 +231,14 @@ namespace Hyperstore.Modeling
             return Query.FirstOrDefault(e => e.Id == id);
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the number of. 
+        /// </summary>
+        /// <value>
+        ///  The count.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public override int Count
         {
             get
@@ -178,17 +253,70 @@ namespace Hyperstore.Modeling
             if (_loaded)
                 return;
 
-            lock(_sync)
+            lock (_sync)
             {
                 if (_loaded)
                     return;
 
-                foreach(var mel in Query)
+                _items.Clear();
+                foreach (var mel in Query)
                 {
-                    NotifyChange(mel.Id, mel.SchemaInfo.Id, NotifyCollectionChangedAction.Add, mel);
+                    _items.Add(mel.Id);
                 }
                 _loaded = true;
             }
+        }
+
+
+        struct Iterator<T> : IEnumerator<T> where T : class, IModelElement
+        {
+            private ObservableModelElementList<T> list;
+            private T current;
+            private int index;
+
+            public Iterator(ObservableModelElementList<T> list)
+            {
+                index = 0;
+                current = null;
+                this.list = list;
+            }
+
+            object IEnumerator.Current
+            {
+                get { return current; }
+            }
+
+            bool IEnumerator.MoveNext()
+            {
+                current = null;
+                if (index >= list._items.Count)
+                    return false;
+
+                var id = list._items[index];
+                current = list.Query.FirstOrDefault(e => e.Id == id);
+                index++;
+                return true;
+            }
+
+            void IEnumerator.Reset()
+            {
+                index = 0;
+            }
+
+            T IEnumerator<T>.Current
+            {
+                get { return current; }
+            }
+
+            void IDisposable.Dispose()
+            {
+            }
+        }
+
+        public override IEnumerator<T> GetEnumerator()
+        {
+            LoadItems();
+            return new Iterator<T>(this);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -199,6 +327,18 @@ namespace Hyperstore.Modeling
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         #region Ilist<T>
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Index of the given value.
+        /// </summary>
+        /// <param name="item">
+        ///  The item.
+        /// </param>
+        /// <returns>
+        ///  An int.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public int IndexOf(T item)
         {
             return _items.IndexOf(item.Id);
@@ -207,6 +347,18 @@ namespace Hyperstore.Modeling
         #endregion
 
         #region IList
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Index of the given value.
+        /// </summary>
+        /// <param name="value">
+        ///  The object to test for containment.
+        /// </param>
+        /// <returns>
+        ///  An int.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public int IndexOf(object value)
         {
             var mel = value as T;
@@ -215,21 +367,56 @@ namespace Hyperstore.Modeling
             return _items.IndexOf(mel.Id);
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets a value indicating whether this instance is fixed size.
+        /// </summary>
+        /// <value>
+        ///  true if this instance is fixed size, false if not.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public bool IsFixedSize
         {
             get { return false; }
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets a value indicating whether this instance is synchronized.
+        /// </summary>
+        /// <value>
+        ///  true if this instance is synchronized, false if not.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public bool IsSynchronized
         {
             get { return true; }
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the synchronise root.
+        /// </summary>
+        /// <value>
+        ///  The synchronise root.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public object SyncRoot
         {
             get { return _sync; }
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Query if this instance contains the given value.
+        /// </summary>
+        /// <param name="value">
+        ///  The object to test for containment.
+        /// </param>
+        /// <returns>
+        ///  true if the object is in this collection, false if not.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public bool Contains(object value)
         {
             return IndexOf(value) != -1;

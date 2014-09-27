@@ -24,7 +24,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
 {
     internal sealed class CheckPropertyConstraintProxy : AbstractConstraintProxy
     {
-        protected Action<object, object, ConstraintContext, object> CheckHandler { get; private set; }
+        private Action<object, object, ConstraintContext, object> CheckHandler { get; set; }
 
         private ISchemaProperty _property;
 

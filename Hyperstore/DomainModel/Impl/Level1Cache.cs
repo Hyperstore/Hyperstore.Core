@@ -28,6 +28,11 @@ using Hyperstore.Modeling.Platform;
 
 namespace Hyperstore.Modeling.Domain
 {
+    internal interface ICacheAccessor
+    {
+        IModelElement TryGetFromCache(Identity id);
+    }
+
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
     ///  A level 1 cache.
@@ -91,7 +96,10 @@ namespace Hyperstore.Modeling.Domain
             foreach (var elem in e.Session.TrackingData.GetTrackedElementsByState(TrackingState.Removed))
             {
                 IModelElement weak;
-                _cache.TryRemove(elem.Id, out weak);
+                if(_cache.TryRemove(elem.Id, out weak) && weak is IDisposable )
+                {
+                    ((IDisposable)weak).Dispose();
+                }
             }
         }
 
@@ -105,7 +113,8 @@ namespace Hyperstore.Modeling.Domain
 
             if (cacheEnabled)
             {
-                if (TryGetFromCache(id, out elem))
+                elem = TryGetFromCache(id);
+                if (elem != null)
                 {
                     if (InnerGraph.IsDeleted(id))
                         return null;
@@ -129,9 +138,11 @@ namespace Hyperstore.Modeling.Domain
             return elem;
         }
 
-        internal bool TryGetFromCache(Identity id, out IModelElement elem)
+        internal IModelElement TryGetFromCache(Identity id)
         {
-            return _cache.TryGetValue(id, out elem);
+            IModelElement elem;
+            _cache.TryGetValue(id, out elem);
+            return elem;
         }
 
 

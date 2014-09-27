@@ -91,12 +91,6 @@ namespace Hyperstore.Tests.DomainExtension
             Assert.AreEqual(11, xLib.Books.Count);
             Assert.AreEqual(10, lib.Books.Count);
 
-            using (var session = store.BeginSession())
-            {
-                extension.Commands.ProcessCommands(new RemoveEntityCommand( extensionBook));
-                session.AcceptChanges();
-            }
-
             store.DomainModels.Unload(extension);
 
             Assert.AreEqual("My Library", lib.Name);

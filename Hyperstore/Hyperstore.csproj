@@ -76,7 +76,7 @@
     <Compile Include="DomainModel\IHyperGraphProvider.cs" />
     <Compile Include="DomainModel\Impl\CalculatedProperty.cs" />
     <Compile Include="DomainModel\IDataErrorNotifier.cs" />
-    <Compile Include="DomainModel\Impl\ObervableModelElementCollection2.cs" />
+    <Compile Include="DomainModel\Impl\ObervableModelElementCollection.cs" />
     <Compile Include="Extensions\DomainExtensions.cs" />
     <Compile Include="DomainModel\Impl\Scopes\IScopeHypergraph.cs" />
     <Compile Include="DomainModel\Impl\Scopes\ISchemaExtension.cs" />
@@ -201,7 +201,6 @@
     <Compile Include="DomainModel\Impl\Scopes\ScopeHyperGraph.cs" />
     <Compile Include="DomainModel\Impl\Scopes\DomainExtensionSchema.cs" />
     <Compile Include="DomainModel\Impl\IdGenerators\LongIdGenerator.cs" />
-    <Compile Include="DomainModel\Impl\ObservableModelElementCollection.cs" />
     <Compile Include="DomainModel\IPropertyChangedNotifier.cs" />
     <Compile Include="DomainModel\Impl\Level1Cache.cs" />
     <Compile Include="DomainModel\Impl\ModelElementCollection.cs" />

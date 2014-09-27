@@ -703,7 +703,7 @@ namespace Hyperstore.Modeling.HyperGraph
                 throw new InvalidElementException(id);
             }
 
-            if (Session.Current.GetContextInfo<bool>("$$remove$$") == false)
+            if ((Session.Current.Mode & SessionMode.UndoOrRedo) == 0 && Session.Current.GetContextInfo<bool>("$$remove$$") == false)
             {
                 _trace.WriteTrace(TraceCategory.Hypergraph, "Remove element {0}", id);
                 var visitor = new DeleteDependencyVisitor();
@@ -808,7 +808,7 @@ namespace Hyperstore.Modeling.HyperGraph
 
             _trace.WriteTrace(TraceCategory.Hypergraph, "Remove relationship {0}", id);
 
-            if (Session.Current.GetContextInfo<bool>("$$remove$$") == false)
+            if ((Session.Current.Mode & SessionMode.UndoOrRedo) == 0 && Session.Current.GetContextInfo<bool>("$$remove$$") == false)
             {
                 var visitor = new DeleteDependencyVisitor();
                 _domainModel.Traversal.WithVisitor(visitor).Traverse(edge);

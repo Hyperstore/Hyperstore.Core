@@ -39,7 +39,7 @@ namespace Hyperstore.Modeling.Domain
     /// <seealso cref="T:Hyperstore.Modeling.IUpdatableDomainModel"/>
     ///-------------------------------------------------------------------------------------------------
     [DebuggerDisplay("Domain {Name} {ExtensionName}")]
-    public class DomainModel : IUpdatableDomainModel, IHyperGraphProvider
+    public class DomainModel : IUpdatableDomainModel, IHyperGraphProvider, ICacheAccessor 
     {
         private readonly IServicesContainer _services;
         private readonly object _resolversLock = new object();
@@ -1245,6 +1245,11 @@ namespace Hyperstore.Modeling.Domain
             var tmp = DomainLoaded;
             if (tmp != null)
                 tmp(this, new EventArgs());
+        }
+
+        IModelElement ICacheAccessor.TryGetFromCache(Identity id)
+        {
+            return L1Cache.TryGetFromCache(id);
         }
     }
 }
