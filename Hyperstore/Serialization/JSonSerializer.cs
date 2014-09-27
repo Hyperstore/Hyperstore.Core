@@ -210,16 +210,13 @@ namespace Hyperstore.Modeling.Serialization
         /// <param name="option">
         ///  (Optional) the option.
         /// </param>
-        /// <param name="query">
-        ///  (Optional) the query.
-        /// </param>
         /// <returns>
         ///  A string.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static string Serialize(IModelElement mel, JSonSerializationOption option = JSonSerializationOption.Json, ITraversalQuery query = null)
+        public static string Serialize(IModelElement mel, JSonSerializationOption option = JSonSerializationOption.Json)
         {
-            return Serialize(mel, new JSonSerializationSettings { Options = option }, query);
+            return Serialize(mel, new JSonSerializationSettings { Options = option });
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -284,33 +281,16 @@ namespace Hyperstore.Modeling.Serialization
         /// <param name="settings">
         ///  Options for controlling the operation.
         /// </param>
-        /// <param name="query">
-        ///  (Optional) the query.
-        /// </param>
         /// <returns>
         ///  A string.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static string Serialize(IModelElement mel, JSonSerializationSettings settings, ITraversalQuery query = null)
+        public static string Serialize(IModelElement mel, JSonSerializationSettings settings)
         {
             Contract.Requires(mel, "mel");
 
-
             var list = new List<IModelElement>();
             list.Add(mel);
-
-            if (query != null)
-            {
-                if (settings == null)
-                    settings = new JSonSerializationSettings();
-                settings.Options &= ~JSonSerializationOption.SerializeGraphObject;
-
-                foreach (var path in query.GetPaths(mel))
-                {
-                    list.Add(path.EndElement);
-                    list.Add(path.LastTraversedRelationship);
-                }
-            }
 
             return Serialize(list, settings);
         }

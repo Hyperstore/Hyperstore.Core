@@ -207,7 +207,7 @@ namespace Hyperstore.Modeling
             OriginStoreId = session.OriginStoreId;
             SessionId = session.SessionId;
             DefaultDomainModel = info.DefaultDomainModel;
-            _contextInfos = session.GetInfos();
+            _contextInfos = info.Infos;
             Events = session.Events.ToList();
             if (messages != null)
             {

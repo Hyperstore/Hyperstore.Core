@@ -730,6 +730,12 @@ namespace Hyperstore.Modeling.Domain
 
         #region IDomainModel Members
 
+
+        public Hyperstore.Modeling.HyperGraph.TraversalBuilder Traversal
+        {
+            get { return new Hyperstore.Modeling.HyperGraph.TraversalBuilder(this); }
+        }
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Gets the identifier generator.
@@ -790,9 +796,9 @@ namespace Hyperstore.Modeling.Domain
             private set;
         }
 
-        bool IUpdatableDomainModel.RemoveEntity(Identity id, ISchemaEntity metadata, bool throwExceptionIfNotExists, Identity originEmbeddedRelationship)
+        bool IUpdatableDomainModel.RemoveEntity(Identity id, ISchemaEntity metadata, bool throwExceptionIfNotExists)
         {
-            return RemoveEntityCore(id, metadata, throwExceptionIfNotExists, originEmbeddedRelationship);
+            return RemoveEntityCore(id, metadata, throwExceptionIfNotExists);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -808,14 +814,11 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="throwExceptionIfNotExists">
         ///  true to throw exception if not exists.
         /// </param>
-        /// <param name="originEmbeddedRelationship">
-        ///  The origin embedded relationship.
-        /// </param>
         /// <returns>
         ///  true if it succeeds, false if it fails.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected virtual bool RemoveEntityCore(Identity id, ISchemaEntity metadata, bool throwExceptionIfNotExists, Identity originEmbeddedRelationship)
+        protected virtual bool RemoveEntityCore(Identity id, ISchemaEntity metadata, bool throwExceptionIfNotExists)
         {
             Contract.Requires(id, "id");
             Contract.Requires(metadata, "metadata");
@@ -823,7 +826,7 @@ namespace Hyperstore.Modeling.Domain
 
             using (var session = EnsuresRunInSession())
             {
-                var r = InnerGraph.RemoveEntity(id, metadata, throwExceptionIfNotExists, originEmbeddedRelationship);
+                var r = InnerGraph.RemoveEntity(id, metadata, throwExceptionIfNotExists);
                 if (session != null)
                     session.AcceptChanges();
                 return r;
@@ -1096,9 +1099,9 @@ namespace Hyperstore.Modeling.Domain
             }
         }
 
-        bool IUpdatableDomainModel.RemoveRelationship(Identity id, ISchemaRelationship metadata, bool throwExceptionIfNotExists, Identity originEmbeddedRelationship)
+        bool IUpdatableDomainModel.RemoveRelationship(Identity id, ISchemaRelationship metadata, bool throwExceptionIfNotExists)
         {
-            return RemoveRelationshipCore(id, metadata, throwExceptionIfNotExists, originEmbeddedRelationship);
+            return RemoveRelationshipCore(id, metadata, throwExceptionIfNotExists);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -1114,14 +1117,11 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="throwExceptionIfNotExists">
         ///  true to throw exception if not exists.
         /// </param>
-        /// <param name="originEmbeddedRelationship">
-        ///  The origin embedded relationship.
-        /// </param>
         /// <returns>
         ///  true if it succeeds, false if it fails.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected virtual bool RemoveRelationshipCore(Identity id, ISchemaRelationship metadata, bool throwExceptionIfNotExists, Identity originEmbeddedRelationship)
+        protected virtual bool RemoveRelationshipCore(Identity id, ISchemaRelationship metadata, bool throwExceptionIfNotExists)
         {
             Contract.Requires(id, "id");
             Contract.Requires(metadata, "metadata");
@@ -1129,7 +1129,7 @@ namespace Hyperstore.Modeling.Domain
             CheckInitialized();
             using (var session = EnsuresRunInSession())
             {
-                var r = InnerGraph.RemoveRelationship(id, metadata, throwExceptionIfNotExists, originEmbeddedRelationship);
+                var r = InnerGraph.RemoveRelationship(id, metadata, throwExceptionIfNotExists);
                 if (session != null)
                     session.AcceptChanges();
                 return r;

@@ -50,6 +50,6 @@ namespace Hyperstore.Modeling.Traversal
         ///  An enumerator that allows foreach to be used to process the matched items.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<GraphPath> Traverse(IModelElement start);
+        IEnumerable<GraphPath> Traverse(Identity nodeId, Identity schemaElementId);
     }
 }

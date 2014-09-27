@@ -13,7 +13,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
+using Hyperstore.Modeling.HyperGraph;
 namespace Hyperstore.Modeling.Traversal
 {
     ///-------------------------------------------------------------------------------------------------
@@ -31,7 +32,7 @@ namespace Hyperstore.Modeling.Traversal
         ///  The node.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IModelElement Node { get; set; }
+        public NodeInfo Node { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -41,7 +42,7 @@ namespace Hyperstore.Modeling.Traversal
         ///  from edge.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IModelRelationship FromEdge { get; set; }
+        public EdgeInfo FromEdge { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

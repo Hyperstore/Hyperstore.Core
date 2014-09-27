@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports (6)
 
 #endregion Imports (6)
@@ -28,60 +28,12 @@ using Hyperstore.Modeling.HyperGraph;
 
 namespace Hyperstore.Modeling.Traversal
 {
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary>
-    ///  A traversal query.
-    /// </summary>
-    /// <seealso cref="T:Hyperstore.Modeling.Traversal.IGraphTraversalConfiguration"/>
-    ///-------------------------------------------------------------------------------------------------
     internal class TraversalQuery : ITraversalQuery
     {
         #region Classes of TraversalQuery (3)
 
-        private class ActionsEvaluator : ITraversalVisitor
-        {
-            #region Properties of ActionsEvaluator (2)
-
-            ///-------------------------------------------------------------------------------------------------
-            /// <summary>
-            ///  Sets the path evaluator.
-            /// </summary>
-            /// <value>
-            ///  The path evaluator.
-            /// </value>
-            ///-------------------------------------------------------------------------------------------------
-            public Func<GraphPath, GraphTraversalEvaluatorResult> PathEvaluator { private get; set; }
-
-            #endregion Properties of ActionsEvaluator (2)
-
-            #region Methods of ActionsEvaluator (2)
-
-            ///-------------------------------------------------------------------------------------------------
-            /// <summary>
-            ///  Returns what to do with this path in a traversal query.
-            /// </summary>
-            /// <param name="path">
-            ///  Full pathname of the file.
-            /// </param>
-            /// <returns>
-            ///  A GraphTraversalEvaluatorResult.
-            /// </returns>
-            ///-------------------------------------------------------------------------------------------------
-            public GraphTraversalEvaluatorResult Visit(GraphPath path)
-            {
-                if (PathEvaluator == null)
-                    return GraphTraversalEvaluatorResult.IncludeAndContinue;
-
-                return PathEvaluator(path);
-            }
-
-            #endregion Methods of ActionsEvaluator (2)
-        }
-
         private class AllEvaluator : ITraversalVisitor
         {
-            #region Methods of AllEvaluator (2)
-
             ///-------------------------------------------------------------------------------------------------
             /// <summary>
             ///  Returns what to do with this path in a traversal query.
@@ -97,13 +49,11 @@ namespace Hyperstore.Modeling.Traversal
             {
                 return GraphTraversalEvaluatorResult.IncludeAndContinue;
             }
-
-            #endregion Methods of AllEvaluator (2)
         }
 
         private class DefaultIncidencesIterator : INodeIncidenceIterator
         {
-            #region Properties of DefaultIncidencesIterator (1)
+            private Hyperstore.Modeling.HyperGraph.HyperGraph _hypergraph;
 
             ///-------------------------------------------------------------------------------------------------
             /// <summary>
@@ -115,10 +65,6 @@ namespace Hyperstore.Modeling.Traversal
             ///-------------------------------------------------------------------------------------------------
             public Direction Direction { get; private set; }
 
-            #endregion Properties of DefaultIncidencesIterator (1)
-
-            #region Constructors of DefaultIncidencesIterator (1)
-
             ///-------------------------------------------------------------------------------------------------
             /// <summary>
             ///  Constructor.
@@ -127,14 +73,11 @@ namespace Hyperstore.Modeling.Traversal
             ///  The direction.
             /// </param>
             ///-------------------------------------------------------------------------------------------------
-            public DefaultIncidencesIterator(Direction direction)
+            public DefaultIncidencesIterator(Direction direction, Hyperstore.Modeling.HyperGraph.HyperGraph hypergraph)
             {
+                _hypergraph = hypergraph;
                 Direction = direction;
             }
-
-            #endregion Constructors of DefaultIncidencesIterator (1)
-
-            #region Methods of DefaultIncidencesIterator (1)
 
             ///-------------------------------------------------------------------------------------------------
             /// <summary>
@@ -147,33 +90,22 @@ namespace Hyperstore.Modeling.Traversal
             ///  An enumerator that allows foreach to be used to process from in this collection.
             /// </returns>
             ///-------------------------------------------------------------------------------------------------
-            public IEnumerable<IModelRelationship> From(IModelElement mel)
+            public IEnumerable<EdgeInfo> From(NodeInfo node)
             {
-                if ((Direction.Outgoing & Direction) == Direction.Outgoing)
-                {
-                    foreach (var rel in mel.GetRelationships())
-                    {
-                        yield return rel;
-                    }
-                }
+                var schemaElement = _hypergraph.DomainModel.Store.GetSchemaElement(node.SchemaId);
+                GraphNode graphNode;
+                if (!_hypergraph.GetGraphNode(node.Id, NodeType.EdgeOrNode, schemaElement, out graphNode))
+                    yield break;
 
-                if ((Direction & Direction.Incoming) == Direction.Incoming)
+                foreach (var rel in _hypergraph.GetGraphEdges(graphNode, schemaElement, Direction))
                 {
-                    foreach (var rel in mel.DomainModel.GetRelationships(end: mel))
-                    {
+                    if (rel != null)
                         yield return rel;
-                    }
                 }
             }
-
-            #endregion Methods of DefaultIncidencesIterator (1)
         }
 
         #endregion Classes of TraversalQuery (3)
-
-        #region Enums of TraversalQuery (2)
-
-        #endregion Enums of TraversalQuery (2)
 
         #region Properties of TraversalQuery (7)
 
@@ -198,16 +130,17 @@ namespace Hyperstore.Modeling.Traversal
         ///  An enumerator that allows foreach to be used to process the paths in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<GraphPath> GetPaths(IModelElement startNode)
+        public IEnumerable<GraphPath> GetPaths(Identity nodeId, Identity schemaElementId)
         {
-            Contract.Requires(startNode, "startNode");
+            Contract.Requires(nodeId, "nodeId");
+            Contract.Requires(schemaElementId, "schemaElementId");
 
             try
             {
                 PathTraverser.Initialize(this);
                 UnicityPolicy.Reset();
 
-                foreach (var p in PathTraverser.Traverse(startNode))
+                foreach (var p in PathTraverser.Traverse(nodeId, schemaElementId))
                 {
                     yield return p;
                 }
@@ -217,6 +150,8 @@ namespace Hyperstore.Modeling.Traversal
                 UnicityPolicy.Reset();
             }
         }
+
+        public IDomainModel DomainModel { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -260,80 +195,17 @@ namespace Hyperstore.Modeling.Traversal
 
         #endregion Properties of TraversalQuery (7)
 
-        #region Constructors of TraversalQuery (1)
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Constructor.
-        /// </summary>
-        /// <param name="domainModel">
-        ///  The domain model.
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
-        public TraversalQuery()
+        internal TraversalQuery(IDomainModel domain)
         {
+            DomainModel = domain;
             PathTraverser = new GraphBreadthFirstTraverser();
             Evaluator = new AllEvaluator();
             UnicityPolicy = new GlobalNodeUnicity();
-            IncidencesIterator = new DefaultIncidencesIterator(Direction.Outgoing);
+
+            var provider = domain as Hyperstore.Modeling.Domain.IHyperGraphProvider;
+            System.Diagnostics.Debug.Assert(provider != null);
+            IncidencesIterator = new DefaultIncidencesIterator(Direction.Outgoing, provider.InnerGraph as HyperGraph.HyperGraph);
         }
 
-        #endregion Constructors of TraversalQuery (1)
-
-        #region Methods of TraversalQuery (6)
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Sets the evaluator factory.
-        /// </summary>
-        /// <value>
-        ///  The evaluator factory.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public Func<GraphPath, GraphTraversalEvaluatorResult> EvaluatorFactory
-        {
-            set
-            {
-                var eval = Evaluator as ActionsEvaluator ?? new ActionsEvaluator();
-                eval.PathEvaluator = value;
-                Evaluator = eval;
-            }
-        }
-
-        //public IGraphTraversalConfiguration RelationshipEvaluator(Func<IModelRelationship, bool> action)
-        //{
-        //    var eval = this.Evaluator as ActionsEvaluator;
-        //    if (eval == null)
-        //        eval = new ActionsEvaluator();
-        //    eval.RelationshipEvaluator = action;
-        //    this.Evaluator = eval;
-        //    return this;
-        //}
-
-        //public IGraphTraversalConfiguration Relationships(Identity id)
-        //{
-        //    var eval = this.Evaluator as ActionsEvaluator;
-        //    if (eval == null)
-        //        eval = new ActionsEvaluator();
-        //    eval.RelationshipEvaluator = rel => rel.Id == id;
-        //    this.Evaluator = eval;
-        //    return this;
-        //}
-
-        //public IGraphTraversalConfiguration Set(Func<GraphPosition, GraphPath, GraphPath> createPath)
-        //{
-        //    Contract.Requires(createPath != null);
-        //    CreatePath = createPath;
-        //    return this;
-        //}
-
-        //public IGraphTraversalConfiguration SetDirection(Direction direction)
-        //{
-        //    if (IncidencesIterator.Direction != direction)
-        //        IncidencesIterator = new DefaultIncidencesIterator(direction);
-        //    return this;
-        //}
-
-        #endregion Methods of TraversalQuery (6)
     }
 }

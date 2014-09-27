@@ -16,6 +16,7 @@
  
 #region Imports
 
+using Hyperstore.Modeling.HyperGraph;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,13 +33,14 @@ namespace Hyperstore.Modeling.Traversal
     public class GraphPath
     {
         private int _hash;
+        public IDomainModel DomainModel { get; private set; }
 
-        internal GraphPath(GraphPosition pos, GraphPath basePath = null)
+        internal GraphPath(IDomainModel domain, GraphPosition pos, GraphPath basePath = null)
         {
             DebugContract.Requires(pos, "pos");
 
-            Elements = new List<IModelElement>();
-            Relationships = new List<IModelRelationship>();
+            Elements = new List<NodeInfo>();
+            Relationships = new List<EdgeInfo>();
 
             if (basePath != null)
             {
@@ -57,7 +59,7 @@ namespace Hyperstore.Modeling.Traversal
         ///  The relationships.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public List<IModelRelationship> Relationships { get; private set; }
+        public List<EdgeInfo> Relationships { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -67,7 +69,7 @@ namespace Hyperstore.Modeling.Traversal
         ///  The elements.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public List<IModelElement> Elements { get; private set; }
+        public List<NodeInfo> Elements { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -77,7 +79,7 @@ namespace Hyperstore.Modeling.Traversal
         ///  The start element.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IModelElement StartElement
+        public NodeInfo StartElement
         {
             get { return Elements.First(); }
         }
@@ -90,7 +92,7 @@ namespace Hyperstore.Modeling.Traversal
         ///  The end element.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IModelElement EndElement
+        public NodeInfo EndElement
         {
             get { return Elements.Last(); }
         }
@@ -116,7 +118,7 @@ namespace Hyperstore.Modeling.Traversal
         ///  The last traversed relationship.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IModelRelationship LastTraversedRelationship
+        public EdgeInfo LastTraversedRelationship
         {
             get { return Relationships.Count > 0 ? Relationships.Last() : null; }
         }
@@ -203,7 +205,7 @@ namespace Hyperstore.Modeling.Traversal
                 {
                     sb.Append(Elements[i].Id);
                     sb.Append(" -- [");
-                    sb.Append(Relationships[i].SchemaInfo.Id);
+                    sb.Append(Relationships[i].SchemaId);
                     sb.Append("] --> ");
                 }
                 sb.Append(EndElement.Id);

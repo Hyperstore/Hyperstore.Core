@@ -96,14 +96,11 @@ namespace Hyperstore.Modeling
         /// <param name="throwExceptionIfNotExists">
         ///  if set to <c>true</c> [throw exception if not exists].
         /// </param>
-        /// <param name="originEmbeddedRelationship">
-        ///  The origin embedded relationship.
-        /// </param>
         /// <returns>
         ///  true if it succeeds, false if it fails.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        bool RemoveRelationship(Identity id, ISchemaRelationship relationshipSchema, bool throwExceptionIfNotExists, Identity originEmbeddedRelationship);
+        bool RemoveRelationship(Identity id, ISchemaRelationship relationshipSchema, bool throwExceptionIfNotExists);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -118,14 +115,11 @@ namespace Hyperstore.Modeling
         /// <param name="throwExceptionIfNotExists">
         ///  if set to <c>true</c> [throw exception if not exists].
         /// </param>
-        /// <param name="originEmbeddedRelationship">
-        ///  The origin embedded relationship.
-        /// </param>
         /// <returns>
         ///  true if it succeeds, false if it fails.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        bool RemoveEntity(Identity id, ISchemaEntity entitySchema, bool throwExceptionIfNotExists, Identity originEmbeddedRelationship);
+        bool RemoveEntity(Identity id, ISchemaEntity entitySchema, bool throwExceptionIfNotExists);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

@@ -622,9 +622,19 @@ namespace Hyperstore.Modeling
         {
             Contract.RequiresNotEmpty(key, "key");
 
-            object obj;
-            if (SessionDataContext.Infos.TryGetValue(key, out obj))
-                return (T)obj;
+            var ctx = SessionDataContext;
+            if (ctx == null || ctx.Depth == 0)
+                return default(T);
+
+            foreach (var s in ctx.SessionInfos.Reverse())
+            {
+                var infos = s.Infos;
+
+                object obj;
+                if (infos.TryGetValue(key, out obj))
+                    return (T)obj;
+            }
+
             return default(T);
         }
 
@@ -642,14 +652,18 @@ namespace Hyperstore.Modeling
         public void SetContextInfo(string key, object value)
         {
             Contract.RequiresNotEmpty(key, "key");
+            var ctx = SessionDataContext;
+            if (ctx == null || ctx.Depth == 0)
+                return;
 
+            var infos = ctx.SessionInfos.Peek().Infos;
             if (value == null)
             {
-                if (SessionDataContext.Infos.ContainsKey(key))
-                    SessionDataContext.Infos.Remove(key);
+                if (infos.ContainsKey(key))
+                    infos.Remove(key);
             }
             else
-                SessionDataContext.Infos[key] = value;
+                infos[key] = value;
         }
 
         void ISessionInternal.SetOriginStoreId(Guid id)
@@ -827,11 +841,6 @@ namespace Hyperstore.Modeling
         {
             var ctx = SessionDataContext;
             return ctx.CommandExecutionScopeLevel == 1;
-        }
-
-        internal Dictionary<string, object> GetInfos()
-        {
-            return SessionDataContext.Infos;
         }
 
         ///-------------------------------------------------------------------------------------------------

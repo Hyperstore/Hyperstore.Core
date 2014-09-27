@@ -16,6 +16,7 @@
  
 #region Imports
 
+using Hyperstore.Modeling.HyperGraph;
 using System.Collections.Generic;
 
 #endregion
@@ -29,17 +30,6 @@ namespace Hyperstore.Modeling.Traversal
     ///-------------------------------------------------------------------------------------------------
     public interface INodeIncidenceIterator
     {
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Get a relationship list.
-        /// </summary>
-        /// <param name="mel">
-        ///  The current element.
-        /// </param>
-        /// <returns>
-        ///  An enumerator that allows foreach to be used to process from in this collection.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        IEnumerable<IModelRelationship> From(IModelElement mel);
+        IEnumerable<EdgeInfo> From(NodeInfo node);
     }
 }

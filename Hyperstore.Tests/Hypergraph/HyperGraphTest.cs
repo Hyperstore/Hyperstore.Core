@@ -141,7 +141,7 @@ namespace Hyperstore.Tests.HyperGraph
 
             using (var session = domain.Store.BeginSession())
             {
-                Graph.RemoveEntity(aid, metadata, true, null);
+                Graph.RemoveEntity(aid, metadata, true);
                 session.AcceptChanges();
             }
 
@@ -497,27 +497,20 @@ namespace Hyperstore.Tests.HyperGraph
                 metadata = TestDomainDefinition.XExtendsBaseClass;
             }
 
-            // Définition d'un query
-            var query = new TraversalQuery(domain)
-                {
-                    // Filtre personnalisé 
-                    // On prend en compte les chemins dont le noeud terminal est le 7 et on ignore les autres
-                    EvaluatorFactory = p=>p.EndElement.Id.Key == "7" 
-                        ? GraphTraversalEvaluatorResult.IncludeAndContinue 
-                        : GraphTraversalEvaluatorResult.ExcludeAndContinue                       
-                };
-
-                var cx = query.GetPaths(domain.GetElement(new Identity("test", "1"), metadata)).Count();
-
-
+            var cx = domain.Traversal.OnEveryPath(
+                // Filtre personnalisé 
+                // On prend en compte les chemins dont le noeud terminal est le 7 et on ignore les autres
+                    p => p.EndElement.Id.Key == "7"
+                        ? GraphTraversalEvaluatorResult.IncludeAndContinue
+                        : GraphTraversalEvaluatorResult.ExcludeAndContinue
+                    )
+                    .GetPaths(new Identity("test", "1"), metadata.Id).Count();
 
                 Assert.AreEqual(3, cx);
 
-                query.PathTraverser = new GraphDepthFirstTraverser();
-                query.EvaluatorFactory = p => p.EndElement.Id.Key == "7" ? GraphTraversalEvaluatorResult.IncludeAndExit : GraphTraversalEvaluatorResult.ExcludeAndContinue;
-
-                //visitor = new FirstPathVisitor(GraphTestBuilder.GetVertex(Graph, 7));
-                var p2 = query.GetPaths(domain.GetElement(new Identity("test", "1"), metadata)).First();
+            var p2 = domain.Traversal.OnEveryPath(p => p.EndElement.Id.Key == "7" ? GraphTraversalEvaluatorResult.IncludeAndExit : GraphTraversalEvaluatorResult.ExcludeAndContinue)
+                                     .PathTraverser(new GraphDepthFirstTraverser())
+                                     .GetPaths(new Identity("test", "1"), metadata.Id).First();
                 Assert.AreEqual(2, p2.Length);
 
             //Assert.IsTrue(visitor.Path != null && visitor.Path.Length == 2);

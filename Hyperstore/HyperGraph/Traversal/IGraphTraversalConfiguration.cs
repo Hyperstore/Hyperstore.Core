@@ -30,6 +30,9 @@ namespace Hyperstore.Modeling.Traversal
     ///-------------------------------------------------------------------------------------------------
     public interface ITraversalQuery
     {
+        IDomainModel DomainModel { get; }
+
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Gets or sets the evaluator.
@@ -72,16 +75,6 @@ namespace Hyperstore.Modeling.Traversal
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the domain model.
-        /// </summary>
-        /// <value>
-        ///  The domain model.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        IDomainModel DomainModel { get; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
         ///  Gets the paths in this collection.
         /// </summary>
         /// <param name="startNode">
@@ -91,6 +84,6 @@ namespace Hyperstore.Modeling.Traversal
         ///  An enumerator that allows foreach to be used to process the paths in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<GraphPath> GetPaths(IModelElement startNode);
+        IEnumerable<GraphPath> GetPaths(Identity nodeId, Identity schemaElementId);
     }
 }

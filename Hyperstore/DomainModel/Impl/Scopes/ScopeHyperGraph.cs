@@ -175,9 +175,9 @@ namespace Hyperstore.Modeling.Scopes
             return flag;
         }
 
-        public override bool RemoveEntity(Identity id, ISchemaEntity schemaEntity, bool throwExceptionIfNotExists, Identity originEmbeddedRelationship)
+        public override bool RemoveEntity(Identity id, ISchemaEntity schemaEntity, bool throwExceptionIfNotExists)
         {
-            var flag = base.RemoveEntity(id, schemaEntity, false, originEmbeddedRelationship);
+            var flag = base.RemoveEntity(id, schemaEntity, false);
             _deletedElements.AddNode(new GraphNode(id, schemaEntity.Id, NodeType.Node));
             return true;
         }
@@ -190,9 +190,9 @@ namespace Hyperstore.Modeling.Scopes
             return flag;
         }
 
-        public override bool RemoveRelationship(Identity id, ISchemaRelationship schemaRelationship, bool throwExceptionIfNotExists, Identity originEmbeddedRelationship)
+        public override bool RemoveRelationship(Identity id, ISchemaRelationship schemaRelationship, bool throwExceptionIfNotExists)
         {
-            var flag = base.RemoveRelationship(id, schemaRelationship, false, originEmbeddedRelationship);
+            var flag = base.RemoveRelationship(id, schemaRelationship, false);
             _deletedElements.AddNode(new GraphNode(id, schemaRelationship.Id, NodeType.Node));
             return true;
         }

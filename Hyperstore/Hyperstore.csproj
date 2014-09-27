@@ -83,6 +83,7 @@
     <Compile Include="DomainModel\Impl\ModelElementEqualityComparer.cs" />
     <Compile Include="Extensions\StoreBuilder.cs" />
     <Compile Include="Extensions\StoreExtensions.cs" />
+    <Compile Include="HyperGraph\Impls\DeleteDependencyVisitor.cs" />
     <Compile Include="HyperGraph\Impls\NodeInfo.cs" />
     <Compile Include="HyperGraph\Impls\Traversal\TraversalBuilder.cs" />
     <Compile Include="Metadata\Constraints\ConstraintProxy.cs" />

@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -576,8 +576,8 @@ namespace Hyperstore.Modeling
     ///  Interface for extension manager.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
-    public interface IDomainManager 
-    { 
+    public interface IDomainManager
+    {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Gets events notifiers.

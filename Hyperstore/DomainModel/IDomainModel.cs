@@ -37,6 +37,8 @@ namespace Hyperstore.Modeling
     [PublicAPI]
     public interface IDomainModel : IDisposable
     {
+        Hyperstore.Modeling.HyperGraph.TraversalBuilder Traversal { get; }
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Gets the id generator.

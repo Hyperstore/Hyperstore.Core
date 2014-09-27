@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 using System;
 namespace Hyperstore.Modeling.HyperGraph
 {
@@ -22,7 +22,7 @@ namespace Hyperstore.Modeling.HyperGraph
     ///  Interface for node information.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
-    public abstract class NodeInfo
+    public class NodeInfo
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -35,7 +35,7 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  The identifier of the schema.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        protected NodeInfo(Identity id, Identity schemaId)
+        public NodeInfo(Identity id, Identity schemaId)
         {
             DebugContract.Requires(id);
             DebugContract.Requires(schemaId);

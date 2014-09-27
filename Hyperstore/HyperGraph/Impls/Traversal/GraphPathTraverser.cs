@@ -13,11 +13,12 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System.Collections.Generic;
 using Hyperstore.Modeling.Container;
+using Hyperstore.Modeling.HyperGraph;
 
 #endregion
 
@@ -32,7 +33,6 @@ namespace Hyperstore.Modeling.Traversal
     public abstract class GraphPathTraverser : IGraphPathTraverser
     {
         private ITraversalQuery _query;
-        private IHyperstoreTrace _trace;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -46,23 +46,22 @@ namespace Hyperstore.Modeling.Traversal
         {
             Contract.Requires(query, "query");
             _query = query;
-            _trace = _query.DomainModel.Resolve<IHyperstoreTrace>(false) ?? new EmptyHyperstoreTrace();
         }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Enumerates the items in this collection that meet given criteria.
         /// </summary>
-        /// <param name="node">
+        /// <param name="nodeId">
         ///  The node.
         /// </param>
         /// <returns>
         ///  An enumerator that allows foreach to be used to process the matched items.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual IEnumerable<GraphPath> Traverse(IModelElement node)
+        public virtual IEnumerable<GraphPath> Traverse(Identity nodeId, Identity schemaElementId)
         {
-            DebugContract.Requires(node);
+            DebugContract.Requires(nodeId);
 
             // Création du container de stockage des noeuds (ou plutot des chemins jusqu'à ce noeud) restant à traverser
             // Le type est tributaire de l'algorithme de traversé (Queue pour BreadthFirst et Stack pour DepthFirst)
@@ -70,17 +69,14 @@ namespace Hyperstore.Modeling.Traversal
             var paths = CreatePathContainer();
 
             // Lecture du noeud de départ            
-            if (node == null)
+            if (nodeId == null)
                 yield break;
 
             // Constitution du Path courant
-            var path = CreatePath(new GraphPosition
-                                  {
-                                          Node = node,
-                                          IsStartPosition = true
-                                  });
+            var path = CreatePath(new GraphPosition { Node = new NodeInfo(nodeId, schemaElementId), IsStartPosition = true });
+
             // Initialisation du container avec le 1er noeud
-            paths.Insert(new[] {path});
+            paths.Insert(new[] { path });
 
             // Tant qu'il y a des noeuds à parcourir
             while (!paths.IsEmpty)
@@ -97,7 +93,7 @@ namespace Hyperstore.Modeling.Traversal
                 // Le chemin courant est à prendre en compte
                 if ((GraphTraversalEvaluatorResult.Include & result) == GraphTraversalEvaluatorResult.Include)
                 {
-                    _trace.WriteTrace(TraceCategory.Traverser, "Include : {0}", path);
+//                    _trace.WriteTrace(TraceCategory.Traverser, "Include : {0}", path);
                     yield return path;
                 }
 
@@ -113,20 +109,20 @@ namespace Hyperstore.Modeling.Traversal
                     // on les prend en compte
                     foreach (var rel in _query.IncidencesIterator.From(path.EndElement))
                     {
-                        _trace.WriteTrace(TraceCategory.Traverser, "Visit : {1} for {0}", path, rel.Id);
+  //                      _trace.WriteTrace(TraceCategory.Traverser, "Visit : {1} for {0}", path, rel.Id);
 
                         // OK on la prend, on génére un nouveau chemin
-                        var childNode = rel.End;
+                        var childNode = new NodeInfo( rel.EndId, rel.EndSchemaId);
                         var pos = new GraphPosition
                                   {
-                                          Node = childNode,
-                                          FromEdge = rel
+                                      Node = childNode,
+                                      FromEdge = rel
                                   };
                         var p = CreatePath(pos, path);
                         // Si ce chemin n'a pas dèjà été traité, on l'ajoute dans la liste des chemins à traiter
                         if (!_query.UnicityPolicy.IsVisited(p))
                         {
-                            _trace.WriteTrace(TraceCategory.Traverser, "Push : {0}", p);
+  //                          _trace.WriteTrace(TraceCategory.Traverser, "Push : {0}", p);
                             childPaths.Add(p);
                         }
                     }
@@ -162,7 +158,7 @@ namespace Hyperstore.Modeling.Traversal
         protected virtual GraphPath CreatePath(GraphPosition pos, GraphPath path = null)
         {
             DebugContract.Requires(pos);
-            return new GraphPath(pos, path);
+            return new GraphPath(_query.DomainModel, pos, path);
         }
     }
 }

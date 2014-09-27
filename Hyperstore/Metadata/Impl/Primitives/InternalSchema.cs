@@ -723,5 +723,10 @@ namespace Hyperstore.Modeling.Metadata
         {
             return domainModel == this;
         }
+
+        public TraversalBuilder Traversal
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 }

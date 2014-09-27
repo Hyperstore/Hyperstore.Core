@@ -679,14 +679,11 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="throwExceptionIfNotExists">
         ///  true to throw exception if not exists.
         /// </param>
-        /// <param name="originEmbeddedRelationship">
-        ///  The origin embedded relationship.
-        /// </param>
         /// <returns>
         ///  true if it succeeds, false if it fails.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual bool RemoveEntity(Identity id, ISchemaEntity schemaEntity, bool throwExceptionIfNotExists, Identity originEmbeddedRelationship)
+        public virtual bool RemoveEntity(Identity id, ISchemaEntity schemaEntity, bool throwExceptionIfNotExists)
         {
             DebugContract.Requires(id);
             DebugContract.Requires(schemaEntity);
@@ -706,20 +703,45 @@ namespace Hyperstore.Modeling.HyperGraph
                 throw new InvalidElementException(id);
             }
 
-            _trace.WriteTrace(TraceCategory.Hypergraph, "Remove element {0}", id);
+            if (Session.Current.GetContextInfo<bool>("$$remove$$") == false)
+            {
+                _trace.WriteTrace(TraceCategory.Hypergraph, "Remove element {0}", id);
+                var visitor = new DeleteDependencyVisitor();
+                _domainModel.Traversal.WithVisitor(visitor).Traverse(id, schemaEntity.Id);
 
-            var commands = RemoveDependencies(node, schemaEntity, originEmbeddedRelationship);
-            if (commands.Count > 0)
-                Session.Current.Execute(commands.ToArray());
+                // Suppression des propriétés 
+                foreach (var prop in schemaEntity.GetProperties(true))
+                {
+                    // Pour chaque propriété qui n'est pas une relation, on va générer un événement spécifique
+                    if (prop.PropertySchema is ISchemaRelationship)
+                        continue;
+
+                    var pnode = GetPropertyValue(id, schemaEntity, prop);
+                    if (pnode != null)
+                    {
+                        _trace.WriteTrace(TraceCategory.Hypergraph, "Remove property {0}.{1}", id, prop.Name);
+                        visitor.Commands.Add(new RemovePropertyCommand(_domainModel, node.Id, schemaEntity, prop));
+                    }
+                }
+                if (visitor.Commands.Count > 0)
+                {
+                    using (var session = _domainModel.Store.BeginSession())
+                    {
+                        session.SetContextInfo("$$remove$$", true);
+                        session.Execute(visitor.Commands.ToArray());
+                        session.AcceptChanges();
+                    }
+                }
+            }
 
             using (var tx = BeginTransaction())
             {
                 if (_storage.RemoveNode(node.Id))
                 {
-                    //foreach (var prop in schemaEntity.GetProperties(true))
-                    //{
-                    //    _storage.RemoveNode(node.Id.CreateAttributeIdentity(prop.Name));
-                    //}
+                    foreach (var prop in schemaEntity.GetProperties(true))
+                    {
+                        _storage.RemoveNode(node.Id.CreateAttributeIdentity(prop.Name));
+                    }
 
                     // Informe qu'il faudra mettre à jour les index
                     DeferRemoveIndex(schemaEntity, node.Id);
@@ -749,14 +771,11 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="throwExceptionIfNotExists">
         ///  true to throw exception if not exists.
         /// </param>
-        /// <param name="originEmbeddedRelationship">
-        ///  The origin embedded relationship.
-        /// </param>
         /// <returns>
         ///  true if it succeeds, false if it fails.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual bool RemoveRelationship(Identity id, ISchemaRelationship schemaRelationship, bool throwExceptionIfNotExists, Identity originEmbeddedRelationship)
+        public virtual bool RemoveRelationship(Identity id, ISchemaRelationship schemaRelationship, bool throwExceptionIfNotExists)
         {
             DebugContract.Requires(id);
             DebugContract.Requires(schemaRelationship);
@@ -777,18 +796,34 @@ namespace Hyperstore.Modeling.HyperGraph
 
             _trace.WriteTrace(TraceCategory.Hypergraph, "Remove relationship {0}", id);
 
-            var commands = RemoveDependencies(edge, schemaRelationship, originEmbeddedRelationship);
-            if (schemaRelationship.IsEmbedded && String.Compare(edge.EndId.DomainModelName, DomainModel.Name, StringComparison.OrdinalIgnoreCase) == 0)
+            if (Session.Current.GetContextInfo<bool>("$$remove$$") == false)
             {
-                var endSchema = _domainModel.Store.GetSchemaElement(edge.EndSchemaId);
-                if (endSchema is ISchemaRelationship)
-                    commands.Add(new RemoveRelationshipCommand(_domainModel, edge.EndId, edge.EndSchemaId, id));
-                else
-                    commands.Add(new RemoveEntityCommand(_domainModel, edge.EndId, edge.EndSchemaId, id));
-            }
+                var visitor = new DeleteDependencyVisitor();
+                _domainModel.Traversal.WithVisitor(visitor).Traverse(id, schemaRelationship.Id);
+                // Suppression des propriétés 
+                foreach (var prop in schemaRelationship.GetProperties(true))
+                {
+                    // Pour chaque propriété qui n'est pas une relation, on va générer un événement spécifique
+                    if (prop.PropertySchema is ISchemaRelationship)
+                        continue;
 
-            if (commands.Count > 0)
-                Session.Current.Execute(commands.ToArray());
+                    var pnode = GetPropertyValue(id, schemaRelationship, prop);
+                    if (pnode != null)
+                    {
+                        _trace.WriteTrace(TraceCategory.Hypergraph, "Remove property {0}.{1}", id, prop.Name);
+                        visitor.Commands.Add(new RemovePropertyCommand(_domainModel, id, schemaRelationship, prop));
+                    }
+                }
+                if (visitor.Commands.Count > 0)
+                {
+                    using (var session = _domainModel.Store.BeginSession())
+                    {
+                        session.SetContextInfo("$$remove$$", true);
+                        session.Execute(visitor.Commands.ToArray());
+                        session.AcceptChanges();
+                    }
+                }
+            }
 
             using (var tx = BeginTransaction())
             {
@@ -834,10 +869,10 @@ namespace Hyperstore.Modeling.HyperGraph
                         }
                     }
 
-                    //foreach (var prop in schemaRelationship.GetProperties(true))
-                    //{
-                    //    _storage.RemoveNode(edge.Id.CreateAttributeIdentity(prop.Name));
-                    //}
+                    foreach (var prop in schemaRelationship.GetProperties(true))
+                    {
+                        _storage.RemoveNode(edge.Id.CreateAttributeIdentity(prop.Name));
+                    }
 
                     DeferRemoveIndex(schemaRelationship, edge.Id);
 
@@ -1060,59 +1095,6 @@ namespace Hyperstore.Modeling.HyperGraph
             _storage = null;
             _disposed = true;
             _domainModel = null;
-        }
-
-        private List<IDomainCommand> RemoveDependencies(GraphNode node, ISchemaElement schemaElement, Identity originEmbeddedRelationship)
-        {
-            DebugContract.Requires(node);
-            DebugContract.Requires(schemaElement);
-            DebugContract.Requires(Session.Current);
-
-            // Dans le cas de la suppression d'un noeud, on ne supprime que les relations entrantes.
-            // Pour les relations sortantes de type IsEmbedded, on va supprimer le noeud opposé qui va lui-même supprimer
-            // ces relations entrantes.            
-            var commands = new List<IDomainCommand>();
-
-            // Suppression des relations entrantes
-            foreach (var incoming in GetEdges(node.Id, schemaElement, Direction.Incoming, null))
-            {
-                if (incoming == null || incoming.Id == originEmbeddedRelationship)
-                    continue;
-
-                Debug.Assert(String.Compare(_domainModel.Name, incoming.Id.DomainModelName, StringComparison.OrdinalIgnoreCase) == 0);
-
-                // Génére la commande de suppression.
-                _trace.WriteTrace(TraceCategory.Hypergraph, "Remove incoming relationship {0}", incoming.Id);
-                commands.Add(new RemoveRelationshipCommand(_domainModel, incoming.Id, incoming.SchemaId));
-            }
-
-            // Gestion des relations sortantes
-            // On sait que ces relations sont toujours dans le graphe courant mais peut-être pas le noeud terminal
-            foreach (var outgoing in GetEdges(node.Id, schemaElement, Direction.Outgoing, null))
-            {
-                if (outgoing == null)
-                    continue;
-
-                _trace.WriteTrace(TraceCategory.Hypergraph, "Remove outgoing relationship {0}", outgoing.Id);
-                commands.Add(new RemoveRelationshipCommand(_domainModel, outgoing.Id, outgoing.SchemaId));
-            }
-
-            // Suppression des propriétés 
-            foreach (var prop in schemaElement.GetProperties(true))
-            {
-                // Pour chaque propriété qui n'est pas une relation, on va générer un événement spécifique
-                if (prop.PropertySchema is ISchemaRelationship)
-                    continue;
-
-                var pnode = GetPropertyValue(node.Id, schemaElement, prop);
-                if (pnode != null)
-                {
-                    _trace.WriteTrace(TraceCategory.Hypergraph, "Remove property {0}.{1}", node.Id, prop.Name);
-                    commands.Add(new RemovePropertyCommand(_domainModel, node.Id, schemaElement, prop));
-                }
-            }
-
-            return commands;
         }
 
         internal void DeferRemoveIndex(ISchemaElement metaclass, Identity id, string propertyName = null, object key = null)
