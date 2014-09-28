@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using Hyperstore.Modeling.HyperGraph;
@@ -33,24 +33,40 @@ namespace Hyperstore.Modeling.Traversal
     public class GraphPath
     {
         private int _hash;
+        private readonly GraphPath _parent;
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the domain model.
+        /// </summary>
+        /// <value>
+        ///  The domain model.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public IDomainModel DomainModel { get; private set; }
 
-        internal GraphPath(IDomainModel domain, GraphPosition pos, GraphPath basePath = null)
+
+        internal GraphPath(IDomainModel domain, NodeInfo node)
         {
-            DebugContract.Requires(pos, "pos");
+            DebugContract.Requires(node, "node");
 
             DomainModel = domain;
+            EndElement = node;
+        }
 
-            Elements = new List<NodeInfo>();
-            Relationships = new List<EdgeInfo>();
+        private GraphPath(GraphPath parent, NodeInfo node, EdgeInfo fromEdge)
+        {
+            DomainModel = parent.DomainModel;
+            _parent = parent;
+            EndElement = node;
+            LastTraversedRelationship = fromEdge;
+        }
 
-            if (basePath != null)
-            {
-                Elements.AddRange(basePath.Elements);
-                Relationships.AddRange(basePath.Relationships);
-            }
+        internal GraphPath Create(NodeInfo node, EdgeInfo fromEdge)
+        {
+            DebugContract.Requires(node);
 
-            Push(pos.Node, pos.FromEdge);
+            return new GraphPath(this, node, fromEdge);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -61,7 +77,7 @@ namespace Hyperstore.Modeling.Traversal
         ///  The relationships.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public List<EdgeInfo> Relationships { get; private set; }
+        public IEnumerable<EdgeInfo> Relationships { get { return IterateToRoot().Where(p => p.LastTraversedRelationship != null).Select(p => p.LastTraversedRelationship); } }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -71,7 +87,7 @@ namespace Hyperstore.Modeling.Traversal
         ///  The elements.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public List<NodeInfo> Elements { get; private set; }
+        public IEnumerable<NodeInfo> Elements { get { return IterateToRoot().Where(p => p.EndElement != null).Select(p => p.EndElement); } }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -83,7 +99,23 @@ namespace Hyperstore.Modeling.Traversal
         ///-------------------------------------------------------------------------------------------------
         public NodeInfo StartElement
         {
-            get { return Elements.First(); }
+            get
+            {
+                var p = IterateToRoot().Last();
+                return p.EndElement;
+            }
+        }
+
+        public IEnumerable<GraphPath> IterateToRoot()
+        {
+            var p = this;
+            for (; ; )
+            {
+                yield return p;
+                if (p._parent == null)
+                    break;
+                p = p._parent;
+            }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -110,7 +142,7 @@ namespace Hyperstore.Modeling.Traversal
         ///-------------------------------------------------------------------------------------------------
         public int Length
         {
-            get { return Relationships.Count; }
+            get { return Relationships.Count(); }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -125,24 +157,6 @@ namespace Hyperstore.Modeling.Traversal
         {
             get;
             private set;
-        }
-
-        internal void Push(NodeInfo node, EdgeInfo fromEdge)
-        {
-            DebugContract.Requires(node);
-            EndElement = node;
-            LastTraversedRelationship = fromEdge; 
-            if (node != null)
-            {
-                Elements.Add(node);
-            }
-
-            if (fromEdge != null)
-            {
-                Relationships.Add(fromEdge);             
-            }
-
-            _hash = 0;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -202,19 +216,23 @@ namespace Hyperstore.Modeling.Traversal
         ///-------------------------------------------------------------------------------------------------
         public override string ToString()
         {
-            var sb = new StringBuilder();
-            if (Length > 0)
+            var stack = new Stack<string>();
+
+            var iterator = Relationships.GetEnumerator();
+            foreach (var mel in Elements)
             {
-                for (var i = 0; i < Elements.Count - 1; i++)
+                stack.Push("]");
+                stack.Push(mel.Id.ToString());
+                if (iterator.MoveNext())
                 {
-                    sb.Append(Elements[i].Id);
-                    sb.Append(" -- [");
-                    sb.Append(Relationships[i].SchemaId);
-                    sb.Append("] --> ");
+                    stack.Push(" --> [");
+                    stack.Push(iterator.Current.SchemaId.ToString());
+                    stack.Push(" -- ");
                 }
-                sb.Append(EndElement.Id);
             }
-            return sb.ToString();
+            stack.Push("[");
+
+            return System.String.Concat(stack);
         }
     }
 }

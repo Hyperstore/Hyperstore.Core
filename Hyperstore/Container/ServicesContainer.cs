@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 using Hyperstore.Modeling.Utils;
 using System;
 using System.Collections.Generic;
@@ -30,9 +30,13 @@ namespace Hyperstore.Modeling.Container
         private readonly ThreadSafeLazyRef<ImmutableDictionary<Type, ServiceDescriptor>> _services = new ThreadSafeLazyRef<ImmutableDictionary<Type, ServiceDescriptor>>(() => ImmutableDictionary<Type, ServiceDescriptor>.Empty);
         private readonly ThreadSafeLazyRef<ImmutableDictionary<ServiceDescriptor, object>> _resolvedServices = new ThreadSafeLazyRef<ImmutableDictionary<ServiceDescriptor, object>>(() => ImmutableDictionary<ServiceDescriptor, object>.Empty);
 
+        private int _nb;
+        private static int _count;
 
         internal ServicesContainer(ServicesContainer parent = null)
         {
+            _nb = _count++;
+
             _parent = parent;
             Register<IServicesContainer>(this);
         }
@@ -92,7 +96,7 @@ namespace Hyperstore.Modeling.Container
             if (_parent != null)
             {
                 desc = _parent.TryGetService<TService>();
-                if( desc != null && desc.Lifecycle == ServiceLifecycle.Scoped)
+                if (desc != null && desc.Lifecycle == ServiceLifecycle.Scoped)
                 {
                     Register(desc);
                     return ResolveService<TService>(desc);
@@ -174,6 +178,9 @@ namespace Hyperstore.Modeling.Container
 
         public void Dispose()
         {
+            if( _services.HasValue)
+                _services.Value.Clear();
+
             if (!_resolvedServices.HasValue)
                 return;
 
@@ -182,12 +189,14 @@ namespace Hyperstore.Modeling.Container
             {
                 disposable.Dispose();
             }
+            _resolvedServices.Value.Clear();
+
         }
 
         internal IServicesContainer Merge(IServicesContainer serviceContainer)
         {
             var container = serviceContainer as ServicesContainer;
-            if( container == null || !container._services.HasValue)
+            if (container == null || !container._services.HasValue)
                 return this;
 
             _services.ExchangeValue(services =>

@@ -53,7 +53,7 @@ namespace Hyperstore.Modeling.Traversal
         /// <summary>
         ///  Enumerates the items in this collection that meet given criteria.
         /// </summary>
-        /// <param name="nodeId">
+        /// <param name="node">
         ///  The node.
         /// </param>
         /// <returns>
@@ -74,7 +74,7 @@ namespace Hyperstore.Modeling.Traversal
                 yield break;
 
             // Constitution du Path courant
-            var path = CreatePath(new GraphPosition { Node = node, IsStartPosition = true });
+            var path = new GraphPath(_query.DomainModel, node);
 
             // Initialisation du container avec le 1er noeud
             paths.Insert(new[] { path });
@@ -115,15 +115,9 @@ namespace Hyperstore.Modeling.Traversal
                         NodeInfo childNode = null;
                         if (String.Compare(rel.EndId.DomainModelName, _query.DomainModel.Name, StringComparison.OrdinalIgnoreCase) == 0)
                             childNode = new NodeInfo(rel.EndId, rel.EndSchemaId);
-
-                        // OK on la prend, on génére un nouveau chemin
-                        var pos = new GraphPosition
-                                  {
-                                      Node = childNode,
-                                      FromEdge = rel
-                                  };
                         
-                        var p = CreatePath(pos, path);
+                        var p = path.Create(childNode, rel);
+
                         // Si ce chemin n'a pas dèjà été traité, on l'ajoute dans la liste des chemins à traiter
                         if (!_query.UnicityPolicy.IsVisited(p))
                         {
@@ -146,24 +140,5 @@ namespace Hyperstore.Modeling.Traversal
         ///-------------------------------------------------------------------------------------------------
         protected abstract IGraphPathList CreatePathContainer();
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Creates a path.
-        /// </summary>
-        /// <param name="pos">
-        ///  The position.
-        /// </param>
-        /// <param name="path">
-        ///  (Optional) full pathname of the file.
-        /// </param>
-        /// <returns>
-        ///  The new path.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        protected virtual GraphPath CreatePath(GraphPosition pos, GraphPath path = null)
-        {
-            DebugContract.Requires(pos);
-            return new GraphPath(_query.DomainModel, pos, path);
-        }
     }
 }

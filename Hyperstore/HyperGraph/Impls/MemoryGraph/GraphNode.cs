@@ -217,7 +217,7 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="metadataId">
+        /// <param name="schemaRelationship">
         ///  Identifier for the metadata.
         /// </param>
         /// <param name="direction">
@@ -228,9 +228,6 @@ namespace Hyperstore.Modeling.HyperGraph
         /// </param>
         /// <param name="endSchemaId">
         ///  The identifier of the end schema.
-        /// </param>
-        /// <param name="isEmbedded">
-        ///  true if this instance is embedded.
         /// </param>
         /// <returns>
         ///  A GraphNode.

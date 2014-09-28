@@ -28,7 +28,7 @@ using Hyperstore.Modeling.Utils;
 
 namespace Hyperstore.Modeling.MemoryStore
 {
-    internal class TransactionManager : ITransactionManager
+    internal class TransactionManager : ITransactionManager, IDisposable 
     {
         private const string CONTEXT_KEY = "__MTM__";
 
@@ -36,7 +36,7 @@ namespace Hyperstore.Modeling.MemoryStore
         private readonly List<MemoryTransaction> _activeTransactions = new List<MemoryTransaction>(8419);
         private readonly object _sync = new object();
         private readonly IHyperstoreTrace _trace;
-
+        private bool _disposed;
         private Dictionary<long, MemoryTransaction> _transactions = new Dictionary<long, MemoryTransaction>(8419);
 
         ///-------------------------------------------------------------------------------------------------
@@ -218,9 +218,11 @@ namespace Hyperstore.Modeling.MemoryStore
                 {
                     foreach (var pair in _transactions)
                     {
+                        if (_disposed)
+                            break;
                         var toBeDeleted = false;
                         var tx = pair.Value;
-                        if (tx.Status == TransactionStatus.Committed && (lowerActiveTransaction == null || tx.Id < lowerActiveTransaction))
+                        if (tx != null && tx.Status == TransactionStatus.Committed && (lowerActiveTransaction == null || tx.Id < lowerActiveTransaction))
                             toBeDeleted = true;
 
                         if (!toBeDeleted)
@@ -320,6 +322,15 @@ namespace Hyperstore.Modeling.MemoryStore
                 {
                 }
             }
+        }
+
+        void IDisposable.Dispose()
+        {
+            if (_disposed)
+                return;
+            _disposed = true;
+            _transactions.Clear();
+            _activeTransactions.Clear(); 
         }
     }
 }

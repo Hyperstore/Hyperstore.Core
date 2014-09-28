@@ -177,6 +177,8 @@ namespace Hyperstore.Modeling.MemoryStore
             _valuesLock.EnterWriteLock();
             try
             {
+                if( _transactionManager is IDisposable)
+                    ((IDisposable)_transactionManager).Dispose();
                 _transactionManager = null;
             }
             finally

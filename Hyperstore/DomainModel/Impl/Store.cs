@@ -174,6 +174,7 @@ namespace Hyperstore.Modeling
             var container = new ServicesContainer();
             ConfigureServices(container);
             _services = container.Merge(services);
+            services.Dispose();
 
             DefaultSessionConfiguration.IsolationLevel = SessionIsolationLevel.ReadCommitted;
             DefaultSessionConfiguration.SessionTimeout = TimeSpan.FromMinutes(1);

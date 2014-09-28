@@ -313,6 +313,14 @@ namespace Hyperstore.Modeling
             }
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the enumerator.
+        /// </summary>
+        /// <returns>
+        ///  The enumerator.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public override IEnumerator<T> GetEnumerator()
         {
             LoadItems();

@@ -481,51 +481,6 @@ namespace Hyperstore.Tests.HyperGraph
             }
         }
 
-        [TestMethod()]
-        [TestCategory("Hypergraph")]
-        public async Task TraversalTest()
-        {
-            var store = await StoreBuilder.New().CreateAsync();
-            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
-            var domain = await store.DomainModels.New().CreateAsync("Test"); 
 
-            CreateGraph(domain);
-
-            ISchemaEntity metadata;
-            using (var session = domain.Store.BeginSession(new SessionConfiguration { Readonly = true }))
-            {
-                metadata = TestDomainDefinition.XExtendsBaseClass;
-            }
-
-            var cx = domain.Traversal.OnEveryPath(
-                // Filtre personnalisé 
-                // On prend en compte les chemins dont le noeud terminal est le 7 et on ignore les autres
-                    p => p.EndElement.Id.Key == "7"
-                        ? GraphTraversalEvaluatorResult.IncludeAndContinue
-                        : GraphTraversalEvaluatorResult.ExcludeAndContinue
-                    )
-                    .GetPaths(new NodeInfo(new Identity("test", "1"), metadata.Id)).Count();
-
-                Assert.AreEqual(3, cx);
-
-            var p2 = domain.Traversal.OnEveryPath(p => p.EndElement.Id.Key == "7" ? GraphTraversalEvaluatorResult.IncludeAndExit : GraphTraversalEvaluatorResult.ExcludeAndContinue)
-                                     .PathTraverser(new GraphDepthFirstTraverser())
-                                     .GetPaths(new NodeInfo(new Identity("test", "1"), metadata.Id)).First();
-                Assert.AreEqual(2, p2.Length);
-
-            //Assert.IsTrue(visitor.Path != null && visitor.Path.Length == 2);
-            //using (var tx = domainModel.Item2.BeginTransaction())
-            //{
-            //    var edge = GraphTestBuilder.GetEdge(Graph, 10);
-            //    Graph.RemoveEdge(edge.Id);
-            //    tx.Commit();
-            //}
-
-            //visitor = new FirstPathVisitor(GraphTestBuilder.GetVertex(Graph, 7));
-            //query.Traverse(visitor);
-
-            //Assert.IsTrue(visitor.Path != null && visitor.Path.Length == 3);
-
-        }
     }
 }

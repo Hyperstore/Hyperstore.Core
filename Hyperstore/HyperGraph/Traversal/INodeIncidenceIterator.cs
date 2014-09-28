@@ -30,6 +30,17 @@ namespace Hyperstore.Modeling.Traversal
     ///-------------------------------------------------------------------------------------------------
     public interface INodeIncidenceIterator
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Enumerates from in this collection.
+        /// </summary>
+        /// <param name="node">
+        ///  The node.
+        /// </param>
+        /// <returns>
+        ///  An enumerator that allows foreach to be used to process from in this collection.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         IEnumerable<EdgeInfo> From(NodeInfo node);
     }
 }

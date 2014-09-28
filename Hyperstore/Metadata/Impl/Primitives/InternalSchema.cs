@@ -616,7 +616,7 @@ namespace Hyperstore.Modeling.Metadata
             var tmp = DomainUnloaded;
             if (tmp != null)
                 tmp(this, new EventArgs());
-
+            _services.Dispose();
             Store = null;
         }
 

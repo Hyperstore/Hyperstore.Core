@@ -228,7 +228,6 @@
     <Compile Include="HyperGraph\Impls\MemoryGraph\GraphNode.cs" />
     <Compile Include="Adapters\EntityUpdaters\IPersistenceGraphAdapter.cs" />
     <Compile Include="HyperGraph\Traversal\GraphPath.cs" />
-    <Compile Include="HyperGraph\Traversal\GraphPosition.cs" />
     <Compile Include="HyperGraph\Traversal\GraphTraversalEvaluatorResult.cs" />
     <Compile Include="HyperGraph\Traversal\IGraphPathList.cs" />
     <Compile Include="HyperGraph\Traversal\IGraphPathTraverser.cs">
@@ -244,7 +243,6 @@
     <Compile Include="HyperGraph\Traversal\IGraphTraversalConfiguration.cs" />
     <Compile Include="HyperGraph\Traversal\ITraversalVisitor.cs" />
     <Compile Include="HyperGraph\Traversal\IGraphTraversalUnicityPolicy.cs" />
-    <Compile Include="MemoryStore\ElementEvictedEventArgs.cs" />
     <Compile Include="MemoryStore\EvictionProcess.cs" />
     <Compile Include="HyperGraph\Impls\MemoryGraph\Index\IndexDefinition.cs" />
     <Compile Include="MemoryStore\Impls\ILockInfo.cs" />

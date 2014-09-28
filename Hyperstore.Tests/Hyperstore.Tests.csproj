@@ -91,6 +91,7 @@
     <Compile Include="DomainModel\DomainTest.cs" />
     <Compile Include="Hypergraph\HyperGraphIndexTest.cs" />
     <Compile Include="Hypergraph\HyperGraphTest.cs" />
+    <Compile Include="Hypergraph\TraversalTests.cs" />
     <Compile Include="MemoryStore\MemoryCommandContextTest.cs" />
     <Compile Include="MemoryStore\MemoryIndexManagerTest.cs">
       <SubType>Code</SubType>

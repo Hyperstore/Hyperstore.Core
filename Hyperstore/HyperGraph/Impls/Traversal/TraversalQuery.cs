@@ -72,6 +72,9 @@ namespace Hyperstore.Modeling.Traversal
             /// <param name="direction">
             ///  The direction.
             /// </param>
+            /// <param name="hypergraph">
+            ///  The hypergraph.
+            /// </param>
             ///-------------------------------------------------------------------------------------------------
             public DefaultIncidencesIterator(Direction direction, Hyperstore.Modeling.HyperGraph.HyperGraph hypergraph)
             {
@@ -83,7 +86,7 @@ namespace Hyperstore.Modeling.Traversal
             /// <summary>
             ///  Get a relationship list.
             /// </summary>
-            /// <param name="mel">
+            /// <param name="node">
             ///  The mel.
             /// </param>
             /// <returns>
@@ -111,19 +114,9 @@ namespace Hyperstore.Modeling.Traversal
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets or sets the full pathname of the create file.
-        /// </summary>
-        /// <value>
-        ///  The full pathname of the create file.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public Func<GraphPosition, GraphPath, GraphPath> CreatePath { get; set; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
         ///  Gets the paths in this collection.
         /// </summary>
-        /// <param name="startNode">
+        /// <param name="node">
         ///  The start node.
         /// </param>
         /// <returns>
@@ -150,6 +143,14 @@ namespace Hyperstore.Modeling.Traversal
             }
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the domain model.
+        /// </summary>
+        /// <value>
+        ///  The domain model.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public IDomainModel DomainModel { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
