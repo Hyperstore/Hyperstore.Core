@@ -5,14 +5,14 @@
     <version>1.0.0.1</version>
     <title>Hyperstore with reactive extension</title>
     <authors>Zenasoft</authors>
-    <licenseUrl>http://opensource.org/licenses/gpl-3.0</licenseUrl>
-    <iconUrl>http://www.zenasoft.com/wp-content/uploads/2014/04/Logo-Hyperstore1.gif</iconUrl>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
+    <iconUrl>http://www.hypertsore.org/img/hyperstore-icon.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>HyperStore is a Database Oriented Model integrating many concepts of DDD and CQRS. This implementation uses Reactive Framework for event sourcing.</description>
+    <description>HyperStore is a modeling framework providing its own in-memory transactional database.</description>
     <copyright>Copyright Zenasoft 2014</copyright>
     <language>en-US</language>
-    <projectUrl>http://www.zenasoft.com</projectUrl>
-    <tags>Hyperstore,DSL,CQRS,DDD,RX</tags>
+    <tags>Hyperstore,DSL,DDD, RX</tags>
+    <projectUrl>http://www.hyperstore.org</projectUrl>
     <dependencies>
       <group targetFramework=".NETPortable0.0-net45+wp8+win8">
         <dependency id="Rx-Main" version="2.2.5" />

@@ -74,6 +74,26 @@ namespace Hyperstore.Modeling.Metadata.Constraints
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
+        ///  Creates a message.
+        /// </summary>
+        /// <param name="level">
+        ///  Type message
+        /// </param>
+        /// <param name="format">
+        ///  Describes the format to use.
+        /// </param>
+        /// <param name="args">
+        ///  A variable-length parameters list containing arguments.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
+        public void CreateMessage( MessageType level, string format, params object[] args)
+        {
+            var message = args.Length == 0 ? format : String.Format(format, args);
+            _sessionContext.Log(new DiagnosticMessage(level, MessageHelper.CreateMessage(message, Element), _category, true, null, null));
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
         ///  Creates warning message.
         /// </summary>
         /// <param name="message">

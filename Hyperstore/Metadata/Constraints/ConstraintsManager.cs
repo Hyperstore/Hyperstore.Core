@@ -176,6 +176,11 @@ namespace Hyperstore.Modeling.Metadata.Constraints
             AddConstraint(schema, proxy);
         }
 
+        public void AddConstraint<T>(ICheckConstraint<T> constraint) where T : IModelElement
+        {
+            AddConstraint<T>(this.Domain.Store.GetSchemaElement<T>(), constraint);
+        }
+
         private void AddConstraint(ISchemaElement schema, AbstractConstraintProxy proxy)
         {
             List<AbstractConstraintProxy> constraints;

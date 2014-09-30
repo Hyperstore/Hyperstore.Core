@@ -65,19 +65,32 @@ namespace Hyperstore.Modeling.Metadata.Constraints
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Adds a constraint to 'constraint'.
+        ///  Adds a constraint to a schemaElement
         /// </summary>
         /// <typeparam name="T">
         ///  Generic type parameter.
         /// </typeparam>
-        /// <param name="schema">
-        ///  The schema.
+        /// <param name="schemaElement">
+        ///  The schema element.
         /// </param>
         /// <param name="constraint">
         ///  The constraint.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        void AddConstraint<T>(Hyperstore.Modeling.ISchemaElement schema, Hyperstore.Modeling.Metadata.Constraints.ICheckConstraint<T> constraint) where T : Hyperstore.Modeling.IModelElement;
+        void AddConstraint<T>(Hyperstore.Modeling.ISchemaElement schemaElement, Hyperstore.Modeling.Metadata.Constraints.ICheckConstraint<T> constraint) where T : Hyperstore.Modeling.IModelElement;
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Adds a constraint to the schema element T
+        /// </summary>
+        /// <typeparam name="T">
+        ///  Schema element
+        /// </typeparam>
+        /// <param name="constraint">
+        ///  The constraint to add
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
+        void AddConstraint<T>(ICheckConstraint<T> constraint) where T : IModelElement;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -244,11 +244,13 @@ namespace Hyperstore.Modeling.HyperGraph
                 || (direction & Direction.Incoming) == Direction.Incoming && _incomings.ContainsKey(id))
                 throw new Exception("Duplicate relationship");
 
-            if( (direction & Direction.Incoming) == Direction.Incoming && schemaRelationship.IsEmbedded)
-            {
-                if (_incomings.Any(r => r.Value.SchemaId == schemaRelationship.Id))
-                    return null;
-            }
+            // Check multi containers
+            // TODO no it's valid if they are not all set (make a test in the command ???)
+            //if ((direction & Direction.Incoming) == Direction.Incoming && schemaRelationship.IsEmbedded)
+            //{
+            //    if (_incomings.Any(r => r.Value.SchemaId == schemaRelationship.Id))
+            //        return null;
+            //}
             var edge = new EdgeInfo(id, schemaRelationship.Id, endId, endSchemaId);
 
             return new GraphNode(this,

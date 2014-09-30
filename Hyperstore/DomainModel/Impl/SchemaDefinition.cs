@@ -35,6 +35,7 @@ namespace Hyperstore.Modeling
     public abstract class SchemaDefinition : DomainConfiguration, ISchemaDefinition
     {
         private readonly string _name;
+        private DomainBehavior _behavior;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -44,7 +45,18 @@ namespace Hyperstore.Modeling
         ///  The behavior.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public DomainBehavior Behavior { get; set; }
+        public DomainBehavior Behavior
+        {
+            get { return _behavior; }
+            set
+            {
+                _behavior = value;
+                if ((_behavior & DomainBehavior.Observable) == DomainBehavior.Observable)
+                {
+                    _behavior &= ~DomainBehavior.DisableL1Cache;
+                }
+            }
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -64,10 +76,7 @@ namespace Hyperstore.Modeling
 
             _name = name;
             Behavior = behavior;
-            if ((Behavior & DomainBehavior.Observable) == DomainBehavior.Observable)
-            {
-                Behavior &= ~DomainBehavior.DisableL1Cache;
-            }
+
         }
 
         ///-------------------------------------------------------------------------------------------------

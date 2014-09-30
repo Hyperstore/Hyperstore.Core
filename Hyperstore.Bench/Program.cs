@@ -77,11 +77,15 @@ namespace Hyperstore.Bench
             Console.WriteLine("Expected {0} Value {1}", mx * nbc * 2, nb);
             domain = null;
             store.Dispose();
+            ids.Clear();
+
 
             for (int i = 0; i < 3; i++)
                 Console.WriteLine("GC collection {0} : {1}", i, GC.CollectionCount(i) - collects[i]);
             //Console.WriteLine();
 
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
 
             //Assert.AreEqual(mx * nbc * 2, nb); // Nbre de fois la contrainte est appelée (sur le add et le update)
             //Assert.IsTrue(sw.ElapsedMilliseconds < 3000, String.Format("ElapsedTime = {0}", sw.ElapsedMilliseconds));
