@@ -19,6 +19,7 @@ using Hyperstore.Modeling.Scopes;
 using Hyperstore.Modeling.Events;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Hyperstore.Modeling
 {
@@ -401,6 +402,12 @@ namespace Hyperstore.Modeling
     ///-------------------------------------------------------------------------------------------------
     public static class SchemaExtensions
     {
+        public static IEnumerable<T> All<T>(this IModelList<T> list) where T:class, IDomainModel
+        {
+            var scopes = list as IScopeManager<T>;
+            return scopes.GetScopes(ScopesSelector.Enabled, Session.Current != null ? Session.Current.SessionId : 0);
+        }
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Prepare a new schema builder using a definition
