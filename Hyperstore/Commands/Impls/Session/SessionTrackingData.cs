@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -79,7 +79,7 @@ namespace Hyperstore.Modeling.Commands
             get
             {
                 if (!_modelElementsPrepared)
-                    throw new Exception(ExceptionMessages.InvolvedModelElementsOnlyAvalaibleWhenSessionIsBeingDisposed);
+                    throw new HyperstoreException(ExceptionMessages.InvolvedModelElementsOnlyAvalaibleWhenSessionIsBeingDisposed);
 
                 return _elements.Values.Where(e => e.ModelElement != null)
                         .Select(e => e.ModelElement); // Simule readonly
@@ -349,7 +349,7 @@ namespace Hyperstore.Modeling.Commands
                             if (mel != null) // Au cas ou il a été supprimé
                             {
                                 TrackedElement data;
-                                if( !_elements.TryGetValue(mel.Id, out data))
+                                if (!_elements.TryGetValue(mel.Id, out data))
                                 {
                                     data = new TrackedElement
                                     {
@@ -407,7 +407,7 @@ namespace Hyperstore.Modeling.Commands
                                         ((IDisposable)mel).Dispose();
                                     }
                                 }
-                                else if( element.State == TrackingState.Removed)
+                                else if (element.State == TrackingState.Removed)
                                 {
                                     ((IDisposable)mel).Dispose();
                                 }

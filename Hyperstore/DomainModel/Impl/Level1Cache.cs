@@ -46,7 +46,7 @@ namespace Hyperstore.Modeling.Domain
 
         private IHyperGraph InnerGraph
         {
-            get { if (_domain == null) throw new Exception("Cannot access an element from an unloaded domain"); return _domain.InnerGraph; }
+            get { if (_domain == null) throw new UnloadedDomainException("Cannot access an element from an unloaded domain"); return _domain.InnerGraph; }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -96,7 +96,7 @@ namespace Hyperstore.Modeling.Domain
             foreach (var elem in e.Session.TrackingData.GetTrackedElementsByState(TrackingState.Removed))
             {
                 IModelElement weak;
-                if(_cache.TryRemove(elem.Id, out weak) && weak is IDisposable )
+                if (_cache.TryRemove(elem.Id, out weak) && weak is IDisposable)
                 {
                     ((IDisposable)weak).Dispose();
                 }

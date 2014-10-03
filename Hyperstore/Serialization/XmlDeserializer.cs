@@ -13,7 +13,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
+using Hyperstore.Modeling.Metadata;
 using Hyperstore.Modeling.Platform;
 using Hyperstore.Modeling.Traversal;
 using System;
@@ -153,7 +154,7 @@ namespace Hyperstore.Modeling.Serialization
         {
             var value = _reader.GetAttribute(name);
             if (value == null && throwException)
-                throw new Exception(String.Format("Invalid file format. Expected attribute {0} in element {1}", name, _reader.LocalName));
+                throw new XmlSerializationException(String.Format("Invalid file format. Expected attribute {0} in element {1}", name, _reader.LocalName));
             return value;
         }
 
@@ -169,7 +170,7 @@ namespace Hyperstore.Modeling.Serialization
                     {
                         var elem = ReadNextElement();
                         if (elem != "domain")
-                            throw new Exception("Invalid format file");
+                            throw new XmlSerializationException("Invalid format file");
 
                         elem = ReadNextElement();
                         if (elem == "schemas")
@@ -218,19 +219,19 @@ namespace Hyperstore.Modeling.Serialization
                     var id = ReadId("id");
                     var schema = GetSchemaFromMoniker(metadata) as ISchemaRelationship;
                     if (schema == null)
-                        throw new Exception(String.Format("Invalid metadata {0} for relationship {1}", metadata, id));
+                        throw new MetadataNotFoundException(String.Format("Invalid metadata {0} for relationship {1}", metadata, id));
 
                     var smetadata = ReadAttribute("startSchema");
                     var startId = ReadId("start");
                     var startSchema = GetSchemaFromMoniker(smetadata);
                     if (startSchema == null)
-                        throw new Exception(String.Format("Invalid start metadata {0} for relationship {1}", smetadata, id));
+                        throw new MetadataNotFoundException(String.Format("Invalid start metadata {0} for relationship {1}", smetadata, id));
 
                     var emetadata = ReadAttribute("endSchema");
                     var endId = ReadId("end");
                     var endSchema = GetSchemaFromMoniker(emetadata);
                     if (endSchema == null)
-                        throw new Exception(String.Format("Invalid end metadata {0} for relationship {1}", emetadata, id));
+                        throw new MetadataNotFoundException(String.Format("Invalid end metadata {0} for relationship {1}", emetadata, id));
 
                     var entity = _domain.CreateRelationship(schema, startId, startSchema, endId, endSchema, id);
 
@@ -250,7 +251,7 @@ namespace Hyperstore.Modeling.Serialization
                     var id = ReadId("id");
                     var schema = GetSchemaFromMoniker(metadata) as ISchemaEntity;
                     if (schema == null)
-                        throw new Exception(String.Format("Invalid metadata {0} for entity {1}", metadata, id));
+                        throw new MetadataNotFoundException(String.Format("Invalid metadata {0} for entity {1}", metadata, id));
 
                     var entity = _domain.CreateEntity(schema, id);
 
@@ -269,11 +270,11 @@ namespace Hyperstore.Modeling.Serialization
                     var name = ReadAttribute("name");
                     var prop = schema.GetProperty(name);
                     if (prop == null)
-                        throw new Exception(String.Format("Unknow value property {1} for element {1}", name, element.Id));
+                        throw new XmlSerializationException(String.Format("Unknow value property {1} for element {1}", name, element.Id));
 
                     var vElem = ReadNextElement();
                     if (vElem != "value")
-                        throw new Exception(String.Format("Value expected for property {1} of element {1}", name, element.Id));
+                        throw new XmlSerializationException(String.Format("Value expected for property {1} of element {1}", name, element.Id));
                     
                     _reader.Read();
                     var cmd = new Hyperstore.Modeling.Commands.ChangePropertyValueCommand(element, prop, prop.PropertySchema.Deserialize(new SerializationContext(prop, _reader.Value)));

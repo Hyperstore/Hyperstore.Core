@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using Hyperstore.Modeling.Platform;
@@ -100,7 +100,7 @@ namespace Hyperstore.Modeling.HyperGraph.Index
 
             var property = metaclass.GetProperty(propertyNames[0]);
             if (property == null)
-                throw new Exception(string.Format(ExceptionMessages.PropertyNameNotValidForMetaclassFormat,  metaclass.Name));
+                throw new Hyperstore.Modeling.Metadata.PropertyDefinitionException(string.Format(ExceptionMessages.PropertyNameNotValidForMetaclassFormat, metaclass.Name));
 
             Conventions.CheckValidName(name);
             IndexDefinition def;

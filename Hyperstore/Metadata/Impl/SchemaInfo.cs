@@ -318,7 +318,7 @@ namespace Hyperstore.Modeling.Metadata
             Contract.Requires(ctx, "ctx");
             var upd = ctx.DomainModel as IUpdatableDomainModel;
             if (upd == null)
-                throw new Exception(string.Format(ExceptionMessages.DomainModelIsReadOnlyCantCreateElementFormat, ctx.Id));
+                throw new ReadOnlyException(string.Format(ExceptionMessages.DomainModelIsReadOnlyCantCreateElementFormat, ctx.Id));
 
             var mel = upd.ModelElementFactory.InstanciateModelElement(ctx.Schema, ImplementedType ?? typeof(DynamicModelEntity));
             var element = mel as ISerializableModelElement;
@@ -446,7 +446,7 @@ namespace Hyperstore.Modeling.Metadata
         /// <returns>
         ///  An ISchemaProperty.
         /// </returns>
-        /// ### <exception cref="System.Exception">
+        /// <exception cref="System.Exception">
         ///  Duplicate property name.
         /// </exception>
         ///-------------------------------------------------------------------------------------------------
@@ -457,7 +457,7 @@ namespace Hyperstore.Modeling.Metadata
             lock (_propertiesByName)
             {
                 if (GetProperty(property.Name) != null)
-                    throw new Exception(ExceptionMessages.DuplicatePropertyName);
+                    throw new Hyperstore.Modeling.MemoryStore.DuplicateElementException(ExceptionMessages.DuplicatePropertyName);
 
                 _properties.Add(property);
                 _propertiesByName.TryAdd(property.Name, property);
@@ -509,7 +509,7 @@ namespace Hyperstore.Modeling.Metadata
 
             var mv = metadata as ISchemaValueObject;
             if (mv == null)
-                throw new Exception(ExceptionMessages.NoSchemaFoundForThisProperty);
+                throw new MetadataNotFoundException(ExceptionMessages.NoSchemaFoundForThisProperty);
 
             return DefineProperty(name, metadata as ISchemaValueObject, kind, defaultValue);
         }
@@ -684,7 +684,7 @@ namespace Hyperstore.Modeling.Metadata
         ///-------------------------------------------------------------------------------------------------
         protected override void Remove()
         {
-            throw new Exception(ExceptionMessages.CantRemoveSchemaElementSchemaIsImmutable);
+            throw new ReadOnlyException(ExceptionMessages.CantRemoveSchemaElementSchemaIsImmutable);
         }
 
         ///-------------------------------------------------------------------------------------------------

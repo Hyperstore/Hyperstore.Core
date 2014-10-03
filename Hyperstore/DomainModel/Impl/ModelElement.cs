@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -169,7 +169,7 @@ namespace Hyperstore.Modeling
             get
             {
                 if (_domainModel == null || _domainModel.IsDisposed)
-                    throw new Exception(ExceptionMessages.CantUseElementFromUnloadedDomain);
+                    throw new UnloadedDomainException(ExceptionMessages.CantUseElementFromUnloadedDomain);
                 return _domainModel;
             }
         }
@@ -288,7 +288,7 @@ namespace Hyperstore.Modeling
             Contract.Requires(commandFactory, "commandFactory");
 
             if (Session.Current == null)
-                throw new NotInTransactionException();
+                throw new SessionRequiredException();
 
             if (schemaElement == null)
             {
@@ -476,11 +476,11 @@ namespace Hyperstore.Modeling
                 {
                     var metaclass = opposite.SchemaInfo;
                     if (metaclass == null)
-                        throw new Exception(ExceptionMessages.InvalidMetaclassForReference);
+                        throw new MetadataNotFoundException(ExceptionMessages.InvalidMetaclassForReference);
 
                     var mel = _store.GetElement(opposite.Id, metaclass);
                     if (mel == null)
-                        throw new Exception(ExceptionMessages.InvalidReference);
+                        throw new InvalidElementException(opposite.Id, ExceptionMessages.InvalidReference);
 
                     return mel;
                 }
@@ -647,7 +647,7 @@ namespace Hyperstore.Modeling
         ///  An ISession.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected ISession EnsuresRunInSession(bool readOnly=false)
+        protected ISession EnsuresRunInSession(bool readOnly = false)
         {
             if (Session.Current != null)
                 return null;
@@ -697,7 +697,7 @@ namespace Hyperstore.Modeling
             try
             {
                 var domainModelDisposed = _domainModel != null && _domainModel.IsDisposed;
-                if (this is INotifyPropertyChanged )
+                if (this is INotifyPropertyChanged)
                 {
                     if (!domainModelDisposed && _domainModel.Events != null)
                         _domainModel.Events.UnregisterForAttributeChangedEvent(this);
@@ -992,7 +992,7 @@ namespace Hyperstore.Modeling
                 //    propertyMetadata = new MetaProperty(Metadata, propertyName, pmetadata);
                 //    Metadata.DefineProperty(propertyMetadata);
                 //}
-                throw new Exception(string.Format(ExceptionMessages.UnknownPropertyFormat, propertyName));
+                throw new PropertyDefinitionException(string.Format(ExceptionMessages.UnknownPropertyFormat, propertyName));
             }
 
             return propertyMetadata;

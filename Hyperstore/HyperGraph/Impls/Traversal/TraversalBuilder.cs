@@ -162,9 +162,9 @@ namespace Hyperstore.Modeling.HyperGraph
         public void Traverse(NodeInfo node)
         {
             Contract.Requires(node, "node");
-            
+
             if (_query.Evaluator == null)
-                throw new Exception("You must define a visitor");
+                throw new CriticalException("You must define a visitor");
 
             _query.GetPaths(node).ToList();
         }

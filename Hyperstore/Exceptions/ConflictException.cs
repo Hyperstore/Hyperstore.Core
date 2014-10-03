@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +27,7 @@ namespace Hyperstore.Modeling
     /// </summary>
     /// <seealso cref="T:System.Exception"/>
     ///-------------------------------------------------------------------------------------------------
-    public class ConflictException : Exception
+    public class ConflictException : HyperstoreException
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

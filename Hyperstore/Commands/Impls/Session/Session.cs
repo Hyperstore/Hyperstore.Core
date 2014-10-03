@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -107,7 +107,7 @@ namespace Hyperstore.Modeling
                 _scope = Hyperstore.Modeling.Platform.PlatformServices.Current.CreateTransactionScope(this, cfg);
             }
             else if (ctx.SessionInfos.Count == 0)
-                throw new Exception(ExceptionMessages.CannotCreateNestedSessionInDisposingSession);
+                throw new HyperstoreException(ExceptionMessages.CannotCreateNestedSessionInDisposingSession);
 
             ctx.SessionInfos.Push(new SessionLocalInfo
                                   {
@@ -511,7 +511,7 @@ namespace Hyperstore.Modeling
                     if (dm == null)
                         dm = Store.GetSchema(cd.Key);
                     if (dm == null)
-                        throw new Exception();
+                        throw new DomainNotFoundException(cd.Key);
 
                     if (dm is IUpdatableDomainModel)
                     {
@@ -1036,7 +1036,7 @@ namespace Hyperstore.Modeling
             }
             catch (Exception ex)
             {
-                throw new Exception(ExceptionMessages.CriticalErrorMaybeAwaitInSession, ex);
+                throw new CriticalException(ExceptionMessages.CriticalErrorMaybeAwaitInSession, ex);
             }
 
             // Suppression de la session courante. Il n'est plus possible de faire référence à la session
@@ -1049,7 +1049,7 @@ namespace Hyperstore.Modeling
         {
             var extensions = Store as IDomainManager;
             if (extensions == null)
-                throw new Exception("Store must implement IExtensionManager");
+                throw new CriticalException("Store must implement IExtensionManager");
             return extensions.GetEventsNotifiers();
         }
 

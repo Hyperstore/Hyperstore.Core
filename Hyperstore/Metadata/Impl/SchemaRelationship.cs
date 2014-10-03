@@ -153,7 +153,7 @@ namespace Hyperstore.Modeling.Metadata
                     (dm, melId, mid) => new AddSchemaRelationshipCommand(dm as ISchema, melId, (ISchemaRelationship)mid, start, end));
 
             if (!Hyperstore.Modeling.Utils.ReflectionHelper.IsAssignableFrom(typeof(IModelRelationship), ImplementedType))
-                throw new Exception("SchemaRelationship must describes a type implementing IModelRelationship");
+                throw new HyperstoreException("SchemaRelationship must describes a type implementing IModelRelationship");
 
             Cardinality = cardinality;
             IsEmbedded = isembedded;

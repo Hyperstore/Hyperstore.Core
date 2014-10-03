@@ -236,7 +236,7 @@ namespace Hyperstore.Modeling
 
             var itemMetadata = Source != null ? SchemaRelationship.End : SchemaRelationship.Start;
             if (!((IModelElement)item).SchemaInfo.IsA(itemMetadata))
-                throw new Exception(ExceptionMessages.InvalidItemType);
+                throw new TypeMismatchException(ExceptionMessages.InvalidItemType);
 
             var start = Source ?? item;
             var end = End ?? item;

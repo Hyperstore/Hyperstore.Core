@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -205,7 +205,7 @@ namespace Hyperstore.Modeling.Scopes
                         }
 
                         if (throwException)
-                            throw new Exception(string.Format(ExceptionMessages.TryToLoadDuplicateDomainModelFormat, domainModel.Name));
+                            throw new DuplicateDomainModelException(string.Format(ExceptionMessages.TryToLoadDuplicateDomainModelFormat, domainModel.Name));
                     }
 
                     var tmp = new List<ScopeStack<T>>(_domainModels)
@@ -217,7 +217,7 @@ namespace Hyperstore.Modeling.Scopes
                 else // Extension de domaine
                 {
                     if (item == null) // TODO verif qu'il correspond au modèle à étendre
-                        throw new Exception(ExceptionMessages.ExtendedDomainNotFound);
+                        throw new DomainNotFoundException(ExceptionMessages.ExtendedDomainNotFound);
 
                     item.Load(domainModel, _activeSessions);
                 }
@@ -433,7 +433,7 @@ namespace Hyperstore.Modeling.Scopes
                 // TODO gestion si l'extension est en train d'être déchargée
                 var item = new ExtensionInfo<TElement>(extension, new List<Guid>(activeSessions));
                 if (_list.Any(i => i.IsExtensionNameExists(extension.ExtensionName)))
-                    throw new Exception("Duplicate extension name " + extension.ExtensionName);
+                    throw new DuplicateDomainModelException("Duplicate extension name " + extension.ExtensionName);
 
                 // Tjs sur le haut
                 _list.AddLast(item);

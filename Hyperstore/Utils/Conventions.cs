@@ -28,7 +28,7 @@ namespace Hyperstore.Modeling
         internal static void CheckValidDomainName(string name)
         {
             if (name == null || name == "$")
-                throw new Exception(ExceptionMessages.InvalidDomainName);
+                throw new InvalidNameException(ExceptionMessages.InvalidDomainName);
 
             CheckValidName(name, true);
         }

@@ -107,7 +107,7 @@ namespace Hyperstore.Modeling.MemoryStore
             {
                 var session = Session.Current;
                 if (session == null)
-                    throw new NotInTransactionException();
+                    throw new Hyperstore.Modeling.Commands.SessionRequiredException();
 
                 session.SetContextInfo(CONTEXT_KEY, value);
             }

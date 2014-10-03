@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -126,7 +126,7 @@ namespace Hyperstore.Modeling.Commands
         public T Pop()
         {
             if (Count == 0)
-                throw new Exception(ExceptionMessages.EmptyStack);
+                throw new CriticalException(ExceptionMessages.EmptyStack);
             _end--;
             if (_end < 0)
             {

@@ -421,7 +421,7 @@ namespace Hyperstore.Modeling.MemoryStore
                     {
                         var currentSlot = slots.GetInSnapshot(ctx);
                         if (currentSlot == null)
-                            throw new Exception(string.Format(ExceptionMessages.KeyDoesntExistFormat, key));
+                            throw new HypergraphException(string.Format(ExceptionMessages.KeyDoesntExistFormat, key));
 
                         currentSlot.XMax = ctx.Transaction.Id;
                         currentSlot.CMin = ctx.CommandId;
@@ -571,7 +571,7 @@ namespace Hyperstore.Modeling.MemoryStore
                         _trace.WriteTrace(TraceCategory.MemoryStore, "Update {0} - {1}", node.Id, node);
                     }
                     else
-                        throw new Exception(ExceptionMessages.NotFound);
+                        throw new HypergraphException(ExceptionMessages.NotFound + node.Id);
                 }
                 finally
                 {

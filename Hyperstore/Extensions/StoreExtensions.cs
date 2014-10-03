@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.Scopes;
 using Hyperstore.Modeling.Events;
@@ -331,7 +331,7 @@ namespace Hyperstore.Modeling
         {
             var ctor = Hyperstore.Modeling.Utils.ReflectionHelper.GetConstructor(typeof(TDomainModel), new[] { typeof(IServicesContainer), typeof(string) }).FirstOrDefault();
             if (ctor == null)
-                throw new Exception("{0} must provided a constructor with two parameters ctor(IServicesContainer services, string domainName) or use a domain factory");
+                throw new CriticalException("{0} must provided a constructor with two parameters ctor(IServicesContainer services, string domainName) or use a domain factory");
 
             _factory = (s, n) => (IDomainModel)ctor.Invoke(new object[] { s, n });
             var domain = await _store.CreateDomainModelAsync(name, _definition, null, _factory);

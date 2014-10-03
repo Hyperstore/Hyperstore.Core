@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -67,12 +67,12 @@ namespace Hyperstore.Modeling
             Contract.RequiresNotEmpty(schemaName, "schemaName");
 
             if (Session.Current == null)
-                throw new NotInTransactionException();
+                throw new SessionRequiredException();
 
             if (domainModel == null)
             {
                 domainModel = Session.Current.DefaultDomainModel;
-                if (domainModel == null )
+                if (domainModel == null)
                     throw new ArgumentException("domainModel");
             }
 
@@ -81,7 +81,7 @@ namespace Hyperstore.Modeling
             Super(domainModel, metadata, (dm, melId, mid) => new AddEntityCommand(this));
 
             if (((IModelEntity)this).SchemaEntity == null)
-                throw new Exception(ExceptionMessages.SchemaMismatch);
+                throw new TypeMismatchException(ExceptionMessages.SchemaMismatch);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -111,7 +111,7 @@ namespace Hyperstore.Modeling
         public ModelEntity(IDomainModel domainModel = null, ISchemaEntity schemaEntity = null, Identity id = null)
         {
             if (Session.Current == null)
-                throw new NotInTransactionException();
+                throw new SessionRequiredException();
 
             if (domainModel == null)
             {
@@ -123,12 +123,12 @@ namespace Hyperstore.Modeling
             Super(domainModel, schemaEntity, (dm, melId, mid) => new AddEntityCommand(this), id);
 
             if (((IModelEntity)this).SchemaEntity == null)
-                throw new Exception(ExceptionMessages.SchemaMismatch);
+                throw new TypeMismatchException(ExceptionMessages.SchemaMismatch);
         }
 
         ISchemaEntity IModelEntity.SchemaEntity
         {
-            get { return ((IModelElement) this).SchemaInfo as ISchemaEntity; }
+            get { return ((IModelElement)this).SchemaInfo as ISchemaEntity; }
         }
 
         ///-------------------------------------------------------------------------------------------------

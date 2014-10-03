@@ -34,7 +34,7 @@ namespace Hyperstore.Modeling.Commands
     {
         private readonly IDomainModel _domainModel;
         private readonly IModelElement _start;
-        private readonly IModelElement _end; 
+        private readonly IModelElement _end;
         private IModelRelationship _element;
 
         ///-------------------------------------------------------------------------------------------------
@@ -100,10 +100,10 @@ namespace Hyperstore.Modeling.Commands
             Contract.Requires(domainModel, "domainModel");
 
             if (!startSchema.IsA(relationshipSchema.Start))
-                throw new Exception(string.Format(ExceptionMessages.TypeMismatchStartElementMustBeAFormat, relationshipSchema.Start.Name));
+                throw new TypeMismatchException(string.Format(ExceptionMessages.TypeMismatchStartElementMustBeAFormat, relationshipSchema.Start.Name));
 
             if (!endSchema.IsA(relationshipSchema.End))
-                throw new Exception(string.Format(ExceptionMessages.TypeMismatchEndElementMustBeAFormat, relationshipSchema.End.Name));
+                throw new TypeMismatchException(string.Format(ExceptionMessages.TypeMismatchEndElementMustBeAFormat, relationshipSchema.End.Name));
 
             StartId = startId;
             EndId = endId;
@@ -112,10 +112,10 @@ namespace Hyperstore.Modeling.Commands
             _domainModel = domainModel;
             Id = id ?? DomainModel.IdGenerator.NextValue(relationshipSchema);
             if (String.Compare(Id.DomainModelName, domainModel.Name, StringComparison.OrdinalIgnoreCase) != 0)
-                throw new Exception("The id must be an id of the specified domain model.");
+                throw new InvalidIdException("The id must be an id of the specified domain model.");
 
             if (relationshipSchema.IsEmbedded && startId == endId)
-                throw new Exception("An element can not contain itself.");
+                throw new CircularReferenceException("An element can not contain itself.");
 
             SchemaRelationship = relationshipSchema;
         }
@@ -250,9 +250,9 @@ namespace Hyperstore.Modeling.Commands
             if (start == null)
                 throw new InvalidElementException(StartId, "Source element must exists to create a relationship");
 
-            if( String.Compare(start.Id.DomainModelName, EndId.DomainModelName, StringComparison.OrdinalIgnoreCase) == 0)
+            if (String.Compare(start.Id.DomainModelName, EndId.DomainModelName, StringComparison.OrdinalIgnoreCase) == 0)
             {
-                if ((_end ?? DomainModel.Store.GetElement(EndId, EndSchema) ) == null)
+                if ((_end ?? DomainModel.Store.GetElement(EndId, EndSchema)) == null)
                     throw new InvalidElementException(EndId, "Target element must exists to create a relationship.");
             }
 

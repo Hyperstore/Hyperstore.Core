@@ -117,13 +117,13 @@ namespace Hyperstore.Modeling
             if (schemaRelationship.Cardinality == Cardinality.OneToOne ||
                 (schemaRelationship.Cardinality == Cardinality.OneToMany && opposite) ||
                 (schemaRelationship.Cardinality == Cardinality.ManyToOne && !opposite))
-                throw new Exception(ExceptionMessages.OnlyOneToManyOrManyToManyAllowedRelationshipsAllowed);
+                throw new HyperstoreException(ExceptionMessages.OnlyOneToManyOrManyToManyAllowedRelationshipsAllowed);
 
             if (!element.SchemaInfo.IsA(schemaRelationship.Start) && !opposite)
-                throw new Exception(ExceptionMessages.InvalidSourceTypeForRelationship);
+                throw new TypeMismatchException(ExceptionMessages.InvalidSourceTypeForRelationship);
 
             if (!element.SchemaInfo.IsA(schemaRelationship.End) && opposite)
-                throw new Exception(ExceptionMessages.InvalidEndTypeForRelationship);
+                throw new TypeMismatchException(ExceptionMessages.InvalidEndTypeForRelationship);
 
             SchemaRelationship = schemaRelationship;
             Source = opposite ? null : element;
@@ -132,7 +132,7 @@ namespace Hyperstore.Modeling
 
             Query = from link in DomainModel.GetRelationships(SchemaRelationship, start: Source, end: End)
                     let mel = (T)(Source != null ? link.End : link.Start)
-                    where _whereClause== null || WhereClause(mel)
+                    where _whereClause == null || WhereClause(mel)
                     select mel;
         }
 

@@ -133,10 +133,10 @@ namespace Hyperstore.Modeling.Metadata
             Contract.Requires(definition, "definition");
 
             if ((Store.Options & StoreOptions.EnableScopings) != StoreOptions.EnableScopings)
-                throw new Exception("Extensions are not enabled. Use StoreOptions.EnableExtensions when instancing the store.");
+                throw new HyperstoreException("Extensions are not enabled. Use StoreOptions.EnableExtensions when instancing the store.");
 
             if (String.CompareOrdinal(definition.SchemaName, this.Name) == 0)
-                throw new Exception("Extension schema must have the same name that the extended schema.");
+                throw new HyperstoreException("Extension schema must have the same name that the extended schema.");
 
             var desc = new ExtensionSchemaDefinition(definition, this, mode);
             var schema = await ((IDomainManager)Store).LoadSchemaAsync(desc, Services);
@@ -541,7 +541,7 @@ namespace Hyperstore.Modeling.Metadata
             Contract.Requires(metaclass, "metaclass");
 
             if (string.Compare(id.DomainModelName, this.Name, StringComparison.OrdinalIgnoreCase) != 0)
-                throw new Exception(string.Format(ExceptionMessages.DomainNameMismatchFormat, id, Name));
+                throw new HyperstoreException(string.Format(ExceptionMessages.DomainNameMismatchFormat, id, Name));
 
             using (EnsuresRunInSession())
             {
@@ -566,7 +566,7 @@ namespace Hyperstore.Modeling.Metadata
             Contract.Requires(end, "end");
 
             if (string.Compare(id.DomainModelName, this.Name, StringComparison.OrdinalIgnoreCase) != 0)
-                throw new Exception(string.Format(ExceptionMessages.DomainNameMismatchFormat, id, Name));
+                throw new HyperstoreException(string.Format(ExceptionMessages.DomainNameMismatchFormat, id, Name));
 
             using (var session = EnsuresRunInSession())
             {

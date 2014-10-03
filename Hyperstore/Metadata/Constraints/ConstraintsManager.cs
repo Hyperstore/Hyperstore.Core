@@ -149,7 +149,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
                 }
                 else
                 {
-                    throw new Exception("Invalid constraint type for property " + property.Name);
+                    throw new HyperstoreException("Invalid constraint type for property " + property.Name);
                 }
             }
         }

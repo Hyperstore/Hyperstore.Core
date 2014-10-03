@@ -231,7 +231,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
 
             var mel = data as IModelElement;
             if (mel == null)
-                throw new Exception(ExceptionMessages.InvalidClassSerialization);
+                throw new HyperstoreException(ExceptionMessages.InvalidClassSerialization);
 
             return (serializer ?? PlatformServices.Current.ObjectSerializer).Serialize(mel.Id);
         }
@@ -255,7 +255,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             DebugContract.Requires(ctx);
             var upd = ctx.DomainModel as IUpdatableDomainModel;
             if (upd == null)
-                throw new Exception(string.Format(ExceptionMessages.DomainModelIsReadOnlyCantCreateElementFormat, ctx.Id));
+                throw new HyperstoreException(string.Format(ExceptionMessages.DomainModelIsReadOnlyCantCreateElementFormat, ctx.Id));
 
             var mel = upd.ModelElementFactory.InstanciateModelElement(this, ImplementedType ?? typeof (ModelEntity));
             if (mel is ISerializableModelElement)
@@ -555,7 +555,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
 
         void IModelElement.Remove()
         {
-            throw new Exception(ExceptionMessages.CantRemoveSchemaElementSchemaIsImmutable);
+            throw new Hyperstore.Modeling.Commands.ReadOnlyException(ExceptionMessages.CantRemoveSchemaElementSchemaIsImmutable);
         }
     }
 }

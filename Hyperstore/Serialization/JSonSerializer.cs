@@ -529,7 +529,7 @@ namespace Hyperstore.Modeling.Serialization
                     Write('{', true);
                     _depth++;
                     if (!HasOption(JSonSerializationOption.SerializeIdentity))
-                        throw new Exception("Circular dependency detected. You must set the JSonSerializationOption.SerializeIdentity to serialize this object graph.");
+                        throw new JsonSerializationException("Circular dependency detected. You must set the JSonSerializationOption.SerializeIdentity to serialize this object graph.");
 
                     WriteKeyString("_eid", terminal.Id.ToString(), false);
 

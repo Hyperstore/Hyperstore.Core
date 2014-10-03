@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -117,9 +117,9 @@ namespace Hyperstore.Modeling
             Contract.Requires(schemaRelationship, "schemaRelationship");
 
             if (schemaRelationship.Cardinality == Cardinality.ManyToMany)
-                throw new System.Exception(ExceptionMessages.ReferenceHandlerCantBeUsedWithManyToManyRelationship);
+                throw new HyperstoreException(ExceptionMessages.ReferenceHandlerCantBeUsedWithManyToManyRelationship);
             else if (schemaRelationship.Cardinality == Cardinality.ManyToOne && opposite)
-                throw new System.Exception(ExceptionMessages.ReferenceHandlerCantBeUsedWithManyToManyRelationship);
+                throw new HyperstoreException(ExceptionMessages.ReferenceHandlerCantBeUsedWithManyToManyRelationship);
 
             _owner = owner;
             SchemaRelationship = schemaRelationship;
@@ -166,7 +166,7 @@ namespace Hyperstore.Modeling
         public void SetReference(IModelElement value)
         {
             if (value != null && !value.SchemaInfo.IsA(_opposite ? RelationshipSchema.Start : RelationshipSchema.End))
-                throw new Exception(ExceptionMessages.InvalidValue);
+                throw new HyperstoreException(ExceptionMessages.InvalidValue);
             CheckOwner();
             _owner.SetReference(ref _id, SchemaRelationship, value, _opposite);
         }
@@ -189,7 +189,7 @@ namespace Hyperstore.Modeling
         private void CheckOwner()
         {
             if (_owner == null)
-                throw new Exception("Cannot use disposed element");
+                throw new HyperstoreException("Cannot use disposed element");
         }
 
         ///-------------------------------------------------------------------------------------------------

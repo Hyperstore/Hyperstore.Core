@@ -132,7 +132,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
 
             var upd = ctx.DomainModel as IUpdatableDomainModel;
             if (upd == null)
-                throw new Exception(string.Format( ExceptionMessages.DomainModelIsReadOnlyCantCreateElementFormat, ctx.Id));
+                throw new Hyperstore.Modeling.Commands.ReadOnlyException(string.Format( ExceptionMessages.DomainModelIsReadOnlyCantCreateElementFormat, ctx.Id));
 
             var mel = upd.ModelElementFactory.InstanciateModelElement(this, ImplementedType ?? typeof (ModelRelationship));
             if (mel is ISerializableModelElement)

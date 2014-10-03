@@ -47,7 +47,7 @@ namespace Hyperstore.Modeling.Platform.WinPhone
         public Task Send(Action action)
         {
             if (_dispatcher == null)
-                throw new Exception("Incorrect UI dispatcher for the context of the current application. Redefines the correct dispatcher in the store.");
+                throw new HyperstoreException("Incorrect UI dispatcher for the context of the current application. Redefines the correct dispatcher in the store.");
 
             if (_dispatcher.CheckAccess())
             {

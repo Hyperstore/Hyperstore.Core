@@ -77,6 +77,18 @@
     <Compile Include="DomainModel\Impl\CalculatedProperty.cs" />
     <Compile Include="DomainModel\IDataErrorNotifier.cs" />
     <Compile Include="DomainModel\Impl\ObervableModelElementCollection.cs" />
+    <Compile Include="Exceptions\CircularReferenceException.cs" />
+    <Compile Include="Exceptions\DomainNotFoundException.cs" />
+    <Compile Include="Exceptions\CriticalException.cs" />
+    <Compile Include="Exceptions\DuplicateDomainModelException.cs" />
+    <Compile Include="Exceptions\HypergraphException.cs" />
+    <Compile Include="Exceptions\XmlSerializationException.cs" />
+    <Compile Include="Exceptions\JsonException.cs" />
+    <Compile Include="Exceptions\ModelElementCreationException.cs" />
+    <Compile Include="Exceptions\UnloadedDomainException.cs" />
+    <Compile Include="Exceptions\InvalidIdException.cs" />
+    <Compile Include="Exceptions\TypeMismatchException.cs" />
+    <Compile Include="Exceptions\HyperstoreException.cs" />
     <Compile Include="Extensions\DomainExtensions.cs" />
     <Compile Include="DomainModel\Impl\Scopes\IScopeHypergraph.cs" />
     <Compile Include="DomainModel\Impl\Scopes\ISchemaExtension.cs" />
@@ -111,7 +123,7 @@
     <Compile Include="..\AssemblyVersion.cs">
       <Link>Properties\AssemblyVersion.cs</Link>
     </Compile>
-    <Compile Include="HyperGraph\Impls\MemoryGraph\ConflictException.cs" />
+    <Compile Include="Exceptions\ConflictException.cs" />
     <Compile Include="Commands\ErrorContinuationStatus.cs" />
     <Compile Include="Commands\IExecutionResultInternal.cs" />
     <Compile Include="Commands\Impls\AbstractCommandInterceptor.cs" />
@@ -119,7 +131,7 @@
     <Compile Include="Commands\Impls\InterceptorWrapper.cs" />
     <Compile Include="Commands\Impls\Session\HyperstoreSynchronizationContext.cs" />
     <Compile Include="Commands\ISessionInternal.cs" />
-    <Compile Include="Commands\SessionRequiredException.cs" />
+    <Compile Include="Exceptions\SessionRequiredException.cs" />
     <Compile Include="Commands\UndoManager\RecursiveStack.cs" />
     <Compile Include="Container\EmptyHyperstoreTrace.cs" />
     <Compile Include="Container\ICompositionService.cs" />
@@ -162,7 +174,7 @@
     <Compile Include="Commands\Impls\AddSchemaPropertyCommand.cs" />
     <Compile Include="Commands\Impls\TransactionScopeWrapper.cs" />
     <Compile Include="Commands\Impls\ITransactionScope.cs" />
-    <Compile Include="Commands\Impls\ReadOnlyException.cs" />
+    <Compile Include="Exceptions\ReadOnlyException.cs" />
     <Compile Include="Commands\Impls\Session\TrackedElement.cs" />
     <Compile Include="Commands\Impls\Session\TrackingState.cs" />
     <Compile Include="Commands\Impls\Session\ISessionTrackingData.cs" />
@@ -215,16 +227,16 @@
     <Compile Include="Events\Impls\EventHandler\AddRelationshipMetadataEventHandler.cs" />
     <Compile Include="Events\Impls\EventHandler\AddPropertyMetadataEventHandler.cs" />
     <Compile Include="Events\IUndoableEvent.cs" />
-    <Compile Include="Exceptions.cs" />
+    <Compile Include="Exceptions\Exceptions.cs" />
     <Compile Include="HyperGraph\GraphElementType.cs" />
     <Compile Include="HyperGraph\IIndex.cs" />
-    <Compile Include="HyperGraph\DuplicateIndexException.cs" />
+    <Compile Include="Exceptions\DuplicateIndexException.cs" />
     <Compile Include="HyperGraph\Impls\MemoryGraph\Index\IndexWrapper.cs" />
     <Compile Include="HyperGraph\ITransactionalGraphAdapter.cs" />
     <Compile Include="Adapters\MergeOption.cs" />
     <Compile Include="HyperGraph\PropertyValue.cs" />
     <Compile Include="Adapters\Query.cs" />
-    <Compile Include="HyperGraph\UniqueConstraintException.cs" />
+    <Compile Include="Exceptions\UniqueConstraintException.cs" />
     <Compile Include="HyperGraph\Impls\MemoryGraph\GraphNode.cs" />
     <Compile Include="Adapters\EntityUpdaters\IPersistenceGraphAdapter.cs" />
     <Compile Include="HyperGraph\Traversal\GraphPath.cs" />
@@ -295,13 +307,13 @@
     <Compile Include="Metadata\Impl\Primitives\DoublePrimitive.cs" />
     <Compile Include="Metadata\Impl\Primitives\PrimitiveMetaRelationship.cs" />
     <Compile Include="Metadata\Impl\Primitives\StringPrimitive.cs" />
-    <Compile Include="HyperGraph\InvalidElementException.cs" />
+    <Compile Include="Exceptions\InvalidElementException.cs" />
     <Compile Include="Commands\Impls\AddRelationshipCommand.cs" />
     <Compile Include="Commands\Impls\RemoveEntityCommand.cs" />
     <Compile Include="Commands\ICommandInterceptorOf.cs" />
     <Compile Include="Events\EventContext.cs" />
     <Compile Include="Commands\ExecutionCommandContext.cs" />
-    <Compile Include="Commands\SessionException.cs" />
+    <Compile Include="Exceptions\SessionException.cs" />
     <Compile Include="Commands\ContinuationStatus.cs" />
     <Compile Include="Commands\ICommandInterceptor.cs" />
     <Compile Include="Commands\IDomainCommand.cs" />
@@ -340,7 +352,6 @@
     <Compile Include="DomainModel\Impl\DomainModel.cs" />
     <Compile Include="DomainModel\Impl\ModelElement.cs">
     </Compile>
-    <Compile Include="DomainModel\Impl\NotInTransactionException.cs" />
     <Compile Include="DomainModel\Impl\SerializationContext.cs" />
     <Compile Include="DomainModel\Impl\Store.cs" />
     <Compile Include="DomainModel\IHyperstore.cs" />
@@ -354,13 +365,13 @@
     <Compile Include="Metadata\Impl\Primitives\PrimitiveMetaClass.cs" />
     <Compile Include="Metadata\Impl\Primitives\PrimitivesMetaModel.cs" />
     <Compile Include="Metadata\Impl\Primitives\PrimitiveMetaProperty.cs" />
-    <Compile Include="Metadata\Impl\PropertyDefinitionException.cs" />
+    <Compile Include="Exceptions\PropertyDefinitionException.cs" />
     <Compile Include="Metadata\ISchemaElement.cs" />
     <Compile Include="Metadata\ISerializableElementInfo.cs" />
-    <Compile Include="Metadata\MetadataNotFoundException.cs" />
+    <Compile Include="Exceptions\MetadataNotFoundException.cs" />
     <Compile Include="DomainModel\ModelElementStatus.cs" />
     <Compile Include="HyperGraph\Direction.cs" />
-    <Compile Include="HyperGraph\DuplicateVertexException.cs" />
+    <Compile Include="Exceptions\DuplicateVertexException.cs" />
     <Compile Include="HyperGraph\Identity.cs" />
     <Compile Include="HyperGraph\Impls\EdgeInfo.cs" />
     <Compile Include="HyperGraph\Impls\HypergraphTransaction.cs" />
@@ -370,10 +381,10 @@
     <Compile Include="HyperGraph\IIndexManager.cs" />
     <Compile Include="HyperGraph\Impls\MemoryGraph\Index\MemoryIndexManager.cs" />
     <Compile Include="Container\IServicesContainer.cs" />
-    <Compile Include="MemoryStore\DeadLockException.cs" />
+    <Compile Include="Exceptions\DeadLockException.cs" />
     <Compile Include="MemoryStore\IKeyValueStore.cs" />
     <Compile Include="MemoryStore\Impls\CommandContext.cs" />
-    <Compile Include="MemoryStore\Impls\DuplicateElementException.cs" />
+    <Compile Include="Exceptions\DuplicateElementException.cs" />
     <Compile Include="MemoryStore\Impls\ITransactionManager.cs" />
     <Compile Include="MemoryStore\Impls\Slot.cs" />
     <Compile Include="MemoryStore\Impls\SlotList.cs" />
@@ -383,7 +394,7 @@
     <Compile Include="MemoryStore\Impls\TransactionCompletedEventArgs.cs" />
     <Compile Include="MemoryStore\ITransaction.cs" />
     <Compile Include="MemoryStore\LockType.cs" />
-    <Compile Include="MemoryStore\SerializableTransactionException.cs" />
+    <Compile Include="Exceptions\SerializableTransactionException.cs" />
     <Compile Include="MemoryStore\TransactionStatus.cs" />
     <Compile Include="Messaging\P2P\Enveloppe.cs" />
     <Compile Include="Messaging\P2P\ICustomEventSerializer.cs" />
@@ -414,7 +425,7 @@
     <Compile Include="Utils\Contract.cs" />
     <Compile Include="Utils\Conventions.cs" />
     <Compile Include="Utils\DebugContract.cs" />
-    <Compile Include="Utils\InvalidNameException.cs" />
+    <Compile Include="Exceptions\InvalidNameException.cs" />
     <Compile Include="Utils\JobScheduler.cs" />
     <Compile Include="Utils\Statistics\DomainStatistics.cs" />
     <Compile Include="Utils\Statistics\IStatisticCounter.cs" />

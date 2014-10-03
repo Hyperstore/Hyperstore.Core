@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -79,7 +79,7 @@ namespace Hyperstore.Modeling.Commands
 
             Id = id ?? domainModel.IdGenerator.NextValue(schemaEntity);
             if (String.Compare(Id.DomainModelName, domainModel.Name, StringComparison.OrdinalIgnoreCase) != 0)
-                throw new Exception("The id must be an id of the specified domain model.");
+                throw new HyperstoreException("The id must be an id of the specified schema.");
 
             SchemaEntity = schemaEntity;
         }

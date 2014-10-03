@@ -75,7 +75,7 @@ namespace Hyperstore.Modeling.Utils
                 }
             }
 
-            throw new Exception(ExceptionMessages.FatalErrorTooManySessions);
+            throw new CriticalException(ExceptionMessages.FatalErrorTooManySessions);
         }
 
         ///-------------------------------------------------------------------------------------------------

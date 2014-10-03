@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -103,7 +103,7 @@ namespace Hyperstore.Modeling.Domain
             if (ctor != null)
                 return (IModelRelationship)ctor.Invoke(new object[] { start, end });
 
-            throw new Exception(String.Format(ExceptionMessages.UnableToCreateRelationshipOfTypeRequiredCtorWithStartEndParametersFormat, implementedType));
+            throw new ModelElementCreationException(String.Format(ExceptionMessages.UnableToCreateRelationshipOfTypeRequiredCtorWithStartEndParametersFormat, implementedType));
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -152,7 +152,7 @@ namespace Hyperstore.Modeling.Domain
             if (ctor != null)
                 return (IModelEntity)ctor.Invoke(new object[] { DomainModel });
 
-            throw new Exception(String.Format(ExceptionMessages.UnableToCreateEntityOfTypeCtorWithIDomainModelRequiredFormat, implementedType));
+            throw new ModelElementCreationException(String.Format(ExceptionMessages.UnableToCreateEntityOfTypeCtorWithIDomainModelRequiredFormat, implementedType));
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -184,7 +184,7 @@ namespace Hyperstore.Modeling.Domain
             }
             catch (Exception ex)
             {
-                throw new Exception(String.Format(ExceptionMessages.UnableToCreateElementOfTypeFormat, implementationType), ex);
+                throw new ModelElementCreationException(String.Format(ExceptionMessages.UnableToCreateElementOfTypeFormat, implementationType), ex);
             }
 
             return mel;

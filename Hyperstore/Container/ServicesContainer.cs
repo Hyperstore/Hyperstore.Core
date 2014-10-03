@@ -169,7 +169,7 @@ namespace Hyperstore.Modeling.Container
         public async Task ComposeAsync(params System.Reflection.Assembly[] assemblies)
         {
             if (Resolve<ICompositionService>() != null)
-                throw new Exception(ExceptionMessages.CompositionAlreadyDone);
+                throw new HyperstoreException(ExceptionMessages.CompositionAlreadyDone);
 
             var container = Platform.PlatformServices.Current.CreateCompositionService();
             await Task.Run(() => container.Compose(assemblies)).ConfigureAwait(false);
@@ -178,7 +178,7 @@ namespace Hyperstore.Modeling.Container
 
         public void Dispose()
         {
-            if( _services.HasValue)
+            if (_services.HasValue)
                 _services.Value.Clear();
 
             if (!_resolvedServices.HasValue)

@@ -287,7 +287,7 @@ namespace Hyperstore.Modeling
                 throw new ObjectDisposedException("Store");
 
             if (DefaultSessionConfiguration == null)
-                throw new Exception(ExceptionMessages.DefaultConfigurationIsNull);
+                throw new CriticalException(ExceptionMessages.DefaultConfigurationIsNull);
 
             var cfg = DefaultSessionConfiguration;
             if (config != null)
@@ -583,7 +583,7 @@ namespace Hyperstore.Modeling
             if (metaclass == null && throwErrorIfNotExists)
             {
                 if (result != null)
-                    throw new Exception(String.Format(ExceptionMessages.ExistsButIsNotASchemaElementFormat, name));
+                    throw new MetadataNotFoundException(String.Format(ExceptionMessages.ExistsButIsNotASchemaElementFormat, name));
 
                 throw new MetadataNotFoundException(name); // Invalid domain model
             }
@@ -617,7 +617,7 @@ namespace Hyperstore.Modeling
             if (metaclass == null && throwErrorIfNotExists)
             {
                 if (result != null)
-                    throw new Exception(String.Format(ExceptionMessages.ExistsButIsNotASchemaElementFormat, id));
+                    throw new MetadataNotFoundException(String.Format(ExceptionMessages.ExistsButIsNotASchemaElementFormat, id));
 
                 throw new MetadataNotFoundException(id.ToString()); // Invalid domain model
             }
@@ -670,7 +670,7 @@ namespace Hyperstore.Modeling
             if (metaclass == null && throwErrorIfNotExists)
             {
                 if (result != null)
-                    throw new Exception(String.Format(ExceptionMessages.ExistsButIsNotASchemaEntityFormat, typeof(T).FullName));
+                    throw new MetadataNotFoundException(String.Format(ExceptionMessages.ExistsButIsNotASchemaEntityFormat, typeof(T).FullName));
                 throw new MetadataNotFoundException(typeof(T).FullName);
             }
             return metaclass;
@@ -703,7 +703,7 @@ namespace Hyperstore.Modeling
             if (metaclass == null && throwErrorIfNotExists)
             {
                 if (result != null)
-                    throw new Exception(String.Format(ExceptionMessages.ExistsButIsNotASchemaEntityFormat, id));
+                    throw new MetadataNotFoundException(String.Format(ExceptionMessages.ExistsButIsNotASchemaEntityFormat, id));
                 throw new MetadataNotFoundException(id.ToString());
             }
             return metaclass;
@@ -736,7 +736,7 @@ namespace Hyperstore.Modeling
             if (metaclass == null && throwErrorIfNotExists)
             {
                 if (result != null)
-                    throw new Exception(String.Format(ExceptionMessages.ExistsButIsNotASchemaEntityFormat, name));
+                    throw new MetadataNotFoundException(String.Format(ExceptionMessages.ExistsButIsNotASchemaEntityFormat, name));
                 throw new MetadataNotFoundException(name);
             }
             return metaclass;
@@ -884,7 +884,7 @@ namespace Hyperstore.Modeling
         {
             Contract.Requires(schemaOrExtension, "schemaOrExtension");
             if (schemaOrExtension is PrimitivesSchema)
-                throw new Exception("Primitives schema canot be unloaded");
+                throw new HyperstoreException("Primitives schema canot be unloaded");
 
             _schemaControler.UnloadScope(schemaOrExtension);
             _notifiersCache = null;
@@ -1185,7 +1185,7 @@ namespace Hyperstore.Modeling
             Conventions.CheckValidDomainName(name);
 
             if (GetDomainModel(name) != null)
-                throw new Exception("A domain with the same name already exists in the store : " + name);
+                throw new DuplicateDomainModelException("A domain with the same name already exists in the store : " + name);
 
             // On s'assure que le domaine primitif est bien chargé
             await Initialize();
@@ -1247,10 +1247,10 @@ namespace Hyperstore.Modeling
             await Initialize();
 
             if (desc.SchemaName == PrimitivesSchema.DomainModelName && !(desc is PrimitivesSchemaDefinition))
-                throw new Exception("Invalid schema name");
+                throw new HyperstoreException("Invalid schema name");
 
             if (desc.SchemaName != PrimitivesSchema.DomainModelName && !(desc is ExtensionSchemaDefinition) && GetDomainModel(desc.SchemaName) != null)
-                throw new Exception("A domain or schema with the same name already exists in the store : " + desc.SchemaName);
+                throw new DuplicateDomainModelException("A domain or schema with the same name already exists in the store : " + desc.SchemaName);
 
             // Chargement du domaine
             using (var session = BeginSession(new SessionConfiguration { Mode = SessionMode.LoadingSchema }))
@@ -1419,7 +1419,7 @@ namespace Hyperstore.Modeling
         {
             var manager = this as IDomainManager;
             if (manager == null)
-                throw new Exception("Current store must implement IDomainManager");
+                throw new CriticalException("Current store must implement IDomainManager");
 
             if (System.Threading.Interlocked.CompareExchange(ref _initialized, 1, 0) == 0)
             {

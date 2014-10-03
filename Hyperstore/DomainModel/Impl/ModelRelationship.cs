@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -34,9 +34,9 @@ namespace Hyperstore.Modeling
     {
         private readonly ISchemaElement _endMetadata;
         private readonly ISchemaElement _startMetadata;
-      //  private IModelElement _end;
+        //  private IModelElement _end;
         private Identity _endId;
-      //  private IModelElement _start;
+        //  private IModelElement _start;
         private Identity _startId;
         private Identity _endSchemaId;
 
@@ -93,7 +93,7 @@ namespace Hyperstore.Modeling
             Super(domainModel, schemaRelationship, (dm, melId, mid) => new AddRelationshipCommand(dm, mid as ISchemaRelationship, _startId, _startMetadata, _endId, _endMetadata, melId));
 
             if (((IModelRelationship)this).SchemaRelationship == null)
-                throw new Exception(ExceptionMessages.SchemaMismatch);
+                throw new TypeMismatchException(ExceptionMessages.SchemaMismatch);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -125,7 +125,7 @@ namespace Hyperstore.Modeling
             Super(start.DomainModel, schemaRelationship, (dm, melId, mid) => new AddRelationshipCommand(mid as ISchemaRelationship, start, end, melId));
 
             if (((IModelRelationship)this).SchemaRelationship == null)
-                throw new Exception(ExceptionMessages.SchemaMismatch);
+                throw new TypeMismatchException(ExceptionMessages.SchemaMismatch);
         }
 
         ISchemaRelationship IModelRelationship.SchemaRelationship
@@ -135,7 +135,7 @@ namespace Hyperstore.Modeling
 
         IModelElement IModelRelationship.Start
         {
-            get { return  (DomainModel.GetElement(this._startId, ((ISchemaRelationship) ((IModelElement) this).SchemaInfo).Start)); }
+            get { return (DomainModel.GetElement(this._startId, ((ISchemaRelationship)((IModelElement)this).SchemaInfo).Start)); }
         }
 
         Identity IModelRelationship.EndId
@@ -150,7 +150,7 @@ namespace Hyperstore.Modeling
 
         IModelElement IModelRelationship.End
         {
-            get { return  (Store.GetElement(this._endId, ((ISchemaRelationship) ((IModelElement) this).SchemaInfo).End)); }
+            get { return (Store.GetElement(this._endId, ((ISchemaRelationship)((IModelElement)this).SchemaInfo).End)); }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -214,7 +214,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public override string ToString()
         {
-            return String.Format("{0} : {1} ({2}->{3})", GetType().Name, ((IModelElement)this).Id, _startId, _endId );
+            return String.Format("{0} : {1} ({2}->{3})", GetType().Name, ((IModelElement)this).Id, _startId, _endId);
         }
     }
 }

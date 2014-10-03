@@ -13,33 +13,23 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
-#region Imports
 
 using System;
-
-#endregion
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace Hyperstore.Modeling
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  Exception for signalling not in transaction errors.
+    ///  Exception for domain unloaded
     /// </summary>
     /// <seealso cref="T:System.Exception"/>
     ///-------------------------------------------------------------------------------------------------
-    public class NotInTransactionException : Exception
+    public class UnloadedDomainException : HyperstoreException
     {
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Constructor.
-        /// </summary>
-        /// <param name="message">
-        ///  (Optional) the message.
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
-        public NotInTransactionException(string message=null) : base(message ?? "Transaction required")
-        {
-        }
+
+        internal UnloadedDomainException(string message) : base(message) { }
     }
 }

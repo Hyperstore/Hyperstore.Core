@@ -141,7 +141,7 @@ namespace Hyperstore.Modeling
                         {
                             if (relationship.Cardinality != Cardinality.OneToOne && relationship.Cardinality != Cardinality.ManyToOne)
                             {
-                                throw new Exception(ExceptionMessages.InvalidValue);
+                                throw new HyperstoreException(ExceptionMessages.InvalidValue);
                             }
 
                             refer = new ReferenceHandler(this, relationship, false);
@@ -152,7 +152,7 @@ namespace Hyperstore.Modeling
                         {
                             if (relationship.Cardinality != Cardinality.OneToMany && relationship.Cardinality != Cardinality.OneToOne)
                             {
-                                throw new Exception(ExceptionMessages.InvalidValue);
+                                throw new HyperstoreException(ExceptionMessages.InvalidValue);
                             }
 
                             refer = new ReferenceHandler(this, relationship, true);
@@ -162,17 +162,17 @@ namespace Hyperstore.Modeling
 
                     _references.TryAdd(propertyName, refer); // adding even refer is null
                     if (refer == null)
-                        throw new Exception(string.Format(ExceptionMessages.UnknownPropertyFormat, propertyName));
+                        throw new Hyperstore.Modeling.Metadata.PropertyDefinitionException(string.Format(ExceptionMessages.UnknownPropertyFormat, propertyName));
                 }
                 else
                 {
                     refer = obj as ReferenceHandler;
                     if (refer == null)
-                        throw new Exception(ExceptionMessages.InvalidValue);
+                        throw new HyperstoreException(ExceptionMessages.InvalidValue);
                 }
 
                 if (value != null && !(value is IModelElement))
-                    throw new Exception(ExceptionMessages.InvalidValue);
+                    throw new HyperstoreException(ExceptionMessages.InvalidValue);
 
                 var mel = value as IModelElement;
 
@@ -242,7 +242,7 @@ namespace Hyperstore.Modeling
                     var relationship = ((IModelElement)this).SchemaInfo.GetRelationships()
                             .FirstOrDefault(r => IsMatchPropertyName(r, propertyName)) as ISchemaRelationship;
                     if (relationship == null)
-                        throw new Exception(string.Format(ExceptionMessages.UnknownPropertyFormat, propertyName));
+                        throw new Hyperstore.Modeling.Metadata.PropertyDefinitionException(string.Format(ExceptionMessages.UnknownPropertyFormat, propertyName));
 
                     if (relationship.Cardinality == Cardinality.OneToOne || relationship.End.Id == ((IModelElement)this).SchemaInfo.Id) // Noeud terminal
                     {

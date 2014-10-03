@@ -149,7 +149,7 @@ namespace Hyperstore.Modeling.HyperGraph
             {
                 var session = Session.Current;
                 if (session == null)
-                    throw new NotInTransactionException();
+                    throw new SessionRequiredException();
 
                 var ctx = session.GetContextInfo<HypergraphTransaction>(CONTEXT_KEY);
                 return ctx;
@@ -158,7 +158,7 @@ namespace Hyperstore.Modeling.HyperGraph
             {
                 var session = Session.Current;
                 if (session == null)
-                    throw new NotInTransactionException();
+                    throw new SessionRequiredException();
 
                 session.SetContextInfo(CONTEXT_KEY, value);
             }
@@ -183,7 +183,7 @@ namespace Hyperstore.Modeling.HyperGraph
             DebugContract.Requires(schemaEntity);
 
             if (Session.Current == null)
-                throw new NotInTransactionException();
+                throw new SessionRequiredException();
 
             Session.Current.AcquireLock(LockType.Exclusive, id);
 
@@ -247,7 +247,7 @@ namespace Hyperstore.Modeling.HyperGraph
             DebugContract.Requires(endSchema);
 
             if (Session.Current == null)
-                throw new NotInTransactionException();
+                throw new SessionRequiredException();
 
             _trace.WriteTrace(TraceCategory.Hypergraph, "Add relationship {0} ({1}->{2})", id, startId, endId);
 
@@ -283,7 +283,7 @@ namespace Hyperstore.Modeling.HyperGraph
                     {
                         var tmp = end.AddEdge(id, metaRelationship, Direction.Incoming, startId, startSchema.Id);
                         if (tmp == null)
-                            throw new Exception(String.Format("Element {0} can not have multi parent", end.Id));
+                            throw new HypergraphException(String.Format("Element {0} can not have multi parent", end.Id));
                         _storage.UpdateNode(tmp);
                     }
                 }
@@ -690,7 +690,7 @@ namespace Hyperstore.Modeling.HyperGraph
             DebugContract.Requires(Session.Current);
 
             if (schemaEntity is ISchemaRelationship)
-                throw new Exception(ExceptionMessages.UseRemoveRelationshipToRemoveRelationship);
+                throw new HypergraphException(ExceptionMessages.UseRemoveRelationshipToRemoveRelationship);
 
             Session.Current.AcquireLock(LockType.Exclusive, id);
 

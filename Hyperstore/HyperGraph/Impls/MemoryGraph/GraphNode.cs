@@ -242,7 +242,7 @@ namespace Hyperstore.Modeling.HyperGraph
 
             if ((direction & Direction.Outgoing) == Direction.Outgoing && _outgoings.ContainsKey(id)
                 || (direction & Direction.Incoming) == Direction.Incoming && _incomings.ContainsKey(id))
-                throw new Exception("Duplicate relationship");
+                throw new DuplicateElementException("Duplicate relationship");
 
             // Check multi containers
             // TODO no it's valid if they are not all set (make a test in the command ???)

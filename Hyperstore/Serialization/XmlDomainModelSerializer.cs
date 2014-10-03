@@ -567,7 +567,7 @@ namespace Hyperstore.Modeling.Serialization
                             val = null;
                         var property = current.SchemaInfo.GetProperty(propertyName);
                         if (property == null)
-                            throw new Exception(string.Format(ExceptionMessages.UnknownPropertyForElementFormat,propertyName,current.Id));
+                            throw new XmlSerializationException(string.Format(ExceptionMessages.UnknownPropertyForElementFormat, propertyName, current.Id));
 
                         var propMetadata = property.PropertySchema;
                         var cmd = new ChangePropertyValueCommand(current, property, propMetadata.Deserialize(new SerializationContext(property, val)));

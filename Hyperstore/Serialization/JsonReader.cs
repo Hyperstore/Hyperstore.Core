@@ -222,7 +222,7 @@ namespace Hyperstore.Modeling.Serialization
             {
                 var ch = NextChar();
                 if (ch == EOF)
-                    throw new Exception("EOF not expected");
+                    throw new JsonSerializationException("EOF not expected");
 
                 if (ch == ' ' || ch == '{' || ch == '}' || ch == '[' || ch == ']' || ch == ':' || ch == ',')
                 {
@@ -241,7 +241,7 @@ namespace Hyperstore.Modeling.Serialization
             {
                 var ch = NextChar();
                 if (ch == EOF)
-                    throw new Exception("Undelimited string");
+                    throw new JsonSerializationException("Undelimited string");
 
                 if( ch == '"')
                 {
@@ -280,7 +280,7 @@ namespace Hyperstore.Modeling.Serialization
                             sb.Append('\f');
                             break;
                         default:
-                            throw new Exception("Undelimited string");
+                            throw new JsonSerializationException("Undelimited string");
                     }
                     continue;
                 }

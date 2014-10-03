@@ -39,7 +39,7 @@ namespace Hyperstore.Modeling.Domain
     /// <seealso cref="T:Hyperstore.Modeling.IUpdatableDomainModel"/>
     ///-------------------------------------------------------------------------------------------------
     [DebuggerDisplay("Domain {Name} {ExtensionName}")]
-    public class DomainModel : IUpdatableDomainModel, IHyperGraphProvider, ICacheAccessor 
+    public class DomainModel : IUpdatableDomainModel, IHyperGraphProvider, ICacheAccessor
     {
         private readonly IServicesContainer _services;
         private readonly object _resolversLock = new object();
@@ -358,11 +358,11 @@ namespace Hyperstore.Modeling.Domain
             CheckInitialized();
 
             if (this is ISchema)
-                throw new Exception("Can not create a scope for a schema. Uses LoadSchemaExtension for a schema");
+                throw new HyperstoreException("Can not create a scope for a schema. Uses LoadSchemaExtension for a schema");
 
             Conventions.CheckValidDomainName(extensionName);
             if ((Store.Options & StoreOptions.EnableScopings) != StoreOptions.EnableScopings)
-                throw new Exception("Scoping are not enabled. Use EnableScoping when instancing the store.");
+                throw new HyperstoreException("Scoping are not enabled. Use EnableScoping when instancing the store.");
 
             var services = Services.NewScope();
             // Removed graphadapter from services
@@ -476,10 +476,10 @@ namespace Hyperstore.Modeling.Domain
         protected void CheckInitialized()
         {
             if (!_initialized)
-                throw new Exception("Domain model must be loaded in a store");
+                throw new UnloadedDomainException("Domain model must be loaded in a store");
 
             if (_disposed)
-                throw new Exception("Can not access to a disposed domain.");
+                throw new UnloadedDomainException("Can not access to a disposed domain.");
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -520,7 +520,7 @@ namespace Hyperstore.Modeling.Domain
             DebugContract.Requires(factory);
             var svc = factory();
             if (svc == null && throwExceptionIfNotExists)
-                throw new Exception(String.Format(ExceptionMessages.ServiceNotFoundForDomainFormat, typeof(TService).Name, Name));
+                throw new HyperstoreException(String.Format(ExceptionMessages.ServiceNotFoundForDomainFormat, typeof(TService).Name, Name));
 
             var service = svc as IDomainService;
             if (service != null)

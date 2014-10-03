@@ -151,7 +151,7 @@ namespace Hyperstore.Modeling.Metadata
             Contract.Requires(implementedType != null || name != null, "name");
 
             if (!ReflectionHelper.IsAssignableFrom(typeof(IModelElement), ImplementedType))
-                throw new Exception("SchemaEntity must describes a type implementing IModelEntity");
+                throw new HyperstoreException("SchemaEntity must describes a type implementing IModelEntity");
         }
 
         ///-------------------------------------------------------------------------------------------------
