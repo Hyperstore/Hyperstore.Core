@@ -65,7 +65,7 @@ namespace Hyperstore.Modeling.Scopes
             Store = null;
         }
 
-        void IScopeManager<T>.ActivateScope(T domain)
+        void IScopeManager<T>.EnableScope(T domain)
         {
             lock (_sync)
             {

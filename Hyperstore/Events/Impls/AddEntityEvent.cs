@@ -63,7 +63,7 @@ namespace Hyperstore.Modeling.Events
         ///  (Optional) the version.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public AddEntityEvent(string domainModelName, string extensionName, Identity id, Identity schemaEntityId, Guid correlationId, long version)
+        public AddEntityEvent(string domainModelName, string extensionName, Identity id, Identity schemaEntityId, int correlationId, long version)
             : base(domainModelName, extensionName, version, correlationId)
         {
             Contract.Requires(id, "id");
@@ -104,7 +104,7 @@ namespace Hyperstore.Modeling.Events
         ///  The reverse event.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IEvent GetReverseEvent(Guid correlationId)
+        public IEvent GetReverseEvent(int correlationId)
         {
             return new RemoveEntityEvent(DomainModel, ExtensionName, Id, SchemaEntityId, correlationId, Version);
         }

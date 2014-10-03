@@ -51,6 +51,7 @@ namespace Hyperstore.Modeling
         ///     est à 1, l'index est utilisé et ne peut pas être affecté à une nouvelle session.
         /// </summary>
         private static readonly SessionIndexProvider s_sessionSequences = new SessionIndexProvider();
+        private static int s_sessionIdSequences = 0;
 
         // Identifiant de session (stocké au niveau du thread)
         // Doit être initialisé pour chaque thread soit par la création d'une session, soit par using(new MultiThreadSession)
@@ -82,7 +83,7 @@ namespace Hyperstore.Modeling
             if (ctx == null)
             {
                 // _statSessionCount.Incr();
-
+                
                 // Nouvelle session
                 ctx = new SessionDataContext
                       {
@@ -94,7 +95,7 @@ namespace Hyperstore.Modeling
                           Current = this,
                           OriginStoreId = store.Id,
                           Mode = cfg.Mode,
-                          SessionId = cfg.SessionId ?? Guid.NewGuid(),
+                          SessionId = cfg.SessionId != 0 ? cfg.SessionId : Interlocked.Increment(ref s_sessionIdSequences),
                           Store = store,
                           CancellationToken = cfg.CancellationToken,
                           Enlistment = new List<ISessionEnlistmentNotification>(),
@@ -785,7 +786,7 @@ namespace Hyperstore.Modeling
         ///  The identifier of the session.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Guid SessionId
+        public int SessionId
         {
             get { return SessionDataContext.SessionId; }
         }

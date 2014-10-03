@@ -70,10 +70,10 @@ namespace Hyperstore.Modeling.Scopes
         ///  The domain model.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public T GetDomainModel(Guid? sessionId)
+        public T GetDomainModel(int sessionId)
         {
             // Un schema est tjs actif
-            if ((_isSchema || Status != ScopeStatus.Disabled) && (PendingUnloadSessions == null || sessionId == null || PendingUnloadSessions.Contains(sessionId.Value)))
+            if ((_isSchema || Status != ScopeStatus.Disabled) && (PendingUnloadSessions == null || sessionId == 0 || PendingUnloadSessions.Contains(sessionId)))
             {
                 return DomainModel;
             }

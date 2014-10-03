@@ -51,7 +51,7 @@ namespace Hyperstore.Modeling
 
             Readonly = false;
             Mode = SessionMode.Normal;
-            SessionId = null;
+            SessionId = 0;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -151,7 +151,7 @@ namespace Hyperstore.Modeling
         ///  The session id.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Guid? SessionId { get; set; }
+        public int SessionId { get; set; }
 
         /// <summary>
         ///     Merges the specified configuration.

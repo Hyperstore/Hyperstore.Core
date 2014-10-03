@@ -68,6 +68,6 @@ namespace Hyperstore.Modeling.Messaging
         ///  The identifier of the session.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Guid CorrelationId { get; set; }
+        public int CorrelationId { get; set; }
     }
 }

@@ -179,8 +179,11 @@ namespace Hyperstore.Modeling
             DefaultSessionConfiguration.IsolationLevel = SessionIsolationLevel.ReadCommitted;
             DefaultSessionConfiguration.SessionTimeout = TimeSpan.FromMinutes(1);
 
-            _domainControler = ((options & StoreOptions.EnableScopings) == StoreOptions.EnableScopings) ? (IScopeManager<IDomainModel>)new ExtendedScopeManager<IDomainModel>(this) : new ScopeManager<IDomainModel>(this);
-            _schemaControler = ((options & StoreOptions.EnableScopings) == StoreOptions.EnableScopings) ? (IScopeManager<ISchema>)new ExtendedScopeManager<ISchema>(this) : new ScopeManager<ISchema>(this);
+       //     _domainControler = ((options & StoreOptions.EnableScopings) == StoreOptions.EnableScopings) ? (IScopeManager<IDomainModel>)new ExtendedScopeManager<IDomainModel>(this) : new ScopeManager<IDomainModel>(this);
+       //     _schemaControler = ((options & StoreOptions.EnableScopings) == StoreOptions.EnableScopings) ? (IScopeManager<ISchema>)new ExtendedScopeManager<ISchema>(this) : new ScopeManager<ISchema>(this);
+
+            _domainControler = new ScopeControler<IDomainModel>(this);
+            _schemaControler = new ScopeControler<ISchema>(this);
 
             _lockManager = _services.Resolve<ILockManager>() ?? new LockManager(_services);
             EventBus = _services.Resolve<IEventBus>();
@@ -454,7 +457,7 @@ namespace Hyperstore.Modeling
             var metaclass = GetSchemaElement<T>(false);
             if (metaclass != null)
             {
-                foreach (var dm in DomainModels)
+                foreach (var dm in _domainControler.GetScopes(ScopesSelector.Enabled, CurrentSessionId))
                 {
                     foreach (var mel in dm.GetElements(metaclass, skip))
                     {
@@ -462,6 +465,11 @@ namespace Hyperstore.Modeling
                     }
                 }
             }
+        }
+
+        private int CurrentSessionId
+        {
+            get { return Session.Current != null ? Session.Current.SessionId : 0; }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -480,7 +488,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public IEnumerable<IModelElement> GetElements(ISchemaElement schemaElement = null, int skip = 0)
         {
-            foreach (var dm in DomainModels)
+            foreach (var dm in _domainControler.GetScopes(ScopesSelector.Enabled, CurrentSessionId))
             {
                 foreach (var mel in dm.GetElements(schemaElement, skip))
                 {
@@ -508,7 +516,7 @@ namespace Hyperstore.Modeling
             var metaclass = GetSchemaEntity<T>(false);
             if (metaclass != null)
             {
-                foreach (var dm in DomainModels)
+                foreach (var dm in _domainControler.GetScopes(ScopesSelector.Enabled, CurrentSessionId))
                 {
                     foreach (var mel in dm.GetEntities(metaclass, skip))
                     {
@@ -534,7 +542,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public IEnumerable<IModelEntity> GetEntities(ISchemaEntity metaclass = null, int skip = 0)
         {
-            foreach (var dm in DomainModels)
+            foreach (var dm in _domainControler.GetScopes(ScopesSelector.Enabled, CurrentSessionId))
             {
                 foreach (var mel in dm.GetEntities(metaclass, skip))
                 {
@@ -777,9 +785,9 @@ namespace Hyperstore.Modeling
             }
 
             // Parcours les domainModels pour rechercher sur la clé
-            foreach (ISchema metaModel in Schemas)
+            foreach (var schema in _schemaControler.GetScopes(ScopesSelector.Enabled, CurrentSessionId))
             {
-                si = metaModel.GetSchemaInfo(name, false);
+                si = schema.GetSchemaInfo(name, false);
                 if (si != null)
                 {
                     _schemaInfosCache[name] = si;
@@ -935,11 +943,11 @@ namespace Hyperstore.Modeling
             if (_notifiersCache != null)
                 return _notifiersCache;
 
-            var domainNotifiers = _domainControler.GetAllScopes()
+            var domainNotifiers = _domainControler.GetScopes(ScopesSelector.Loaded)
                     .Where(domainModel => domainModel.Events is IEventNotifier)
                     .Select(domainmodel => domainmodel.Events as IEventNotifier);
 
-            var schemaNotifiers = _schemaControler.GetAllScopes()
+            var schemaNotifiers = _schemaControler.GetScopes(ScopesSelector.Loaded)
                     .Where(domainModel => domainModel.Events is IEventNotifier)
                     .Select(domainmodel => domainmodel.Events as IEventNotifier);
 
@@ -965,7 +973,7 @@ namespace Hyperstore.Modeling
             if (name == PrimitivesSchema.DomainModelName)
                 return PrimitivesSchema.Current;
 
-            return _domainControler.GetActiveScope(name) ?? GetSchema(name);
+            return _domainControler.GetActiveScope(name, CurrentSessionId) ?? GetSchema(name);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -983,7 +991,7 @@ namespace Hyperstore.Modeling
         public ISchema GetSchema(string name)
         {
             Contract.RequiresNotEmpty(name, "name");
-            return _schemaControler.GetActiveScope(name);
+            return _schemaControler.GetActiveScope(name, CurrentSessionId);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -1014,7 +1022,7 @@ namespace Hyperstore.Modeling
             }
 
             // Parcours les domainModels pour rechercher sur la clé
-            foreach (ISchema metaModel in Schemas)
+            foreach (ISchema metaModel in _schemaControler.GetScopes(ScopesSelector.Enabled, CurrentSessionId))
             {
                 var metadata = metaModel.GetSchemaRelationship(id, false);
                 if (metadata != null)
@@ -1058,7 +1066,7 @@ namespace Hyperstore.Modeling
             }
 
             // Parcours les domainModels pour rechercher sur la clé
-            foreach (ISchema metaModel in Schemas)
+            foreach (ISchema metaModel in _schemaControler.GetScopes(ScopesSelector.Enabled, CurrentSessionId))
             {
                 var metadata = metaModel.GetSchemaRelationship(name, false);
                 if (metadata != null)
@@ -1138,7 +1146,8 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public IEnumerable<IModelRelationship> GetRelationships(ISchemaRelationship metaclass = null, int skip = 0)
         {
-            return DomainModels.SelectMany(dm => dm.GetRelationships(metaclass, skip: skip));
+            return _domainControler.GetScopes(ScopesSelector.Enabled, CurrentSessionId)
+                .SelectMany(dm => dm.GetRelationships(metaclass, skip: skip));
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -1159,7 +1168,8 @@ namespace Hyperstore.Modeling
         {
             var metaclass = GetSchemaRelationship<T>(false);
             if (metaclass != null)
-                return from dm in DomainModels from rel in dm.GetRelationships(metaclass, skip: skip) select (T)rel;
+                return from dm in _domainControler.GetScopes(ScopesSelector.Enabled, CurrentSessionId)
+                       from rel in dm.GetRelationships(metaclass, skip: skip) select (T)rel;
 
             return default(IEnumerable<T>);
         }
@@ -1236,7 +1246,7 @@ namespace Hyperstore.Modeling
                 }
             }
 
-            _domainControler.ActivateScope(domainModel);
+            _domainControler.EnableScope(domainModel);
             _notifiersCache = null;
             if (domainModel is DomainModel)
             {
@@ -1273,6 +1283,7 @@ namespace Hyperstore.Modeling
 
                 // Enregistrement du domaine au niveau du store
                 _schemaControler.RegisterScope(schema);
+                _schemaControler.EnableScope(schema);
 
                 // Initialisation du domaine
                 await schema.Initialize(desc);
@@ -1282,7 +1293,6 @@ namespace Hyperstore.Modeling
                     EventBus.RegisterDomainPolicies(schema, r.OutputProperty, r.InputProperty);
                 }
 
-                _schemaControler.ActivateScope(schema);
                 _notifiersCache = null;
                 session.AcceptChanges();
                 if (schema is DomainModel)
@@ -1401,15 +1411,13 @@ namespace Hyperstore.Modeling
             if (Session.Current != null)
                 return null;
 
-            return BeginSession(new SessionConfiguration
-                                {
-                                    Readonly = true
+            return BeginSession(new SessionConfiguration {                        Readonly = true
                                 });
         }
 
         private void NotifyEnd()
         {
-            foreach (var domainModel in DomainModels)
+            foreach (var domainModel in _domainControler.GetScopes(ScopesSelector.Loaded))
             {
                 var notifier = domainModel.Events as IEventNotifier;
                 if (notifier != null)
@@ -1438,7 +1446,7 @@ namespace Hyperstore.Modeling
         {
             // Chargement du méta modéle
             domainModel.Configure();
-            _domainControler.ActivateScope(domainModel);
+            _domainControler.EnableScope(domainModel);
         }
 
         #endregion

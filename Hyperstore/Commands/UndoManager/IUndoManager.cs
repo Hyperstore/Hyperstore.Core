@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using Hyperstore.Modeling.Events;
@@ -49,7 +49,7 @@ namespace Hyperstore.Modeling.Commands
         ///  The save point.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        Guid? SavePoint { get; }
+        int? SavePoint { get; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -107,7 +107,7 @@ namespace Hyperstore.Modeling.Commands
         ///  all the commands will be dequeue.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        void Undo(Guid? toSavePoint = null);
+        void Undo(int? toSavePoint = 0);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

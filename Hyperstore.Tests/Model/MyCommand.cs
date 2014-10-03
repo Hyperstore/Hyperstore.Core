@@ -90,7 +90,7 @@ namespace Hyperstore.Tests
 
     public class MyEvent : Hyperstore.Modeling.Events.AbstractDomainEvent
     {
-        public MyEvent(IDomainModel domainModel, Guid correlationId)
+        public MyEvent(IDomainModel domainModel, int correlationId)
             : base(domainModel.Name, domainModel.ExtensionName, 1, correlationId)
         {
 

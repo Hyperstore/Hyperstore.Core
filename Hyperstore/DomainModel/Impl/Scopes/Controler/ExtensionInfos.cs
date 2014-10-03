@@ -39,7 +39,7 @@ namespace Hyperstore.Modeling.Scopes
         ///  The active sessions.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public ExtensionInfo(T extension, List<Guid> activeSessions)
+        public ExtensionInfo(T extension, List<int> activeSessions)
             : base(extension)
         {
             PendingLoadSessions = activeSessions;
@@ -74,7 +74,7 @@ namespace Hyperstore.Modeling.Scopes
         ///  The domain model.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public T GetDomainModel(Guid? sessionId)
+        public T GetDomainModel(int sessionId)
         {
             //DomainModel.Store.Trace.WriteTrace(TraceCategory.DomainControler, " >>> GetDomainModel extension for session {0} - ALT is {1}", sessionId, DomainModel == null ? "null" : "not null");
             //if (PendingUnloadSessions != null)
@@ -83,8 +83,8 @@ namespace Hyperstore.Modeling.Scopes
             //    DomainModel.Store.Trace.WriteTrace(TraceCategory.DomainControler, "      -- load : {0}", String.Join(",", PendingLoadSessions));
 
             if (DomainModel != null
-                && ( Status == ScopeStatus.ScopeEnabled) && (PendingUnloadSessions == null || sessionId == null || PendingUnloadSessions.Contains(sessionId.Value))
-                && (PendingLoadSessions == null || sessionId == null || !PendingLoadSessions.Contains(sessionId.Value) || (Session.Current.Mode & SessionMode.LoadingSchema) == SessionMode.LoadingSchema)) // TODO ou Loading ???
+                && ( Status == ScopeStatus.ScopeEnabled) && (PendingUnloadSessions == null || sessionId == 0 || PendingUnloadSessions.Contains(sessionId))
+                && (PendingLoadSessions == null || sessionId == 0 || !PendingLoadSessions.Contains(sessionId) || (Session.Current.Mode & SessionMode.LoadingSchema) == SessionMode.LoadingSchema)) // TODO ou Loading ???
             {
                 //DomainModel.Store.Trace.WriteTrace(TraceCategory.DomainControler, "  return ALT");
                 return DomainModel;

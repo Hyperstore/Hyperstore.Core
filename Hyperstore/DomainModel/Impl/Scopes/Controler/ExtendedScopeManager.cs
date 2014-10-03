@@ -31,7 +31,7 @@ namespace Hyperstore.Modeling.Scopes
     /// </summary>
     internal class ExtendedScopeManager<T> : IScopeManager<T> where T : class,IDomainModel
     {
-        private readonly List<Guid> _activeSessions = new List<Guid>();
+        private readonly List<int> _activeSessions = new List<int>();
         private readonly ReaderWriterLockSlim _sync = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
         private List<ScopeStack<T>> _domainModels = new List<ScopeStack<T>>();
 
@@ -91,7 +91,7 @@ namespace Hyperstore.Modeling.Scopes
         ///  .
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void ActivateScope(T domain)
+        public void EnableScope(T domain)
         {
             DebugContract.Requires(domain != null);
 
@@ -120,7 +120,7 @@ namespace Hyperstore.Modeling.Scopes
         {
             DebugContract.Requires(domainModel != null);
             ScopeStack<T> item;
-            List<Guid> activeSessions;
+            List<int> activeSessions;
 
             _sync.EnterWriteLock();
             try
@@ -130,7 +130,7 @@ namespace Hyperstore.Modeling.Scopes
                     return;
 
                 // TODO immutable
-                activeSessions = new List<Guid>(_activeSessions);
+                activeSessions = new List<int>(_activeSessions);
             }
             finally
             {
@@ -189,7 +189,7 @@ namespace Hyperstore.Modeling.Scopes
                     if (item != null)
                     {
                         var throwException = true;
-                        Guid? sessionId = null;
+                        int sessionId = 0;
                         if (Session.Current != null)
                             sessionId = Session.Current.SessionId;
 
@@ -246,7 +246,7 @@ namespace Hyperstore.Modeling.Scopes
             try
             {
                 var list = new List<T>(8);
-                var sessionId = Session.Current != null ? Session.Current.SessionId : Guid.Empty;
+                var sessionId = Session.Current != null ? Session.Current.SessionId : 0;
                 var tmp = _domainModels;
 
                 // Recherche les domaines actifs pour une session
@@ -278,7 +278,7 @@ namespace Hyperstore.Modeling.Scopes
             try
             {
                 var list = new List<T>(8); // TODO a optimiser (préparer la liste)
-                var sessionId = Session.Current != null ? Session.Current.SessionId : Guid.Empty;
+                var sessionId = Session.Current != null ? Session.Current.SessionId : 0;
                 var tmp = _domainModels;
 
                 // Recherche les domaines actifs pour une session
@@ -424,14 +424,14 @@ namespace Hyperstore.Modeling.Scopes
             ///  The active sessions.
             /// </param>
             ///-------------------------------------------------------------------------------------------------
-            public void Load(TElement extension, List<Guid> activeSessions)
+            public void Load(TElement extension, List<int> activeSessions)
             {
                 DebugContract.Requires(extension);
                 DebugContract.Requires(activeSessions);
                 extension.Store.Trace.WriteTrace(TraceCategory.DomainControler, "*** Load extension for {1} with active sessions {0}", String.Join(",", activeSessions), extension.Name);
 
                 // TODO gestion si l'extension est en train d'être déchargée
-                var item = new ExtensionInfo<TElement>(extension, new List<Guid>(activeSessions));
+                var item = new ExtensionInfo<TElement>(extension, new List<int>(activeSessions));
                 if (_list.Any(i => i.IsExtensionNameExists(extension.ExtensionName)))
                     throw new Exception("Duplicate extension name " + extension.ExtensionName);
 
@@ -449,7 +449,7 @@ namespace Hyperstore.Modeling.Scopes
                 }
             }
 
-            internal TElement GetDomainModel(Guid? sessionId)
+            internal TElement GetDomainModel(int sessionId)
             {
                 var item = _list.Last;
                 while (item != null)
@@ -462,7 +462,7 @@ namespace Hyperstore.Modeling.Scopes
                 return null;
             }
 
-            internal void Unload(List<Guid> activeSessions, TElement domainModel = null)
+            internal void Unload(List<int> activeSessions, TElement domainModel = null)
             {
                 var item = _list.Last;
                 while (item != null)
@@ -474,7 +474,7 @@ namespace Hyperstore.Modeling.Scopes
                 }
             }
 
-            internal void OnSessionCompleted(Guid sessionId)
+            internal void OnSessionCompleted(int sessionId)
             {
                 var item = _list.Last;
                 while (item != null)

@@ -54,7 +54,7 @@ namespace Hyperstore.Modeling.Events
         ///  The correlation identifier.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        protected AbstractDomainEvent(string domainModel, string extensionName, Guid correlationId)
+        protected AbstractDomainEvent(string domainModel, string extensionName, int correlationId)
             : this(domainModel, extensionName, 0, correlationId)
         {
         }
@@ -76,7 +76,7 @@ namespace Hyperstore.Modeling.Events
         ///  The correlation identifier.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        protected AbstractDomainEvent(string domainModel, string extensionName, long version, Guid correlationId)
+        protected AbstractDomainEvent(string domainModel, string extensionName, long version, int correlationId)
         {
             Contract.RequiresNotEmpty(domainModel, "domainModel");
 
@@ -126,7 +126,7 @@ namespace Hyperstore.Modeling.Events
         ///  The correlation identifier.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Guid CorrelationId
+        public int CorrelationId
         {
             [DebuggerStepThrough]
             get;

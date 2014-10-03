@@ -178,7 +178,7 @@ namespace Hyperstore.Modeling.Messaging
         ///  A Message.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected virtual Message SendMessage(Guid originStoreId, SessionMode mode, Guid sessionId, IEnumerable<IEvent> events)
+        protected virtual Message SendMessage(Guid originStoreId, SessionMode mode, int sessionId, IEnumerable<IEvent> events)
         {
             var msg = new Message { Mode = mode, Events = new List<Enveloppe>() };
             msg.OriginStoreId = originStoreId;

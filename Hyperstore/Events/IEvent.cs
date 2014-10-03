@@ -47,7 +47,7 @@ namespace Hyperstore.Modeling.Events
         ///  The correlation identifier.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        Guid CorrelationId { get; }
+        int CorrelationId { get; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

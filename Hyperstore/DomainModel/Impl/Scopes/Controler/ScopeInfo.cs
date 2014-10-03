@@ -37,14 +37,14 @@ namespace Hyperstore.Modeling.Scopes
         ///  Sessions actives lors du chargement de l'extension du domaine.
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
-        protected List<Guid> PendingLoadSessions;
+        protected List<int> PendingLoadSessions;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Sessions actives lors du déchargement d'un domaine.
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
-        protected List<Guid> PendingUnloadSessions;
+        protected List<int> PendingUnloadSessions;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -82,7 +82,7 @@ namespace Hyperstore.Modeling.Scopes
         ///  true if it succeeds, false if it fails.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public bool OnSessionCompleted(Guid sessionId)
+        public bool OnSessionCompleted(int sessionId)
         {
             DomainModel.Store.Trace.WriteTrace(TraceCategory.DomainControler, "Session completed for {0}", sessionId);
 
@@ -149,7 +149,7 @@ namespace Hyperstore.Modeling.Scopes
         ///  true if it succeeds, false if it fails.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual bool Unload(List<Guid> activeSessions, T extension)
+        public virtual bool Unload(List<int> activeSessions, T extension)
         {
             if (extension == null || extension.InstanceId == DomainModel.InstanceId)
             {
@@ -167,7 +167,7 @@ namespace Hyperstore.Modeling.Scopes
                 // Sessions actives au moment du déchargement de l'extension
                 if (activeSessions.Count > 0)
                 {
-                    PendingUnloadSessions = new List<Guid>(activeSessions);
+                    PendingUnloadSessions = new List<int>(activeSessions);
                     return false;
                 }
 

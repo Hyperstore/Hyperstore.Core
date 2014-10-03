@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -46,7 +46,7 @@ namespace Hyperstore.Modeling.Scopes
         ///  The domain model.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        T GetDomainModel(Guid? sessionId);
+        T GetDomainModel(int sessionId);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -62,7 +62,7 @@ namespace Hyperstore.Modeling.Scopes
         ///  true if it succeeds, false if it fails.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        bool Unload(List<Guid> activeSessions, T extension);
+        bool Unload(List<int> activeSessions, T extension);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -75,7 +75,7 @@ namespace Hyperstore.Modeling.Scopes
         ///  true if it succeeds, false if it fails.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        bool OnSessionCompleted(Guid guid);
+        bool OnSessionCompleted(int guid);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

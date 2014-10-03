@@ -18,6 +18,12 @@ using System;
 using System.Collections.Generic;
 namespace Hyperstore.Modeling.Scopes
 {
+    enum ScopesSelector
+    {
+        Enabled,
+        Loaded
+    }
+
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
     ///  Interface for model list.
@@ -27,7 +33,7 @@ namespace Hyperstore.Modeling.Scopes
     /// </typeparam>
     /// <seealso cref="T:IEnumerable{T}"/>
     ///-------------------------------------------------------------------------------------------------
-    public interface IModelList<T> : IEnumerable<T> where T : class, IDomainModel
+    public interface IModelList<T>  where T : class, IDomainModel
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -42,12 +48,11 @@ namespace Hyperstore.Modeling.Scopes
 
     interface IScopeManager<T> : IModelList<T>, IDisposable where T : class, global::Hyperstore.Modeling.IDomainModel
     {
-        void ActivateScope(T scope);
-        T GetActiveScope(string name);
-        //   global::System.Collections.Generic.IEnumerable<T> GetActiveScopes();
-        void OnSessionCreated(global::Hyperstore.Modeling.ISession session);
+        void EnableScope(T scope);
+        T GetActiveScope(string name, int sessionId);
+        void OnSessionCreated(global::Hyperstore.Modeling.ISession session, int sessionId=0);
         void RegisterScope(T scope);
         void UnloadScope(T scope);
-        System.Collections.Generic.IEnumerable<T> GetAllScopes();
+        System.Collections.Generic.IEnumerable<T> GetScopes(ScopesSelector selector, int sessionId=0);
     }
 }

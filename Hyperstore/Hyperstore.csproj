@@ -77,6 +77,8 @@
     <Compile Include="DomainModel\Impl\CalculatedProperty.cs" />
     <Compile Include="DomainModel\IDataErrorNotifier.cs" />
     <Compile Include="DomainModel\Impl\ObervableModelElementCollection.cs" />
+    <Compile Include="DomainModel\Impl\Scopes\V2\Entry.cs" />
+    <Compile Include="DomainModel\Impl\Scopes\V2\ScopeControler.cs" />
     <Compile Include="Extensions\DomainExtensions.cs" />
     <Compile Include="DomainModel\Impl\Scopes\IScopeHypergraph.cs" />
     <Compile Include="DomainModel\Impl\Scopes\ISchemaExtension.cs" />
@@ -131,8 +133,7 @@
     <Compile Include="DomainModel\IDomainConfiguration.cs" />
     <Compile Include="DomainModel\IModelEntity.cs" />
     <Compile Include="DomainModel\Impl\DomainConfiguration.cs" />
-    <Compile Include="DomainModel\Impl\Scopes\Controler\ScopeManager.cs" />
-    <Compile Include="DomainModel\Impl\Scopes\Controler\IScopeManager.cs" />
+    <Compile Include="DomainModel\Impl\Scopes\IScopeManager.cs" />
     <Compile Include="DomainModel\Impl\Scopes\IDomainScope.cs" />
     <Compile Include="DomainModel\Impl\ModelElementList.cs" />
     <Compile Include="DomainModel\Impl\ModelEntity.cs" />
@@ -187,14 +188,8 @@
     <Compile Include="DomainModel\IUpdatableDomainModel.cs" />
     <Compile Include="DomainModel\ISchemaDefinition.cs" />
     <Compile Include="DomainModel\Impl\Dynamic\DynamicModelElementMetaObject.cs" />
-    <Compile Include="DomainModel\Impl\Scopes\Controler\DomainInfo.cs" />
-    <Compile Include="DomainModel\Impl\Scopes\Controler\ScopeStatus.cs" />
-    <Compile Include="DomainModel\Impl\Scopes\Controler\ExtendedScopeManager.cs" />
     <Compile Include="DomainModel\Impl\SchemaDefinition.cs" />
     <Compile Include="DomainModel\Impl\Dynamic\DynamicModelEntity.cs" />
-    <Compile Include="DomainModel\Impl\Scopes\Controler\ExtensionInfos.cs" />
-    <Compile Include="DomainModel\Impl\Scopes\Controler\IDomainInfos.cs" />
-    <Compile Include="DomainModel\Impl\Scopes\Controler\ScopeInfo.cs" />
     <Compile Include="DomainModel\Impl\Scopes\ExtensionConstraintManager.cs" />
     <Compile Include="DomainModel\Impl\Scopes\DomainModelScope.cs" />
     <Compile Include="DomainModel\Impl\Scopes\ExtensionSchemaDefinition.cs" />
