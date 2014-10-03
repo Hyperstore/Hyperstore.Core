@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System.Collections.Generic;
@@ -32,7 +32,7 @@ namespace Hyperstore.Modeling
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the domain model.
+        ///  Get the domain model.
         /// </summary>
         /// <value>
         ///  The domain model.
@@ -42,7 +42,7 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the id.
+        ///  Get the id.
         /// </summary>
         /// <value>
         ///  The identifier.
@@ -52,7 +52,7 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the metadata.
+        ///  Get the metadata.
         /// </summary>
         /// <value>
         ///  The metadata.
@@ -62,7 +62,7 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the status.
+        ///  Get the status.
         /// </summary>
         /// <value>
         ///  The status.
@@ -72,7 +72,7 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the creation sequence.
+        ///  Get the creation sequence.
         /// </summary>
         /// <value>
         ///  The sequence.
@@ -82,29 +82,30 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets property value.
+        ///  Get value of a property. Returns a PropertyValue where version property can be 0 if there is no value for this property
         /// </summary>
         /// <param name="property">
-        ///  The property.
+        ///  The property description
         /// </param>
         /// <returns>
-        ///  The property value.
+        ///  A PropertyValue class
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
         PropertyValue GetPropertyValue(ISchemaProperty property);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the property value.
+        ///  Get value of a property. Returns a PropertyValue where version property can be 0 if there is no
+        ///  value for this property.
         /// </summary>
         /// <typeparam name="T">
-        ///  .
+        ///  Generic type parameter.
         /// </typeparam>
         /// <param name="propertyName">
-        ///  Name of the property.
+        ///  The property name
         /// </param>
         /// <returns>
-        ///  The property value.
+        ///  A PropertyValue class.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
         T GetPropertyValue<T>(string propertyName);
@@ -120,30 +121,30 @@ namespace Hyperstore.Modeling
         ///  (Optional) The end.
         /// </param>
         /// <returns>
-        ///  An enumerator that allows foreach to be used to process the relationships in this collection.
+        ///  List of relationships
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
         IEnumerable<IModelRelationship> GetRelationships(ISchemaRelationship relationshipSchema = null, IModelElement end = null);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the relationships.
+        ///  Get all relationships outgoings from the current element
         /// </summary>
         /// <typeparam name="T">
         ///  .
         /// </typeparam>
         /// <param name="end">
-        ///  (Optional) The end.
+        ///  (Optional) End element, if precised return only relationships between the current and the end element.
         /// </param>
         /// <returns>
-        ///  An enumerator that allows foreach to be used to process the relationships in this collection.
+        ///  List of relationships
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
         IEnumerable<T> GetRelationships<T>(IModelElement end = null) where T : IModelRelationship;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Removes this instance.
+        ///  Remove this instance.
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
         void Remove();

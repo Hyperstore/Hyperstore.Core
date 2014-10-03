@@ -171,7 +171,7 @@ namespace Hyperstore.Modeling.Container
             if (Resolve<ICompositionService>() != null)
                 throw new Exception(ExceptionMessages.CompositionAlreadyDone);
 
-            var container = new Hyperstore.Modeling.Container.Composition.CompositionContainer();
+            var container = Platform.PlatformServices.Current.CreateCompositionService();
             await Task.Run(() => container.Compose(assemblies)).ConfigureAwait(false);
             Register<ICompositionService>(container);
         }

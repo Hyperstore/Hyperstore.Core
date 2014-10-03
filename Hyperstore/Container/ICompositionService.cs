@@ -29,8 +29,18 @@ namespace Hyperstore.Modeling
     /// </summary>
     /// <seealso cref="T:IDisposable"/>
     ///-------------------------------------------------------------------------------------------------
-    internal interface ICompositionService : IDisposable 
+    public interface ICompositionService : IDisposable 
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Composes the given assemblies.
+        /// </summary>
+        /// <param name="assemblies">
+        ///  The assemblies.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
+        void Compose(params System.Reflection.Assembly[] assemblies);
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Gets the event handlers in this collection.

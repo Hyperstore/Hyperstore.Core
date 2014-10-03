@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Hyperstore.Modeling.Platform
 {
@@ -173,13 +174,25 @@ namespace Hyperstore.Modeling.Platform
         ///-------------------------------------------------------------------------------------------------
         public virtual void Parallel_ForEach<TSource>(System.Collections.Generic.IEnumerable<TSource> source, Action<TSource> body)
         {
+            var tasks = new Task[source.Count()];
+            var i=0;
             foreach (var s in source)
-                body(s);
+            {
+                var tmp = s;
+                tasks[i++] = Task.Run(() => body(tmp) );
+            }
+            Task.WaitAll(tasks);
         }
+
 
         internal IConcurrentQueue<TValue> CreateConcurrentQueue<TValue>()
         {
             return new InternalConcurrentQueue<TValue>();
+        }
+
+        public virtual ICompositionService CreateCompositionService()
+        {
+            return new Hyperstore.Modeling.Container.Composition.CompositionContainer();
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -206,12 +219,6 @@ namespace Hyperstore.Modeling.Platform
         public virtual IModelElementFactory CreateModelElementFactory()
         {
             return new Hyperstore.Modeling.Domain.ModelElementFactory();
-        }
-
-
-        internal void Parallel_ForEach(List<IGrouping<Metadata.Constraints.IConstraintsManager, IModelElement>> constraints, Action<IGrouping<Metadata.Constraints.IConstraintsManager, IModelElement>> action)
-        {
-            throw new NotImplementedException();
         }
     }
 }

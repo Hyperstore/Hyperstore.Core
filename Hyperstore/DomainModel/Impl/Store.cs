@@ -43,7 +43,6 @@ namespace Hyperstore.Modeling
     ///-------------------------------------------------------------------------------------------------
     public class Store : IHyperstore, IDomainManager
     {
-        private const string platformTypeName = "Hyperstore.Modeling.Platform.PlatformServicesInstance, Hyperstore.Platform";
 
         #region Events
 
@@ -188,12 +187,6 @@ namespace Hyperstore.Modeling
 
         private void ConfigureServices(IServicesContainer services)
         {
-            var platformfactoryType = Type.GetType(platformTypeName, false);
-            if (platformfactoryType != null)
-            {
-                Activator.CreateInstance(platformfactoryType);
-            }
-
             // Store instance
             services.Register<IHyperstore>(this);
             services.Register<Hyperstore.Modeling.Statistics.IStatistics>(this.Statistics);

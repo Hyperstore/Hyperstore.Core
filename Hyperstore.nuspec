@@ -6,7 +6,7 @@
     <title>Hyperstore</title>
     <authors>Zenasoft</authors>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
-    <iconUrl>http://www.hypertsore.org/img/hyperstore-icon.png</iconUrl>
+    <iconUrl>http://www.hyperstore.org/img/hyperstore-icon.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>HyperStore is a modeling framework providing its own in-memory transactional database.</description>
     <copyright>Copyright Zenasoft 2014</copyright>

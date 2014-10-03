@@ -52,6 +52,7 @@
     <Compile Include="Dynamic\DynamicTypeDescriptorProvider.cs" />
     <Compile Include="IWCFHyperstoreChannel.cs" />
     <Compile Include="P2PChannel.cs" />
+    <Compile Include="Platform\CompositionContainer.cs" />
     <Compile Include="Platform\ConcurrentDictionary.cs" />
     <Compile Include="Platform\ConcurrentQueue.cs" />
     <Compile Include="Platform\DefaultCodeMarkerListener.cs" />

@@ -58,5 +58,10 @@ namespace Hyperstore.Modeling.Platform
         {
             return new ModelElementFactory();
         }
+
+        public override ICompositionService CreateCompositionService()
+        {
+            return new CompositionService();
+        }
     }
 }

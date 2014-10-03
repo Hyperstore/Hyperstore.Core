@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 using Hyperstore.Modeling.Container;
 using System;
 using System.Collections.Generic;
@@ -31,13 +31,20 @@ namespace Hyperstore.Modeling
     ///-------------------------------------------------------------------------------------------------
     public sealed class StoreBuilder
     {
+        private const string platformTypeName = "Hyperstore.Modeling.Platform.PlatformServicesInstance, Hyperstore.Platform";
+
         private StoreOptions _options = StoreOptions.None;
         private List<Assembly> _assemblies;
-        private IServicesContainer _services = new ServicesContainer();
+        private ServicesContainer _services = new ServicesContainer();
         private Guid? _id;
 
         private StoreBuilder()
         {
+            var platformfactoryType = Type.GetType(platformTypeName, false);
+            if (platformfactoryType != null)
+            {
+                Activator.CreateInstance(platformfactoryType); // Initialize platfom services singleton and set its current property
+            }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -80,10 +87,11 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public StoreBuilder ComposeWith(params Assembly[] assemblies)
         {
+
+            if (_assemblies == null)
+                _assemblies = new List<Assembly>();
             if (assemblies.Length > 0)
             {
-                if (_assemblies == null)
-                    _assemblies = new List<Assembly>();
                 _assemblies.AddRange(assemblies);
             }
             return this;
