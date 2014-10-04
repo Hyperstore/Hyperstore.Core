@@ -21,8 +21,9 @@ namespace Hyperstore.Modeling.Scopes
             _next = next;
         }
 
-        public Entry(Entry<T> entry, Entry<T> next=null, int start=0, int end=0, HashSet<int> pendings=null)
+        public Entry(Entry<T> entry, T domain=null, Entry<T> next=null, int start=0, int end=0, HashSet<int> pendings=null)
         {
+            Domain = domain ?? this.Domain;
             this._next = next ?? entry._next;
             _startSessionId = start != 0 ? start : entry._startSessionId;
             _endSessionId = end != 0 ? end : entry._endSessionId;
@@ -30,7 +31,7 @@ namespace Hyperstore.Modeling.Scopes
             _pendingSessions = pendings != null ? pendings.ToImmutableHashSet() : entry._pendingSessions;
         }
 
-        public Entry(Entry<T> entry, Entry<T> next, ImmutableHashSet<int> pendings) : this(entry, next)
+        public Entry(Entry<T> entry, Entry<T> next, ImmutableHashSet<int> pendings) : this(entry, next:next)
         {
             this._pendingSessions = pendings;
         }
@@ -72,7 +73,7 @@ namespace Hyperstore.Modeling.Scopes
                 {
                     Debug.Assert(_startSessionId != 0); // Domain is being unloaded 
                 }
-                var entry = new Entry<T>(this, _endSessionId != 0 ? this : _next, sessionId + 1 ); // Ensure _startSessionId > 0
+                var entry = new Entry<T>(this, domain, _endSessionId != 0 ? this : _next, sessionId + 1 ); // Ensure _startSessionId > 0
                 return entry;
             }
 
@@ -83,6 +84,9 @@ namespace Hyperstore.Modeling.Scopes
 
         internal Entry<T> SetEndSessionId(T domain, int sessionId, HashSet<int> activeSessions)
         {
+            if (domain.ExtensionName == null)
+                return ForceUnload(activeSessions, sessionId);
+
             if (domain == Domain)
             {
                 var entry = new Entry<T>(this, end:sessionId, pendings: activeSessions);
@@ -91,7 +95,7 @@ namespace Hyperstore.Modeling.Scopes
 
             Debug.Assert(_next != null);
 
-            return new Entry<T>(this, _next.SetEndSessionId(domain, sessionId, activeSessions));
+            return new Entry<T>(this, next: _next.SetEndSessionId(domain, sessionId, activeSessions));
         }
 
         internal T GetActiveScope(int sessionId)
@@ -137,9 +141,9 @@ namespace Hyperstore.Modeling.Scopes
             }
         }
 
-        internal Entry<T> ForceUnload(HashSet<int> activeSessions)
+        internal Entry<T> ForceUnload(HashSet<int> activeSessions, int sessionId=0)
         {
-            return new Entry<T>(this, _next != null ? _next.ForceUnload(activeSessions) : null, pendings: activeSessions);
+            return new Entry<T>(this, next : _next != null ? _next.ForceUnload(activeSessions) : null, end:sessionId, pendings: activeSessions);
         }
     }
 }
