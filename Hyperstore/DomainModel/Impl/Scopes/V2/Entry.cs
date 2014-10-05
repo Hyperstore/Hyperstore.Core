@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Hyperstore.Modeling.Scopes
 {
-    class Entry<T>  where T : class, IDomainModel
+    class Entry<T> where T : class, IDomainModel
     {
         public T Domain { get; private set; }
         private int _startSessionId;
@@ -15,13 +15,13 @@ namespace Hyperstore.Modeling.Scopes
         private ImmutableHashSet<int> _pendingSessions;
         private Entry<T> _next;
 
-        public Entry(T domain, Entry<T> next=null)
+        public Entry(T domain, Entry<T> next = null)
         {
             this.Domain = domain;
             _next = next;
         }
 
-        public Entry(Entry<T> entry, T domain=null, Entry<T> next=null, int start=0, int end=0, HashSet<int> pendings=null)
+        public Entry(Entry<T> entry, T domain = null, Entry<T> next = null, int start = 0, int end = 0, HashSet<int> pendings = null)
         {
             Domain = domain ?? this.Domain;
             this._next = next ?? entry._next;
@@ -31,26 +31,33 @@ namespace Hyperstore.Modeling.Scopes
             _pendingSessions = pendings != null ? pendings.ToImmutableHashSet() : entry._pendingSessions;
         }
 
-        public Entry(Entry<T> entry, Entry<T> next, ImmutableHashSet<int> pendings) : this(entry, next:next)
+        public Entry(Entry<T> entry, Entry<T> next, ImmutableHashSet<int> pendings)
+            : this(entry, next: next)
         {
             this._pendingSessions = pendings;
         }
+
 
         public Entry<T> Purge(int sessionId)
         {
             var entry = this;
             var pendings = _pendingSessions;
             var next = _next;
+            var disposeDomain = false;
 
             if (_pendingSessions != null)
             {
                 pendings = _pendingSessions.Remove(sessionId);
-                if (pendings.Count == 0)
-                {
-                    Domain.Dispose();
-                    if (_next == null)
-                        return null;
-                }
+                disposeDomain = pendings.Count == 0;
+            }
+
+            if (disposeDomain)
+            {
+                Domain.Dispose();
+                if (_next == null)
+                    return null;
+
+                return _next.Purge(sessionId);
             }
 
             if (_next != null)
@@ -58,11 +65,7 @@ namespace Hyperstore.Modeling.Scopes
                 next = _next.Purge(sessionId);
             }
 
-            if (next != _next || pendings != _pendingSessions)
-                entry = new Entry<T>(this, next, pendings);
-
-
-            return entry;
+            return new Entry<T>(this, next, pendings);
         }
 
         public Entry<T> SetStartSessionId(T domain, int sessionId)
@@ -73,7 +76,7 @@ namespace Hyperstore.Modeling.Scopes
                 {
                     Debug.Assert(_startSessionId != 0); // Domain is being unloaded 
                 }
-                var entry = new Entry<T>(this, domain, _endSessionId != 0 ? this : _next, sessionId + 1 ); // Ensure _startSessionId > 0
+                var entry = new Entry<T>(this, domain, _endSessionId != 0 ? this : _next, sessionId + 1); // Ensure _startSessionId > 0
                 return entry;
             }
 
@@ -89,7 +92,7 @@ namespace Hyperstore.Modeling.Scopes
 
             if (domain == Domain)
             {
-                var entry = new Entry<T>(this, end:sessionId, pendings: activeSessions);
+                var entry = new Entry<T>(this, end: sessionId, pendings: activeSessions);
                 return entry;
             }
 
@@ -141,9 +144,9 @@ namespace Hyperstore.Modeling.Scopes
             }
         }
 
-        internal Entry<T> ForceUnload(HashSet<int> activeSessions, int sessionId=0)
+        internal Entry<T> ForceUnload(HashSet<int> activeSessions, int sessionId = 0)
         {
-            return new Entry<T>(this, next : _next != null ? _next.ForceUnload(activeSessions) : null, end:sessionId, pendings: activeSessions);
+            return new Entry<T>(this, next: _next != null ? _next.ForceUnload(activeSessions) : null, end: sessionId, pendings: activeSessions);
         }
     }
 }
