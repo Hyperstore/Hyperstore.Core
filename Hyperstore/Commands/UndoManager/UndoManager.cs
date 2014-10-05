@@ -121,16 +121,16 @@ namespace Hyperstore.Modeling.Commands
         ///  The save point.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Guid? SavePoint
+        public int? SavePoint
         {
             get
             {
                 lock (_sync)
                 {
                     return _undos.Count > 0
-                            ? (Guid?)_undos.Peek()
+                            ? _undos.Peek()
                                     .SessionId
-                            : Guid.Empty;
+                            : default(int?);
                 }
             }
         }
@@ -176,7 +176,7 @@ namespace Hyperstore.Modeling.Commands
         ///  (Optional) to save point.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void Undo(Guid? toSavePoint = null)
+        public void Undo(int? toSavePoint = null)
         {
             if (CanUndo)
                 PerformPop(_undos, _redos, SessionMode.Undo, toSavePoint);
@@ -203,7 +203,7 @@ namespace Hyperstore.Modeling.Commands
         public void Redo()
         {
             if (CanRedo)
-                PerformPop(_redos, _undos, SessionMode.Redo, null);
+                PerformPop(_redos, _undos, SessionMode.Redo, 0);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -288,12 +288,12 @@ namespace Hyperstore.Modeling.Commands
             return events;
         }
 
-        private void PerformPop(RecursiveStack<SessionEvents> mainStack, RecursiveStack<SessionEvents> altStack, SessionMode mode, Guid? toSavePoint)
+        private void PerformPop(RecursiveStack<SessionEvents> mainStack, RecursiveStack<SessionEvents> altStack, SessionMode mode, int? toSavePoint)
         {
             var notify = false;
             lock (_sync)
             {
-                Guid? sid = null;
+                int sid = 0;
                 var events = new List<IUndoableEvent>();
                 using (var session = _store.BeginSession(new SessionConfiguration { Mode = mode }))
                 {
@@ -301,7 +301,7 @@ namespace Hyperstore.Modeling.Commands
                     string domainModelName = null;
                     while (mainStack.Count > 0)
                     {
-                        if (toSavePoint != null && mainStack.Peek().SessionId == toSavePoint.Value)
+                        if (toSavePoint != null && mainStack.Peek().SessionId == toSavePoint)
                             break;
 
                         var ci = mainStack.Pop();
@@ -334,7 +334,7 @@ namespace Hyperstore.Modeling.Commands
                     notify = true;
                     altStack.Push(new SessionEvents
                                   {
-                                      SessionId = sid.Value,
+                                      SessionId = sid,
                                       Events = events.ToList()
                                   });
                 }
@@ -377,7 +377,7 @@ namespace Hyperstore.Modeling.Commands
             ///  Identifier for the session.
             /// </summary>
             ///-------------------------------------------------------------------------------------------------
-            public Guid SessionId;
+            public int SessionId;
 
             ///-------------------------------------------------------------------------------------------------
             /// <summary>

@@ -93,7 +93,7 @@ namespace Hyperstore.Tests
         public async Task LoadDynamicDomainTest()
         {
             var dm = await LoadDynamicDomain();
-            var schema = dm.Store.Schemas.Last();
+            var schema = dm.Store.Schemas.Get("Hyperstore.Tests");
 
             Assert.AreEqual(13, schema.GetSchemaInfos().Count());
             Assert.AreEqual(10, schema.GetSchemaElements().Count());

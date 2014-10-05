@@ -134,7 +134,7 @@ namespace Hyperstore.Modeling.Commands
         ///  Identifier for the session.
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
-        public Guid SessionId;
+        public int SessionId;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

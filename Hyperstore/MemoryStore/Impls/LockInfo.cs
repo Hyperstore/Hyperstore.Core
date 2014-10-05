@@ -35,7 +35,7 @@ namespace Hyperstore.Modeling
         ///  The identifier of the session.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Guid SessionId { get; set; }
+        public int SessionId { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

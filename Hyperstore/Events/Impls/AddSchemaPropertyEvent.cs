@@ -62,7 +62,7 @@ namespace Hyperstore.Modeling.Events
         ///  The version.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public AddSchemaPropertyEvent(string domainModelName, string extensionName, Identity id, Identity schemaPropertyId, Guid correlationId, long version) 
+        public AddSchemaPropertyEvent(string domainModelName, string extensionName, Identity id, Identity schemaPropertyId, int correlationId, long version) 
             : base(domainModelName, extensionName, version, correlationId)
         {
             Contract.Requires(id, "id");

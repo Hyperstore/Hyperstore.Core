@@ -41,6 +41,6 @@ namespace Hyperstore.Modeling.Events
         ///  The reverse event.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEvent GetReverseEvent(Guid correlationId);
+        IEvent GetReverseEvent(int correlationId);
     }
 }

@@ -54,7 +54,7 @@ namespace Hyperstore.XTests
             var schema = await store.Schemas.New(def).CreateAsync();
             Assert.NotNull(schema);
             Assert.Equal(1, schema.GetSchemaInfos().Count());
-            Assert.Equal(2, store.Schemas.Count());
+            Assert.Equal(2, store.Schemas.All().Count());
         }
 
         [Fact]
@@ -65,7 +65,7 @@ namespace Hyperstore.XTests
             var schema = await store.Schemas.New(def).CreateAsync();
             Assert.NotNull(schema);
             store.Schemas.Unload(schema);
-            Assert.Equal(1, store.Schemas.Count());
+            Assert.Equal(1, store.Schemas.All().Count());
         }
 
         [Fact]
@@ -73,7 +73,7 @@ namespace Hyperstore.XTests
         {
             var domain = await StoreBuilder.CreateDomain<MySchemaDefinition>("Test");
             var store = domain.Store;
-            var schema = store.Schemas.First();
+            var schema = store.Schemas.All().First(s => s.Name != "hyperstore.xtests");
             Assert.NotNull(schema);
             Assert.IsType<PrimitivesSchema>(schema);
             Assert.Throws<HyperstoreException>(() => store.Schemas.Unload(schema));
