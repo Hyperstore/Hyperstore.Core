@@ -11,7 +11,7 @@ namespace Hyperstore.Modeling.Scopes
 {
     class ScopeControler<TDomain> : IScopeManager<TDomain> where TDomain : class, IDomainModel
     {
-        private readonly ThreadSafeLazyRef<ImmutableDictionary<string, Entry<TDomain>>> _scopes = new ThreadSafeLazyRef<ImmutableDictionary<string, Entry<TDomain>>>(() =>  ImmutableDictionary<string, Entry<TDomain>>.Empty.WithComparers(StringComparer.OrdinalIgnoreCase));
+        private readonly ThreadSafeLazyRef<ImmutableDictionary<string, Entry<TDomain>>> _scopes = new ThreadSafeLazyRef<ImmutableDictionary<string, Entry<TDomain>>>(() => ImmutableDictionary<string, Entry<TDomain>>.Empty.WithComparers(StringComparer.OrdinalIgnoreCase));
         private HashSet<int> _activeSessions = new HashSet<int>();
 
         private int _lastSessionId;
@@ -146,9 +146,16 @@ namespace Hyperstore.Modeling.Scopes
         {
             _scopes.ExchangeValue(scopes =>
                 {
-                    foreach (var key in scopes.Keys.ToList())
+                    var keys = scopes.Keys.ToList();
+                    foreach (var key in keys)
                     {
-                        scopes.SetItem(key, scopes[key].ForceUnload(_activeSessions));
+                        var scope = scopes[key].ForceUnload(_activeSessions);
+                        if (scope != null)
+                            scope = scope.Purge(0);
+                        if (scope == null)
+                            scopes = scopes.Remove(key);
+                        else
+                            scopes = scopes.SetItem(key, scope);
                     }
                     return scopes;
                 });
