@@ -76,7 +76,7 @@ namespace Hyperstore.XTests
             var schema = store.Schemas.First();
             Assert.NotNull(schema);
             Assert.IsType<PrimitivesSchema>(schema);
-            Assert.Throws<Exception>(() => store.Schemas.Unload(schema));
+            Assert.Throws<HyperstoreException>(() => store.Schemas.Unload(schema));
         }
     }
 }
