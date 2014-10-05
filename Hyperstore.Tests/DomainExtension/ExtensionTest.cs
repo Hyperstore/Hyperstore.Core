@@ -333,9 +333,9 @@ namespace Hyperstore.Tests.Extension
             await initialSchema.LoadSchemaExtension( new ExtensionsDomainDefinition());
 
             // Iterate to make hot load and unload of the extension
-            for (int i = 1; i < 30; i++)
+            for (int i = 1; i < 300; i++)
             {
-                Sleep(100);
+                Sleep(10);
 
                 var xDomain = await initial.CreateScopeAsync("Ex1");
 
@@ -353,7 +353,7 @@ namespace Hyperstore.Tests.Extension
                 var xx = store.GetElement<Category>(((IModelElement)a).Id).Value;
                 Assert.AreEqual(9, xx);
 
-                Sleep(100);
+                Sleep(12);
                 store.DomainModels.Unload(xDomain);
             }
 

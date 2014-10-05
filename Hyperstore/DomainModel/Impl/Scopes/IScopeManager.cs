@@ -44,6 +44,22 @@ namespace Hyperstore.Modeling.Scopes
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         IHyperstore Store { get; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Get a domain or schema.
+        /// </summary>
+        /// <param name="name">
+        ///  The name to get.
+        /// </param>
+        /// <param name="session">
+        ///  (Optional) the current session
+        /// </param>
+        /// <returns>
+        ///  A domain or schema or null if not exists or not enabled in the session.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        T Get(string name, ISession session=null);
     }
 
     interface IScopeManager<T> : IModelList<T>, IDisposable where T : class, global::Hyperstore.Modeling.IDomainModel

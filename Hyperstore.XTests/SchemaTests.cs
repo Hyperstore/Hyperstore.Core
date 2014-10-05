@@ -73,7 +73,7 @@ namespace Hyperstore.XTests
         {
             var domain = await StoreBuilder.CreateDomain<MySchemaDefinition>("Test");
             var store = domain.Store;
-            var schema = store.Schemas.All().First();
+            var schema = store.Schemas.All().First(s => s.Name != "hyperstore.xtests");
             Assert.NotNull(schema);
             Assert.IsType<PrimitivesSchema>(schema);
             Assert.Throws<Exception>(() => store.Schemas.Unload(schema));

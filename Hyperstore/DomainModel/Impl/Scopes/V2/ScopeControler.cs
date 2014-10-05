@@ -125,6 +125,25 @@ namespace Hyperstore.Modeling.Scopes
             Purge(0);
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets.
+        /// </summary>
+        /// <param name="name">
+        ///  The name.
+        /// </param>
+        /// <param name="session">
+        ///  The session.
+        /// </param>
+        /// <returns>
+        ///  A TDomain.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        public TDomain Get(string name, ISession session)
+        {
+            return ((IScopeManager<TDomain>)this).GetActiveScope(name, session != null ? session.SessionId : 0);
+        }
+
         IEnumerable<TDomain> IScopeManager<TDomain>.GetScopes(ScopesSelector selector, int sessionId)
         {
             return _scopes.Value.Values.SelectMany(e => e.GetScopes(selector, sessionId));
