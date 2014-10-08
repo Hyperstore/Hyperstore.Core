@@ -263,8 +263,8 @@ namespace Hyperstore.Modeling
         /// <summary>
         ///  Méthode permettant de déplacer l'appel du constructeur dans les classes d'héritage.
         /// </summary>
-        /// <exception cref="NotInTransactionException">
-        ///  Thrown when a Not In Transaction error condition occurs.
+        /// <exception cref="SessionRequiredException">
+        ///  Thrown when a Session Required error condition occurs.
         /// </exception>
         /// <param name="domainModel">
         ///  .
@@ -278,9 +278,6 @@ namespace Hyperstore.Modeling
         /// <param name="id">
         ///  (Optional)
         /// </param>
-        /// ### <returns>
-        ///  .
-        /// </returns>
         ///-------------------------------------------------------------------------------------------------
         protected virtual void Super(IDomainModel domainModel, ISchemaElement schemaElement, Func<IDomainModel, Identity, ISchemaElement, IDomainCommand> commandFactory, Identity id = null)
         {
@@ -768,6 +765,10 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public override string ToString()
         {
+            var namedElement = this as INamedElement;
+            if( namedElement != null )
+                return namedElement.Name;
+
             return String.Format("{0} : {1}", GetType().Name, _id);
         }
 

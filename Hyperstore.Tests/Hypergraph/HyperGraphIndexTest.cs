@@ -36,10 +36,10 @@ namespace Hyperstore.Tests.Hypergraph
         public async Task CreateIndexTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
-            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
 
-            domain.Indexes.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
+            domain.Indexes.CreateIndex(schema.Definition.XExtendsBaseClass, "index1", true, "Name");
         }
 
         [TestCategory("Hypergraph")]
@@ -47,14 +47,14 @@ namespace Hyperstore.Tests.Hypergraph
         public async Task IndexTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
-            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
 
-            domain.Indexes.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
+            domain.Indexes.CreateIndex(schema.Definition.XExtendsBaseClass, "index1", true, "Name");
 
             using (var tx = domain.Store.BeginSession())
             {
-                dynamic a = new DynamicModelEntity(domain, TestDomainDefinition.XExtendsBaseClass);
+                dynamic a = new DynamicModelEntity(domain, schema.Definition.XExtendsBaseClass);
                 a.Name = "toto";
                 tx.AcceptChanges();
             }

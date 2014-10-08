@@ -602,7 +602,7 @@ namespace Hyperstore.Modeling
         ///  The schema.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        Task<ISchema> LoadSchemaAsync(ISchemaDefinition definition, IServicesContainer parentContainer = null);
+        Task<ISchema<T>> LoadSchemaAsync<T>(T definition, IServicesContainer parentContainer = null) where T: class, ISchemaDefinition;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

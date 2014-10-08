@@ -30,7 +30,7 @@ namespace Hyperstore.Tests.DomainExtension
     {
         private IHyperstore store;
         private IDomainModel domain;
-        private ISchema schema;
+        private ISchema<LibraryDefinition> schema;
 
         private async Task CreateDomain()
         {
@@ -113,7 +113,7 @@ namespace Hyperstore.Tests.DomainExtension
         public async Task TestValidateConstraint()
         {
             await CreateDomain();
-            LibraryDefinition.Library.AddConstraint<Library>(self => self.Name != "abcd").Message("error").Category("test").Register();
+            schema.Definition.Library.AddConstraint<Library>(self => self.Name != "abcd").Message("error").Category("test").Register();
 
                 Library lib;
                 using (var session = store.BeginSession())

@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -25,13 +25,20 @@ using Hyperstore.Modeling.Metadata.Primitives;
 
 namespace Hyperstore.Modeling.Metadata
 {
-    internal class PrimitivesSchemaDefinition : DomainConfiguration, ISchemaDefinition
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  The primitives schema definition.
+    /// </summary>
+    /// <seealso cref="T:Hyperstore.Modeling.DomainConfiguration"/>
+    /// <seealso cref="T:Hyperstore.Modeling.ISchemaDefinition"/>
+    ///-------------------------------------------------------------------------------------------------
+    public class PrimitivesSchemaDefinition : DomainConfiguration, ISchemaDefinition
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Gets the name of the schema. </summary>
         /// <value> The name of the schema. </value>
         ///-------------------------------------------------------------------------------------------------
-        public string SchemaName
+        string ISchemaDefinition.SchemaName
         {
             get { return "$"; }
         }
@@ -40,7 +47,7 @@ namespace Hyperstore.Modeling.Metadata
         /// <summary>   Defines the schema. </summary>
         /// <param name="schema">   The schema. </param>
         ///-------------------------------------------------------------------------------------------------
-        public void DefineSchema(ISchema schema)
+        void ISchemaDefinition.DefineSchema(ISchema schema)
         {
             DebugContract.Requires(schema);
 
@@ -81,7 +88,7 @@ namespace Hyperstore.Modeling.Metadata
             //PrimitivesSchema.GeneratedSchemaEntitySchema.DefineProperty("Name", PrimitivesSchema.StringSchema);
 
             var cardinality = new CardinalityPrimitive(schema);
-            metaModel.RegisterMetadata(cardinality); 
+            metaModel.RegisterMetadata(cardinality);
 
             // MetaProperty
             metaModel.RegisterMetadata(PrimitivesSchema.SchemaPropertySchema = new PrimitiveMetaEntity<SchemaProperty>(schema));
@@ -116,13 +123,14 @@ namespace Hyperstore.Modeling.Metadata
         }
 
         ///-------------------------------------------------------------------------------------------------
-        /// <summary>   Called when [schema loaded]. </summary>
-        /// <param name="domainModel">  The domain model. </param>
-        /// ### <exception cref="NotImplementedException">
-        ///     Thrown when the requested operation is unimplemented.
-        /// </exception>
+        /// <summary>
+        ///  Called when [schema loaded].
+        /// </summary>
+        /// <param name="domainModel">
+        ///  The domain model.
+        /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public void OnSchemaLoaded(ISchema domainModel)
+        void ISchemaDefinition.OnSchemaLoaded(ISchema domainModel)
         {
         }
 
@@ -131,17 +139,9 @@ namespace Hyperstore.Modeling.Metadata
         /// <param name="container">   The domain services. </param>
         /// <returns>   The new schema. </returns>
         ///-------------------------------------------------------------------------------------------------
-        public ISchema CreateSchema(IServicesContainer container)
+        ISchema<T> ISchemaDefinition.CreateSchema<T>(IServicesContainer container)
         {
-            return new PrimitivesSchema(container);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>   Loads dependent schemas. </summary>
-        /// <param name="store">    The store. </param>
-        ///-------------------------------------------------------------------------------------------------
-        public void LoadDependentSchemas(IHyperstore store)
-        {
+            return new PrimitivesSchema(container) as ISchema<T>;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -152,6 +152,19 @@ namespace Hyperstore.Modeling.Metadata
         ///  The behavior.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public DomainBehavior Behavior { get; set; }
+        DomainBehavior ISchemaDefinition.Behavior { get; set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets dependent schemas.
+        /// </summary>
+        /// <returns>
+        ///  The dependent schemas.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        System.Collections.Generic.IEnumerable<ISchemaDefinition> ISchemaDefinition.GetDependentSchemas()
+        {
+            yield break;
+        }
     }
 }

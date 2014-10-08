@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.HyperGraph;
 using System;
@@ -31,11 +31,14 @@ namespace Hyperstore.Modeling
     ///-------------------------------------------------------------------------------------------------
     public class DomainConfiguration : IDomainConfiguration
     {
-        private readonly List<Action<IServicesContainer>> _factories = new List<Action<IServicesContainer>>();
+        private readonly List<Action<IServicesContainer>> _factories;
         internal const string PreloadActionKey = "{A8D153D6-EEED-4841-9106-A508CAAB2BCF}";
+        private readonly IDomainConfiguration _shared;
 
-        internal DomainConfiguration()
+        internal DomainConfiguration(IDomainConfiguration config = null)
         {
+            _shared = config;
+            _factories = new List<Action<IServicesContainer>>();
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -91,6 +94,11 @@ namespace Hyperstore.Modeling
             foreach (var action in _factories)
             {
                 action(container);
+            }
+
+            if (_shared != null)
+            {
+                _shared.PrepareScopedContainer(container);
             }
 
             return container;

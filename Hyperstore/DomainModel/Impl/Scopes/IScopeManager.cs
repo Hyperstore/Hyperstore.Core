@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 using System;
 using System.Collections.Generic;
 namespace Hyperstore.Modeling.Scopes
@@ -33,7 +33,7 @@ namespace Hyperstore.Modeling.Scopes
     /// </typeparam>
     /// <seealso cref="T:IEnumerable{T}"/>
     ///-------------------------------------------------------------------------------------------------
-    public interface IModelList<T>  where T : class, IDomainModel
+    public interface IModelList<T> where T : class, IDomainModel
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -59,16 +59,16 @@ namespace Hyperstore.Modeling.Scopes
         ///  A domain or schema or null if not exists or not enabled in the session.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        T Get(string name, ISession session=null);
+        T Get(string name, ISession session = null);
     }
 
     interface IScopeManager<T> : IModelList<T>, IDisposable where T : class, global::Hyperstore.Modeling.IDomainModel
     {
         void EnableScope(T scope);
         T GetActiveScope(string name, int sessionId);
-        void OnSessionCreated(global::Hyperstore.Modeling.ISession session, int sessionId=0);
+        void OnSessionCreated(global::Hyperstore.Modeling.ISession session, int sessionId = 0);
         void RegisterScope(T scope);
         void UnloadScope(T scope);
-        System.Collections.Generic.IEnumerable<T> GetScopes(ScopesSelector selector, int sessionId=0);
+        System.Collections.Generic.IEnumerable<T> GetScopes(ScopesSelector selector, int sessionId = 0);
     }
 }

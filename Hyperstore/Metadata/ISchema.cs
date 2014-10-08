@@ -30,6 +30,27 @@ namespace Hyperstore.Modeling
     /// <summary>
     ///  Interface for schema.
     /// </summary>
+    /// <typeparam name="T">
+    ///  Generic type parameter.
+    /// </typeparam>
+    ///-------------------------------------------------------------------------------------------------
+    public interface ISchema<T> : ISchema where T:ISchemaDefinition
+    {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the schema definition.
+        /// </summary>
+        /// <value>
+        ///  The schema definition.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        T Definition { get; }
+    }
+
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  Interface for schema.
+    /// </summary>
     /// <seealso cref="T:IDomainModel"/>
     ///-------------------------------------------------------------------------------------------------
     public interface ISchema : IDomainModel

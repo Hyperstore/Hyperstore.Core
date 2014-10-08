@@ -35,12 +35,13 @@ namespace Hyperstore.Tests
     {
         private ConcurrentDictionary<int, Identity> ids;
         private IHyperstore store;
+        private ISchema<TestDomainDefinition> schema;
 
         [TestMethod]
         public async Task Bench()
         {
             store = await StoreBuilder.New().CreateAsync();
-            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
             var sw = new Stopwatch();
 
@@ -60,14 +61,14 @@ namespace Hyperstore.Tests
         {
             long nb = 0;
             store = await StoreBuilder.New().CreateAsync();
-            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
             var sw = new Stopwatch();
 
             // Ajout de 100 contraintes
             var nbc = 100;
             for (int i = 0; i < nbc; i++)
-                TestDomainDefinition.XExtendsBaseClass.AddImplicitConstraint(
+                schema.Definition.XExtendsBaseClass.AddImplicitConstraint(
                     self =>
                         System.Threading.Interlocked.Increment(ref nb) > 0,
                     "OK");
@@ -133,7 +134,7 @@ namespace Hyperstore.Tests
             {
                 using (var tx = store.BeginSession())
                 {
-                    IModelElement a = store.GetElement(ids[i], TestDomainDefinition.XExtendsBaseClass);
+                    IModelElement a = store.GetElement(ids[i], schema.Definition.XExtendsBaseClass);
                     //if (a != null)
                     {
                         Identity id;
@@ -146,7 +147,7 @@ namespace Hyperstore.Tests
             }
             );
 
-            var x = store.GetElements(TestDomainDefinition.XExtendsBaseClass).Count();
+            var x = store.GetElements(schema.Definition.XExtendsBaseClass).Count();
             var y = ids.Count();
             Assert.IsTrue(x == 0 && y == 0);
             return x + y;

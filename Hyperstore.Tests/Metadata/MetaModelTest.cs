@@ -90,7 +90,7 @@ namespace Hyperstore.Tests.MemoryStore
         public async Task IsAInheritTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
-            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var dm = await store.DomainModels.New().CreateAsync("Test");
 
             IModelElement a;
@@ -100,10 +100,10 @@ namespace Hyperstore.Tests.MemoryStore
                 s.AcceptChanges();
             }
 
-            Assert.IsTrue(a.SchemaInfo.IsA(TestDomainDefinition.AbstractClass));
+            Assert.IsTrue(a.SchemaInfo.IsA(schema.Definition.AbstractClass));
 
             Assert.IsTrue(a.SchemaInfo.IsA(PrimitivesSchema.ModelEntitySchema));
-            Assert.IsFalse(((ISchemaElement)TestDomainDefinition.AbstractClass).IsA(a.SchemaInfo));
+            Assert.IsFalse(((ISchemaElement)schema.Definition.AbstractClass).IsA(a.SchemaInfo));
         }
 
         [TestMethod]
@@ -127,8 +127,8 @@ namespace Hyperstore.Tests.MemoryStore
             var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var dm = await store.DomainModels.New().CreateAsync("Test");
 
-            Assert.AreEqual(1, schema.GetSchemaRelationships().Count(r => r.End.IsA(TestDomainDefinition.XExtendsBaseClass)));
-            Assert.AreEqual(2, schema.GetSchemaRelationships().Count(r => r.Start.IsA(TestDomainDefinition.XExtendsBaseClass)));
+            Assert.AreEqual(1, schema.GetSchemaRelationships().Count(r => r.End.IsA(schema.Definition.XExtendsBaseClass)));
+            Assert.AreEqual(2, schema.GetSchemaRelationships().Count(r => r.Start.IsA(schema.Definition.XExtendsBaseClass)));
         }
 
         [TestMethod()]
@@ -157,10 +157,10 @@ namespace Hyperstore.Tests.MemoryStore
         public async Task DefinePropertyMetadataTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
-            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
 
-            ISchemaEntity metadata = TestDomainDefinition.XExtendsBaseClass;
+            ISchemaEntity metadata = schema.Definition.XExtendsBaseClass;
             Assert.IsNotNull(metadata);
             Assert.AreEqual(2, metadata.GetProperties(true).Count());
             Assert.IsNotNull(metadata.GetProperty("Name"));
@@ -173,12 +173,12 @@ namespace Hyperstore.Tests.MemoryStore
         public async Task DefineEnumPropertyTest_Autodefinition()
         {
             var store = await StoreBuilder.New().CreateAsync();
-            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test") as IUpdatableDomainModel;
 
             using( var s = store.BeginSession() )
             {
-                ISchemaEntity metadata = TestDomainDefinition.XExtendsBaseClass;
+                ISchemaEntity metadata = schema.Definition.XExtendsBaseClass;
                 var prop = metadata.DefineProperty<ETest>( "enum" );
 
                 IModelElement a = new XExtendsBaseClass( domain );
@@ -204,7 +204,7 @@ namespace Hyperstore.Tests.MemoryStore
 
             using (var s = store.BeginSession())
             {
-                ISchemaElement metadata = TestDomainDefinition.XExtendsBaseClass;
+                ISchemaElement metadata = schema.Definition.XExtendsBaseClass;
                 var e = new Hyperstore.Modeling.Metadata.Primitives.EnumPrimitive(schema, typeof(ETest));
                 var prop = metadata.DefineProperty<ETest>("enum");
 

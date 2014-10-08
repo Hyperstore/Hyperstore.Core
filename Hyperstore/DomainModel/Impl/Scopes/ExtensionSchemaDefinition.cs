@@ -87,12 +87,13 @@ namespace Hyperstore.Modeling
         /// <param name="services"> The domain services. </param>
         /// <returns>   The new schema. </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected override ISchema CreateSchema(IServicesContainer services)
+        protected override ISchema<T> CreateSchema<T>(IServicesContainer services) 
         {
-            return new Hyperstore.Modeling.Scopes.DomainSchemaExtension(_extendedSchema,
-                                                                              services,
-                                                                              Behavior,
-                                                                              new ExtensionConstraintManager(services, _extendedSchema, _mode));
+            return new Hyperstore.Modeling.Scopes.DomainSchemaExtension<T>( this as T,
+                                                                            _extendedSchema,
+                                                                            services,
+                                                                            Behavior,
+                                                                            new ExtensionConstraintManager(services, _extendedSchema, _mode));
         }
     }
 }

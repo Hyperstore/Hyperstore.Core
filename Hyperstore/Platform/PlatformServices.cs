@@ -190,6 +190,14 @@ namespace Hyperstore.Modeling.Platform
             return new InternalConcurrentQueue<TValue>();
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Creates composition service.
+        /// </summary>
+        /// <returns>
+        ///  The new composition service.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public virtual ICompositionService CreateCompositionService()
         {
             return new Hyperstore.Modeling.Container.Composition.CompositionContainer();

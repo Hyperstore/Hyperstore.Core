@@ -209,11 +209,14 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <summary>
         ///  Create a relationship.
         /// </summary>
-        /// <exception cref="NotInTransactionException">
-        ///  Thrown when a Not In Transaction error condition occurs.
+        /// <exception cref="SessionRequiredException">
+        ///  Thrown when a Session Required error condition occurs.
         /// </exception>
         /// <exception cref="InvalidElementException">
         ///  Thrown when an Invalid Element error condition occurs.
+        /// </exception>
+        /// <exception cref="HypergraphException">
+        ///  Thrown when a Hypergraph error condition occurs.
         /// </exception>
         /// <param name="id">
         ///  .

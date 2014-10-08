@@ -51,7 +51,7 @@ namespace Hyperstore.Tests
             var graph = domain.Resolve<IHyperGraph>();
             var ids = new Identity[8];
 
-            var mid = TestDomainDefinition.XExtendsBaseClass;
+            var mid = domain.Store.GetSchemaEntity<XExtendsBaseClass>();
             using (var session = domain.Store.BeginSession())
             {
                 for (int i = 1; i <= 7; i++)
@@ -61,7 +61,7 @@ namespace Hyperstore.Tests
                 }
 
                 var cx = 8;
-                var rid = TestDomainDefinition.XReferencesX;
+                var rid = domain.Store.GetSchemaRelationship<XReferencesX>();
                 graph.CreateRelationship(Id(cx++), rid, ids[1], mid, ids[2], mid);
                 graph.CreateRelationship(Id(cx++), rid, ids[1], mid, ids[3], mid);
                 graph.CreateRelationship(Id(cx++), rid, ids[2], mid, ids[4], mid);

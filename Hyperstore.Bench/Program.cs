@@ -14,6 +14,8 @@ namespace Hyperstore.Bench
     {
         private IHyperstore store;
         private ConcurrentDictionary<int, Identity> ids;
+        private ISchema<TestDomainDefinition> schema;
+
         static void Main(string[] args)
         {
             var cx = 0;
@@ -34,7 +36,7 @@ namespace Hyperstore.Bench
             
             long nb = 0;
             store = await StoreBuilder.New().CreateAsync();
-            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
 
             var domain = await store.DomainModels
                                     .New()
@@ -53,7 +55,7 @@ namespace Hyperstore.Bench
                 Console.WriteLine("Adding 100 implicit constraints on each element.");
 
                 for (int i = 0; i < nbc; i++)
-                    TestDomainDefinition.XExtendsBaseClass.AddImplicitConstraint(self =>
+                    schema.Definition.XExtendsBaseClass.AddImplicitConstraint(self =>
                         System.Threading.Interlocked.Increment(ref nb) > 0,
                         "OK").Register();
             }
@@ -155,7 +157,7 @@ namespace Hyperstore.Bench
             }
             );
 
-            var x = store.GetElements(TestDomainDefinition.XExtendsBaseClass).Count();
+            var x = store.GetElements(schema.Definition.XExtendsBaseClass).Count();
             var y = ids.Count();
 
             return x + y;

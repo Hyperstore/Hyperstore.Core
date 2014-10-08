@@ -26,14 +26,31 @@ using Hyperstore.Modeling.Metadata.Constraints;
 
 namespace Hyperstore.Modeling.Scopes
 {
-    internal class DomainSchemaExtension : DomainSchema, IScope, ISchemaExtension
+    internal class DomainSchemaExtension<T> : DomainSchema, IScope, ISchemaExtension, ISchema<T> where T:class, ISchemaDefinition
     {
         private readonly ISchema _extendedMetaModel;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
+        ///  Gets or sets the definition.
+        /// </summary>
+        /// <value>
+        ///  The definition.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public T Definition
+        {
+            get;
+            private set;
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
         ///  Constructor.
         /// </summary>
+        /// <param name="desc">
+        ///  The description.
+        /// </param>
         /// <param name="extendedMetaModel">
         ///  The extended meta model.
         /// </param>
@@ -48,7 +65,7 @@ namespace Hyperstore.Modeling.Scopes
         ///  The constraints.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public DomainSchemaExtension(ISchema extendedMetaModel, IServicesContainer services, DomainBehavior behavior = DomainBehavior.Standard, IConstraintsManager constraints = null)
+        public DomainSchemaExtension(T desc, ISchema extendedMetaModel, IServicesContainer services, DomainBehavior behavior = DomainBehavior.Standard, IConstraintsManager constraints = null)
             : base(extendedMetaModel.Name, services, behavior, constraints)
         {
             DebugContract.Requires(extendedMetaModel);
@@ -56,6 +73,7 @@ namespace Hyperstore.Modeling.Scopes
             DebugContract.Requires(constraints);
 
             _extendedMetaModel = extendedMetaModel;
+            Definition = desc;
         }
 
         protected override IHyperGraph ResolveHyperGraph()

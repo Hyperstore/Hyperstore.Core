@@ -29,8 +29,25 @@ using Hyperstore.Modeling.Metadata.Constraints;
 
 namespace Hyperstore.Modeling.Metadata
 {
-    [DebuggerDisplay("Meta Model {Name}")]
-    internal class DomainSchema : DomainModel, ISchema, IUpdatableSchema
+    internal class DomainSchema<T> : DomainSchema, ISchema<T> where T:class, ISchemaDefinition
+    {
+        private readonly T _schemaDefinition;
+
+        public DomainSchema(T desc, string name, IServicesContainer services, DomainBehavior behavior = DomainBehavior.DisableL1Cache, IConstraintsManager constraints = null)
+            : base(name, services, behavior, constraints)
+        {
+            DebugContract.Requires(desc);
+            _schemaDefinition = desc;
+        }
+
+        T ISchema<T>.Definition
+        {
+            get { return _schemaDefinition; }
+        }
+    }
+
+    [DebuggerDisplay("Schema {Name}")]
+    internal abstract class DomainSchema : DomainModel, ISchema, IUpdatableSchema
     {
         private IConstraintsManager _constraints;
 

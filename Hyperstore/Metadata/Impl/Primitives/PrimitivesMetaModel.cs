@@ -33,8 +33,21 @@ namespace Hyperstore.Modeling.Metadata
     /// </summary>
     /// <seealso cref="T:Hyperstore.Modeling.ISchema"/>
     ///-------------------------------------------------------------------------------------------------
-    public class PrimitivesSchema : InternalSchema
+    public class PrimitivesSchema : InternalSchema, ISchema<PrimitivesSchemaDefinition>
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the definition.
+        /// </summary>
+        /// <value>
+        ///  The definition.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public PrimitivesSchemaDefinition Definition
+        {
+            get { return null; }
+        }
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Name of the domain model.
@@ -77,6 +90,41 @@ namespace Hyperstore.Modeling.Metadata
             return base.GetSchemaInfo(id, throwErrorIfNotExists);
         }
 
+        public override void Dispose()
+        {
+            base.Dispose();
+            StringSchema = null;
+            BooleanSchema = null;
+            DateTimeSchema = null;
+            TimeSpanSchema = null;
+            SingleSchema = null;
+            DecimalSchema = null;
+            UInt16Schema = null;
+            UInt32Schema = null;
+            UInt64Schema = null;
+            Int16Schema = null; 
+            Int32Schema = null;
+            Int64Schema = null;
+            DoubleSchema = null;
+            GuidSchema = null;
+            CharSchema = null;
+            ByteSchema = null;
+            ByteArraySchema = null;
+            SchemaElementSchema = null;
+            SchemaEntitySchema = null;
+            SchemaValueObjectSchema = null;
+            GeneratedSchemaEntitySchema = null;
+            SchemaPropertySchema = null;
+            IdentitySchema = null;
+            TypeSchema = null;
+            SchemaRelationshipSchema = null;
+            ModelEntitySchema = null;
+            ModelRelationshipSchema = null;
+            SchemaElementHasPropertiesSchema = null;
+            SchemaElementReferencesSuperElementSchema = null;
+            SchemaPropertyReferencesSchemaEntitySchema = null;
+
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

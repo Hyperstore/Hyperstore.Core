@@ -168,7 +168,7 @@ namespace Hyperstore.Modeling
         ///  A new domain instance.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static async Task<IDomainModel> CreateDomain<T>(string name) where T : ISchemaDefinition, new()
+        public static async Task<IDomainModel> CreateDomain<T>(string name) where T : class, ISchemaDefinition, new()
         {
             Contract.RequiresNotEmpty(name, "name");
 

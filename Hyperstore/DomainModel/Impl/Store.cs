@@ -178,8 +178,8 @@ namespace Hyperstore.Modeling
             DefaultSessionConfiguration.IsolationLevel = SessionIsolationLevel.ReadCommitted;
             DefaultSessionConfiguration.SessionTimeout = TimeSpan.FromMinutes(1);
 
-       //     _domainControler = ((options & StoreOptions.EnableScopings) == StoreOptions.EnableScopings) ? (IScopeManager<IDomainModel>)new ExtendedScopeManager<IDomainModel>(this) : new ScopeManager<IDomainModel>(this);
-       //     _schemaControler = ((options & StoreOptions.EnableScopings) == StoreOptions.EnableScopings) ? (IScopeManager<ISchema>)new ExtendedScopeManager<ISchema>(this) : new ScopeManager<ISchema>(this);
+            //     _domainControler = ((options & StoreOptions.EnableScopings) == StoreOptions.EnableScopings) ? (IScopeManager<IDomainModel>)new ExtendedScopeManager<IDomainModel>(this) : new ScopeManager<IDomainModel>(this);
+            //     _schemaControler = ((options & StoreOptions.EnableScopings) == StoreOptions.EnableScopings) ? (IScopeManager<ISchema>)new ExtendedScopeManager<ISchema>(this) : new ScopeManager<ISchema>(this);
 
             _domainControler = new ScopeControler<IDomainModel>(this);
             _schemaControler = new ScopeControler<ISchema>(this);
@@ -1162,7 +1162,8 @@ namespace Hyperstore.Modeling
             var metaclass = GetSchemaRelationship<T>(false);
             if (metaclass != null)
                 return from dm in _domainControler.GetScopes(ScopesSelector.Enabled, CurrentSessionId)
-                       from rel in dm.GetRelationships(metaclass, skip: skip) select (T)rel;
+                       from rel in dm.GetRelationships(metaclass, skip: skip)
+                       select (T)rel;
 
             return default(IEnumerable<T>);
         }
@@ -1248,7 +1249,7 @@ namespace Hyperstore.Modeling
             return domainModel;
         }
 
-        async Task<ISchema> IDomainManager.LoadSchemaAsync(ISchemaDefinition desc, IServicesContainer parentContainer)
+        async Task<ISchema<T>> IDomainManager.LoadSchemaAsync<T>(T desc, IServicesContainer parentContainer)
         {
             Contract.Requires(desc, "desc");
             Conventions.CheckValidName(desc.SchemaName, true);
@@ -1265,14 +1266,14 @@ namespace Hyperstore.Modeling
             // Chargement du domaine
             using (var session = BeginSession(new SessionConfiguration { Mode = SessionMode.LoadingSchema }))
             {
-                desc.LoadDependentSchemas(this);
+                await LoadDependentSchemas(desc);
 
                 // Création du services du domaine à partir du services maitre (du store)
                 var domainContainer = (parentContainer ?? Services).NewScope();
 
                 desc.PrepareScopedContainer(domainContainer);
 
-                var schema = desc.CreateSchema(domainContainer);
+                var schema = desc.CreateSchema<T>(domainContainer);
 
                 // Enregistrement du domaine au niveau du store
                 _schemaControler.RegisterScope(schema);
@@ -1404,8 +1405,10 @@ namespace Hyperstore.Modeling
             if (Session.Current != null)
                 return null;
 
-            return BeginSession(new SessionConfiguration {                        Readonly = true
-                                });
+            return BeginSession(new SessionConfiguration
+            {
+                Readonly = true
+            });
         }
 
         private void NotifyEnd()
@@ -1432,6 +1435,17 @@ namespace Hyperstore.Modeling
             if (System.Threading.Interlocked.CompareExchange(ref _initialized, 1, 0) == 0)
             {
                 await manager.LoadSchemaAsync(new PrimitivesSchemaDefinition());
+            }
+        }
+
+        protected virtual async Task LoadDependentSchemas(ISchemaDefinition desc)
+        {
+            foreach (var dependent in desc.GetDependentSchemas())
+            {
+                if (!_schemaControler.All().Any(s => s.Name == dependent.SchemaName))
+                {
+                    await ((IDomainManager)this).LoadSchemaAsync(dependent, null);
+                }
             }
         }
 

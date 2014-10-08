@@ -35,7 +35,7 @@ namespace Hyperstore.Tests.Hypergraph
         public async Task TraversalTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
-            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
 
             CreateGraph(domain);
@@ -43,7 +43,7 @@ namespace Hyperstore.Tests.Hypergraph
             ISchemaEntity metadata;
             using (var session = domain.Store.BeginSession(new SessionConfiguration { Readonly = true }))
             {
-                metadata = TestDomainDefinition.XExtendsBaseClass;
+                metadata = schema.Definition.XExtendsBaseClass;
             }
 
             var cx = domain.Traversal.OnEveryPath(

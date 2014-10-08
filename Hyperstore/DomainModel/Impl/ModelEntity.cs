@@ -46,14 +46,14 @@ namespace Hyperstore.Modeling
         ///  Constructeur. Si la clé est à null, une clé est générée automatiquement. Si le metadata est
         ///  Empty, un nouvel metadata est créé automatiquement.
         /// </summary>
-        /// <exception cref="NotInTransactionException">
-        ///  Thrown when a Not In Transaction error condition occurs.
+        /// <exception cref="SessionRequiredException">
+        ///  Thrown when a Session Required error condition occurs.
         /// </exception>
         /// <exception cref="ArgumentException">
         ///  Thrown when one or more arguments have unsupported or illegal values.
         /// </exception>
-        /// <exception cref="Exception">
-        ///  Thrown when an exception error condition occurs.
+        /// <exception cref="TypeMismatchException">
+        ///  Thrown when a Type Mismatch error condition occurs.
         /// </exception>
         /// <param name="schemaName">
         ///  Name of the schema.

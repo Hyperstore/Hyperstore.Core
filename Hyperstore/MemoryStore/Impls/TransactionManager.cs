@@ -84,9 +84,6 @@ namespace Hyperstore.Modeling.MemoryStore
         /// <summary>
         ///  Get the current transaction.
         /// </summary>
-        /// <exception cref="NotInTransactionException">
-        ///  Thrown when a Not In Transaction error condition occurs.
-        /// </exception>
         /// <value>
         ///  The current transaction.
         /// </value>

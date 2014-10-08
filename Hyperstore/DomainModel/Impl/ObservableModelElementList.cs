@@ -268,7 +268,7 @@ namespace Hyperstore.Modeling
         }
 
 
-        struct Iterator<T> : IEnumerator<T> where T : class, IModelElement
+        struct Iterator : IEnumerator<T> 
         {
             private ObservableModelElementList<T> list;
             private T current;
@@ -324,7 +324,7 @@ namespace Hyperstore.Modeling
         public override IEnumerator<T> GetEnumerator()
         {
             LoadItems();
-            return new Iterator<T>(this);
+            return new Iterator(this);
         }
 
         ///-------------------------------------------------------------------------------------------------

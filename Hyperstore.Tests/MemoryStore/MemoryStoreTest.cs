@@ -428,7 +428,7 @@ namespace Hyperstore.Tests.MemoryStore
         public async Task SerializableTransactionTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
-            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
 
             Identity aid;
@@ -436,7 +436,7 @@ namespace Hyperstore.Tests.MemoryStore
 
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
             {
-                a = new DynamicModelEntity(domain, TestDomainDefinition.XExtendsBaseClass);
+                a = new DynamicModelEntity(domain, schema.Definition.XExtendsBaseClass);
                 aid = a.Id;
                 a.Value = 10;
                 s.AcceptChanges();
@@ -479,7 +479,7 @@ namespace Hyperstore.Tests.MemoryStore
         public async Task ReadPhantomTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
-            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
 
             Identity aid;
@@ -488,7 +488,7 @@ namespace Hyperstore.Tests.MemoryStore
             // Création d'une valeur
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
             {
-                a = new DynamicModelEntity(domain, TestDomainDefinition.XExtendsBaseClass);
+                a = new DynamicModelEntity(domain, schema.Definition.XExtendsBaseClass);
                 aid = a.Id;
                 a.Value = 10;
                 s.AcceptChanges();

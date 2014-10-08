@@ -106,6 +106,14 @@ namespace Hyperstore.Modeling.Traversal
             }
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Enumerates iterate to root in this collection.
+        /// </summary>
+        /// <returns>
+        ///  An enumerator that allows foreach to be used to process iterate to root in this collection.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public IEnumerable<GraphPath> IterateToRoot()
         {
             var p = this;

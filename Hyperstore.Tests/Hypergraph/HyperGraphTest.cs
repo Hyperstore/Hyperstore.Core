@@ -116,14 +116,14 @@ namespace Hyperstore.Tests.HyperGraph
         public async Task RemoveElementTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
-            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test"); 
 
             CreateGraph(domain);
             var Graph = domain.Resolve<IHyperGraph>();
 
             var aid = Id(1);
-            var metadata = TestDomainDefinition.XExtendsBaseClass;
+            var metadata = schema.Definition.XExtendsBaseClass;
             var mel = domain.GetElement(aid, metadata);
             var namePropertyMetadata = mel.SchemaInfo.GetProperty("Name");
 
@@ -157,7 +157,7 @@ namespace Hyperstore.Tests.HyperGraph
         public async Task RollbackPropertyTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
-            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
 
             CreateGraph(domain);
@@ -168,7 +168,7 @@ namespace Hyperstore.Tests.HyperGraph
             IModelElement mel;
             using (var session = domain.Store.BeginSession(new SessionConfiguration { Readonly = true }))
             {
-                metadata = TestDomainDefinition.XExtendsBaseClass;
+                metadata = schema.Definition.XExtendsBaseClass;
                 mel = domain.GetElement(aid, metadata);
             }
 
@@ -263,7 +263,7 @@ namespace Hyperstore.Tests.HyperGraph
         public async Task GetPropertyTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
-            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
 
             CreateGraph(domain);
@@ -272,7 +272,7 @@ namespace Hyperstore.Tests.HyperGraph
             var Graph = domain.Resolve<IHyperGraph>();
             ISchemaEntity metadata;
             IModelElement mel;
-            metadata = TestDomainDefinition.XExtendsBaseClass;
+            metadata = schema.Definition.XExtendsBaseClass;
             mel = domain.GetElement(aid, metadata);
 
             var prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo, mel.SchemaInfo.GetProperty("Name"));
@@ -312,7 +312,7 @@ namespace Hyperstore.Tests.HyperGraph
         public async Task GetPropertyTest2()
         {
             var store = await StoreBuilder.New().CreateAsync();
-            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
 
             CreateGraph(domain);
@@ -321,7 +321,7 @@ namespace Hyperstore.Tests.HyperGraph
             var Graph = domain.Resolve<IHyperGraph>();
             ISchemaEntity metadata;
             IModelElement mel;
-            metadata = TestDomainDefinition.XExtendsBaseClass;
+            metadata = schema.Definition.XExtendsBaseClass;
             mel = domain.GetElement(aid, metadata);
             var gate = new System.Threading.ManualResetEvent(false);
 

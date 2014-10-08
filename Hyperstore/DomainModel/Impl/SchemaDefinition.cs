@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -36,6 +36,8 @@ namespace Hyperstore.Modeling
     {
         private readonly string _name;
         private DomainBehavior _behavior;
+
+        public string SchemaName { get { return _name; } }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -69,14 +71,14 @@ namespace Hyperstore.Modeling
         ///  (Optional) the behavior.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        protected SchemaDefinition(string name, DomainBehavior behavior = DomainBehavior.Standard)
+        protected SchemaDefinition(string name, DomainBehavior behavior = DomainBehavior.Standard, ISchemaDefinition desc = null)
+            : base(desc)
         {
             Contract.Requires(name, "name");
             Conventions.CheckValidDomainName(name);
 
             _name = name;
             Behavior = behavior;
-
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -150,10 +152,10 @@ namespace Hyperstore.Modeling
         ///  The new schema.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        ISchema ISchemaDefinition.CreateSchema(IServicesContainer services)
+        ISchema<T> ISchemaDefinition.CreateSchema<T>(IServicesContainer services)
         {
             DebugContract.Requires(services);
-            return CreateSchema(services);
+            return CreateSchema<T>(services);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -170,31 +172,35 @@ namespace Hyperstore.Modeling
         ///  The new schema.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected virtual ISchema CreateSchema(IServicesContainer services)
+        protected virtual ISchema<T> CreateSchema<T>(IServicesContainer services) where T : class, ISchemaDefinition
         {
-            return new Hyperstore.Modeling.Metadata.DomainSchema(_name, services, Behavior);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>   Loads dependent schemas. </summary>
-        /// <param name="store">    The store. </param>
-        ///-------------------------------------------------------------------------------------------------
-        void ISchemaDefinition.LoadDependentSchemas(IHyperstore store)
-        {
-            DebugContract.Requires(store);
-            LoadDependentSchemas(store);
+            return new Hyperstore.Modeling.Metadata.DomainSchema<T>(this as T, _name, services, Behavior);
         }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Loads dependent schemas.
+        ///  Gets dependent schemas.
         /// </summary>
-        /// <param name="store">
-        ///  The store.
-        /// </param>
+        /// <returns>
+        ///  The dependent schemas.
+        /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected virtual void LoadDependentSchemas(IHyperstore store)
+        IEnumerable<ISchemaDefinition> ISchemaDefinition.GetDependentSchemas()
         {
+            return GetDependentSchemas();
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets dependent schemas.
+        /// </summary>
+        /// <returns>
+        ///  The dependent schemas.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        protected virtual IEnumerable<ISchemaDefinition> GetDependentSchemas()
+        {
+            yield break;
         }
     }
 }

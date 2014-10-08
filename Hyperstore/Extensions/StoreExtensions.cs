@@ -27,13 +27,16 @@ namespace Hyperstore.Modeling
     /// <summary>
     ///  A schema builder.
     /// </summary>
+    /// <typeparam name="T">
+    ///  Generic type parameter.
+    /// </typeparam>
     ///-------------------------------------------------------------------------------------------------
-    public class SchemaBuilder
+    public class SchemaBuilder<T> where T: class, ISchemaDefinition 
     {
-        private ISchemaDefinition _definition;
+        private T _definition;
         private readonly IDomainManager _store;
 
-        internal SchemaBuilder(IDomainManager store, ISchemaDefinition definition)
+        internal SchemaBuilder(IDomainManager store, T definition)
         {
             _store = store;
             _definition = definition;
@@ -41,7 +44,7 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Set or override a configuration property
+        ///  Set or override a configuration property.
         /// </summary>
         /// <param name="key">
         ///  The property key.
@@ -53,7 +56,7 @@ namespace Hyperstore.Modeling
         ///  A SchemaBuilder.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public SchemaBuilder Set(string key, object value)
+        public SchemaBuilder<T> Set(string key, object value)
         {
             _definition.SetProperty(key, value);
             return this;
@@ -61,16 +64,16 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Register an action to execute before the schema will be activated
+        ///  Register an action to execute before the schema will be activated.
         /// </summary>
         /// <param name="action">
-        ///  A lambda expression receiving the schema as paramater
+        ///  A lambda expression receiving the schema as paramater.
         /// </param>
         /// <returns>
         ///  A SchemaBuilder.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public SchemaBuilder PreloadAction(Action<IDomainModel> action)
+        public SchemaBuilder<T> PreloadAction(Action<IDomainModel> action)
         {
             _definition.ExecutePreloadAction(action);
             return this;
@@ -90,7 +93,7 @@ namespace Hyperstore.Modeling
         ///  A schema builder.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public SchemaBuilder Using<TService>(Func<IServicesContainer, TService> factory) where TService : class
+        public SchemaBuilder<T> Using<TService>(Func<IServicesContainer, TService> factory) where TService : class
         {
             _definition.Using<TService>(factory);
             return this;
@@ -104,7 +107,7 @@ namespace Hyperstore.Modeling
         ///  A SchemaBuilder.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public SchemaBuilder AsObservable()
+        public SchemaBuilder<T> AsObservable()
         {
             _definition.Behavior |= DomainBehavior.Observable;
             return this;
@@ -118,7 +121,7 @@ namespace Hyperstore.Modeling
         ///  A SchemaBuilder.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public SchemaBuilder DisableL1Cache()
+        public SchemaBuilder<T> DisableL1Cache()
         {
             _definition.Behavior |= DomainBehavior.DisableL1Cache;
             return this;
@@ -129,13 +132,13 @@ namespace Hyperstore.Modeling
         ///  Replace the current id generator.
         /// </summary>
         /// <param name="factory">
-        ///  A id generator factory
+        ///  A id generator factory.
         /// </param>
         /// <returns>
         ///  A schema builder.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public SchemaBuilder UsingIdGenerator(Func<IServicesContainer, Hyperstore.Modeling.HyperGraph.IIdGenerator> factory)
+        public SchemaBuilder<T> UsingIdGenerator(Func<IServicesContainer, Hyperstore.Modeling.HyperGraph.IIdGenerator> factory)
         {
             Using(factory);
             return this;
@@ -155,7 +158,7 @@ namespace Hyperstore.Modeling
         ///  A schema builder.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public SchemaBuilder SubscribeToEventBus(Messaging.ChannelPolicy outputProperty, Messaging.ChannelPolicy inputProperty = null)
+        public SchemaBuilder<T> SubscribeToEventBus(Messaging.ChannelPolicy outputProperty, Messaging.ChannelPolicy inputProperty = null)
         {
             _definition.SubscribeToEventBus(
                         outputProperty,
@@ -166,15 +169,15 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Create a new schema
+        ///  Create a new schema.
         /// </summary>
         /// <returns>
-        ///  The schema instance
+        ///  The schema instance.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public System.Threading.Tasks.Task<ISchema> CreateAsync()
+        public System.Threading.Tasks.Task<ISchema<T>> CreateAsync() 
         {
-            return _store.LoadSchemaAsync(_definition);
+            return _store.LoadSchemaAsync<T>(_definition);
         }
 
     }
@@ -209,7 +212,7 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Set or override a configuration property
+        ///  Set or override a configuration property.
         /// </summary>
         /// <param name="key">
         ///  The key.
@@ -266,7 +269,8 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Provide a factory to create the new domain instance (If your domain doesn't have the standard constructor)
+        ///  Provide a factory to create the new domain instance (If your domain doesn't have the standard
+        ///  constructor)
         /// </summary>
         /// <param name="factory">
         ///  The domain factory.
@@ -283,7 +287,7 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Replace the current id generator
+        ///  Replace the current id generator.
         /// </summary>
         /// <param name="factory">
         ///  The id generator factory.
@@ -300,13 +304,13 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Create a new domain model
+        ///  Create a new domain model.
         /// </summary>
         /// <param name="name">
         ///  The domain name.
         /// </param>
         /// <returns>
-        ///  A new domain model
+        ///  A new domain model.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
         public System.Threading.Tasks.Task<IDomainModel> CreateAsync(string name)
@@ -316,16 +320,20 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Create a new domain model of the specified type. The domain model must have a constructor with the following signature ctor(IServicesContainer services, string domainName).
+        ///  Create a new domain model of the specified type. The domain model must have a constructor
+        ///  with the following signature ctor(IServicesContainer services, string domainName).
         /// </summary>
+        /// <exception cref="CriticalException">
+        ///  Thrown when a Critical error condition occurs.
+        /// </exception>
         /// <typeparam name="TDomainModel">
-        ///  Type of the domain model to create
+        ///  Type of the domain model to create.
         /// </typeparam>
         /// <param name="name">
         ///  The domain name.
         /// </param>
         /// <returns>
-        ///  A new domain model
+        ///  A new domain model.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
         public async System.Threading.Tasks.Task<TDomainModel> CreateAsync<TDomainModel>(string name) where TDomainModel : IDomainModel
@@ -344,7 +352,7 @@ namespace Hyperstore.Modeling
         ///  Replace the current model element factory.
         /// </summary>
         /// <param name="factory">
-        ///  A model element factory factory
+        ///  A model element factory factory.
         /// </param>
         /// <returns>
         ///  An ISchemaDefinition.
@@ -402,6 +410,20 @@ namespace Hyperstore.Modeling
     ///-------------------------------------------------------------------------------------------------
     public static class SchemaExtensions
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Enumerates all in this collection.
+        /// </summary>
+        /// <typeparam name="T">
+        ///  Generic type parameter.
+        /// </typeparam>
+        /// <param name="list">
+        ///  The list to act on.
+        /// </param>
+        /// <returns>
+        ///  An enumerator that allows foreach to be used to process all in this collection.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public static IEnumerable<T> All<T>(this IModelList<T> list) where T:class, IDomainModel
         {
             var scopes = list as IScopeManager<T>;
@@ -410,10 +432,10 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Prepare a new schema builder using a definition
+        ///  Prepare a new schema builder using a definition.
         /// </summary>
         /// <typeparam name="T">
-        ///  Type of the schema definition to use
+        ///  Type of the schema definition to use.
         /// </typeparam>
         /// <param name="schemas">
         ///  The schemas to act on.
@@ -422,16 +444,19 @@ namespace Hyperstore.Modeling
         ///  A SchemaBuilder.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static SchemaBuilder New<T>(this IModelList<ISchema> schemas) where T : ISchemaDefinition, new()
+        public static SchemaBuilder<T> New<T>(this IModelList<ISchema> schemas) where T : class, ISchemaDefinition, new()
         {
             var store = schemas.Store as IDomainManager;
-            return new SchemaBuilder(store, new T());
+            return new SchemaBuilder<T>(store, new T());
         }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Prepare a new schema builder from an existing definition
+        ///  Prepare a new schema builder from an existing definition.
         /// </summary>
+        /// <typeparam name="T">
+        ///  Generic type parameter.
+        /// </typeparam>
         /// <param name="schemas">
         ///  The schemas to act on.
         /// </param>
@@ -442,16 +467,16 @@ namespace Hyperstore.Modeling
         ///  A SchemaBuilder.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static SchemaBuilder New(this IModelList<ISchema> schemas, ISchemaDefinition definition)
+        public static SchemaBuilder<T> New<T>(this IModelList<ISchema> schemas, T definition) where T : class, ISchemaDefinition
         {
             Contract.Requires(definition, "definition");
             var store = schemas.Store as IDomainManager;
-            return new SchemaBuilder(store, definition);
+            return new SchemaBuilder<T>(store, definition);
         }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Unload a schema
+        ///  Unload a schema.
         /// </summary>
         /// <param name="models">
         ///  The models to act on.
@@ -477,7 +502,7 @@ namespace Hyperstore.Modeling
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Prepare a new domain builder
+        ///  Prepare a new domain builder.
         /// </summary>
         /// <param name="models">
         ///  The models to act on.
@@ -497,13 +522,13 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Unload a domain or an extension
+        ///  Unload a domain or an extension.
         /// </summary>
         /// <param name="models">
         ///  The models to act on.
         /// </param>
         /// <param name="scope">
-        ///  domain or extension to unload
+        ///  domain or extension to unload.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         public static void Unload(this IModelList<IDomainModel> models, IDomainModel scope)

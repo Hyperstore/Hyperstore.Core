@@ -37,8 +37,8 @@ namespace Hyperstore.Modeling.Metadata
     ///-------------------------------------------------------------------------------------------------
     public class InternalSchema : ISchema
     {
-        private readonly IDictionary<Identity, ISchemaInfo> _metadatas = new Dictionary<Identity, ISchemaInfo>(31);
-        private readonly IDictionary<string, ISchemaInfo> _metadatasByName = new Dictionary<string, ISchemaInfo>(31);
+        private IDictionary<Identity, ISchemaInfo> _metadatas = new Dictionary<Identity, ISchemaInfo>(31);
+        private IDictionary<string, ISchemaInfo> _metadatasByName = new Dictionary<string, ISchemaInfo>(31);
         private readonly string _name;
         private readonly string _instanceId;
         private readonly IServicesContainer _services;
@@ -617,7 +617,10 @@ namespace Hyperstore.Modeling.Metadata
             if (tmp != null)
                 tmp(this, new EventArgs());
             _services.Dispose();
+            _metadatas = null;
+            _metadatasByName = null;
             Store = null;
+            _instance = null;
         }
 
         ///-------------------------------------------------------------------------------------------------

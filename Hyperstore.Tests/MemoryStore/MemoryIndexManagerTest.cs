@@ -41,12 +41,12 @@ namespace Hyperstore.Tests.Memory
             {
                 // Création concurrente -> Une seule création
                 var store = await StoreBuilder.New().CreateAsync();
-                await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+                var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
                 var domain = await store.DomainModels.New().CreateAsync("Test");
                 var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
                 MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
-                manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
-                manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
+                manager.CreateIndex(schema.Definition.XExtendsBaseClass, "index1", true, "Name");
+                manager.CreateIndex(schema.Definition.XExtendsBaseClass, "index1", true, "Name");
             });
         }
 
@@ -55,11 +55,11 @@ namespace Hyperstore.Tests.Memory
         public async Task IndexExists()
         {
             var store = await StoreBuilder.New().CreateAsync();
-            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
             var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
             MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
-            manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
+            manager.CreateIndex(schema.Definition.XExtendsBaseClass, "index1", true, "Name");
 
             Assert.IsTrue(manager.IndexExists("index1"));
         }
@@ -69,11 +69,11 @@ namespace Hyperstore.Tests.Memory
         public async Task GetIndex()
         {
             var store = await StoreBuilder.New().CreateAsync();
-            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
             var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
             MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
-            manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
+            manager.CreateIndex(schema.Definition.XExtendsBaseClass, "index1", true, "Name");
 
             Assert.IsNotNull(manager.GetIndex("index1"));
         }
@@ -83,11 +83,11 @@ namespace Hyperstore.Tests.Memory
         public async Task DropIndex()
         {
             var store = await StoreBuilder.New().CreateAsync();
-            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
             var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
             MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
-            manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
+            manager.CreateIndex(schema.Definition.XExtendsBaseClass, "index1", true, "Name");
             Assert.IsTrue(manager.IndexExists("index1"));
             manager.DropIndex("index1");
             Assert.IsFalse(manager.IndexExists("index1"));
@@ -100,11 +100,11 @@ namespace Hyperstore.Tests.Memory
             await AssertHelper.ThrowsException<InvalidNameException>(async () =>
             {
                 var store = await StoreBuilder.New().CreateAsync();
-                await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+                var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
                 var domain = await store.DomainModels.New().CreateAsync("Test");
                 var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
                 MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
-                manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index:1", true, "Name");
+                manager.CreateIndex(schema.Definition.XExtendsBaseClass, "index:1", true, "Name");
             });
         }
 
@@ -113,19 +113,19 @@ namespace Hyperstore.Tests.Memory
         public async Task AddToIndex()
         {
             var store = await StoreBuilder.New().CreateAsync();
-            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
             var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
             MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
             using (var s = store.BeginSession(new SessionConfiguration { Readonly = true }))
             {
-                manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
+                manager.CreateIndex(schema.Definition.XExtendsBaseClass, "index1", true, "Name");
 
                 var index = manager.GetIndex("index1");
                 Assert.IsNull(index.Get("momo"));
 
                 var id = new Identity("Test", "1");
-                manager.AddToIndex(TestDomainDefinition.XExtendsBaseClass, "index1", id, "momo");
+                manager.AddToIndex(schema.Definition.XExtendsBaseClass, "index1", id, "momo");
 
                 Assert.AreEqual(id, index.Get("momo"));
             }
@@ -138,16 +138,16 @@ namespace Hyperstore.Tests.Memory
             await AssertHelper.ThrowsException<UniqueConstraintException>(async () =>
             {
                 var store = await StoreBuilder.New().CreateAsync();
-                await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+                var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
                 var domain = await store.DomainModels.New().CreateAsync("Test");
                 var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
                 MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
                 using (var s = store.BeginSession(new SessionConfiguration { Readonly = true }))
                 {
-                    manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
+                    manager.CreateIndex(schema.Definition.XExtendsBaseClass, "index1", true, "Name");
 
-                    manager.AddToIndex(TestDomainDefinition.XExtendsBaseClass, "index1", new Identity("Test", "1"), "momo");
-                    manager.AddToIndex(TestDomainDefinition.XExtendsBaseClass, "index1", new Identity("Test", "2"), "momo");
+                    manager.AddToIndex(schema.Definition.XExtendsBaseClass, "index1", new Identity("Test", "1"), "momo");
+                    manager.AddToIndex(schema.Definition.XExtendsBaseClass, "index1", new Identity("Test", "2"), "momo");
                 }
             });
         }
@@ -157,15 +157,15 @@ namespace Hyperstore.Tests.Memory
         public async Task NotUniqueConstraintIndex()
         {
             var store = await StoreBuilder.New().CreateAsync();
-            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
             var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
             MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
 
-            manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", false, "Name");
+            manager.CreateIndex(schema.Definition.XExtendsBaseClass, "index1", false, "Name");
 
-            manager.AddToIndex(TestDomainDefinition.XExtendsBaseClass, "index1", new Identity("Test", "1"), "momo");
-            manager.AddToIndex(TestDomainDefinition.XExtendsBaseClass, "index1", new Identity("Test", "2"), "momo");
+            manager.AddToIndex(schema.Definition.XExtendsBaseClass, "index1", new Identity("Test", "1"), "momo");
+            manager.AddToIndex(schema.Definition.XExtendsBaseClass, "index1", new Identity("Test", "2"), "momo");
             var index = manager.GetIndex("index1");
             using (var session = store.BeginSession(new SessionConfiguration { Readonly = true }))
             {
@@ -179,20 +179,20 @@ namespace Hyperstore.Tests.Memory
         public async Task RemoveFromIndex()
         {
             var store = await StoreBuilder.New().CreateAsync();
-            await store.Schemas.New<TestDomainDefinition>().CreateAsync();
+            var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
             var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
             MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
 
-            manager.CreateIndex(TestDomainDefinition.XExtendsBaseClass, "index1", true, "Name");
+            manager.CreateIndex(schema.Definition.XExtendsBaseClass, "index1", true, "Name");
 
             var index = manager.GetIndex("index1");
             var id = new Identity("Test", "1");
             using (var session = store.BeginSession(new SessionConfiguration { Readonly = true }))
             {
-                manager.AddToIndex(TestDomainDefinition.XExtendsBaseClass, "index1", id, "momo");
+                manager.AddToIndex(schema.Definition.XExtendsBaseClass, "index1", id, "momo");
                 Assert.AreEqual(id, index.Get("momo"));
-                manager.RemoveFromIndex(TestDomainDefinition.XExtendsBaseClass, "index1", id, "momo");
+                manager.RemoveFromIndex(schema.Definition.XExtendsBaseClass, "index1", id, "momo");
                 Assert.IsNull(index.Get("momo"));
             }
         }

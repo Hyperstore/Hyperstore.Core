@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -76,12 +76,16 @@ namespace Hyperstore.Modeling
         /// <param name="services">   The domain services. </param>
         /// <returns>   The new schema. </returns>
         ///-------------------------------------------------------------------------------------------------
-        ISchema CreateSchema(IServicesContainer services);
+        ISchema<T> CreateSchema<T>(IServicesContainer services) where T : class, ISchemaDefinition;
 
         ///-------------------------------------------------------------------------------------------------
-        /// <summary>   Loads dependent schemas. </summary>
-        /// <param name="store">    The store. </param>
+        /// <summary>
+        ///  Gets dependent schemas.
+        /// </summary>
+        /// <returns>
+        ///  The dependent schemas.
+        /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        void LoadDependentSchemas(IHyperstore store);
+        System.Collections.Generic.IEnumerable<ISchemaDefinition> GetDependentSchemas();
     }
 }

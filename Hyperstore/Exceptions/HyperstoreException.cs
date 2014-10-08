@@ -22,10 +22,42 @@ using System.Threading.Tasks;
 
 namespace Hyperstore.Modeling
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///  Exception for signalling hyperstore errors.
+    /// </summary>
+    /// <seealso cref="T:System.Exception"/>
+    ///-------------------------------------------------------------------------------------------------
     public class HyperstoreException : Exception
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Default constructor.
+        /// </summary>
+        ///-------------------------------------------------------------------------------------------------
         public HyperstoreException() { }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Constructor.
+        /// </summary>
+        /// <param name="message">
+        ///  The message.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         public HyperstoreException(string message) : base(message) { }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Constructor.
+        /// </summary>
+        /// <param name="message">
+        ///  The message.
+        /// </param>
+        /// <param name="inner">
+        ///  The inner.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         public HyperstoreException(string message, Exception inner) : base(message, inner) { }
     }
 }
