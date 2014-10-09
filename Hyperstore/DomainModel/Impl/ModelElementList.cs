@@ -117,10 +117,10 @@ namespace Hyperstore.Modeling
             if (schemaRelationship.Cardinality == Cardinality.OneToOne )
                 throw new HyperstoreException(ExceptionMessages.OnlyOneToManyOrManyToManyAllowedRelationshipsAllowed);
 
-            if (!element.SchemaInfo.IsA(schemaRelationship.Start) && !opposite)
+            if (!opposite && !element.SchemaInfo.IsA(schemaRelationship.Start))
                 throw new TypeMismatchException(ExceptionMessages.InvalidSourceTypeForRelationship);
 
-            if (!element.SchemaInfo.IsA(schemaRelationship.End) && opposite)
+            if (opposite && !element.SchemaInfo.IsA(schemaRelationship.End))
                 throw new TypeMismatchException(ExceptionMessages.InvalidEndTypeForRelationship);
 
             SchemaRelationship = schemaRelationship;
