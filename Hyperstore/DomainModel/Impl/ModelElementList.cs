@@ -114,9 +114,7 @@ namespace Hyperstore.Modeling
             Contract.Requires(schemaRelationship, "schemaRelationship");
             Contract.Requires(element, "element");
 
-            if (schemaRelationship.Cardinality == Cardinality.OneToOne ||
-                (schemaRelationship.Cardinality == Cardinality.OneToMany && opposite) ||
-                (schemaRelationship.Cardinality == Cardinality.ManyToOne && !opposite))
+            if (schemaRelationship.Cardinality == Cardinality.OneToOne )
                 throw new HyperstoreException(ExceptionMessages.OnlyOneToManyOrManyToManyAllowedRelationshipsAllowed);
 
             if (!element.SchemaInfo.IsA(schemaRelationship.Start) && !opposite)
