@@ -23,13 +23,13 @@ using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.HyperGraph;
 using Hyperstore.Modeling.HyperGraph.Index;
 using Hyperstore.Tests.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System.Threading.Tasks;
 using Hyperstore.Modeling.Metadata.Constraints;
 
 namespace Hyperstore.Tests.Commands
 {
-    [TestClass()]
+    
     public class ConstraintsTest
     {
         [Constraint]
@@ -49,8 +49,8 @@ namespace Hyperstore.Tests.Commands
             }
         }
 
-        [TestMethod]
-        [TestCategory("Constraints")]
+        [Fact]
+        
         public async Task ConstraintByComposition()
         {
             var store = await StoreBuilder.New().ComposeWith(typeof(ConstraintsTest).Assembly).CreateAsync();
@@ -66,11 +66,11 @@ namespace Hyperstore.Tests.Commands
 
 
             var result = schema.Constraints.Validate(domain.GetElements());
-            Assert.IsTrue(result.Messages.Count() == 1);
+            Assert.True(result.Messages.Count() == 1);
         }
 
-        [TestMethod]
-        [TestCategory("Constraints")]
+        [Fact]
+        
         public async Task ExplicitConstraint()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -89,12 +89,12 @@ namespace Hyperstore.Tests.Commands
             } // Pas d'erreur
 
             var result = schema.Constraints.Validate(domain.GetElements());
-            Assert.IsTrue(result.Messages.Count() == 1);
+            Assert.True(result.Messages.Count() == 1);
 
         }
 
-        [TestMethod]
-        [TestCategory("Constraints")]
+        [Fact]
+        
         public async Task ImplicitConstraint()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -114,16 +114,16 @@ namespace Hyperstore.Tests.Commands
                     s.AcceptChanges();
                 }
 
-                Assert.Inconclusive();
+                                throw new Exception("Inconclusive");
             }
             catch (SessionException ex)
             {
-                Assert.IsTrue(ex.Messages.Count() == 1);
+                Assert.True(ex.Messages.Count() == 1);
             }
         }
 
-        [TestMethod]
-        [TestCategory("Constraints")]
+        [Fact]
+        
         public async Task Contraint_Error_Notification()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -142,17 +142,17 @@ namespace Hyperstore.Tests.Commands
                     s.AcceptChanges();
                 }
 
-                Assert.Inconclusive();
+                                throw new Exception("Inconclusive");
             }
             catch (SessionException ex)
             {
-                Assert.IsTrue(ex.Messages.Count() == 1);
+                Assert.True(ex.Messages.Count() == 1);
             }
-            Assert.AreEqual(true, sawError);
+            Assert.Equal(true, sawError);
         }
 
-        [TestMethod]
-        [TestCategory("Constraints")]
+        [Fact]
+        
         public async Task EatConstraintException()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -169,8 +169,8 @@ namespace Hyperstore.Tests.Commands
             }
         }
 
-       // [TestMethod]
-        [TestCategory("Constraints")]
+       // [Fact]
+        
         public async Task MultiConstraints()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -207,14 +207,14 @@ namespace Hyperstore.Tests.Commands
                 s.AcceptChanges();
             }
 
-            Assert.AreEqual(0, cx);
+            Assert.Equal(0, cx);
         }
 
-        [TestMethod]
-        [TestCategory("Constraints")]
+        [Fact]
+        
         public async Task Constraint_Cannot_modify_the_model()
         {
-            await AssertHelper.ThrowsException<SessionException>(async () =>
+            await Assert.ThrowsAsync<SessionException>(async () =>
             {
                 Identity aid = null;
                 var store = await StoreBuilder.New().CreateAsync();
@@ -237,11 +237,11 @@ namespace Hyperstore.Tests.Commands
             });
         }
 
-        [TestMethod]
-        [TestCategory("Constraints")]
+        [Fact]
+        
         public async Task Inherited_constraint()
         {
-            await AssertHelper.ThrowsException<SessionException>(async () =>
+            await Assert.ThrowsAsync<SessionException>(async () =>
             {
                 var store = await StoreBuilder.New().CreateAsync();
                 var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
@@ -262,7 +262,7 @@ namespace Hyperstore.Tests.Commands
             });
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RelationshipConstraintTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -271,7 +271,7 @@ namespace Hyperstore.Tests.Commands
 
             schema.Definition.XReferencesY.AddImplicitConstraint(r => r.Weight > 0, "error").Register();
 
-            AssertHelper.ThrowsException<SessionException>(
+            Assert.Throws<SessionException>(
                 () =>
                 {
                     XReferencesY rel = null;

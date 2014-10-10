@@ -20,7 +20,7 @@ using System.Linq;
 using System.Text;
 using Hyperstore.Modeling;
 using Hyperstore.Tests.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System.Threading.Tasks;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -28,11 +28,11 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace Hyperstore.Tests.Hypergraph
 {
-    [TestClass()]
+    
     public class HyperGraphIndexTest : HyperstoreTestBase
     {
-        [TestCategory("Hypergraph")]
-        [TestMethod()]
+        
+        [Fact]
         public async Task CreateIndexTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -42,8 +42,8 @@ namespace Hyperstore.Tests.Hypergraph
             domain.Indexes.CreateIndex(schema.Definition.XExtendsBaseClass, "index1", true, "Name");
         }
 
-        [TestCategory("Hypergraph")]
-        [TestMethod()]
+        
+        [Fact]
         public async Task IndexTest()
         {
             var store = await StoreBuilder.New().CreateAsync();

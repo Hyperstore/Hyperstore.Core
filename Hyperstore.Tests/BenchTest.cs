@@ -15,7 +15,7 @@
 // limitations under the License.
  
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Hyperstore.Modeling.MemoryStore;
 using System.Linq;
 using System.Collections.Concurrent;
@@ -30,14 +30,14 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace Hyperstore.Tests
 {
-    [TestClass]
+    
     public class BenchTest : HyperstoreTestBase
     {
         private ConcurrentDictionary<int, Identity> ids;
         private IHyperstore store;
         private ISchema<TestDomainDefinition> schema;
 
-        [TestMethod]
+        [Fact]
         public async Task Bench()
         {
             store = await StoreBuilder.New().CreateAsync();
@@ -53,10 +53,10 @@ namespace Hyperstore.Tests
             RemoveElement(mx);
             sw.Stop();
             Trace.WriteLine("Bench : " + sw.ElapsedMilliseconds.ToString());
-            Assert.IsTrue(sw.ElapsedMilliseconds < 2000);
+            Assert.True(sw.ElapsedMilliseconds < 2000);
         }
 
-        // [TestMethod]
+        // [Fact]
         public async Task BenchWithConstraints()
         {
             long nb = 0;
@@ -81,8 +81,8 @@ namespace Hyperstore.Tests
             RemoveElement(mx);
             sw.Stop();
 
-            Assert.AreEqual(mx * nbc * 2, nb); // Nbre de fois la contrainte est appelée (sur le add et le update)
-            Assert.IsTrue(sw.ElapsedMilliseconds < 4000, String.Format("ElapsedTime = {0}", sw.ElapsedMilliseconds));
+            Assert.Equal(mx * nbc * 2, nb); // Nbre de fois la contrainte est appelée (sur le add et le update)
+            Assert.True(sw.ElapsedMilliseconds < 4000, String.Format("ElapsedTime = {0}", sw.ElapsedMilliseconds));
         }
 
         private void AddElement(IDomainModel domain, int max)
@@ -149,7 +149,7 @@ namespace Hyperstore.Tests
 
             var x = store.GetElements(schema.Definition.XExtendsBaseClass).Count();
             var y = ids.Count();
-            Assert.IsTrue(x == 0 && y == 0);
+            Assert.True(x == 0 && y == 0);
             return x + y;
         }
     }

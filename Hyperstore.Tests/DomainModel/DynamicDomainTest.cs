@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
  
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System;
 using System.Threading.Tasks;
 using Hyperstore.Modeling;
@@ -34,7 +34,7 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace Hyperstore.Tests
 {
-    [TestClass]
+    
     public class DynamicDomainTest : HyperstoreTestBase
     {
         private class DynamicModelDefinition : SchemaDefinition
@@ -89,19 +89,19 @@ namespace Hyperstore.Tests
             return domain;
         }
 
-        [TestMethod]
+        [Fact]
         public async Task LoadDynamicDomainTest()
         {
             var dm = await LoadDynamicDomain();
             var schema = dm.Store.Schemas.Get("Hyperstore.Tests");
 
-            Assert.AreEqual(13, schema.GetSchemaInfos().Count());
-            Assert.AreEqual(10, schema.GetSchemaElements().Count());
-            Assert.AreEqual(5, schema.GetSchemaEntities().Count());
-            Assert.AreEqual(5, schema.GetSchemaRelationships().Count());
+            Assert.Equal(13, schema.GetSchemaInfos().Count());
+            Assert.Equal(10, schema.GetSchemaElements().Count());
+            Assert.Equal(5, schema.GetSchemaEntities().Count());
+            Assert.Equal(5, schema.GetSchemaRelationships().Count());
         }
 
-        [TestMethod]
+        [Fact]
         public async Task CreateDynamicElementTest()
         {
             var domain = await LoadDynamicDomain();
@@ -113,10 +113,10 @@ namespace Hyperstore.Tests
                 session.AcceptChanges();
             }
 
-            Assert.IsNotNull(x);
+            Assert.NotNull(x);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task CreateDynamicElementTest2()
         {
             var domain = await LoadDynamicDomain();
@@ -129,11 +129,11 @@ namespace Hyperstore.Tests
                 session.AcceptChanges();
             }
 
-            Assert.IsNotNull(x);
-            Assert.AreEqual("LIB", x.Name);
+            Assert.NotNull(x);
+            Assert.Equal("LIB", x.Name);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DynamicPropertyTest()
         {
             var domain = await LoadDynamicDomain();
@@ -146,11 +146,11 @@ namespace Hyperstore.Tests
                 session.AcceptChanges();
             }
 
-            Assert.IsNotNull(x);
-            Assert.AreEqual("Library", x.Name);
+            Assert.NotNull(x);
+            Assert.Equal("Library", x.Name);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DynamicReferenceTest()
         {
             var domain = await LoadDynamicDomain();
@@ -171,9 +171,9 @@ namespace Hyperstore.Tests
                 session.AcceptChanges();
             }
 
-            Assert.IsNotNull(lib);
-            Assert.IsNotNull(loan.Book);
-            Assert.IsNotNull(((IEnumerable<IModelElement>)lib.Books).FirstOrDefault());
+            Assert.NotNull(lib);
+            Assert.NotNull(loan.Book);
+            Assert.NotNull(((IEnumerable<IModelElement>)lib.Books).FirstOrDefault());
         }
     }
 }

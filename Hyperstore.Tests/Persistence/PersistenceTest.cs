@@ -25,7 +25,7 @@ using Hyperstore.Modeling.HyperGraph;
 using Hyperstore.Modeling.HyperGraph.Index;
 using Hyperstore.Modeling.Serialization;
 using Hyperstore.Tests.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System.Threading.Tasks;
 using System.Diagnostics;
 #if NETFX_CORE
@@ -34,10 +34,10 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace Hyperstore.Tests.Commands
 {
-    [TestClass()]
+    
     public class PersistenceTest : HyperstoreTestBase
     {
-        [TestMethod]
+        [Fact]
         public async Task Serialization()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -68,8 +68,8 @@ namespace Hyperstore.Tests.Commands
             {
                 Hyperstore.Modeling.Serialization.XmlSerializer.Serialize(writer, domain, XmlSerializationOption.CompressAll);
             }
-            Assert.AreEqual(11, domain.GetEntities().Count());
-            Assert.AreEqual(10, domain.GetRelationships().Count());
+            Assert.Equal(11, domain.GetEntities().Count());
+            Assert.Equal(10, domain.GetRelationships().Count());
 
             var store2 = await StoreBuilder.New().CreateAsync();
             await store2.Schemas.New<LibraryDefinition>().CreateAsync();
@@ -79,23 +79,23 @@ namespace Hyperstore.Tests.Commands
                 Hyperstore.Modeling.Serialization.XmlDeserializer.Deserialize(reader, domain2);
             }
 
-            Assert.AreEqual(11, domain2.GetEntities().Count());
-            Assert.AreEqual(10, domain2.GetRelationships().Count());
+            Assert.Equal(11, domain2.GetEntities().Count());
+            Assert.Equal(10, domain2.GetRelationships().Count());
 
             foreach(var book2 in domain2.GetEntities<Book>())
             {
                 var book = domain.GetEntity<Book>(((IModelElement)book2).Id);
-                Assert.IsNotNull(book);
-                Assert.AreEqual(book.Title, book2.Title);
-                Assert.AreEqual(book.Copies, book2.Copies);
+                Assert.NotNull(book);
+                Assert.Equal(book.Title, book2.Title);
+                Assert.Equal(book.Copies, book2.Copies);
             }
 
             lib = domain2.GetEntities<Library>().FirstOrDefault();
-            Assert.IsNotNull(lib);
-            Assert.AreEqual(5, lib.Books.Count());
+            Assert.NotNull(lib);
+            Assert.Equal(5, lib.Books.Count());
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SerializeAndDeserializeWithNewDomainName()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -126,8 +126,8 @@ namespace Hyperstore.Tests.Commands
             {
                 Hyperstore.Modeling.Serialization.XmlSerializer.Serialize(writer, domain, XmlSerializationOption.CompressAll);
             }
-            Assert.AreEqual(11, domain.GetEntities().Count());
-            Assert.AreEqual(10, domain.GetRelationships().Count());
+            Assert.Equal(11, domain.GetEntities().Count());
+            Assert.Equal(10, domain.GetRelationships().Count());
 
             var store2 = await StoreBuilder.New().CreateAsync();
             await store2.Schemas.New<LibraryDefinition>().CreateAsync();
@@ -139,15 +139,15 @@ namespace Hyperstore.Tests.Commands
                 Hyperstore.Modeling.Serialization.XmlDeserializer.Deserialize(reader, domain2);
             }
 
-            Assert.AreEqual(11, domain2.GetEntities().Count());
-            Assert.AreEqual(10, domain2.GetRelationships().Count());
+            Assert.Equal(11, domain2.GetEntities().Count());
+            Assert.Equal(10, domain2.GetRelationships().Count());
 
             IModelElement library = domain2.GetEntities<Library>().FirstOrDefault();            
-            Assert.IsNotNull(library);
-            Assert.AreEqual("test2", library.Id.DomainModelName);            
+            Assert.NotNull(library);
+            Assert.Equal("test2", library.Id.DomainModelName);            
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SerializePerf()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -203,8 +203,8 @@ namespace Hyperstore.Tests.Commands
                 }
             }
             var time2 = sw.ElapsedMilliseconds;
-            Assert.IsTrue(time2 < time1, String.Format("XmlDomainSerializer should have an execution time {0} greater than XmlSerializer {1}", time1, time2));
-            Assert.IsTrue(size2 < size1, String.Format("XmlDomainSerializer should have a generated size file {0} greater than XmlSerializer {1}", size1, size2));
+            Assert.True(time2 < time1, String.Format("XmlDomainSerializer should have an execution time {0} greater than XmlSerializer {1}", time1, time2));
+            Assert.True(size2 < size1, String.Format("XmlDomainSerializer should have a generated size file {0} greater than XmlSerializer {1}", size1, size2));
         }
 
     

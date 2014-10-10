@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
  
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System;
 using System.Threading.Tasks;
 using Hyperstore.Modeling;
@@ -32,26 +32,26 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace Hyperstore.Tests
 {  
-    [TestClass]
+    
     public class UtilTest 
     {
-        [TestMethod]
+        [Fact]
         public void UtilValidateNameTest()
         {
             Conventions.CheckValidName("a_b$");
             Conventions.CheckValidName("a_b$.a10", true);
 
-            AssertHelper.ThrowsException<Exception>(
+            Assert.Throws<InvalidNameException>(
                 () =>
                 Conventions.CheckValidName("a_b$.")
             );
 
-            AssertHelper.ThrowsException<Exception>(
+            Assert.Throws<InvalidNameException>(
                 ()=>
                 Conventions.CheckValidName("a_b$:.")            
                 );
 
-            AssertHelper.ThrowsException<Exception>(
+            Assert.Throws<InvalidNameException>(
                 ()=>
                 Conventions.CheckValidName("a_b$.:", true)              
                 );

@@ -15,7 +15,7 @@
 // limitations under the License.
  
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Hyperstore.Modeling;
 using Hyperstore.Modeling.Metadata;
 using Hyperstore.Modeling.Metadata.Primitives;
@@ -28,62 +28,62 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace Hyperstore.Tests.Metadata
 {
-    [TestClass]
+    
     public class PrimitivesTest
     {
-        [TestMethod]
+        [Fact]
         public async Task BooleanTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
             IDomainModel dm = await store.DomainModels.New().CreateAsync("Test");
-            Assert.IsTrue((bool)PrimitivesSchema.BooleanSchema.Deserialize(new SerializationContext(PrimitivesSchema.BooleanSchema, PrimitivesSchema.BooleanSchema.Serialize(true))));
-            Assert.IsFalse((bool)PrimitivesSchema.BooleanSchema.Deserialize(new SerializationContext(PrimitivesSchema.BooleanSchema, PrimitivesSchema.BooleanSchema.Serialize(false))));
-            Assert.IsFalse((bool)PrimitivesSchema.BooleanSchema.Deserialize(new SerializationContext(PrimitivesSchema.BooleanSchema, null)));
-            Assert.IsNull(PrimitivesSchema.BooleanSchema.Serialize(null));
+            Assert.True((bool)PrimitivesSchema.BooleanSchema.Deserialize(new SerializationContext(PrimitivesSchema.BooleanSchema, PrimitivesSchema.BooleanSchema.Serialize(true))));
+            Assert.False((bool)PrimitivesSchema.BooleanSchema.Deserialize(new SerializationContext(PrimitivesSchema.BooleanSchema, PrimitivesSchema.BooleanSchema.Serialize(false))));
+            Assert.False((bool)PrimitivesSchema.BooleanSchema.Deserialize(new SerializationContext(PrimitivesSchema.BooleanSchema, null)));
+            Assert.Null(PrimitivesSchema.BooleanSchema.Serialize(null));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DateTimeTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
             var dt = DateTime.Today;
             IDomainModel dm = await store.DomainModels.New().CreateAsync("Test");
-            Assert.AreEqual(dt, (DateTime)PrimitivesSchema.DateTimeSchema.Deserialize(new SerializationContext(PrimitivesSchema.DateTimeSchema, PrimitivesSchema.DateTimeSchema.Serialize(dt))));
-            Assert.IsNull(PrimitivesSchema.DateTimeSchema.Serialize(null));
+            Assert.Equal(dt, (DateTime)PrimitivesSchema.DateTimeSchema.Deserialize(new SerializationContext(PrimitivesSchema.DateTimeSchema, PrimitivesSchema.DateTimeSchema.Serialize(dt))));
+            Assert.Null(PrimitivesSchema.DateTimeSchema.Serialize(null));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DoubleTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
             var dt = 10.2;
             IDomainModel dm = await store.DomainModels.New().CreateAsync("Test");
-            Assert.AreEqual(dt, (Double)PrimitivesSchema.DoubleSchema.Deserialize(new SerializationContext( PrimitivesSchema.DoubleSchema, PrimitivesSchema.DoubleSchema.Serialize(dt))));
-            Assert.IsNull(PrimitivesSchema.DoubleSchema.Serialize(null));
+            Assert.Equal(dt, (Double)PrimitivesSchema.DoubleSchema.Deserialize(new SerializationContext( PrimitivesSchema.DoubleSchema, PrimitivesSchema.DoubleSchema.Serialize(dt))));
+            Assert.Null(PrimitivesSchema.DoubleSchema.Serialize(null));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TimeSpanTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
             var dt = DateTime.Now.TimeOfDay;
             IDomainModel dm = await store.DomainModels.New().CreateAsync("Test");
-            Assert.AreEqual((TimeSpan)PrimitivesSchema.TimeSpanSchema.Deserialize(new SerializationContext( PrimitivesSchema.TimeSpanSchema, PrimitivesSchema.TimeSpanSchema.Serialize(dt))), dt);
-            Assert.IsNull(PrimitivesSchema.TimeSpanSchema.Serialize(null));
+            Assert.Equal((TimeSpan)PrimitivesSchema.TimeSpanSchema.Deserialize(new SerializationContext( PrimitivesSchema.TimeSpanSchema, PrimitivesSchema.TimeSpanSchema.Serialize(dt))), dt);
+            Assert.Null(PrimitivesSchema.TimeSpanSchema.Serialize(null));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task FloatTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
             var dt = 10.2;
             IDomainModel dm = await store.DomainModels.New().CreateAsync("Test");
-            Assert.IsTrue((float)PrimitivesSchema.SingleSchema.Deserialize(new SerializationContext(PrimitivesSchema.SingleSchema, PrimitivesSchema.SingleSchema.Serialize(dt))) - dt < 0.01);
-            Assert.IsNull(PrimitivesSchema.SingleSchema.Serialize(null));
+            Assert.True((float)PrimitivesSchema.SingleSchema.Deserialize(new SerializationContext(PrimitivesSchema.SingleSchema, PrimitivesSchema.SingleSchema.Serialize(dt))) - dt < 0.01);
+            Assert.Null(PrimitivesSchema.SingleSchema.Serialize(null));
         }
 
         private enum X { A, B,C };
-        //[TestMethod]
+        //[Fact]
         //public void EnumTest()
         //{
         //    var store = await StoreBuilder.Init().CreateStore();
@@ -92,25 +92,25 @@ namespace Hyperstore.Tests.Metadata
         //    {
         //        ISerializableModelElement ser = new EnumPrimitive<X>(dm.Schema);
         //        // TODO accès aux méthodes privees
-        //        Assert.AreEqual(X.B, (X)ser.Deserialize(new SerializationContext(dm, Identity.Empty, PrimitivesSchema.SchemaEntitySchema, ser.Serialize(X.B))));
-        //        Assert.AreEqual(X.B | X.C, (X)ser.Deserialize(new SerializationContext(dm, Identity.Empty, PrimitivesSchema.SchemaEntitySchema, ser.Serialize(X.C | X.B))));
-        //        Assert.IsNull(PrimitivesSchema.SingleSchema.Serialize(null));
+        //        Assert.Equal(X.B, (X)ser.Deserialize(new SerializationContext(dm, Identity.Empty, PrimitivesSchema.SchemaEntitySchema, ser.Serialize(X.B))));
+        //        Assert.Equal(X.B | X.C, (X)ser.Deserialize(new SerializationContext(dm, Identity.Empty, PrimitivesSchema.SchemaEntitySchema, ser.Serialize(X.C | X.B))));
+        //        Assert.Null(PrimitivesSchema.SingleSchema.Serialize(null));
         //        s.AcceptChanges();
         //    }
         //}
 
-        [TestMethod]
+        [Fact]
         public void DefaultValue()
         {
-            Assert.AreEqual((double)0, ReflectionHelper.GetDefaultValue(typeof(double)));
-            Assert.AreEqual(0, ReflectionHelper.GetDefaultValue(typeof(int)));
+            Assert.Equal((double)0, ReflectionHelper.GetDefaultValue(typeof(double)));
+            Assert.Equal(0, ReflectionHelper.GetDefaultValue(typeof(int)));
             var x = ReflectionHelper.GetDefaultValue(typeof(Nullable<int>));
-            Assert.AreEqual((Nullable<int>)null, ReflectionHelper.GetDefaultValue(typeof(Nullable<int>)));
-            Assert.AreEqual(X.A, ReflectionHelper.GetDefaultValue(typeof(X)));
-            Assert.AreEqual(default(DateTime), ReflectionHelper.GetDefaultValue(typeof(DateTime)));
-            Assert.AreEqual((uint)0, ReflectionHelper.GetDefaultValue(typeof(uint)));
-            Assert.AreEqual((byte)0, ReflectionHelper.GetDefaultValue(typeof(byte)));
-            Assert.AreEqual(false, ReflectionHelper.GetDefaultValue(typeof(bool)));
+            Assert.Equal((Nullable<int>)null, ReflectionHelper.GetDefaultValue(typeof(Nullable<int>)));
+            Assert.Equal(X.A, ReflectionHelper.GetDefaultValue(typeof(X)));
+            Assert.Equal(default(DateTime), ReflectionHelper.GetDefaultValue(typeof(DateTime)));
+            Assert.Equal((uint)0, ReflectionHelper.GetDefaultValue(typeof(uint)));
+            Assert.Equal((byte)0, ReflectionHelper.GetDefaultValue(typeof(byte)));
+            Assert.Equal(false, ReflectionHelper.GetDefaultValue(typeof(bool)));
         }
     }
 }

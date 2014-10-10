@@ -21,7 +21,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Hyperstore.Modeling;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Hyperstore.Modeling.Commands;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -29,7 +29,7 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace Hyperstore.Tests.Extension
 {
-    [TestClass]
+    
     public class ExtensionsTest : HyperstoreTestBase
     {
         class CategoryEx : Category
@@ -100,7 +100,7 @@ namespace Hyperstore.Tests.Extension
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ExtensionGetExisting()
         {
             var store = await StoreBuilder.New().EnableScoping().CreateAsync();
@@ -118,14 +118,14 @@ namespace Hyperstore.Tests.Extension
             await schema.LoadSchemaExtension(new ExtensionsDomainDefinition());
             var extended = await initial.CreateScopeAsync("Ex1");
 
-            Assert.IsNotNull(store.GetElement<CategoryEx>(((IModelElement)cat).Id));
+            Assert.NotNull(store.GetElement<CategoryEx>(((IModelElement)cat).Id));
         }
 
-        //[TestMethod]
+        //[Fact]
         //public async Task Extension_constraint_in_updatable_mode()
         //{
         //    // En mode updatable, les contraintes du domaine étendu s'appliquent
-        //    await AssertHelper.ThrowsException<SessionException>(async () =>
+        //    await Assert.ThrowsAsync<SessionException>(async () =>
         //        {
         //            var store = await StoreBuilder.Init().EnableExtensions().CreateStore();
         //            var schema = await store.Schemas.New<InitialDomainDefinition>().CreateAsync();
@@ -154,10 +154,10 @@ namespace Hyperstore.Tests.Extension
         //        });
         //}
 
-        //[TestMethod]
+        //[Fact]
         //public async Task Extension_constraint()
         //{
-        //    await AssertHelper.ThrowsException<SessionException>(async () =>
+        //    await Assert.ThrowsAsync<SessionException>(async () =>
         //        {
         //            var store = await StoreBuilder.New().EnableScoping().CreateAsync();
         //            var schema = await store.Schemas.New<InitialDomainDefinition>().CreateAsync();
@@ -177,7 +177,7 @@ namespace Hyperstore.Tests.Extension
         //        });
         //}
 
-        [TestMethod]
+        [Fact]
         public async Task Extension_constraint_in_readonly_mode()
         {
             var store = await StoreBuilder.New().EnableScoping().CreateAsync();
@@ -206,7 +206,7 @@ namespace Hyperstore.Tests.Extension
             }
         }
 
-        //[TestMethod]
+        //[Fact]
         //public async Task TestExtension()
         //{
         //    var initialResult = @"<?xml version=""1.0"" encoding=""utf-8""?><domain name=""d1""><model><elements><element id=""d1:1"" metadata=""hyperstore.tests:extension.extensionstest+categoryex""><attributes><attribute name=""Value"">10</attribute><attribute name=""Name"">Cat x</attribute></attributes></element></elements><relationships /></model></domain>";
@@ -234,7 +234,7 @@ namespace Hyperstore.Tests.Extension
         //        await ser.Serialize(initial, ms);
 
         //        var result = System.Text.Encoding.UTF8.GetString(ms.GetBuffer());
-        //        Assert.IsTrue(String.Compare(initialResult, result) == 0);
+        //        Assert.True(String.Compare(initialResult, result) == 0);
         //    }
 
         //    using (var ms = new MemoryStream())
@@ -242,14 +242,14 @@ namespace Hyperstore.Tests.Extension
         //        var ser = new Hyperstore.Modeling.Serialization.XmlDomainModelSerializer();
         //        await ser.Serialize(extended, ms);
         //        var result = System.Text.Encoding.UTF8.GetString(ms.GetBuffer());
-        //        Assert.IsTrue(String.Compare(extensionResult, result) == 0);
+        //        Assert.True(String.Compare(extensionResult, result) == 0);
         //    }
         //}
 
-        //[TestMethod]
+        //[Fact]
         //public void ReadOnlyException()
         //{
-        //    AssertHelper.ThrowsException<SessionException>(() =>
+        //    Assert.ThrowsAsync<SessionException>(() =>
         //        {
         //            var store = new Hyperstore.Modeling.Store();
         //            var initial = store.LoadDomainModel("d1", new InitialDomainDefinition());
@@ -264,7 +264,7 @@ namespace Hyperstore.Tests.Extension
         //        });
         //}    
 
-        [TestMethod]
+        [Fact]
         public async Task ExtendedUnloadTest()
         {
             var store = await StoreBuilder.New().EnableScoping().CreateAsync();
@@ -285,7 +285,7 @@ namespace Hyperstore.Tests.Extension
             }
             catch (SessionException)
             {
-                Assert.Inconclusive();
+                                throw new Exception("Inconclusive");
             }
 
             // Add a constraint
@@ -307,7 +307,7 @@ namespace Hyperstore.Tests.Extension
                         //  s.AcquireLock(LockType.Shared, a.Id.CreateAttributeIdentity("Value"));
                         var x = store.GetElement<Category>(((IModelElement)a).Id);
                         var v = x.Value;
-                        Assert.AreEqual(false, v != 1 && v != 9);
+                        Assert.Equal(false, v != 1 && v != 9);
                     }
 
                     Sleep(11);
@@ -323,7 +323,7 @@ namespace Hyperstore.Tests.Extension
                         // s.AcquireLock(LockType.Shared, a.Id.CreateAttributeIdentity("Value"));
                         var x = store.GetElement<Category>(((IModelElement)a).Id);
                         var v = x.Value;
-                        Assert.AreEqual(false, v != 1 && v != 9);
+                        Assert.Equal(false, v != 1 && v != 9);
                     }
                     Sleep(7);
                 }
@@ -351,7 +351,7 @@ namespace Hyperstore.Tests.Extension
                 }
 
                 var xx = store.GetElement<Category>(((IModelElement)a).Id).Value;
-                Assert.AreEqual(9, xx);
+                Assert.Equal(9, xx);
 
                 Sleep(12);
                 store.DomainModels.Unload(xDomain);
@@ -361,7 +361,7 @@ namespace Hyperstore.Tests.Extension
         }
 
 
-        [TestMethod]
+        [Fact]
         public async Task ExtendedDeleteElementTest()
         {
             var store = await StoreBuilder.New().EnableScoping().CreateAsync();
@@ -383,7 +383,7 @@ namespace Hyperstore.Tests.Extension
             }
             catch (SessionException)
             {
-                Assert.Inconclusive();
+                                throw new Exception("Inconclusive");
             }
 
             var xDomain = await initial.CreateScopeAsync("Ex1");
@@ -395,7 +395,7 @@ namespace Hyperstore.Tests.Extension
                 // rollback
             }
 
-            Assert.IsNotNull(store.GetElement<Category>(id));
+            Assert.NotNull(store.GetElement<Category>(id));
 
             using (var tx = store.BeginSession())
             {
@@ -404,10 +404,10 @@ namespace Hyperstore.Tests.Extension
                 tx.AcceptChanges();
             }
 
-            Assert.IsNull( store.GetElement<Category>(id));
-            Assert.IsNull(xDomain.GetElement<Category>(id));
-            Assert.IsNotNull(initial.GetElement<Category>(id));
-            Assert.AreEqual(1, initial.GetElement<Category>(id).Value);
+            Assert.Null( store.GetElement<Category>(id));
+            Assert.Null(xDomain.GetElement<Category>(id));
+            Assert.NotNull(initial.GetElement<Category>(id));
+            Assert.Equal(1, initial.GetElement<Category>(id).Value);
 
             using (var tx = store.BeginSession())
             {
@@ -417,10 +417,10 @@ namespace Hyperstore.Tests.Extension
                 tx.AcceptChanges();
             }
 
-            Assert.IsNotNull(store.GetElement<Category>(id));
-            Assert.AreEqual(10, store.GetElement<Category>(id).Value);
+            Assert.NotNull(store.GetElement<Category>(id));
+            Assert.Equal(10, store.GetElement<Category>(id).Value);
 
-            Assert.AreEqual(1, initial.GetElement<Category>(id).Value);
+            Assert.Equal(1, initial.GetElement<Category>(id).Value);
 
             
             store.Dispose();

@@ -23,7 +23,7 @@ using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.HyperGraph;
 using Hyperstore.Modeling.HyperGraph.Index;
 using Hyperstore.Tests.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System.Threading.Tasks;
 
 #if NETFX_CORE
@@ -32,7 +32,7 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace Hyperstore.Tests.Commands
 {
-    [TestClass()]
+    
     public class InterceptorsTest
     {
         class MyInterceptor : ICommandInterceptor<MyCommand>
@@ -95,7 +95,7 @@ namespace Hyperstore.Tests.Commands
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task InterceptorOrdersEvents()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -113,10 +113,10 @@ namespace Hyperstore.Tests.Commands
                 s.AcceptChanges();
             }
 
-            Assert.AreEqual(2, cx);
+            Assert.Equal(2, cx);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SharedInterceptorTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -133,10 +133,10 @@ namespace Hyperstore.Tests.Commands
                 s.AcceptChanges();
             }
 
-            Assert.AreEqual(2, cx);
+            Assert.Equal(2, cx);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AddInterceptorTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -152,7 +152,7 @@ namespace Hyperstore.Tests.Commands
                 s.Execute(new MyCommand(domain));
                 s.AcceptChanges();
             }
-            Assert.AreEqual(1, cx);
+            Assert.Equal(1, cx);
             domain.Commands.RegisterInterceptor(new MyInterceptor(() => { cx = 2; }));
             
             using (var s = store.BeginSession())
@@ -161,7 +161,7 @@ namespace Hyperstore.Tests.Commands
                 s.AcceptChanges();
             }
 
-            Assert.AreEqual(2, cx);
+            Assert.Equal(2, cx);
         }
     }
 }

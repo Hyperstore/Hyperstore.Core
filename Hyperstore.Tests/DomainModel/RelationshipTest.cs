@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
  
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System;
 using System.Threading.Tasks;
 using Hyperstore.Modeling;
@@ -113,10 +113,10 @@ namespace Hyperstore.Tests.Relationships
         }
     }
 
-    [TestClass]
+    
     public class RelationshipTest : HyperstoreTestBase
     {
-        [TestMethod]
+        [Fact]
         public async Task ManyToManyTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -155,8 +155,8 @@ namespace Hyperstore.Tests.Relationships
             customers[0].Products.Add(products[3]);
             customers[0].Products.Add(products[4]);
 
-            Assert.AreEqual(5, customers[0].Products.Count);
-            Assert.AreEqual(1, products[0].Customers.Count);
+            Assert.Equal(5, customers[0].Products.Count);
+            Assert.Equal(1, products[0].Customers.Count);
 
             customers[1].Products.Add(products[0]);
             customers[1].Products.Add(products[1]);
@@ -164,26 +164,26 @@ namespace Hyperstore.Tests.Relationships
             customers[1].Products.Add(products[3]);
             customers[1].Products.Add(products[4]);
 
-            Assert.AreEqual(5, customers[1].Products.Count);
-            Assert.AreEqual(2, products[0].Customers.Count);
+            Assert.Equal(5, customers[1].Products.Count);
+            Assert.Equal(2, products[0].Customers.Count);
 
             products[0].Customers.Add(customers[2]);
-            Assert.AreEqual(1, customers[2].Products.Count);
-            Assert.AreEqual(3, products[0].Customers.Count);
+            Assert.Equal(1, customers[2].Products.Count);
+            Assert.Equal(3, products[0].Customers.Count);
 
             products[0].Customers.ToList();
             customers[0].Products.ToList();
 
             customers[0].Products.Remove(products[0]);
-            Assert.AreEqual(4, customers[0].Products.Count);
-            Assert.AreEqual(2, products[0].Customers.Count);
+            Assert.Equal(4, customers[0].Products.Count);
+            Assert.Equal(2, products[0].Customers.Count);
 
             products[0].Customers.Remove(customers[2]);
-            Assert.AreEqual(0, customers[2].Products.Count);
-            Assert.AreEqual(1, products[0].Customers.Count);
+            Assert.Equal(0, customers[2].Products.Count);
+            Assert.Equal(1, products[0].Customers.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ObservableManyToManyTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -224,8 +224,8 @@ namespace Hyperstore.Tests.Relationships
             //customers[0].Products.Add(products[3]);
             //customers[0].Products.Add(products[4]);
 
-            Assert.AreEqual(size, customers[0].Products.Count);
-            Assert.AreEqual(1, products[0].Customers.Count);
+            Assert.Equal(size, customers[0].Products.Count);
+            Assert.Equal(1, products[0].Customers.Count);
 
             customers[1].Products.Add(products[0]);
             customers[1].Products.Add(products[1]);
@@ -233,17 +233,17 @@ namespace Hyperstore.Tests.Relationships
             customers[1].Products.Add(products[3]);
             customers[1].Products.Add(products[4]);
 
-            Assert.AreEqual(5, customers[1].Products.Count);
-            Assert.AreEqual(2, products[0].Customers.Count);
+            Assert.Equal(5, customers[1].Products.Count);
+            Assert.Equal(2, products[0].Customers.Count);
 
             products[0].Customers.Add(customers[2]);
-            Assert.AreEqual(1, customers[2].Products.Count);
-            Assert.AreEqual(3, products[0].Customers.Count);
+            Assert.Equal(1, customers[2].Products.Count);
+            Assert.Equal(3, products[0].Customers.Count);
 
             products[0].Customers.ToList();
             customers[0].Products.ToList();
 
-            Assert.AreEqual(1, customers[0].Products2.Count());
+            Assert.Equal(1, customers[0].Products2.Count());
 
             // Change property from the whereclause
             using (var session = store.BeginSession())
@@ -252,15 +252,15 @@ namespace Hyperstore.Tests.Relationships
                 session.AcceptChanges();
             }
 
-            Assert.AreEqual(0, customers[0].Products2.Count());
+            Assert.Equal(0, customers[0].Products2.Count());
 
             customers[0].Products.Remove(products[0]);
-            Assert.AreEqual(size - 1, customers[0].Products.Count);
-            Assert.AreEqual(2, products[0].Customers.Count);
+            Assert.Equal(size - 1, customers[0].Products.Count);
+            Assert.Equal(2, products[0].Customers.Count);
 
             products[0].Customers.Remove(customers[2]);
-            Assert.AreEqual(0, customers[2].Products.Count);
-            Assert.AreEqual(1, products[0].Customers.Count);
+            Assert.Equal(0, customers[2].Products.Count);
+            Assert.Equal(1, products[0].Customers.Count);
 
         }
     }

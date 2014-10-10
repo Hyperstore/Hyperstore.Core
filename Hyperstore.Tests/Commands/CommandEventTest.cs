@@ -23,7 +23,7 @@ using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.HyperGraph;
 using Hyperstore.Modeling.HyperGraph.Index;
 using Hyperstore.Tests.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System.Threading.Tasks;
 
 #if NETFX_CORE
@@ -32,7 +32,7 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace Hyperstore.Tests.Commands
 {
-    [TestClass()]
+    
     public class CommandEventTest
     {
         class MyCommand : ICommandHandler<MyCommand>, IDomainCommand
@@ -65,7 +65,7 @@ namespace Hyperstore.Tests.Commands
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task EventLevel()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -82,14 +82,14 @@ namespace Hyperstore.Tests.Commands
                 a = store.GetEntities<XExtendsBaseClass>().FirstOrDefault(x => x.Name == "Test");
             }
 
-            Assert.IsTrue(undoManager.CanUndo);
-            Assert.IsFalse(undoManager.CanRedo);
+            Assert.True(undoManager.CanUndo);
+            Assert.False(undoManager.CanRedo);
 
             undoManager.Undo();
-            Assert.IsTrue(undoManager.CanRedo);
-            Assert.IsFalse(undoManager.CanUndo);
+            Assert.True(undoManager.CanRedo);
+            Assert.False(undoManager.CanUndo);
 
-            AssertHelper.ThrowsException<Exception>(() =>
+            Assert.Throws<UnloadedDomainException>(() =>
             {
                 using (var s = store.BeginSession())
                 {

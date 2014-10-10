@@ -15,7 +15,7 @@
 // limitations under the License.
  
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System.Threading.Tasks;
 using Hyperstore.Modeling;
 using Hyperstore.Tests.Model;
@@ -25,10 +25,10 @@ using Hyperstore.Modeling.Domain;
 
 namespace Hyperstore.Tests.DomainExtension
 {
-    [TestClass]
+    
     public class ExtensionScopeTest
     {
-        [TestMethod]
+        [Fact]
         public async Task TestScope()
         {
             var store = await StoreBuilder.New().EnableScoping().CreateAsync();
@@ -76,11 +76,11 @@ namespace Hyperstore.Tests.DomainExtension
                 session.AcceptChanges();
             }
 
-            Assert.AreEqual("xxxx", xLib.Name);
-            Assert.AreEqual("My Library", lib.Name);
+            Assert.Equal("xxxx", xLib.Name);
+            Assert.Equal("My Library", lib.Name);
 
-            Assert.AreEqual(12, xLib.Books.Count);
-            Assert.AreEqual(10, lib.Books.Count);
+            Assert.Equal(12, xLib.Books.Count);
+            Assert.Equal(10, lib.Books.Count);
 
             using (var session = store.BeginSession())
             {
@@ -88,16 +88,16 @@ namespace Hyperstore.Tests.DomainExtension
                 session.AcceptChanges();
             }
             
-            Assert.AreEqual(11, xLib.Books.Count);
-            Assert.AreEqual(10, lib.Books.Count);
+            Assert.Equal(11, xLib.Books.Count);
+            Assert.Equal(10, lib.Books.Count);
 
             store.DomainModels.Unload(extension);
 
-            Assert.AreEqual("My Library", lib.Name);
-            AssertHelper.ThrowsException<Exception>(() => {
+            Assert.Equal("My Library", lib.Name);
+            Assert.Throws<UnloadedDomainException>(() => {
                 var x = xLib.Books.Count; 
             });
-            Assert.AreEqual(10, lib.Books.Count);
+            Assert.Equal(10, lib.Books.Count);
         }
     }
 }

@@ -17,7 +17,7 @@
 using Hyperstore.Modeling;
 using Hyperstore.Modeling.Commands;
 using Hyperstore.Tests.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System.Threading.Tasks;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -26,10 +26,10 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace Hyperstore.Tests
 {
-    [TestClass]
+    
     public class StoreTest
     {
-        [TestMethod]
+        [Fact]
         public async Task DisposedTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -59,7 +59,7 @@ namespace Hyperstore.Tests
                 s.AcceptChanges();
             }
 
-            Assert.IsNotNull(rel);
+            Assert.NotNull(rel);
         }
 
     }

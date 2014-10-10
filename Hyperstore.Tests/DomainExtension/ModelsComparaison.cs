@@ -18,7 +18,7 @@ using Hyperstore.Modeling;
 using Hyperstore.Modeling.HyperGraph;
 using Hyperstore.Modeling.Serialization;
 using Hyperstore.Tests.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,10 +28,10 @@ using System.Threading.Tasks;
 
 namespace Hyperstore.Tests.DomainExtension
 {
-    [TestClass()]
+    
     public class ModelComparaisonTests : HyperstoreTestBase
     {
-        [TestMethod]
+        [Fact]
         public async Task CompareModels()
         {
             var store = await StoreBuilder.New().EnableScoping().Using<IIdGenerator>(r=>new Hyperstore.Modeling.Domain.LongIdGenerator()).CreateAsync();
@@ -85,10 +85,10 @@ namespace Hyperstore.Tests.DomainExtension
                 session.AcceptChanges();
             }
 
-            Assert.AreEqual(2, domain2.GetDeletedElements().Count());
-            Assert.AreEqual(4, lib2.Books.Count());
-            Assert.AreEqual(6, domain2.GetScopeElements().Count()); // Books : 2 created, 1 updated, Library : 1 updated (Books property), LibraryHasBooks : 2 created
-            Assert.AreEqual(5, domain2.GetUpdatedProperties().Count()); // New Books * 2 + 1 in the extendee domain
+            Assert.Equal(2, domain2.GetDeletedElements().Count());
+            Assert.Equal(4, lib2.Books.Count());
+            Assert.Equal(6, domain2.GetScopeElements().Count()); // Books : 2 created, 1 updated, Library : 1 updated (Books property), LibraryHasBooks : 2 created
+            Assert.Equal(5, domain2.GetUpdatedProperties().Count()); // New Books * 2 + 1 in the extendee domain
         }
 
     }

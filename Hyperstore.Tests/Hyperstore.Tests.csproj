@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\xunit.core.2.0.0-beta4-build2738\build\portable-net45+win+wpa81+wp80+monotouch+monoandroid\xunit.core.props" Condition="Exists('..\packages\xunit.core.2.0.0-beta4-build2738\build\portable-net45+win+wpa81+wp80+monotouch+monoandroid\xunit.core.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <ProjectGuid>{65A22C6F-D70B-427A-962A-40007921EF02}</ProjectGuid>
@@ -15,7 +16,7 @@
     <TestProjectType>UnitTest</TestProjectType>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-    <NuGetPackageImportStamp>1f07cf5e</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>da5c279b</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -63,11 +64,18 @@
       <HintPath>..\packages\Rx-PlatformServices.2.2.2\lib\Net45\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
+    <Reference Include="xunit.abstractions">
+      <HintPath>..\packages\xunit.abstractions.2.0.0-beta4-build2738\lib\net35\xunit.abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit.assert">
+      <HintPath>..\packages\xunit.assert.2.0.0-beta4-build2738\lib\portable-net45+win+wpa81+wp80+monoandroid+monotouch10\xunit.assert.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit.core">
+      <HintPath>..\packages\xunit.core.2.0.0-beta4-build2738\lib\portable-net45+win+wpa81+wp80+monotouch+monoandroid\xunit.core.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BenchTest.cs" />
@@ -149,6 +157,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Hyperstore.DomainLanguage.0.9.268\build\Hyperstore.DomainLanguage.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Hyperstore.DomainLanguage.0.9.268\build\Hyperstore.DomainLanguage.targets'))" />
+    <Error Condition="!Exists('..\packages\xunit.core.2.0.0-beta4-build2738\build\portable-net45+win+wpa81+wp80+monotouch+monoandroid\xunit.core.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\xunit.core.2.0.0-beta4-build2738\build\portable-net45+win+wpa81+wp80+monotouch+monoandroid\xunit.core.props'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

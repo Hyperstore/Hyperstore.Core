@@ -25,7 +25,7 @@ using Hyperstore.Modeling.HyperGraph;
 using Hyperstore.Modeling.HyperGraph.Index;
 using Hyperstore.Modeling.Serialization;
 using Hyperstore.Tests.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System.Threading.Tasks;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -33,61 +33,61 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace Hyperstore.Tests.Commands
 {
-    [TestClass()]
+    
     public class JSonDeSerialization : HyperstoreTestBase
     {
-        [TestMethod]
+        [Fact]
         public void SerializeJsonElement()
         {
             var json = "{ \"a\" : 10, \"b\" : \"abcd\" , \"c\" : [ 10.5, null]}";
             JsonReader reader = new JsonReader(new StringReader(json));
             var token = reader.Read();
-            Assert.AreEqual(JToken.StartObject, token);
+            Assert.Equal(JToken.StartObject, token);
             token = reader.Read();
-            Assert.AreEqual(JToken.String, token);
-            Assert.AreEqual("a", reader.CurrentValue);
+            Assert.Equal(JToken.String, token);
+            Assert.Equal("a", reader.CurrentValue);
             token = reader.Read();
-            Assert.AreEqual(JToken.Colon, token);
+            Assert.Equal(JToken.Colon, token);
             token = reader.Read();
-            Assert.AreEqual(JToken.Value, token);
-            Assert.AreEqual("10", reader.CurrentValue);
+            Assert.Equal(JToken.Value, token);
+            Assert.Equal("10", reader.CurrentValue);
             token = reader.Read();
-            Assert.AreEqual(JToken.Comma, token);
+            Assert.Equal(JToken.Comma, token);
             token = reader.Read();
-            Assert.AreEqual(JToken.String, token);
-            Assert.AreEqual("b", reader.CurrentValue);
+            Assert.Equal(JToken.String, token);
+            Assert.Equal("b", reader.CurrentValue);
             token = reader.Read();
-            Assert.AreEqual(JToken.Colon, token);
+            Assert.Equal(JToken.Colon, token);
             token = reader.Read();
-            Assert.AreEqual(JToken.String, token);
-            Assert.AreEqual("abcd", reader.CurrentValue);
+            Assert.Equal(JToken.String, token);
+            Assert.Equal("abcd", reader.CurrentValue);
 
             token = reader.Read();
-            Assert.AreEqual(JToken.Comma, token);
+            Assert.Equal(JToken.Comma, token);
             token = reader.Read();
-            Assert.AreEqual(JToken.String, token);
-            Assert.AreEqual("c", reader.CurrentValue);
+            Assert.Equal(JToken.String, token);
+            Assert.Equal("c", reader.CurrentValue);
 
             token = reader.Read();
-            Assert.AreEqual(JToken.Colon, token);
+            Assert.Equal(JToken.Colon, token);
             token = reader.Read();
-            Assert.AreEqual(JToken.StartArray, token);
+            Assert.Equal(JToken.StartArray, token);
             token = reader.Read();
-            Assert.AreEqual(JToken.Value, token);
-            Assert.AreEqual("10.5", reader.CurrentValue);
+            Assert.Equal(JToken.Value, token);
+            Assert.Equal("10.5", reader.CurrentValue);
 
             token = reader.Read();
-            Assert.AreEqual(JToken.Comma, token);
+            Assert.Equal(JToken.Comma, token);
             token = reader.Read();
-            Assert.AreEqual(JToken.Value, token);
-            Assert.AreEqual("null", reader.CurrentValue);
+            Assert.Equal(JToken.Value, token);
+            Assert.Equal("null", reader.CurrentValue);
 
             token = reader.Read();
-            Assert.AreEqual(JToken.EndArray, token);
+            Assert.Equal(JToken.EndArray, token);
             token = reader.Read();
-            Assert.AreEqual(JToken.EndObject, token);
+            Assert.Equal(JToken.EndObject, token);
             token = reader.Read();
-            Assert.AreEqual(JToken.EOF, token);
+            Assert.Equal(JToken.EOF, token);
         }
      
     }

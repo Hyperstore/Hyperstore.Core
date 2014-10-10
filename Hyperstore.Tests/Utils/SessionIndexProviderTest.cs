@@ -15,7 +15,7 @@
 // limitations under the License.
  
 using Hyperstore.Modeling.Utils;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,10 +24,10 @@ using System.Threading.Tasks;
 
 namespace Hyperstore.Tests.Utils
 {
-    [TestClass]
+    
     public class SessionIndexProviderTest
     {
-        [TestMethod]
+        [Fact]
         public void GetFreeIndex()
         {
             var m = new SessionIndexProvider();
@@ -37,11 +37,11 @@ namespace Hyperstore.Tests.Utils
                 m.Set(i+1);
             }
 
-            Assert.AreEqual(1, m.GetFirstFreeValue());
-            Assert.AreEqual(8 * 32 + 1, m.GetFirstFreeValue());
+            Assert.Equal(1, m.GetFirstFreeValue());
+            Assert.Equal(8 * 32 + 1, m.GetFirstFreeValue());
             m.ReleaseValue(47);
-            Assert.AreEqual(47, m.GetFirstFreeValue());
-            Assert.AreEqual(8 * 32 + 2, m.GetFirstFreeValue());
+            Assert.Equal(47, m.GetFirstFreeValue());
+            Assert.Equal(8 * 32 + 2, m.GetFirstFreeValue());
         }
     }
 }

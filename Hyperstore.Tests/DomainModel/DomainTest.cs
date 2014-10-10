@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System;
 using System.Threading.Tasks;
 using Hyperstore.Modeling;
@@ -32,10 +32,10 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace Hyperstore.Tests
 {
-    [TestClass]
+    
     public class DomainModelTest : HyperstoreTestBase
     {
-        [TestMethod]
+        [Fact]
         public async Task ReferenceInRelationshipTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -52,12 +52,12 @@ namespace Hyperstore.Tests
                 s.AcceptChanges();
             }
 
-            Assert.IsNotNull(rel);
-            Assert.IsNotNull(rel.YRelation);
+            Assert.NotNull(rel);
+            Assert.NotNull(rel.YRelation);
         }
 
 
-        [TestMethod]
+        [Fact]
         public async Task SetReferenceTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -73,12 +73,12 @@ namespace Hyperstore.Tests
                 s.AcceptChanges();
             }
 
-            Assert.AreEqual(x.YRelation, y);
-            Assert.AreEqual(x.YRelation.X, x);
-            Assert.AreEqual(y.X, x);
+            Assert.Equal(x.YRelation, y);
+            Assert.Equal(x.YRelation.X, x);
+            Assert.Equal(y.X, x);
             var rel = x.GetRelationships<XReferencesY>().FirstOrDefault();
-            Assert.AreEqual(rel.Start, x);
-            Assert.AreEqual(rel.End, y);
+            Assert.Equal(rel.Start, x);
+            Assert.Equal(rel.End, y);
 
             using (var s = store.BeginSession())
             {
@@ -87,16 +87,16 @@ namespace Hyperstore.Tests
                 s.AcceptChanges();
             }
 
-            Assert.AreEqual(x.YRelation, y);
-            Assert.AreEqual(x.YRelation.X, x);
-            Assert.AreEqual(x.GetRelationships<XReferencesY>().Count(), 1);
+            Assert.Equal(x.YRelation, y);
+            Assert.Equal(x.YRelation.X, x);
+            Assert.Equal(x.GetRelationships<XReferencesY>().Count(), 1);
 
             rel = x.GetRelationships<XReferencesY>().FirstOrDefault();
-            Assert.AreEqual(rel.Start, x);
-            Assert.AreEqual(rel.End, y);
+            Assert.Equal(rel.Start, x);
+            Assert.Equal(rel.End, y);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SetReferenceFromOppositeTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -112,12 +112,12 @@ namespace Hyperstore.Tests
                 s.AcceptChanges();
             }
 
-            Assert.AreEqual(x.YRelation, y);
-            Assert.AreEqual(x.YRelation.X, x);
-            Assert.AreEqual(y.X, x);
+            Assert.Equal(x.YRelation, y);
+            Assert.Equal(x.YRelation.X, x);
+            Assert.Equal(y.X, x);
             var rel = x.GetRelationships<XReferencesY>().FirstOrDefault();
-            Assert.AreEqual(rel.Start, x);
-            Assert.AreEqual(rel.End, y);
+            Assert.Equal(rel.Start, x);
+            Assert.Equal(rel.End, y);
 
             using (var s = store.BeginSession())
             {
@@ -126,16 +126,16 @@ namespace Hyperstore.Tests
                 s.AcceptChanges();
             }
 
-            Assert.AreEqual(x.YRelation, y);
-            Assert.AreEqual(x.YRelation.X, x);
-            Assert.AreEqual(x.GetRelationships<XReferencesY>().Count(), 1);
+            Assert.Equal(x.YRelation, y);
+            Assert.Equal(x.YRelation.X, x);
+            Assert.Equal(x.GetRelationships<XReferencesY>().Count(), 1);
 
             rel = x.GetRelationships<XReferencesY>().FirstOrDefault();
-            Assert.AreEqual(rel.Start, x);
-            Assert.AreEqual(rel.End, y);
+            Assert.Equal(rel.Start, x);
+            Assert.Equal(rel.End, y);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task PropertyChangedOnSetReferenceTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -180,11 +180,11 @@ namespace Hyperstore.Tests
                 s.AcceptChanges();
             }
 
-            Assert.AreEqual(3, yrelationChanges);
-            Assert.AreEqual(3, allPropertychanges);
+            Assert.Equal(3, yrelationChanges);
+            Assert.Equal(3, allPropertychanges);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SetReferenceToNullTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -207,12 +207,12 @@ namespace Hyperstore.Tests
                 s.AcceptChanges();
             }
 
-            Assert.AreEqual(x.YRelation, null);
-            Assert.AreEqual(((IModelElement)y).Status, ModelElementStatus.Disposed);
-            Assert.AreEqual(x.GetRelationships<XReferencesY>().Count(), 0);
+            Assert.Equal(x.YRelation, null);
+            Assert.Equal(((IModelElement)y).Status, ModelElementStatus.Disposed);
+            Assert.Equal(x.GetRelationships<XReferencesY>().Count(), 0);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SetReferenceToNullFromOppositeTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -235,13 +235,13 @@ namespace Hyperstore.Tests
                 s.AcceptChanges();
             }
 
-            Assert.AreEqual(x.YRelation, null);
-            Assert.AreEqual(((IModelElement)y).Status, ModelElementStatus.Disposed);
-            Assert.AreEqual(x.GetRelationships<XReferencesY>().Count(), 0);
+            Assert.Equal(x.YRelation, null);
+            Assert.Equal(((IModelElement)y).Status, ModelElementStatus.Disposed);
+            Assert.Equal(x.GetRelationships<XReferencesY>().Count(), 0);
         }
 
 
-        [TestMethod]
+        [Fact]
         public async Task SetReferenceToNullFromOpposite2Test()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -264,8 +264,8 @@ namespace Hyperstore.Tests
                 s.AcceptChanges();
             }
 
-            Assert.AreEqual(x.YRelation, null);
-            Assert.AreEqual(x.GetRelationships<XReferencesY>().Count(), 0);
+            Assert.Equal(x.YRelation, null);
+            Assert.Equal(x.GetRelationships<XReferencesY>().Count(), 0);
 
             using (var s = store.BeginSession())
             {
@@ -281,13 +281,13 @@ namespace Hyperstore.Tests
                 s.AcceptChanges();
             }
 
-            Assert.AreEqual(x.YRelation, null);
-            Assert.AreEqual(((IModelElement)y).Status, ModelElementStatus.Disposed);
-            Assert.AreEqual(x.GetRelationships<XReferencesY>().Count(), 0);
+            Assert.Equal(x.YRelation, null);
+            Assert.Equal(((IModelElement)y).Status, ModelElementStatus.Disposed);
+            Assert.Equal(x.GetRelationships<XReferencesY>().Count(), 0);
 
         }
 
-        [TestMethod]
+        [Fact]
         public async Task EmbeddedRelationship()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -316,8 +316,8 @@ namespace Hyperstore.Tests
                 s.AcceptChanges();
             }
 
-            Assert.IsNull(dm.GetElement<Book>(((IModelElement)b).Id));
-            Assert.AreEqual(0, lib.Books.Count());
+            Assert.Null(dm.GetElement<Book>(((IModelElement)b).Id));
+            Assert.Equal(0, lib.Books.Count());
         }
     }
 }

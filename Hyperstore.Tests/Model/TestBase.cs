@@ -24,7 +24,7 @@ using Hyperstore.Modeling;
 using Hyperstore.Modeling.Domain;
 using Hyperstore.Modeling.Metadata;
 using Hyperstore.Tests.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Hyperstore.Modeling.HyperGraph;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -34,13 +34,6 @@ namespace Hyperstore.Tests
 {
     public abstract class HyperstoreTestBase
     {
-        public TestContext TestContext
-        {
-            get
-            ;
-            set
-            ;
-        }
 
         // 1 -> 2 -> 4 -> 6 -> 7
         //        -> 5

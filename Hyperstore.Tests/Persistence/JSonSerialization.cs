@@ -25,7 +25,7 @@ using Hyperstore.Modeling.HyperGraph;
 using Hyperstore.Modeling.HyperGraph.Index;
 using Hyperstore.Modeling.Serialization;
 using Hyperstore.Tests.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System.Threading.Tasks;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -33,10 +33,10 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace Hyperstore.Tests.Commands
 {
-    [TestClass()]
+    
     public class JSonSerializationTest : HyperstoreTestBase
     {
-        [TestMethod]
+        [Fact]
         public async Task SerializeElementAsJson()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -64,7 +64,7 @@ namespace Hyperstore.Tests.Commands
             }
 
             var json = JSonSerializer.Serialize(lib, JSonSerializationOption.Json );
-            Assert.IsTrue(!String.IsNullOrEmpty( json) );
+            Assert.True(!String.IsNullOrEmpty( json) );
 
             var newton = Newtonsoft.Json.JsonConvert.SerializeObject(lib, new Newtonsoft.Json.JsonSerializerSettings { PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects });
            
@@ -76,8 +76,8 @@ namespace Hyperstore.Tests.Commands
                 session.AcceptChanges();
             }
             lib = domain.GetEntities<Library>().FirstOrDefault();
-            Assert.IsNotNull(lib);
-            Assert.AreEqual(3, lib.Books.Count());
+            Assert.NotNull(lib);
+            Assert.Equal(3, lib.Books.Count());
         }
      
     }

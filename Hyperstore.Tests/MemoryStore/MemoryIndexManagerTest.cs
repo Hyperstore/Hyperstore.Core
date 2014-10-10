@@ -22,7 +22,7 @@ using Hyperstore.Modeling;
 using Hyperstore.Modeling.HyperGraph;
 using Hyperstore.Modeling.HyperGraph.Index;
 using Hyperstore.Tests.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System.Threading.Tasks;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -30,14 +30,14 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace Hyperstore.Tests.Memory
 {
-    [TestClass()]
+    
     public class MemoryIndexManagerTest : HyperstoreTestBase 
     {
-        [TestMethod]
-        [TestCategory("MemoryIndexManager")]
+        [Fact]
+        
         public async Task CreateIndex()
         {
-            await AssertHelper.ThrowsException<DuplicateIndexException>(async () =>
+            await Assert.ThrowsAsync<DuplicateIndexException>( async () =>
             {
                 // Création concurrente -> Une seule création
                 var store = await StoreBuilder.New().CreateAsync();
@@ -50,8 +50,8 @@ namespace Hyperstore.Tests.Memory
             });
         }
 
-        [TestMethod]
-        [TestCategory("MemoryIndexManager")]
+        [Fact]
+        
         public async Task IndexExists()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -61,11 +61,11 @@ namespace Hyperstore.Tests.Memory
             MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
             manager.CreateIndex(schema.Definition.XExtendsBaseClass, "index1", true, "Name");
 
-            Assert.IsTrue(manager.IndexExists("index1"));
+            Assert.True(manager.IndexExists("index1"));
         }
 
-        [TestMethod]
-        [TestCategory("MemoryIndexManager")]
+        [Fact]
+        
         public async Task GetIndex()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -75,11 +75,11 @@ namespace Hyperstore.Tests.Memory
             MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
             manager.CreateIndex(schema.Definition.XExtendsBaseClass, "index1", true, "Name");
 
-            Assert.IsNotNull(manager.GetIndex("index1"));
+            Assert.NotNull(manager.GetIndex("index1"));
         }
 
-        [TestMethod]
-        [TestCategory("MemoryIndexManager")]
+        [Fact]
+        
         public async Task DropIndex()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -88,16 +88,16 @@ namespace Hyperstore.Tests.Memory
             var graph = domain.Resolve<IHyperGraph>() as Hyperstore.Modeling.HyperGraph.HyperGraph;
             MemoryIndexManager manager = graph.IndexManager as MemoryIndexManager;
             manager.CreateIndex(schema.Definition.XExtendsBaseClass, "index1", true, "Name");
-            Assert.IsTrue(manager.IndexExists("index1"));
+            Assert.True(manager.IndexExists("index1"));
             manager.DropIndex("index1");
-            Assert.IsFalse(manager.IndexExists("index1"));
+            Assert.False(manager.IndexExists("index1"));
         }
         
-        [TestCategory("MemoryIndexManager")]
-        [TestMethod()]
+        
+        [Fact]
         public async Task WrongIndexNameTest()
         {
-            await AssertHelper.ThrowsException<InvalidNameException>(async () =>
+            await Assert.ThrowsAsync<InvalidNameException>(async () =>
             {
                 var store = await StoreBuilder.New().CreateAsync();
                 var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
@@ -108,8 +108,8 @@ namespace Hyperstore.Tests.Memory
             });
         }
 
-        [TestMethod]
-        [TestCategory("MemoryIndexManager")]
+        [Fact]
+        
         public async Task AddToIndex()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -122,20 +122,20 @@ namespace Hyperstore.Tests.Memory
                 manager.CreateIndex(schema.Definition.XExtendsBaseClass, "index1", true, "Name");
 
                 var index = manager.GetIndex("index1");
-                Assert.IsNull(index.Get("momo"));
+                Assert.Null(index.Get("momo"));
 
                 var id = new Identity("Test", "1");
                 manager.AddToIndex(schema.Definition.XExtendsBaseClass, "index1", id, "momo");
 
-                Assert.AreEqual(id, index.Get("momo"));
+                Assert.Equal(id, index.Get("momo"));
             }
         }
 
-        [TestMethod]
-        [TestCategory("MemoryIndexManager")]
+        [Fact]
+        
         public async Task UniqueConstraintIndex()
         {
-            await AssertHelper.ThrowsException<UniqueConstraintException>(async () =>
+            await Assert.ThrowsAsync<UniqueConstraintException>(async () =>
             {
                 var store = await StoreBuilder.New().CreateAsync();
                 var schema = await store.Schemas.New<TestDomainDefinition>().CreateAsync();
@@ -152,8 +152,8 @@ namespace Hyperstore.Tests.Memory
             });
         }
 
-        [TestMethod]
-        [TestCategory("MemoryIndexManager")]
+        [Fact]
+        
         public async Task NotUniqueConstraintIndex()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -169,13 +169,13 @@ namespace Hyperstore.Tests.Memory
             var index = manager.GetIndex("index1");
             using (var session = store.BeginSession(new SessionConfiguration { Readonly = true }))
             {
-                Assert.AreEqual(2, index.GetAll("momo").Count());
-                Assert.AreEqual(2, index.GetAll().Count());
+                Assert.Equal(2, index.GetAll("momo").Count());
+                Assert.Equal(2, index.GetAll().Count());
             }
         }
 
-        [TestMethod]
-        [TestCategory("MemoryIndexManager")]
+        [Fact]
+        
         public async Task RemoveFromIndex()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -191,9 +191,9 @@ namespace Hyperstore.Tests.Memory
             using (var session = store.BeginSession(new SessionConfiguration { Readonly = true }))
             {
                 manager.AddToIndex(schema.Definition.XExtendsBaseClass, "index1", id, "momo");
-                Assert.AreEqual(id, index.Get("momo"));
+                Assert.Equal(id, index.Get("momo"));
                 manager.RemoveFromIndex(schema.Definition.XExtendsBaseClass, "index1", id, "momo");
-                Assert.IsNull(index.Get("momo"));
+                Assert.Null(index.Get("momo"));
             }
         }
 

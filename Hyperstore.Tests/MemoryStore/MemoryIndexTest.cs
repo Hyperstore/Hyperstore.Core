@@ -23,7 +23,7 @@ using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.HyperGraph;
 using Hyperstore.Modeling.HyperGraph.Index;
 using Hyperstore.Tests.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System.Threading.Tasks;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -31,11 +31,11 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace Hyperstore.Tests.Memory
 {
-    [TestClass()]
+    
     public class MemoryIndexTest : Hyperstore.Tests.HyperstoreTestBase
     {
-        [TestMethod]
-        [TestCategory("MemoryIndex")]
+        [Fact]
+        
         public async Task CreateIndexDefinition()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -44,12 +44,12 @@ namespace Hyperstore.Tests.Memory
             var graph = ((Hyperstore.Modeling.Domain.IHyperGraphProvider)domain).InnerGraph;
 
             var def = new IndexDefinition(graph, "Index1", schema.Definition.XExtendsBaseClass, true, "Name");
-            Assert.AreEqual(1, def.PropertyNames.Length);
-            Assert.AreEqual("Name", def.PropertyNames[0]);
+            Assert.Equal(1, def.PropertyNames.Length);
+            Assert.Equal("Name", def.PropertyNames[0]);
         }
 
-        [TestMethod]
-        [TestCategory("MemoryIndex")]
+        [Fact]
+        
         public async Task IsImpactedIndexDefinition()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -57,13 +57,13 @@ namespace Hyperstore.Tests.Memory
             var domain = await store.DomainModels.New().CreateAsync("Test");
             var graph = ((Hyperstore.Modeling.Domain.IHyperGraphProvider)domain).InnerGraph;
             var def = new IndexDefinition(graph, "Index1", schema.Definition.XExtendsBaseClass, true, "Name");
-            Assert.IsTrue(def.IsImpactedBy(schema.Definition.XExtendsBaseClass, "Name"));
-            Assert.IsFalse(def.IsImpactedBy(schema.Definition.XExtendsBaseClass, "Name2"));
-            Assert.IsTrue(def.IsImpactedBy(schema.Definition.XExtendsBaseClass, null));
+            Assert.True(def.IsImpactedBy(schema.Definition.XExtendsBaseClass, "Name"));
+            Assert.False(def.IsImpactedBy(schema.Definition.XExtendsBaseClass, "Name2"));
+            Assert.True(def.IsImpactedBy(schema.Definition.XExtendsBaseClass, null));
         }
 
-        [TestMethod]
-        [TestCategory("MemoryIndex")]
+        [Fact]
+        
         public async Task AddInTransaction()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -79,17 +79,17 @@ namespace Hyperstore.Tests.Memory
                 a.Name = "momo";
                 s.AcceptChanges();
                 // Est visible dans la transaction
-                Assert.IsNotNull(domain.GetElement(index.Get("momo"), schema.Definition.XExtendsBaseClass));
+                Assert.NotNull(domain.GetElement(index.Get("momo"), schema.Definition.XExtendsBaseClass));
             }
 
             using (var session = domain.Store.BeginSession(new SessionConfiguration { Readonly = true }))
             {
-                Assert.IsNotNull(domain.GetElement(index.Get("momo"), schema.Definition.XExtendsBaseClass));
+                Assert.NotNull(domain.GetElement(index.Get("momo"), schema.Definition.XExtendsBaseClass));
             }
         }
 
-        [TestMethod]
-        [TestCategory("MemoryIndex")]
+        [Fact]
+        
         public async Task UpdateIndexedProperty()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -110,7 +110,7 @@ namespace Hyperstore.Tests.Memory
             using (var session = domain.Store.BeginSession(new SessionConfiguration { Readonly = true }))
             {
                 mel = domain.GetElement(index.Get("momo"), schema.Definition.XExtendsBaseClass);
-                Assert.IsNotNull(mel);
+                Assert.NotNull(mel);
             }
             using (var s = domain.Store.BeginSession())
             {
@@ -120,13 +120,13 @@ namespace Hyperstore.Tests.Memory
 
             using (var session = domain.Store.BeginSession(new SessionConfiguration { Readonly = true }))
             {
-                Assert.IsNull(domain.GetElement(index.Get("momo"), schema.Definition.XExtendsBaseClass));
-                Assert.IsNotNull(domain.GetElement(index.Get("mama"), schema.Definition.XExtendsBaseClass));
+                Assert.Null(domain.GetElement(index.Get("momo"), schema.Definition.XExtendsBaseClass));
+                Assert.NotNull(domain.GetElement(index.Get("mama"), schema.Definition.XExtendsBaseClass));
             }
         }
 
-        [TestMethod]
-        [TestCategory("MemoryIndex")]
+        [Fact]
+        
         public async Task RemoveIndexElement()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -147,10 +147,10 @@ namespace Hyperstore.Tests.Memory
             }
 
             dynamic mel = domain.GetElement(index1.Get("momo"), schema.Definition.XExtendsBaseClass);
-            Assert.IsNotNull(mel);
+            Assert.NotNull(mel);
 
             mel = domain.GetElement(index2.Get(10), schema.Definition.XExtendsBaseClass);
-            Assert.IsNotNull(mel);
+            Assert.NotNull(mel);
 
             using (var s = domain.Store.BeginSession())
             {
@@ -158,14 +158,14 @@ namespace Hyperstore.Tests.Memory
                 s.AcceptChanges();
 
                 // Ne doit plus être visible ds la transaction
-                Assert.IsNull(domain.GetElement(index1.Get("momo"), schema.Definition.XExtendsBaseClass));
-                Assert.IsNull(domain.GetElement(index2.Get(10), schema.Definition.XExtendsBaseClass));
+                Assert.Null(domain.GetElement(index1.Get("momo"), schema.Definition.XExtendsBaseClass));
+                Assert.Null(domain.GetElement(index2.Get(10), schema.Definition.XExtendsBaseClass));
             }
 
             using (var session = domain.Store.BeginSession(new SessionConfiguration { Readonly = true }))
             {
-                Assert.IsNull(domain.GetElement(index1.Get("momo"), schema.Definition.XExtendsBaseClass));
-                Assert.IsNull(domain.GetElement(index2.Get(10), schema.Definition.XExtendsBaseClass));
+                Assert.Null(domain.GetElement(index1.Get("momo"), schema.Definition.XExtendsBaseClass));
+                Assert.Null(domain.GetElement(index2.Get(10), schema.Definition.XExtendsBaseClass));
             }
         }
     }

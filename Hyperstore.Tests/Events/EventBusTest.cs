@@ -25,7 +25,7 @@ using Hyperstore.Modeling.HyperGraph;
 using Hyperstore.Modeling.HyperGraph.Index;
 using Hyperstore.Modeling.Messaging;
 using Hyperstore.Tests.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System.Threading.Tasks;
 
 #if NETFX_CORE
@@ -34,10 +34,10 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace Hyperstore.Tests.Commands
 {
-    [TestClass()]
+    
     public class EventBusTest
     {
-        [TestMethod]
+        [Fact]
         public async Task InprocEventBus()
         {
             // Synchronize two domain in two diffrent stores.
@@ -65,7 +65,7 @@ namespace Hyperstore.Tests.Commands
             ManualResetEvent set = new ManualResetEvent(false); // Used to indicate that the event has been received
             domain2.Events.EntityAdded.Subscribe(e =>
             {
-                Assert.IsNotNull(store2.GetElements<XExtendsBaseClass>().First());
+                Assert.NotNull(store2.GetElements<XExtendsBaseClass>().First());
                 set.Set();
             });
 
@@ -78,11 +78,11 @@ namespace Hyperstore.Tests.Commands
 
             if (!set.WaitOne(1000))
             {
-                Assert.Inconclusive();
+                throw new Exception("Inconclusive");
             }
         }
 
-        //[TestMethod]
+        //[Fact]
         //public async Task InprocEventBusWithMetadatas()
         //{
         //    // Initial store
@@ -104,7 +104,7 @@ namespace Hyperstore.Tests.Commands
         //    ManualResetEvent set = new ManualResetEvent(false);
         //    domain2.Events.ElementAdded.Subscribe(e =>
         //    {
-        //        Assert.IsNotNull(store2.GetElements<XExtendsBaseClass>().First());
+        //        Assert.NotNull(store2.GetElements<XExtendsBaseClass>().First());
         //        set.Set();
         //    });
 
@@ -116,7 +116,7 @@ namespace Hyperstore.Tests.Commands
 
         //    if (!set.WaitOne(1500))
         //    {
-        //        Assert.Inconclusive();
+        //                        throw new Exception("Inconclusive");
         //    }
 
         //}

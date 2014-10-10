@@ -15,7 +15,7 @@
 // limitations under the License.
  
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System.Threading.Tasks;
 using Hyperstore.Modeling;
 using Hyperstore.Tests.Model;
@@ -25,7 +25,7 @@ using Hyperstore.Modeling.Domain;
 
 namespace Hyperstore.Tests.DomainExtension
 {
-    [TestClass]
+    
     public class ConstraintsTest
     {
         private IHyperstore store;
@@ -46,7 +46,7 @@ namespace Hyperstore.Tests.DomainExtension
                                         .CreateAsync("lib");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ConstraintNotExecuted()
         {
             await CreateDomain();
@@ -70,12 +70,12 @@ namespace Hyperstore.Tests.DomainExtension
         }
 
 
-        [TestMethod]
+        [Fact]
         public async Task TestCheckConstraint()
         {
             await CreateDomain();
 
-            var ex = AssertHelper.ThrowsException<Exception>(() =>
+            var ex = Assert.Throws<SessionException>(() =>
                 {
                     Library lib;
                     using (var session = store.BeginSession())
@@ -87,15 +87,15 @@ namespace Hyperstore.Tests.DomainExtension
                     }
                 });
 
-            Assert.AreEqual("[Error] - Invalid email address toto for My Library ", ex.Message);
+            Assert.Equal("[Error] - Invalid email address toto for My Library ", ex.Message);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestCheckConstraint2()
         {
             await CreateDomain();
 
-            var ex = AssertHelper.ThrowsException<Exception>(() =>
+            var ex = Assert.Throws<SessionException>(() =>
             {
                 Library lib;
                 using (var session = store.BeginSession())
@@ -106,10 +106,10 @@ namespace Hyperstore.Tests.DomainExtension
                     session.AcceptChanges();
                 }
             });
-            Assert.AreEqual("[Error] - Name is required for element  (lib:1). ", ex.Message);
+            Assert.Equal("[Error] - Name is required for element  (lib:1). ", ex.Message);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestValidateConstraint()
         {
             await CreateDomain();
@@ -125,16 +125,16 @@ namespace Hyperstore.Tests.DomainExtension
                 }
 
                 var result = schema.Constraints.Validate(domain.GetElements());
-                Assert.AreEqual(1, result.Messages.Count());
-                Assert.AreEqual("error for element abcd (lib:1).", result.Messages.First().Message);
+                Assert.Equal(1, result.Messages.Count());
+                Assert.Equal("error for element abcd (lib:1).", result.Messages.First().Message);
 
                 result = schema.Constraints.Validate(domain.GetElements(), "test"); // With a valid category
-                Assert.AreEqual(1, result.Messages.Count());
-                Assert.AreEqual("error for element abcd (lib:1).", result.Messages.First().Message);
+                Assert.Equal(1, result.Messages.Count());
+                Assert.Equal("error for element abcd (lib:1).", result.Messages.First().Message);
 
 
                 result = schema.Constraints.Validate(domain.GetElements(), "test2"); // Unknow category
-                Assert.AreEqual(0, result.Messages.Count());
+                Assert.Equal(0, result.Messages.Count());
         }
     }
 }

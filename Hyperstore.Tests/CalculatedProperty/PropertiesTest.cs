@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
  
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System;
 using System.Threading.Tasks;
 using Hyperstore.Modeling;
@@ -45,10 +45,10 @@ namespace Hyperstore.Tests.Model
 
 namespace Hyperstore.Tests
 {
-    [TestClass]
+    
     public class PropertiesTest : HyperstoreTestBase
     {
-        [TestMethod]
+        [Fact]
         public async Task CalculatedPropertyTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -59,7 +59,7 @@ namespace Hyperstore.Tests
             using( var s = store.BeginSession() )
             {
                 start = new XExtendsBaseClass(dm);
-                Assert.AreEqual(0, start.CalculatedValue);
+                Assert.Equal(0, start.CalculatedValue);
                 s.AcceptChanges();
             }
 
@@ -72,8 +72,8 @@ namespace Hyperstore.Tests
                 s.AcceptChanges();
             }
 
-            Assert.IsTrue(flag);
-            Assert.AreEqual(50, start.CalculatedValue);
+            Assert.True(flag);
+            Assert.Equal(50, start.CalculatedValue);
 
         
         }

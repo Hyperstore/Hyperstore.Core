@@ -15,7 +15,7 @@
 // limitations under the License.
  
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Hyperstore.Modeling.MemoryStore;
 using System.Linq;
 using Hyperstore.Modeling;
@@ -25,29 +25,29 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace Hyperstore.Tests.MemoryStore
 {
-    [TestClass]
+    
     public class SlotListTest
     {
-        [TestMethod]
+        [Fact]
         public void AddItem()
         {
             SlotList list = new SlotList(null, NodeType.Node);
             list.Add(new Slot<int>(1));
-            Assert.IsTrue(list.Length == 1);
+            Assert.True(list.Length == 1);
         }
 
 
-        [TestMethod]
+        [Fact]
         public void Enumerate()
         {
             SlotList list = new SlotList(null, NodeType.Node);
             list.Add(new Slot<int>(1));
             list.Add(new Slot<int>(1));
-            Assert.AreEqual(2, list.Sum(i => ((Slot<int>)i).Value));
+            Assert.Equal(2, list.Sum(i => ((Slot<int>)i).Value));
         }
 
 #if !NETFX_CORE
-        [TestMethod]
+        [Fact]
         public void Garbage()
         {
             SlotList list = new SlotList(null, NodeType.Node);

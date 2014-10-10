@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
  
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System;
 using System.Threading.Tasks;
 using Hyperstore.Modeling;
@@ -35,7 +35,7 @@ namespace Hyperstore.Tests.MemoryStore
     ///This is a test class for MvccPersistenceProviderTest and is intended
     ///to contain all MvccPersistenceProviderTest Unit Tests
     ///</summary>
-    [TestClass]
+    
     public class MemoryStoreTest : HyperstoreTestBase
     {
         class Data : GraphNode
@@ -49,7 +49,7 @@ namespace Hyperstore.Tests.MemoryStore
         /// <summary>
         /// Deadlock
         ///</summary>
-        [TestMethod]
+        [Fact]
         public async Task DeadlockTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -86,12 +86,12 @@ namespace Hyperstore.Tests.MemoryStore
             }
             catch (AggregateException ex)
             {
-                Assert.IsInstanceOfType(ex.InnerException, typeof(DeadLockException));
+                Assert.IsType<DeadLockException>(ex.InnerException);
             }
         }
 
 
-        [TestMethod]
+        [Fact]
         public async Task DeadlockTest2()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -128,7 +128,7 @@ namespace Hyperstore.Tests.MemoryStore
             Task.WaitAll(t1, t2);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SerializeTransactionExceptionTest()
         {
             // Accéder à une même donnée ds une session Serializable génere une SerializeTransactionException
@@ -166,16 +166,16 @@ namespace Hyperstore.Tests.MemoryStore
             try
             {
                 Task.WaitAll(t1, t2);
-                Assert.Inconclusive();
+                                throw new Exception("Inconclusive");
             }
             catch (AggregateException ex)
             {
-                Assert.IsInstanceOfType(ex.InnerException, typeof(SerializableTransactionException));
+                Assert.IsType<SerializableTransactionException>(ex.InnerException);
             }
         }
 
 
-        [TestMethod]
+        [Fact]
         public async Task AcquireExclusive2Test()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -202,11 +202,11 @@ namespace Hyperstore.Tests.MemoryStore
 
             Task.WaitAll(tasks);
 #if TEST
-            Assert.IsTrue(((LockManager)((IStore)store).LockManager).IsEmpty());
+            Assert.True(((LockManager)((IStore)store).LockManager).IsEmpty());
 #endif
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AcquireExclusiveWaitTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -246,14 +246,14 @@ namespace Hyperstore.Tests.MemoryStore
             }
 
             Task.WaitAll(tasks);
-            Assert.AreEqual(1, cx);
+            Assert.Equal(1, cx);
 #if TEST
-            Assert.IsTrue(((LockManager)((IStore)store).LockManager).IsEmpty());
+            Assert.True(((LockManager)((IStore)store).LockManager).IsEmpty());
 #endif
 
         }
 
-        [TestMethod]
+        [Fact]
         public async Task NestedSession()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -273,10 +273,10 @@ namespace Hyperstore.Tests.MemoryStore
                 s.AcceptChanges();
             }
 
-            Assert.AreEqual(((Data)provider.GetNode(new Identity("test", "1"))).Value, 20);
+            Assert.Equal(((Data)provider.GetNode(new Identity("test", "1"))).Value, 20);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RollbackNestedSession()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -295,12 +295,12 @@ namespace Hyperstore.Tests.MemoryStore
 
             using (var s = store.BeginSession())
             {
-                Assert.AreEqual(provider.GetNode(new Identity("test", "1")), null);
+                Assert.Equal(provider.GetNode(new Identity("test", "1")), null);
                 s.AcceptChanges();
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task NestedSessionRollback()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -319,12 +319,12 @@ namespace Hyperstore.Tests.MemoryStore
 
             using (var s = store.BeginSession())
             {
-                Assert.AreEqual(provider.GetNode(new Identity("test", "1")), null);
+                Assert.Equal(provider.GetNode(new Identity("test", "1")), null);
                 s.AcceptChanges();
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task CommitTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -339,12 +339,12 @@ namespace Hyperstore.Tests.MemoryStore
             }
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
             {
-                Assert.AreEqual(((Data)provider.GetNode(new Identity("test", "1"))).Value, 10);
+                Assert.Equal(((Data)provider.GetNode(new Identity("test", "1"))).Value, 10);
                 s.AcceptChanges();
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RollbackTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -359,12 +359,12 @@ namespace Hyperstore.Tests.MemoryStore
 
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
             {
-                Assert.AreEqual(provider.GetNode(new Identity("test", "1")), null);
+                Assert.Equal(provider.GetNode(new Identity("test", "1")), null);
                 s.AcceptChanges();
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RollbackUpdateTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -383,12 +383,12 @@ namespace Hyperstore.Tests.MemoryStore
             }
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
             {
-                Assert.AreEqual(((Data)provider.GetNode(new Identity("test", "1"))).Value, 10);
+                Assert.Equal(((Data)provider.GetNode(new Identity("test", "1"))).Value, 10);
                 s.AcceptChanges();
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DeleteTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -408,7 +408,7 @@ namespace Hyperstore.Tests.MemoryStore
 
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
             {
-                Assert.AreEqual(((Data)provider.GetNode(new Identity("test", "1"))).Value, 10);
+                Assert.Equal(((Data)provider.GetNode(new Identity("test", "1"))).Value, 10);
             }
 
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
@@ -419,12 +419,12 @@ namespace Hyperstore.Tests.MemoryStore
 
             using (var s = store.BeginSession(new SessionConfiguration { IsolationLevel = SessionIsolationLevel.ReadCommitted }))
             {
-                Assert.AreEqual(provider.GetNode(new Identity("test", "1")), null);
+                Assert.Equal(provider.GetNode(new Identity("test", "1")), null);
                 s.AcceptChanges();
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SerializableTransactionTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -455,7 +455,7 @@ namespace Hyperstore.Tests.MemoryStore
                     var x = a.Value; // Ou n'importe quoi 
                     signal2.Set();
                     signal.Wait();
-                    Assert.AreEqual(a.Value, 10); // On ne "voit" pas les modifications des autres transactions
+                    Assert.Equal(a.Value, 10); // On ne "voit" pas les modifications des autres transactions
                 }
             });
 
@@ -475,7 +475,7 @@ namespace Hyperstore.Tests.MemoryStore
             Task.WaitAll(t1, t2);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ReadPhantomTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -505,7 +505,7 @@ namespace Hyperstore.Tests.MemoryStore
                 {
                     signal2.Set();
                     signal.Wait();// On attend le commit de l'autre                    
-                    Assert.AreEqual(11, a.Value); // On "voit" dèja que la valeur a été modifiée
+                    Assert.Equal(11, a.Value); // On "voit" dèja que la valeur a été modifiée
                 }
             });
 

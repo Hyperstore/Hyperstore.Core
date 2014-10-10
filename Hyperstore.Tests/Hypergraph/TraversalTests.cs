@@ -18,7 +18,7 @@ using Hyperstore.Modeling;
 using Hyperstore.Modeling.HyperGraph;
 using Hyperstore.Modeling.Traversal;
 using Hyperstore.Tests.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,11 +27,11 @@ using System.Threading.Tasks;
 
 namespace Hyperstore.Tests.Hypergraph
 {
-    [TestClass()]
+    
     public class TraversalTests : HyperstoreTestBase
     {
-        [TestMethod()]
-        [TestCategory("Traversal")]
+        [Fact]
+        
         public async Task TraversalTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -55,17 +55,17 @@ namespace Hyperstore.Tests.Hypergraph
                     )
                     .GetPaths(new NodeInfo(new Identity("test", "1"), metadata.Id)).Count();
 
-            Assert.AreEqual(3, cx);
+            Assert.Equal(3, cx);
 
             var p2 = domain.Traversal.OnEveryPath(p => p.EndElement.Id.Key == "7" ? GraphTraversalEvaluatorResult.IncludeAndExit : GraphTraversalEvaluatorResult.ExcludeAndContinue)
                                      .PathTraverser(new GraphDepthFirstTraverser())
                                      .GetPaths(new NodeInfo(new Identity("test", "1"), metadata.Id)).First();
-            Assert.AreEqual(2, p2.Length);
+            Assert.Equal(2, p2.Length);
         }
 
 
-        [TestMethod()]
-        [TestCategory("Traversal")]
+        [Fact]
+        
         public async Task GraphPathTests()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -76,11 +76,11 @@ namespace Hyperstore.Tests.Hypergraph
             var p = new GraphPath(domain, start);
             var p2 = new GraphPath(domain, start);
 
-            Assert.AreEqual(0, p.Length);
-            Assert.AreEqual(1, p.Elements.Count());
-            Assert.AreEqual(0, p.Relationships.Count());
-            Assert.AreEqual(start, p.StartElement);
-            Assert.AreEqual(start, p.EndElement);
+            Assert.Equal(0, p.Length);
+            Assert.Equal(1, p.Elements.Count());
+            Assert.Equal(0, p.Relationships.Count());
+            Assert.Equal(start, p.StartElement);
+            Assert.Equal(start, p.EndElement);
 
             var end = new NodeInfo(new Identity("test", "3"), Identity.Empty);
             var edge = new EdgeInfo(new Identity("test", "2"), new Identity("test", "Has"), end.Id, end.SchemaId);
@@ -88,11 +88,11 @@ namespace Hyperstore.Tests.Hypergraph
             p = p.Create(end, edge);
             p2 = p2.Create(end, edge);
 
-            Assert.AreEqual(1, p.Length);
-            Assert.AreEqual(2, p.Elements.Count());
-            Assert.AreEqual(1, p.Relationships.Count());
-            Assert.AreEqual(start, p.StartElement);
-            Assert.AreEqual(end, p.EndElement);
+            Assert.Equal(1, p.Length);
+            Assert.Equal(2, p.Elements.Count());
+            Assert.Equal(1, p.Relationships.Count());
+            Assert.Equal(start, p.StartElement);
+            Assert.Equal(end, p.EndElement);
 
 
             end = new NodeInfo(new Identity("test", "5"), Identity.Empty);
@@ -101,15 +101,15 @@ namespace Hyperstore.Tests.Hypergraph
             p = p.Create(end, edge);
             p2 = p2.Create(end, edge);
 
-            Assert.AreEqual(2, p.Length);
-            Assert.AreEqual(3, p.Elements.Count());
-            Assert.AreEqual(2, p.Relationships.Count());
-            Assert.AreEqual(start, p.StartElement);
-            Assert.AreEqual(end, p.EndElement);
+            Assert.Equal(2, p.Length);
+            Assert.Equal(3, p.Elements.Count());
+            Assert.Equal(2, p.Relationships.Count());
+            Assert.Equal(start, p.StartElement);
+            Assert.Equal(end, p.EndElement);
 
-            Assert.AreEqual(p, p2);
+            Assert.Equal(p, p2);
 
-            Assert.AreEqual("[test:1] -- test:has --> [test:3] -- test:has --> [test:5]", p.ToString());
+            Assert.Equal("[test:1] -- test:has --> [test:3] -- test:has --> [test:5]", p.ToString());
 
         }
     }

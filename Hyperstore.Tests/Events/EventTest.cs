@@ -23,7 +23,7 @@ using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.HyperGraph;
 using Hyperstore.Modeling.HyperGraph.Index;
 using Hyperstore.Tests.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System.Threading.Tasks;
 using Hyperstore.Modeling.Domain;
 
@@ -33,10 +33,10 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace Hyperstore.Tests.Commands
 {
-    [TestClass()]
+    
     public class EventTest
     {
-        [TestMethod]
+        [Fact]
         public async Task CreationEvents()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -48,26 +48,26 @@ namespace Hyperstore.Tests.Commands
             domain.Events.CustomEventRaised.Subscribe(e =>
             {
                 // Il est le seul en top level
-                Assert.IsTrue(e.Event.IsTopLevelEvent);
+                Assert.True(e.Event.IsTopLevelEvent);
                 cx++;
             });
  
             domain.Events.EntityAdded.Subscribe(e =>
             {
-                Assert.IsFalse(e.Event.IsTopLevelEvent);
+                Assert.False(e.Event.IsTopLevelEvent);
                 cx++;
             });
 
             domain.Events.PropertyChanged.Subscribe(e =>
             {
-                Assert.IsFalse(e.Event.IsTopLevelEvent);
+                Assert.False(e.Event.IsTopLevelEvent);
                 cx++;
             });
 
             domain.Events.SessionCompleted.Subscribe(e =>
             {
-                Assert.IsFalse(e.IsAborted);
-                Assert.IsFalse(e.IsReadOnly);
+                Assert.False(e.IsAborted);
+                Assert.False(e.IsReadOnly);
                 cx++;
             });
 
@@ -75,7 +75,7 @@ namespace Hyperstore.Tests.Commands
             {
                 if (e.Event.ElementId == new Identity("Test", "1"))
                 {
-                    Assert.IsFalse(e.Event.IsTopLevelEvent);
+                    Assert.False(e.Event.IsTopLevelEvent);
                     cx++;
                 }
             });
@@ -86,10 +86,10 @@ namespace Hyperstore.Tests.Commands
                 s.AcceptChanges();
             }
 
-            Assert.AreEqual(5, cx);
+            Assert.Equal(5, cx);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DeletionEvents()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -100,20 +100,20 @@ namespace Hyperstore.Tests.Commands
             // Abonnements aux events
             domain.Events.EntityRemoved.Subscribe(e =>
             {
-                Assert.IsTrue(e.Event.IsTopLevelEvent);
+                Assert.True(e.Event.IsTopLevelEvent);
                 cx++;
             });
 
             domain.Events.PropertyRemoved.Subscribe(e =>
             {
-                Assert.IsFalse(e.Event.IsTopLevelEvent);
+                Assert.False(e.Event.IsTopLevelEvent);
                 cx++;
             });
 
             domain.Events.SessionCompleted.Subscribe(e =>
             {
-                Assert.IsFalse(e.IsAborted);
-                Assert.IsFalse(e.IsReadOnly);
+                Assert.False(e.IsAborted);
+                Assert.False(e.IsReadOnly);
                 cx++;
             });
 
@@ -132,7 +132,7 @@ namespace Hyperstore.Tests.Commands
                 s.AcceptChanges();
             }
 
-            Assert.AreEqual(4, cx);
+            Assert.Equal(4, cx);
         }
 
     }

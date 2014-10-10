@@ -23,7 +23,7 @@ using Hyperstore.Modeling.Commands;
 using Hyperstore.Modeling.HyperGraph;
 using Hyperstore.Modeling.HyperGraph.Index;
 using Hyperstore.Tests.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System.Threading.Tasks;
 using Hyperstore.Modeling.Domain;
 
@@ -33,11 +33,11 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace Hyperstore.Tests.Commands
 {
-    [TestClass()]
+    
     public class UndoTest : HyperstoreTestBase
     {
-        [TestMethod]
-        [TestCategory("Commands")]
+        [Fact]
+        
         public async Task Undo()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -75,17 +75,17 @@ namespace Hyperstore.Tests.Commands
                 s.AcceptChanges();
             }
 
-            Assert.AreEqual(0, store.GetElements().Count());
+            Assert.Equal(0, store.GetElements().Count());
             undoManager.Undo();
 
-            Assert.AreEqual(11, store.GetEntities().Count());
+            Assert.Equal(11, store.GetEntities().Count());
             undoManager.Redo();
-            Assert.AreEqual(0, store.GetElements().Count());
+            Assert.Equal(0, store.GetElements().Count());
 
         }
 
-        [TestMethod]
-        [TestCategory("Commands")]
+        [Fact]
+        
         public async Task UndoWithEnum()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -110,15 +110,15 @@ namespace Hyperstore.Tests.Commands
             }
 
             undoManager.Undo();
-            Assert.AreEqual(Model.Direction.South, y.Direction);
+            Assert.Equal(Model.Direction.South, y.Direction);
 
             undoManager.Redo();
-            Assert.AreEqual(Model.Direction.West, y.Direction);
+            Assert.Equal(Model.Direction.West, y.Direction);
 
         }
 
-        [TestMethod]
-        [TestCategory("Commands")]
+        [Fact]
+        
         public async Task UndoWithMultipleDelete()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -135,8 +135,8 @@ namespace Hyperstore.Tests.Commands
                 s.AcceptChanges();
             }
 
-            Assert.IsTrue(undoManager.CanUndo);
-            Assert.IsFalse(undoManager.CanRedo);
+            Assert.True(undoManager.CanUndo);
+            Assert.False(undoManager.CanRedo);
 
             using (var s = store.BeginSession())
             {
@@ -144,17 +144,17 @@ namespace Hyperstore.Tests.Commands
                 s.AcceptChanges();
             }
 
-            Assert.IsTrue(undoManager.CanUndo);
-            Assert.IsFalse(undoManager.CanRedo);
+            Assert.True(undoManager.CanUndo);
+            Assert.False(undoManager.CanRedo);
 
             undoManager.Undo();
-            Assert.IsTrue(undoManager.CanRedo);
-            Assert.IsTrue(undoManager.CanUndo);
-            Assert.AreEqual("mama", a.Name);
+            Assert.True(undoManager.CanRedo);
+            Assert.True(undoManager.CanUndo);
+            Assert.Equal("mama", a.Name);
         }
 
-        [TestMethod]
-        [TestCategory("Commands")]
+        [Fact]
+        
         public async Task UndoInEmbeddedSessions()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -171,8 +171,8 @@ namespace Hyperstore.Tests.Commands
                 s.AcceptChanges();
             }
 
-            Assert.IsTrue(undoManager.CanUndo);
-            Assert.IsFalse(undoManager.CanRedo);
+            Assert.True(undoManager.CanUndo);
+            Assert.False(undoManager.CanRedo);
 
             using (var s = store.BeginSession())
             {
@@ -184,13 +184,13 @@ namespace Hyperstore.Tests.Commands
                 s.AcceptChanges();
             }
 
-            Assert.IsTrue(undoManager.CanUndo);
-            Assert.IsFalse(undoManager.CanRedo);
+            Assert.True(undoManager.CanUndo);
+            Assert.False(undoManager.CanRedo);
 
             undoManager.Undo();
-            Assert.IsTrue(undoManager.CanRedo);
-            Assert.IsTrue(undoManager.CanUndo);
-            Assert.AreEqual("mama", a.Name);
+            Assert.True(undoManager.CanRedo);
+            Assert.True(undoManager.CanUndo);
+            Assert.Equal("mama", a.Name);
         }
     }
 }

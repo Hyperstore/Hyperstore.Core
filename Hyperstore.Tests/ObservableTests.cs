@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Hyperstore.Modeling;
 using Hyperstore.Tests.Model;
 using System.Threading.Tasks;
@@ -7,10 +7,10 @@ using Hyperstore.Modeling.Domain;
 
 namespace Hyperstore.Tests
 {
-    [TestClass]
+    
     public class ObservableTests
     {
-        [TestMethod]
+        [Fact]
         public async Task ObservableCollectionTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -63,11 +63,11 @@ namespace Hyperstore.Tests
                 session.AcceptChanges();
             }
 
-            Assert.AreEqual(2, added);
-            Assert.AreEqual(2, removed);
+            Assert.Equal(2, added);
+            Assert.Equal(2, removed);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ObservableCollectionMultiChangesTest()
         {
             var store = await StoreBuilder.New().CreateAsync();
@@ -111,8 +111,8 @@ namespace Hyperstore.Tests
                 session.AcceptChanges();
             }
 
-            Assert.AreEqual(1, added);
-            Assert.AreEqual(0, removed);
+            Assert.Equal(1, added);
+            Assert.Equal(0, removed);
         }
     }
 }

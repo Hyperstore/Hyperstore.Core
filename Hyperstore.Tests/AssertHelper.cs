@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
  
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 #endif
 
-namespace Microsoft.VisualStudio.TestTools.UnitTesting
+namespace Xunit
 {
     static class AssertHelper
     {
@@ -34,33 +34,33 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
             return Assert.ThrowsException<T>(action);
         }
 #else
-        public static T ThrowsException<T>(Action action) where T : Exception
-        {
-            try
-            {
-                action();
-            }
-            catch (T ex)
-            {
-                return ex;
-            }
+        //public static T ThrowsException<T>(Action action) where T : Exception
+        //{
+        //    try
+        //    {
+        //        action();
+        //    }
+        //    catch (T ex)
+        //    {
+        //        return ex;
+        //    }
 
-            throw new AssertFailedException("Expected exception failed.");
-        }
+        //    throw new AssertFailedException("Expected exception failed.");
+        //}
 
-        public static async Task<T> ThrowsException<T>(Func<Task> action) where T : Exception
-        {
-            try
-            {
-                await action();
-            }
-            catch(T ex)
-            {
-                return ex;
-            }
+        //public static async Task<T> ThrowsException<T>(Func<Task> action) where T : Exception
+        //{
+        //    try
+        //    {
+        //        await action();
+        //    }
+        //    catch(T ex)
+        //    {
+        //        return ex;
+        //    }
 
-            throw new AssertFailedException("Expected exception failed.");
-        }
+        //    throw new AssertFailedException("Expected exception failed.");
+        //}
 
 
         public static void IsGarbageCollected<TObject>(ref TObject @object)    where TObject : class
@@ -85,7 +85,7 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
             GC.Collect(generation, GCCollectionMode.Forced);
             GC.WaitForPendingFinalizers();
 
-            Assert.IsFalse(reference.IsAlive);
+            Assert.False(reference.IsAlive);
         }
 #endif
     }
