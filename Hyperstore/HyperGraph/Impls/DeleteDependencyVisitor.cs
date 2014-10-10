@@ -10,9 +10,10 @@ namespace Hyperstore.Modeling.HyperGraph
 {
     internal class DeleteDependencyVisitor : ITraversalVisitor
     {
-        private List<IDomainCommand> _commands = new List<IDomainCommand>();
+        private Stack<IDomainCommand> _entityCommands = new Stack<IDomainCommand>();
+        private Stack<IDomainCommand> _relationshipCommands = new Stack<IDomainCommand>();
 
-        internal List<IDomainCommand> Commands { get { return _commands; } }
+        internal IEnumerable<IDomainCommand> Commands { get { return _relationshipCommands.Concat(_entityCommands); } }
 
         GraphTraversalEvaluatorResult ITraversalVisitor.Visit(GraphPath path)
         {
@@ -20,7 +21,7 @@ namespace Hyperstore.Modeling.HyperGraph
             var relationship = path.LastTraversedRelationship;
             if (relationship != null)
             {
-                _commands.Add(new RemoveRelationshipCommand(path.DomainModel, relationship.Id, relationship.SchemaId));
+                _relationshipCommands.Push(new RemoveRelationshipCommand(path.DomainModel, relationship.Id, relationship.SchemaId));
                 if (end == null)
                     return GraphTraversalEvaluatorResult.IncludeAndNextPath;
             }
@@ -41,9 +42,9 @@ namespace Hyperstore.Modeling.HyperGraph
 
             var endSchema = path.DomainModel.Store.GetSchemaElement(relationship.EndSchemaId);
             if (endSchema is ISchemaRelationship)
-                _commands.Add(new RemoveRelationshipCommand(path.DomainModel, end.Id, end.SchemaId));
+                _relationshipCommands.Push(new RemoveRelationshipCommand(path.DomainModel, end.Id, end.SchemaId));
             else
-                _commands.Add(new RemoveEntityCommand(path.DomainModel, end.Id, end.SchemaId));
+                _entityCommands.Push(new RemoveEntityCommand(path.DomainModel, end.Id, end.SchemaId));
 
             return GraphTraversalEvaluatorResult.Continue;
         }

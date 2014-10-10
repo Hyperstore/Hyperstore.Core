@@ -33,6 +33,8 @@ namespace Hyperstore.Modeling.Commands
     public class RemoveRelationshipCommand : PrimitiveCommand, ICommandHandler<RemoveRelationshipCommand>
     {
         private readonly bool _throwExceptionIfNotExists;
+        private readonly Identity _startId;
+        private readonly Identity _startSchemaId;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -69,6 +71,8 @@ namespace Hyperstore.Modeling.Commands
             if (Relationship == null)
                 throw new InvalidElementException(id);
             _throwExceptionIfNotExists = throwExceptionIfNotExists;
+            _startId = Relationship.Start.Id;
+            _startSchemaId = Relationship.Start.SchemaInfo.Id;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -87,6 +91,8 @@ namespace Hyperstore.Modeling.Commands
         {
             Contract.Requires(relationship, "relationship");
             Relationship = relationship;
+            _startId = Relationship.Start.Id;
+            _startSchemaId = Relationship.Start.SchemaInfo.Id;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -127,8 +133,8 @@ namespace Hyperstore.Modeling.Commands
                                                      Relationship.DomainModel.ExtensionName,
                                                      Relationship.Id,
                                                      Relationship.SchemaInfo.Id,
-                                                     Relationship.Start.Id,
-                                                     Relationship.Start.SchemaInfo.Id,
+                                                     _startId,
+                                                     _startSchemaId,
                                                      endId,
                                                      endSchemaId,
                                                      context.CurrentSession.SessionId,

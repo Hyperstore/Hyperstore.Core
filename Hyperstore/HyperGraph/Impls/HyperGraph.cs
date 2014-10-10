@@ -712,7 +712,7 @@ namespace Hyperstore.Modeling.HyperGraph
                 var visitor = new DeleteDependencyVisitor();
                 _domainModel.Traversal.WithVisitor(visitor).Traverse(node);
 
-                if (visitor.Commands.Count > 0)
+                if (visitor.Commands.Any())
                 {
                     using (var session = _domainModel.Store.BeginSession())
                     {
@@ -816,7 +816,7 @@ namespace Hyperstore.Modeling.HyperGraph
                 var visitor = new DeleteDependencyVisitor();
                 _domainModel.Traversal.WithVisitor(visitor).Traverse(edge);
 
-                if (visitor.Commands.Count > 0)
+                if (visitor.Commands.Any())
                 {
                     using (var session = _domainModel.Store.BeginSession())
                     {
