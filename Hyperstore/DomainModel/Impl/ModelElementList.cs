@@ -130,7 +130,7 @@ namespace Hyperstore.Modeling
 
             Query = from link in DomainModel.GetRelationships(SchemaRelationship, start: Source, end: End)
                     let mel = (T)(Source != null ? link.End : link.Start)
-                    where _whereClause == null || WhereClause(mel)
+                    where mel != null && ( _whereClause == null || WhereClause(mel))
                     select mel;
         }
 

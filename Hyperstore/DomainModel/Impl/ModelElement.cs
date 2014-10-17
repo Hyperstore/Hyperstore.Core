@@ -532,8 +532,8 @@ namespace Hyperstore.Modeling
                 IModelRelationship relationship = null;
 
                 // !opposite ? this -> target : target -> this
-                var start = !opposite ? this : target;
-                var end = !opposite ? target : this;
+                IModelElement start = !opposite ? this : null;
+                IModelElement end = !opposite ? null : this;
 
                 // Si l'identifiant est fourni c'est que la relation existe surement dèjà
                 if (relationshipId != null)
@@ -543,6 +543,9 @@ namespace Hyperstore.Modeling
                 {
                     relationship = DomainModel.GetRelationships(relationshipSchema, start, end).FirstOrDefault();
                 }
+
+                start = !opposite ? this : target;
+                end = !opposite ? target : this; 
 
                 // Si cette relation existe dèjà mais sur un autre élement, on la supprime
                 if (relationship != null)
@@ -557,6 +560,9 @@ namespace Hyperstore.Modeling
                     // Suppression car elle pointe sur un élement diffèrent
                     commands.Add(new RemoveRelationshipCommand(relationship));
                 }
+
+                relationship = null;
+                relationshipId = null;
 
                 // Si elle n'a pas été mise à null
                 if (end != null && start != null)

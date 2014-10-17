@@ -289,12 +289,17 @@ namespace Hyperstore.Modeling
             bool IEnumerator.MoveNext()
             {
                 current = null;
-                if (index >= list._items.Count)
-                    return false;
+                do
+                {
+                    if (index >= list._items.Count)
+                        return false;
 
-                var id = list._items[index];
-                current = list.Query.FirstOrDefault(e => e.Id == id);
-                index++;
+                    var id = list._items[index];
+                    current = list.Query.FirstOrDefault(e => e.Id == id);
+                    index++;
+                }
+                while (current == null);
+
                 return true;
             }
 

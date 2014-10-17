@@ -63,6 +63,9 @@ namespace Hyperstore.Tests.Commands
                 session.AcceptChanges();
             }
 
+            var txt = JSonSerializer.Serialize(lib, JSonSerializationOption.Hyperstore);
+            Assert.True(!String.IsNullOrEmpty(txt));
+
             var json = JSonSerializer.Serialize(lib, JSonSerializationOption.Json );
             Assert.True(!String.IsNullOrEmpty( json) );
 

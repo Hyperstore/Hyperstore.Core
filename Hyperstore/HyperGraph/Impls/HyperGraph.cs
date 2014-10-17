@@ -706,23 +706,10 @@ namespace Hyperstore.Modeling.HyperGraph
                 throw new InvalidElementException(id);
             }
 
-            if ((Session.Current.Mode & SessionMode.UndoOrRedo) == 0 && Session.Current.GetContextInfo<bool>("$$remove$$") == false)
-            {
-                _trace.WriteTrace(TraceCategory.Hypergraph, "Remove element {0}", id);
-                var visitor = new DeleteDependencyVisitor();
-                _domainModel.Traversal.WithVisitor(visitor).Traverse(node);
 
-                if (visitor.Commands.Any())
-                {
-                    using (var session = _domainModel.Store.BeginSession())
-                    {
-                        session.SetContextInfo("$$remove$$", true);
-                        session.Execute(visitor.Commands.ToArray());
-                        session.AcceptChanges();
-                    }
-                }
-            }
+            RemoveDependencies(node);
 
+            _trace.WriteTrace(TraceCategory.Hypergraph, "Remove element {0}", id);
             RemoveProperties(id, schemaEntity);
 
             using (var tx = BeginTransaction())
@@ -744,6 +731,35 @@ namespace Hyperstore.Modeling.HyperGraph
             }
 
             return true;
+        }
+
+        private void RemoveDependencies(GraphNode node)
+        {
+            if ((Session.Current.Mode & SessionMode.UndoOrRedo) == 0 && Session.Current.GetContextInfo<bool>("$$remove$$") == false)
+            {
+                var visitor = new DeleteDependencyVisitor();
+                _domainModel.Traversal.WithVisitor(visitor).Traverse(node);
+                List<IDomainCommand> commands=null;
+
+                foreach (var incoming in node.Incomings)
+                {
+                    if( commands == null)
+                        commands  = new List<IDomainCommand>();
+                    commands.Add(new RemoveRelationshipCommand(this._domainModel, incoming.Id, incoming.SchemaId));
+                }
+
+                if (commands != null || visitor.Commands.Any())
+                {
+                    var cmds = commands != null ? visitor.Commands.Concat(commands) : visitor.Commands;
+                    
+                    using (var session = _domainModel.Store.BeginSession())
+                    {
+                        session.SetContextInfo("$$remove$$", true); // loop guard
+                        session.Execute(cmds.ToArray());
+                        session.AcceptChanges();
+                    }
+                }
+            }
         }
 
         private void RemoveProperties(Identity id, ISchemaElement schemaEntity)
@@ -809,24 +825,9 @@ namespace Hyperstore.Modeling.HyperGraph
             Session.Current.AcquireLock(LockType.Exclusive, edge.StartId);
             Session.Current.AcquireLock(LockType.Exclusive, edge.EndId);
 
+            RemoveDependencies(edge);
+
             _trace.WriteTrace(TraceCategory.Hypergraph, "Remove relationship {0}", id);
-
-            if ((Session.Current.Mode & SessionMode.UndoOrRedo) == 0 && Session.Current.GetContextInfo<bool>("$$remove$$") == false)
-            {
-                var visitor = new DeleteDependencyVisitor();
-                _domainModel.Traversal.WithVisitor(visitor).Traverse(edge);
-
-                if (visitor.Commands.Any())
-                {
-                    using (var session = _domainModel.Store.BeginSession())
-                    {
-                        session.SetContextInfo("$$remove$$", true);
-                        session.Execute(visitor.Commands.ToArray());
-                        session.AcceptChanges();
-                    }
-                }
-            }
-
             RemoveProperties(id, schemaRelationship);
 
             using (var tx = BeginTransaction())
