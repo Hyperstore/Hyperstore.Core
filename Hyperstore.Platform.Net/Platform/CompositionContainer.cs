@@ -23,10 +23,10 @@ using System.ComponentModel.Composition;
 
 namespace Hyperstore.Modeling.Platform.Net
 {
-    class CompositionService : ICompositionService 
+    class CompositionService : ICompositionService
     {
         [ImportMany]
-        private IEnumerable<Lazy<Commands.ICommandInterceptor, ICommandInterceptorMetadata>> _commands=null;
+        private IEnumerable<Lazy<Commands.ICommandInterceptor, ICommandInterceptorMetadata>> _commands = null;
         [ImportMany]
         private IEnumerable<Lazy<Events.IEventHandler, ICompositionMetadata>> _events = null;
         [ImportMany]
