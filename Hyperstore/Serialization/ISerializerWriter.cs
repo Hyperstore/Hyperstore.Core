@@ -14,33 +14,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
  
-#region Imports
-
 using System;
-
-#endregion
-
 namespace Hyperstore.Modeling.Serialization
 {
-    ///-------------------------------------------------------------------------------------------------
-    /// <summary>
-    ///  Bitfield of flags for specifying SerializationOption.
-    /// </summary>
-    ///-------------------------------------------------------------------------------------------------
-    [Flags]
-    public enum XmlSerializationOptions
+    interface ISerializerWriter
     {
-        /// <summary>
-        ///  Specifies the metadatas option.
-        /// </summary>
-        Metadatas = 1,
-        /// <summary>
-        ///  Specifies the elements option.
-        /// </summary>
-        Elements = 2,
-        /// <summary>
-        ///  Specifies all option.
-        /// </summary>
-        All = 3,
+        void NewScope();
+        void PushElement(string name, string id, string schemaId = null);
+        void PushElement(string name, string id, string startId, string startSchemaId, string endId, string endSchemaId, string schemaId = null);
+        void PushProperty(string tag, object value, string name = null);
+        void PushSchemaElement(string tag, string name, string id = null);
+        void ReduceScope(string tag, string name = null, bool unshift = false);
+        void SaveTo(System.IO.Stream stream, Hyperstore.Modeling.IDomainModel domain);
     }
 }

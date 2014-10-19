@@ -37,6 +37,7 @@ namespace Hyperstore.Modeling.Serialization
     ///  An XML domain model serializer.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
+    [Obsolete("Use HyperstoreSerializer")]
     public class XmlDomainModelSerializer
     {
         private bool _serializeDomainPropertiesOnly;
@@ -58,7 +59,7 @@ namespace Hyperstore.Modeling.Serialization
         ///  A Task.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public Task Serialize(IDomainModel model, Stream stream, SerializationOption option = SerializationOption.Elements)
+        public Task Serialize(IDomainModel model, Stream stream, XmlSerializationOptions option = XmlSerializationOptions.Elements)
         {
             Contract.Requires(model, "model");
             Contract.Requires(stream, "stream");
@@ -82,9 +83,9 @@ namespace Hyperstore.Modeling.Serialization
                             //        ? new XElement("metaModel", new XElement("metadatas", SerializeMetaElements(model.Schema)), new XElement("metaRelationships", SerializeMetaRelationships(model.Schema)),
                             //                new XElement("relationships", SerializeRelationships(model.Schema)))
                             //        : null,
-                            (option & SerializationOption.Elements) == SerializationOption.Elements ? new XElement("model", new XElement("elements", SerializeElements(model)), new XElement("relationships", SerializeRelationships(model))) : null);
+                            (option & XmlSerializationOptions.Elements) == XmlSerializationOptions.Elements ? new XElement("model", new XElement("elements", SerializeElements(model)), new XElement("relationships", SerializeRelationships(model))) : null);
 
-                    using (var writer = XmlWriter.Create(stream))
+                    using (var writer = global::System.Xml.XmlWriter.Create(stream))
                     {
                         root.WriteTo(writer);
                     }

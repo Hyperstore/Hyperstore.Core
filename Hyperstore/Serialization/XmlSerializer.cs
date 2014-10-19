@@ -23,8 +23,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Linq;
 
 namespace Hyperstore.Modeling.Serialization
 {
@@ -34,7 +32,7 @@ namespace Hyperstore.Modeling.Serialization
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     [Flags]
-    public enum XmlSerializationOption
+    public enum SerializationOptions
     {
         /// <summary>
         ///  Serialize elements
@@ -58,7 +56,12 @@ namespace Hyperstore.Modeling.Serialization
         /// <summary>
         ///  reserved
         /// </summary>
-        Fluent = 4
+        Fluent = 4,
+
+        /// <summary>
+        ///  Specifies the json option.
+        /// </summary>
+        Json = 8
     }
 
     ///-------------------------------------------------------------------------------------------------
@@ -66,7 +69,7 @@ namespace Hyperstore.Modeling.Serialization
     ///  A son serialization settings.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
-    public class XmlSerializationSettings
+    public class SerializationSettings
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -86,7 +89,7 @@ namespace Hyperstore.Modeling.Serialization
         ///  The options.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public XmlSerializationOption Options { get; set; }
+        public SerializationOptions Options { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -103,18 +106,18 @@ namespace Hyperstore.Modeling.Serialization
         ///  Default constructor.
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
-        public XmlSerializationSettings()
+        public SerializationSettings()
         {
-            Options = XmlSerializationOption.Normal;
+            Options = SerializationOptions.CompressAll;
         }
     }
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  A son domain model serializer.
+    ///  A domain model serializer.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
-    public partial class XmlSerializer
+    public partial class HyperstoreSerializer
     {
         struct MonikerEntry
         {
@@ -123,58 +126,43 @@ namespace Hyperstore.Modeling.Serialization
             public string SchemaName;
         }
 
-        private readonly XmlSerializationOption _options;
+        private readonly SerializationOptions _options;
         private readonly ISchema _schema;
         private Dictionary<Identity, MonikerEntry> _monikers;
         private int _monikerSequence;
         private readonly IDomainModel _domain;
         private IJsonSerializer _serializer;
+        private ISerializerWriter _writer;
 
         #region static
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  true this instance to the given stream.
-        /// </summary>
-        /// <param name="stream">
-        ///  The stream.
-        /// </param>
-        /// <param name="domain">
-        ///  The domain.
-        /// </param>
-        /// <param name="option">
-        ///  (Optional) the option.
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
-        public static void Serialize(Stream stream, IDomainModel domain, XmlSerializationOption option = XmlSerializationOption.CompressAll)
+        public static void Serialize(Stream stream, IDomainModel domain, SerializationSettings settings=null, IEnumerable<IModelElement> elements=null)
         {
-            Serialize(stream, domain, new XmlSerializationSettings { Options = option });
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  true this instance to the given stream.
-        /// </summary>
-        /// <param name="stream">
-        ///  The stream.
-        /// </param>
-        /// <param name="domain">
-        ///  The domain.
-        /// </param>
-        /// <param name="settings">
-        ///  Options for controlling the operation.
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
-        public static void Serialize(Stream stream, IDomainModel domain, XmlSerializationSettings settings)
-        {
+            Contract.Requires(stream, "stream");
             Contract.Requires(domain, "domain");
 
             if (settings == null)
-                settings = new XmlSerializationSettings();
-            var ser = new XmlSerializer(domain, settings);
-            ser.Serialize(stream);
+                settings = new SerializationSettings();
+            var ser = new HyperstoreSerializer(domain, settings);
+            ser.Serialize(stream, 
+                elements != null ? elements.OfType<IModelEntity>() : domain.GetEntities(),
+                elements != null ? elements.OfType<IModelRelationship>() : domain.GetRelationships());
         }
 
+        public static string Serialize(IDomainModel domain, SerializationSettings settings=null, IEnumerable<IModelElement> elements = null)
+        {
+            string result = null;
+            using (var writer = new MemoryStream())
+            {
+                Serialize(writer, domain, settings, elements);
+                writer.Position = 0;
+                using (var reader = new StreamReader(writer ))
+                {
+                    result = reader.ReadToEnd();
+                }
+            }
+            return result;
+        }
 
         #endregion
 
@@ -189,19 +177,20 @@ namespace Hyperstore.Modeling.Serialization
         ///  Options for controlling the operation.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        private XmlSerializer(IDomainModel domain, XmlSerializationSettings settings)
+        private HyperstoreSerializer(IDomainModel domain, SerializationSettings settings)
         {
             Contract.Requires(domain, "domain");
             _domain = domain;
             _options = settings.Options;
             _schema = settings.Schema;
             _serializer = settings.Serializer;
+            _writer = HasOption(SerializationOptions.Json) ? (ISerializerWriter)new JsonWriter() : new XmlWriter();
         }
 
         private string GetSchemaMoniker(IModelElement mel)
         {
             MonikerEntry moniker;
-            if (HasOption(XmlSerializationOption.CompressSchemaId) || HasOption(XmlSerializationOption.Fluent))
+            if (HasOption(SerializationOptions.CompressSchemaId) || HasOption(SerializationOptions.Fluent))
             {
                 if (_monikers.TryGetValue(mel.SchemaInfo.Id, out moniker))
                     return moniker.Moniker;
@@ -209,10 +198,10 @@ namespace Hyperstore.Modeling.Serialization
 
             var schemaInfo = GetSchemaInfo(mel, false);
 
-            if (HasOption(XmlSerializationOption.CompressSchemaId) || HasOption(XmlSerializationOption.Fluent))
+            if (HasOption(SerializationOptions.CompressSchemaId) || HasOption(SerializationOptions.Fluent))
             {
                 MonikerEntry entry;
-                if (HasOption(XmlSerializationOption.Fluent))
+                if (HasOption(SerializationOptions.Fluent))
                 {
                     entry.Moniker = schemaInfo.Id.Key;
                 }
@@ -242,52 +231,38 @@ namespace Hyperstore.Modeling.Serialization
             return _schema == null ? mel.SchemaInfo : _schema.GetSchemaElement(mel.SchemaInfo.Id);
         }
 
-        private bool HasOption(XmlSerializationOption option)
+        private bool HasOption(SerializationOptions option)
         {
             return (_options & option) == option;
         }
 
-        private void Serialize(Stream stream)
+        private void Serialize(Stream stream, IEnumerable<IModelEntity> entities, IEnumerable<IModelRelationship> relationships)
         {
             try
             {
                 _monikers = new Dictionary<Identity, MonikerEntry>();
+                SerializeEntities(entities);
+                SerializeRelationships(relationships);
 
-                var entities = SerializeEntities();
-                var relationships = SerializeRelationships();
-                XElement schemasElement = null;
-                if (HasOption(XmlSerializationOption.CompressSchemaId) || HasOption(XmlSerializationOption.Fluent))
+                if (HasOption(SerializationOptions.CompressSchemaId) || HasOption(SerializationOptions.Fluent))
                 {
-                    var schemas = new List<XElement>();
+                    _writer.NewScope();
+
                     foreach (var entries in _monikers.Values.GroupBy(s => s.SchemaName))
                     {
-                        var schemaNode = new XElement("schema", new XAttribute("name", entries.Key));
-                        schemas.Add(schemaNode);
+                        _writer.NewScope();
 
                         foreach (var entry in entries)
                         {
-                            var node = new XElement("add", new XAttribute("name", entry.Schema.Id.Key));
-                            schemaNode.Add(node);
-                            if (HasOption(XmlSerializationOption.CompressSchemaId))
-                                node.Add(new XAttribute("id", entry.Moniker));
+                            _writer.PushSchemaElement("add", entry.Schema.Id.Key, HasOption(SerializationOptions.CompressSchemaId)
+                            ? entry.Moniker : null);
                         }
+                        _writer.ReduceScope("schema", entries.Key);
                     }
-                    if (schemas.Any())
-                    {
-                        schemasElement = new XElement("schemas", schemas);
-                    }
+                    _writer.ReduceScope("schemas", unshift: true);
                 }
 
-                using (var writer = XmlWriter.Create(stream))
-                {
-                    var root = new XElement("domain",
-                                    _domain.ExtensionName != null ? new XAttribute("extension", _domain.ExtensionName) : null,
-                                    schemasElement,
-                                    entities,
-                                    relationships); // Order are important
-
-                    root.WriteTo(writer);
-                }
+                _writer.SaveTo(stream, _domain);
             }
             finally
             {
@@ -296,38 +271,30 @@ namespace Hyperstore.Modeling.Serialization
             }
         }
 
-        private XElement SerializeRelationships()
+        private void SerializeRelationships(IEnumerable<IModelRelationship> relationships)
         {
-            var elements = new List<XElement>();
-            foreach (var relationship in _domain.GetRelationships())
+            _writer.NewScope();
+            foreach (var relationship in relationships)
             {
-                XElement node;
-                if (HasOption(XmlSerializationOption.Fluent))
+                SerializeProperties(relationship);
+                if (HasOption(SerializationOptions.Fluent))
                 {
-                    node = new XElement(GetSchemaMoniker(relationship), new XAttribute("id", GetId(relationship)),
-                                  new XAttribute("start", GetId(relationship.Start)), new XAttribute("startSchema", GetSchemaMoniker(relationship.Start)),
-                                  new XAttribute("end", GetId(relationship.End)), new XAttribute("endSchema", GetSchemaMoniker(relationship.End)),
-                                  SerializeProperties(relationship));
+                    _writer.PushElement(GetSchemaMoniker(relationship), GetId(relationship), GetId(relationship.Start), GetSchemaMoniker(relationship.Start),
+                        GetId(relationship.End), GetSchemaMoniker(relationship.End));
                 }
                 else
                 {
-                    node = new XElement("relationship", new XAttribute("id", GetId(relationship)), new XAttribute("schema", GetSchemaMoniker(relationship)),
-                                 new XAttribute("start", GetId(relationship.Start)), new XAttribute("startSchema", GetSchemaMoniker(relationship.Start)),
-                                 new XAttribute("end", GetId(relationship.End)), new XAttribute("endSchema", GetSchemaMoniker(relationship.End)),
-                                 SerializeProperties(relationship));
+                    _writer.PushElement("relationship", GetId(relationship), GetId(relationship.Start), GetSchemaMoniker(relationship.Start),
+                        GetId(relationship.End), GetSchemaMoniker(relationship.End), GetSchemaMoniker(relationship));
                 }
-                elements.Add(node);
             }
 
-            if (!elements.Any())
-                return null;
-
-            return new XElement("relationships", elements);
+            _writer.ReduceScope("relationships");
         }
 
         private string GetId(IModelElement element)
         {
-            if (HasOption(XmlSerializationOption.CompressId) && String.Compare(element.Id.DomainModelName, _domain.Name, StringComparison.OrdinalIgnoreCase) == 0)
+            if (HasOption(SerializationOptions.CompressId) && String.Compare(element.Id.DomainModelName, _domain.Name, StringComparison.OrdinalIgnoreCase) == 0)
             {
                 return element.Id.Key;
             }
@@ -335,55 +302,46 @@ namespace Hyperstore.Modeling.Serialization
             return element.Id.ToString();
         }
 
-        private XElement SerializeEntities()
+        private void SerializeEntities(IEnumerable<IModelEntity> entities)
         {
-            var elements = new List<XElement>();
-            foreach (var entity in _domain.GetEntities())
+            _writer.NewScope();
+            foreach (var entity in entities)
             {
-                XElement node;
-                if (HasOption(XmlSerializationOption.Fluent))
+                SerializeProperties(entity);
+
+                if (HasOption(SerializationOptions.Fluent))
                 {
-                    node = new XElement(GetSchemaMoniker(entity), new XAttribute("id", GetId(entity)), SerializeProperties(entity));
+                    _writer.PushElement(GetSchemaMoniker(entity), GetId(entity));
                 }
                 else
                 {
-                    node = new XElement("entity", new XAttribute("id", GetId(entity)), new XAttribute("schema", GetSchemaMoniker(entity)), SerializeProperties(entity));
+                    _writer.PushElement("entity", GetId(entity), GetSchemaMoniker(entity));
                 }
-                elements.Add(node);
             }
 
-            if (!elements.Any())
-                return null;
-
-            return new XElement("entities", elements);
+            _writer.ReduceScope("entities");
         }
 
-        private XElement SerializeProperties(IModelElement element)
+        private void SerializeProperties(IModelElement element)
         {
+            _writer.NewScope();
             var schemaInfo = GetSchemaInfo(element);
-            var elements = new List<XElement>();
+
             foreach (var prop in schemaInfo.GetProperties(true))
             {
                 var value = element.GetPropertyValue(prop);
                 if (value.HasValue)
                 {
-                    XElement node;
-                    if (HasOption(XmlSerializationOption.Fluent))
+                    if (HasOption(SerializationOptions.Fluent))
                     {
-                        node = new XElement(prop.Name, new XElement("value", prop.Serialize(value.Value, _serializer)));
+                        _writer.PushProperty(prop.Name, prop.Serialize(value.Value, _serializer));
                     }
                     else
                     {
-                        node = new XElement("property", new XAttribute("name", prop.Name), new XElement("value", prop.Serialize(value.Value, _serializer)));
-
+                        _writer.PushProperty("property", prop.Serialize(value.Value, _serializer), prop.Name);
                     }
-                    elements.Add(node);
                 }
             }
-            if (!elements.Any())
-                return null;
-
-            return new XElement("properties", elements);
         }
     }
 }
