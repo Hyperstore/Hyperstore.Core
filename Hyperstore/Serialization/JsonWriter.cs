@@ -42,10 +42,17 @@ namespace Hyperstore.Modeling.Serialization
     class JsonWriter : ISerializerWriter
     {
         private Stack<List<string>> _scopes = new Stack<List<string>>();
+        private SerializationOptions _options;
 
-        public JsonWriter()
+        public JsonWriter(SerializationOptions options)
         {
+            this._options = options;
             NewScope();
+        }
+
+        private bool HasOption(SerializationOptions option)
+        {
+            return (_options & option) == option;
         }
 
         public void NewScope()
@@ -53,19 +60,28 @@ namespace Hyperstore.Modeling.Serialization
             _scopes.Push(new List<string>());
         }
 
-
-        public void PushElement(string name, string id, string schemaId = null)
+        public void PushElement(string name, string id, string schemaId, string startId = null, string startSchemaId = null, string endId = null, string endSchemaId = null)
         {
             var list = _scopes.Pop();
             var current = new StringBuilder("{");
 
             current.AppendKey("id");
             current.AppendString(id);
-            if (schemaId != null)
+            current.AppendKey("schema", true);
+            current.AppendString(schemaId);
+
+            if (startId != null)
             {
-                current.AppendKey("schema", true);
-                current.AppendString(schemaId);
+                current.AppendKey("startId", true);
+                current.AppendString(startId);
+                current.AppendKey("startSchemaId", true);
+                current.AppendString(startSchemaId);
+                current.AppendKey("endId", true);
+                current.AppendString(endId);
+                current.AppendKey("endSchemaId", true);
+                current.AppendString(endSchemaId);
             }
+
             if (list.Count > 0)
             {
                 current.AppendKey("properties", true);
@@ -74,87 +90,58 @@ namespace Hyperstore.Modeling.Serialization
                 current.Append("]");
             }
             current.Append("}");
+
             _scopes.Peek().Add(current.ToString());
         }
 
-        public void PushElement(string name, string id, string startId, string startSchemaId, string endId, string endSchemaId, string schemaId = null)
+        public void PushProperty(string tag, string name, object value)
         {
-            var list = _scopes.Pop();
-            var current = new StringBuilder("{");
-
-            current.AppendKey("id");
-            current.AppendString(id);
-            current.AppendKey("startId", true);
-            current.AppendString(startId);
-            current.AppendKey("startSchemaId", true);
-            current.AppendString(startSchemaId);
-            current.AppendKey("endId", true);
-            current.AppendString(endId);
-            current.AppendKey("endSchemaId", true);
-            current.AppendString(endSchemaId);
-            if (schemaId != null)
-            {
-                current.AppendKey("schema", true);
-                current.AppendString(schemaId);
-            }
-            if (list.Count > 0)
-            {
-                current.AppendKey("properties", true);
-                current.Append("[");
-                current.Append(String.Join(",", list));
-                current.Append("]");
-            }
-            current.Append("}");
-            _scopes.Peek().Add(current.ToString());
+            _scopes.Peek().Add(String.Format("{{ \"name\":\"{0}\", \"value\":{1} }}", name, value));
         }
 
-        public void PushProperty(string tag, object value, string name = null)
+        public void SaveSchema(Dictionary<Identity, string> monikers)
         {
-            _scopes.Peek().Add(String.Format("{{ \"name\":\"{0}\", \"value\":{1} }}", name ?? tag, value));
-        }
-
-        public void PushSchemaElement(string tag, string name, string id = null)
-        {
-            var current = new StringBuilder("{");
-
-            current.AppendKey("id");
-            current.AppendString(id);
-            current.AppendKey("name", true);
-            current.AppendString(name);
-            if (id != null)
+            if (HasOption(SerializationOptions.CompressSchema))
             {
-                current.AppendKey("schema", true);
-                current.AppendString(id);
-            }
-            current.Append("}");
-            _scopes.Peek().Add(current.ToString());
-        }
+                List<string> list = null;
+                NewScope();
 
-        public void ReduceScope(string tag, string name = null, bool unshift = false)
+                foreach (var kv in monikers)
+                {
+                    var current = new StringBuilder("{");
+
+                    current.AppendKey("id");
+                    current.AppendString(kv.Value);
+                    current.AppendKey("name", true);
+                    current.AppendString(kv.Key.Key);
+                    current.Append("}");
+
+                    _scopes.Peek().Add(current.ToString());
+                }
+
+                list = _scopes.Pop();
+                if (list.Count > 0)
+                {
+                    var current = new StringBuilder();
+                    current.Append(String.Join(", ", list));
+                    current.Append("]");
+                    _scopes.Peek().Insert(0, current.ToString());
+                }
+            }
+        }
+        public void ReduceScope(string tag)
         {
             var list = _scopes.Pop();
             if (list.Count > 0)
             {
                 var current = new StringBuilder();
-                if (name != null)
-                {
-                    current.Append("{");
-                    current.AppendFormat(String.Format("\"name\":\"{0}\", \"elements\":", name));
-                }
-                else
-                    current.AppendKey(tag);
+                current.AppendKey(tag);
 
                 current.Append("[");
                 current.Append(String.Join(", ", list));
                 current.Append("]");
-                if (name != null)
-                    current.Append("}");
 
-                if (!unshift)
-                    _scopes.Peek().Add(current.ToString());
-                else
-                    _scopes.Peek().Insert(0, current.ToString());
-
+                _scopes.Peek().Add(current.ToString());
             }
         }
 

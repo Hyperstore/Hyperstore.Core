@@ -17,14 +17,20 @@
 using System;
 namespace Hyperstore.Modeling.Serialization
 {
+    struct MonikerEntry
+    {
+        public string Moniker;
+        public ISchemaElement Schema;
+        public string SchemaName;
+    }
+
     interface ISerializerWriter
     {
         void NewScope();
-        void PushElement(string name, string id, string schemaId = null);
-        void PushElement(string name, string id, string startId, string startSchemaId, string endId, string endSchemaId, string schemaId = null);
-        void PushProperty(string tag, object value, string name = null);
-        void PushSchemaElement(string tag, string name, string id = null);
-        void ReduceScope(string tag, string name = null, bool unshift = false);
+        void PushElement(string name, string id, string schemaId, string startId = null, string startSchemaId = null, string endId = null, string endSchemaId = null);
+        void PushProperty(string tag, string name, object value);
+        void ReduceScope(string tag);
         void SaveTo(System.IO.Stream stream, Hyperstore.Modeling.IDomainModel domain);
+        void SaveSchema(System.Collections.Generic.Dictionary<Identity, string> monikers);
     }
 }

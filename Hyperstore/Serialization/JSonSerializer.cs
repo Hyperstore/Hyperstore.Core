@@ -28,7 +28,7 @@ namespace Hyperstore.Modeling.Serialization
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  Bitfield of flags for specifying JSonSerializationOption.
+    ///  JSon serialization options
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     [Flags]
@@ -74,24 +74,24 @@ namespace Hyperstore.Modeling.Serialization
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  A son serialization settings.
+    ///  JSon serialization settings.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     public class JSonSerializationSettings
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets or sets the serializer.
+        ///  JSon serializer used to serialize value object.
         /// </summary>
         /// <value>
-        ///  The serializer.
+        ///  A serializer or null to used the default serializer
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         public IJsonSerializer Serializer { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets or sets options for controlling the operation.
+        ///  Serialization options
         /// </summary>
         /// <value>
         ///  The options.
@@ -101,17 +101,17 @@ namespace Hyperstore.Modeling.Serialization
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets or sets a specific schema used to serialize elements.
+        ///  Schema to used to serialize domain elements. 
         /// </summary>
         /// <value>
-        ///  The schema.
+        ///  A schema to replace the schema associated with each elements.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         public ISchema Schema { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Default constructor.
+        ///  Create a new serialization settings with default Json option
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
         public JSonSerializationSettings()
@@ -141,10 +141,10 @@ namespace Hyperstore.Modeling.Serialization
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  true this instance to the given stream.
+        ///  Serialize a domain with the sepecified options
         /// </summary>
         /// <param name="domain">
-        ///  The domain.
+        ///  Domain to serialize
         /// </param>
         /// <param name="option">
         ///  (Optional) the option.

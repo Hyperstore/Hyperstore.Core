@@ -28,62 +28,46 @@ namespace Hyperstore.Modeling.Serialization
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  Bitfield of flags for specifying JSonSerializationOption.
+    ///  Serialization options
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     [Flags]
     public enum SerializationOptions
     {
         /// <summary>
-        ///  Serialize elements
+        ///  Serialize using Hyperstore format
         /// </summary>
         Normal = 0,
         /// <summary>
-        ///  Compress data
+        ///  Optimize schema persistence by creating a schemaid map.
         /// </summary>
-        CompressSchemaId = 1,
-
+        CompressSchema = 1,
         /// <summary>
-        ///  Specifies the compress id= 2 option.
+        ///  Serialize as Json
         /// </summary>
-        CompressId = 2,
-
-        /// <summary>
-        ///  Specifies the compress all= 3 option.
-        /// </summary>
-        CompressAll = 3,
-
-        /// <summary>
-        ///  reserved
-        /// </summary>
-        Fluent = 4,
-
-        /// <summary>
-        ///  Specifies the json option.
-        /// </summary>
-        Json = 8
+        Json = 2
     }
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  A son serialization settings.
+    ///  Hyperstore serialization settings.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     public class SerializationSettings
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets or sets the serializer.
+        ///  JSon serializer used to serialize value object.
         /// </summary>
         /// <value>
-        ///  The serializer.
+        ///  A serializer or null to used the default serializer
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         public IJsonSerializer Serializer { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets or sets options for controlling the operation.
+        ///  Get or set options for controlling the serialization.
         /// </summary>
         /// <value>
         ///  The options.
@@ -93,39 +77,32 @@ namespace Hyperstore.Modeling.Serialization
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets or sets a specific schema used to serialize elements.
+        ///  Get or set a specific schema used to serialize elements.
         /// </summary>
         /// <value>
-        ///  The schema.
+        ///  A specific schema or null to used the schema associated with elements.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         public ISchema Schema { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Default constructor.
+        ///  Create a new serialization settings with the default CompressAll option.
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
         public SerializationSettings()
         {
-            Options = SerializationOptions.CompressAll;
+            Options = SerializationOptions.CompressSchema;
         }
     }
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  A domain model serializer.
+    ///  Hyperstore serializer. Allow to serialize a domain or a list of elements in XML or JSon format.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     public partial class HyperstoreSerializer
     {
-        struct MonikerEntry
-        {
-            public string Moniker;
-            public ISchemaElement Schema;
-            public string SchemaName;
-        }
-
         private readonly SerializationOptions _options;
         private readonly ISchema _schema;
         private Dictionary<Identity, MonikerEntry> _monikers;
@@ -136,7 +113,7 @@ namespace Hyperstore.Modeling.Serialization
 
         #region static
 
-        public static void Serialize(Stream stream, IDomainModel domain, SerializationSettings settings=null, IEnumerable<IModelElement> elements=null)
+        public static void Serialize(Stream stream, IDomainModel domain, SerializationSettings settings = null, IEnumerable<IModelElement> elements = null)
         {
             Contract.Requires(stream, "stream");
             Contract.Requires(domain, "domain");
@@ -144,19 +121,19 @@ namespace Hyperstore.Modeling.Serialization
             if (settings == null)
                 settings = new SerializationSettings();
             var ser = new HyperstoreSerializer(domain, settings);
-            ser.Serialize(stream, 
+            ser.Serialize(stream,
                 elements != null ? elements.OfType<IModelEntity>() : domain.GetEntities(),
                 elements != null ? elements.OfType<IModelRelationship>() : domain.GetRelationships());
         }
 
-        public static string Serialize(IDomainModel domain, SerializationSettings settings=null, IEnumerable<IModelElement> elements = null)
+        public static string Serialize(IDomainModel domain, SerializationSettings settings = null, IEnumerable<IModelElement> elements = null)
         {
             string result = null;
             using (var writer = new MemoryStream())
             {
                 Serialize(writer, domain, settings, elements);
                 writer.Position = 0;
-                using (var reader = new StreamReader(writer ))
+                using (var reader = new StreamReader(writer))
                 {
                     result = reader.ReadToEnd();
                 }
@@ -166,17 +143,6 @@ namespace Hyperstore.Modeling.Serialization
 
         #endregion
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Constructor.
-        /// </summary>
-        /// <param name="domain">
-        /// The domain to serialize
-        /// </param>
-        /// <param name="settings">
-        ///  Options for controlling the operation.
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
         private HyperstoreSerializer(IDomainModel domain, SerializationSettings settings)
         {
             Contract.Requires(domain, "domain");
@@ -184,13 +150,13 @@ namespace Hyperstore.Modeling.Serialization
             _options = settings.Options;
             _schema = settings.Schema;
             _serializer = settings.Serializer;
-            _writer = HasOption(SerializationOptions.Json) ? (ISerializerWriter)new JsonWriter() : new XmlWriter();
+            _writer = HasOption(SerializationOptions.Json) ? (ISerializerWriter)new JsonWriter(_options) : new XmlWriter(_options);
         }
 
         private string GetSchemaMoniker(IModelElement mel)
         {
             MonikerEntry moniker;
-            if (HasOption(SerializationOptions.CompressSchemaId) || HasOption(SerializationOptions.Fluent))
+            if (HasOption(SerializationOptions.CompressSchema))
             {
                 if (_monikers.TryGetValue(mel.SchemaInfo.Id, out moniker))
                     return moniker.Moniker;
@@ -198,21 +164,15 @@ namespace Hyperstore.Modeling.Serialization
 
             var schemaInfo = GetSchemaInfo(mel, false);
 
-            if (HasOption(SerializationOptions.CompressSchemaId) || HasOption(SerializationOptions.Fluent))
+            if (HasOption(SerializationOptions.CompressSchema))
             {
                 MonikerEntry entry;
-                if (HasOption(SerializationOptions.Fluent))
-                {
-                    entry.Moniker = schemaInfo.Id.Key;
-                }
-                else
-                {
-                    _monikerSequence++;
-                    entry.Moniker = _monikerSequence.ToString();
-                }
+                _monikerSequence++;
+                entry.Moniker = _monikerSequence.ToString();
                 entry.Schema = schemaInfo;
                 entry.SchemaName = schemaInfo.Id.DomainModelName;
                 _monikers[mel.SchemaInfo.Id] = entry;
+
                 return entry.Moniker;
             }
 
@@ -231,6 +191,16 @@ namespace Hyperstore.Modeling.Serialization
             return _schema == null ? mel.SchemaInfo : _schema.GetSchemaElement(mel.SchemaInfo.Id);
         }
 
+        private string GetId(IModelElement element)
+        {
+            if (String.Compare(element.Id.DomainModelName, _domain.Name, StringComparison.OrdinalIgnoreCase) == 0)
+            {
+                return element.Id.Key;
+            }
+
+            return element.Id.ToString();
+        }
+
         private bool HasOption(SerializationOptions option)
         {
             return (_options & option) == option;
@@ -244,24 +214,7 @@ namespace Hyperstore.Modeling.Serialization
                 SerializeEntities(entities);
                 SerializeRelationships(relationships);
 
-                if (HasOption(SerializationOptions.CompressSchemaId) || HasOption(SerializationOptions.Fluent))
-                {
-                    _writer.NewScope();
-
-                    foreach (var entries in _monikers.Values.GroupBy(s => s.SchemaName))
-                    {
-                        _writer.NewScope();
-
-                        foreach (var entry in entries)
-                        {
-                            _writer.PushSchemaElement("add", entry.Schema.Id.Key, HasOption(SerializationOptions.CompressSchemaId)
-                            ? entry.Moniker : null);
-                        }
-                        _writer.ReduceScope("schema", entries.Key);
-                    }
-                    _writer.ReduceScope("schemas", unshift: true);
-                }
-
+                _writer.SaveSchema(_monikers.Values.ToDictionary(kv => kv.Schema.Id, kv => kv.Moniker));
                 _writer.SaveTo(stream, _domain);
             }
             finally
@@ -277,29 +230,13 @@ namespace Hyperstore.Modeling.Serialization
             foreach (var relationship in relationships)
             {
                 SerializeProperties(relationship);
-                if (HasOption(SerializationOptions.Fluent))
-                {
-                    _writer.PushElement(GetSchemaMoniker(relationship), GetId(relationship), GetId(relationship.Start), GetSchemaMoniker(relationship.Start),
-                        GetId(relationship.End), GetSchemaMoniker(relationship.End));
-                }
-                else
-                {
-                    _writer.PushElement("relationship", GetId(relationship), GetId(relationship.Start), GetSchemaMoniker(relationship.Start),
-                        GetId(relationship.End), GetSchemaMoniker(relationship.End), GetSchemaMoniker(relationship));
-                }
+                _writer.PushElement("relationship",
+                            GetId(relationship), GetSchemaMoniker(relationship),
+                            GetId(relationship.Start), GetSchemaMoniker(relationship.Start),
+                            GetId(relationship.End), GetSchemaMoniker(relationship.End));
             }
 
             _writer.ReduceScope("relationships");
-        }
-
-        private string GetId(IModelElement element)
-        {
-            if (HasOption(SerializationOptions.CompressId) && String.Compare(element.Id.DomainModelName, _domain.Name, StringComparison.OrdinalIgnoreCase) == 0)
-            {
-                return element.Id.Key;
-            }
-
-            return element.Id.ToString();
         }
 
         private void SerializeEntities(IEnumerable<IModelEntity> entities)
@@ -308,15 +245,7 @@ namespace Hyperstore.Modeling.Serialization
             foreach (var entity in entities)
             {
                 SerializeProperties(entity);
-
-                if (HasOption(SerializationOptions.Fluent))
-                {
-                    _writer.PushElement(GetSchemaMoniker(entity), GetId(entity));
-                }
-                else
-                {
-                    _writer.PushElement("entity", GetId(entity), GetSchemaMoniker(entity));
-                }
+                _writer.PushElement("entity", GetSchemaMoniker(entity), GetId(entity));
             }
 
             _writer.ReduceScope("entities");
@@ -332,14 +261,7 @@ namespace Hyperstore.Modeling.Serialization
                 var value = element.GetPropertyValue(prop);
                 if (value.HasValue)
                 {
-                    if (HasOption(SerializationOptions.Fluent))
-                    {
-                        _writer.PushProperty(prop.Name, prop.Serialize(value.Value, _serializer));
-                    }
-                    else
-                    {
-                        _writer.PushProperty("property", prop.Serialize(value.Value, _serializer), prop.Name);
-                    }
+                    _writer.PushProperty("property", prop.Name, prop.Serialize(value.Value, _serializer));
                 }
             }
         }

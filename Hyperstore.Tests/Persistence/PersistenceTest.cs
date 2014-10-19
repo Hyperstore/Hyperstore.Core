@@ -120,7 +120,7 @@ namespace Hyperstore.Tests.Commands
                 session.AcceptChanges();
             }
 
-            var text = Hyperstore.Modeling.Serialization.HyperstoreSerializer.Serialize(domain, new SerializationSettings { Options = SerializationOptions.Json | SerializationOptions.CompressSchemaId });
+            var text = Hyperstore.Modeling.Serialization.HyperstoreSerializer.Serialize(domain, new SerializationSettings { Options = SerializationOptions.Json | SerializationOptions.CompressSchema });
             Assert.NotNull(text);
             Newtonsoft.Json.JsonConvert.DeserializeObject(text);
         }

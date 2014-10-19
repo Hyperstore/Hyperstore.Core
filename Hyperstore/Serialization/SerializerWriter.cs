@@ -27,12 +27,18 @@ namespace Hyperstore.Modeling.Serialization
 {
     class XmlWriter : Hyperstore.Modeling.Serialization.ISerializerWriter
     {
-        private XElement _current;
         private Stack<List<XElement>> _scopes = new Stack<List<XElement>>();
+        private SerializationOptions _options;
 
-        public XmlWriter()
+        public XmlWriter(SerializationOptions options)
         {
+            this._options = options;
             NewScope();
+        }
+
+        private bool HasOption(SerializationOptions option)
+        {
+            return (_options & option) == option;
         }
 
         public void NewScope()
@@ -54,64 +60,64 @@ namespace Hyperstore.Modeling.Serialization
             writer.Flush();
         }
 
-        public void ReduceScope(string tag, string name = null, bool unshift = false)
+        public void ReduceScope(string tag)
         {
             var list = _scopes.Pop();
 
             if (list.Count > 0)
             {
-                _current = new XElement(tag, list);
-                if (!unshift)
-                    _scopes.Peek().Add(_current);
-                else
-                    _scopes.Peek().Insert(0, _current);
-                if (name != null)
-                    _current.Add(new XAttribute("name", name));
+                var current = new XElement(tag, list);
+                _scopes.Peek().Add(current);
             }
         }
 
-        public void PushElement(string name, string id, string schemaId = null)
+        public void PushElement(string name, string id, string schemaId, string startId = null, string startSchemaId = null, string endId = null, string endSchemaId = null)
         {
-            _current = new XElement(name, new XAttribute("id", id));
-            var list = _scopes.Pop();
-            if (list.Count > 0)
+
+            var current = new XElement(name, new XAttribute("id", id), new XAttribute("schema", schemaId));
+
+            if (startId != null)
             {
-                _current.Add(new XElement("properties", list));
-            }
-            _scopes.Peek().Add(_current);
-            if (schemaId != null)
-                _current.Add(new XAttribute("schema", schemaId));
-        }
-
-        public void PushElement(string name, string id, string startId, string startSchemaId, string endId, string endSchemaId, string schemaId = null)
-        {
-            _current = new XElement(name, new XAttribute("id", id),
+                current.Add(
                              new XAttribute("start", startId), new XAttribute("startSchema", startSchemaId),
                              new XAttribute("end", endId), new XAttribute("endSchema", endSchemaId));
+            }
+
             var list = _scopes.Pop();
             if (list.Count > 0)
             {
-                _current.Add(new XElement("properties", list));
+                current.Add(new XElement("properties", list));
             }
-            _scopes.Peek().Add(_current);
-            if (schemaId != null)
-                _current.Add(new XAttribute("schema", schemaId));
+
+            _scopes.Peek().Add(current);
         }
 
-        public void PushProperty(string tag, object value, string name = null)
+        public void PushProperty(string tag, string name, object value)
         {
-            var elem = new XElement(tag, new XElement("value", value));
+            var elem = new XElement(tag, new XAttribute("name", name), new XElement("value", value));
             _scopes.Peek().Add(elem);
-            if (name != null)
-                elem.Add(new XAttribute("name", name));
         }
 
-        public void PushSchemaElement(string tag, string name, string id = null)
+        public void SaveSchema(Dictionary<Identity, string> monikers)
         {
-            _current = new XElement(tag, new XAttribute("name", name));
-            _scopes.Peek().Add(_current);
-            if (id != null)
-                _current.Add(new XAttribute("id", id));
+            if (HasOption(SerializationOptions.CompressSchema))
+            {
+                List<XElement> list = null;
+                NewScope();
+
+                foreach (var kv in monikers)
+                {
+                    var current = new XElement("add", new XAttribute("id", kv.Value), new XAttribute("name", kv.Key));
+                    _scopes.Peek().Add(current);
+                }
+
+                list = _scopes.Pop();
+                if (list.Count > 0)
+                {
+                    var current = new XElement("schemas", list);
+                    _scopes.Peek().Insert(0, current);
+                }
+            }
         }
     }
 }
