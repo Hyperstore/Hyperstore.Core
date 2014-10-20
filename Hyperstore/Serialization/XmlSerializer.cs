@@ -150,7 +150,7 @@ namespace Hyperstore.Modeling.Serialization
             _options = settings.Options;
             _schema = settings.Schema;
             _serializer = settings.Serializer;
-            _writer = HasOption(SerializationOptions.Json) ? (ISerializerWriter)new JsonWriter(_options) : new XmlWriter(_options);
+            _writer = HasOption(SerializationOptions.Json) ? (ISerializerWriter)new JsonWriter(_options, domain) : new XmlWriter(_options, domain);
         }
 
         private string GetSchemaMoniker(IModelElement mel)
@@ -214,8 +214,7 @@ namespace Hyperstore.Modeling.Serialization
                 SerializeEntities(entities);
                 SerializeRelationships(relationships);
 
-                _writer.SaveSchema(_monikers.Values.ToDictionary(kv => kv.Schema.Id, kv => kv.Moniker));
-                _writer.SaveTo(stream, _domain);
+                _writer.Save(stream, _monikers.Values);
             }
             finally
             {
@@ -226,36 +225,34 @@ namespace Hyperstore.Modeling.Serialization
 
         private void SerializeRelationships(IEnumerable<IModelRelationship> relationships)
         {
-            _writer.NewScope();
+            _writer.NewScope("relationships");
             foreach (var relationship in relationships)
             {
-                SerializeProperties(relationship);
                 _writer.PushElement("relationship",
                             GetId(relationship), GetSchemaMoniker(relationship),
                             GetId(relationship.Start), GetSchemaMoniker(relationship.Start),
                             GetId(relationship.End), GetSchemaMoniker(relationship.End));
+                SerializeProperties(relationship);
             }
 
-            _writer.ReduceScope("relationships");
+            _writer.ReduceScope();
         }
 
         private void SerializeEntities(IEnumerable<IModelEntity> entities)
         {
-            _writer.NewScope();
+            _writer.NewScope("entities");
             foreach (var entity in entities)
             {
+                _writer.PushElement("entity", GetId(entity), GetSchemaMoniker(entity));
                 SerializeProperties(entity);
-                _writer.PushElement("entity", GetSchemaMoniker(entity), GetId(entity));
             }
 
-            _writer.ReduceScope("entities");
+            _writer.ReduceScope();
         }
 
         private void SerializeProperties(IModelElement element)
         {
-            _writer.NewScope();
             var schemaInfo = GetSchemaInfo(element);
-
             foreach (var prop in schemaInfo.GetProperties(true))
             {
                 var value = element.GetPropertyValue(prop);

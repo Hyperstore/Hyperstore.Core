@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,30 +25,24 @@ namespace Hyperstore.Modeling.Serialization
 {
     static class StringBuilderEx
     {
-        public static void AppendString(this StringBuilder sb, string value)
-        {
-            sb.Append("\"");
-            sb.Append(value);
-            sb.Append("\"");
-        }
-        public static void AppendKey(this StringBuilder sb, string name, bool prefixWithColon = false)
-        {
-            if (prefixWithColon)
-                sb.Append(",");
-            AppendString(sb, name);
-            sb.Append(":");
-        }
+
     }
 
     class JsonWriter : ISerializerWriter
     {
-        private Stack<List<string>> _scopes = new Stack<List<string>>();
+        private StringWriter _stream = new StringWriter();
         private SerializationOptions _options;
+        private bool _propertiesOpen;
+        private bool _firstElement;
+        private bool _firstScope;
+        private IDomainModel _domain;
 
-        public JsonWriter(SerializationOptions options)
+        public JsonWriter(SerializationOptions options, IDomainModel domain)
         {
             this._options = options;
-            NewScope();
+            _stream = new StringWriter();
+            _firstScope = true;
+            _domain = domain;
         }
 
         private bool HasOption(SerializationOptions option)
@@ -55,109 +50,125 @@ namespace Hyperstore.Modeling.Serialization
             return (_options & option) == option;
         }
 
-        public void NewScope()
+        public void NewScope(string tag)
         {
-            _scopes.Push(new List<string>());
+            WriteKey(tag, !_firstScope);
+            Write("[");
+            _firstElement = true;
+            _firstScope = false;
+            _propertiesOpen = false;
+        }
+
+        public void ReduceScope()
+        {
+            if (_propertiesOpen)
+                Write("]");
+            Write("}");
+            Write("]");
         }
 
         public void PushElement(string name, string id, string schemaId, string startId = null, string startSchemaId = null, string endId = null, string endSchemaId = null)
         {
-            var list = _scopes.Pop();
-            var current = new StringBuilder("{");
-
-            current.AppendKey("id");
-            current.AppendString(id);
-            current.AppendKey("schema", true);
-            current.AppendString(schemaId);
+            if (_propertiesOpen)
+                Write("]");
+            if (!_firstElement)
+                Write("},");
+            Write("{");
+            WriteKey("id");
+            WriteString(id);
+            WriteKey("schema", true);
+            WriteString(schemaId);
 
             if (startId != null)
             {
-                current.AppendKey("startId", true);
-                current.AppendString(startId);
-                current.AppendKey("startSchemaId", true);
-                current.AppendString(startSchemaId);
-                current.AppendKey("endId", true);
-                current.AppendString(endId);
-                current.AppendKey("endSchemaId", true);
-                current.AppendString(endSchemaId);
+                WriteKey("startId", true);
+                WriteString(startId);
+                WriteKey("startSchemaId", true);
+                WriteString(startSchemaId);
+                WriteKey("endId", true);
+                WriteString(endId);
+                WriteKey("endSchemaId", true);
+                WriteString(endSchemaId);
             }
-
-            if (list.Count > 0)
-            {
-                current.AppendKey("properties", true);
-                current.Append("[");
-                current.Append(String.Join(",", list));
-                current.Append("]");
-            }
-            current.Append("}");
-
-            _scopes.Peek().Add(current.ToString());
+            _propertiesOpen = false;
+            _firstElement = false;
         }
 
         public void PushProperty(string tag, string name, object value)
         {
-            _scopes.Peek().Add(String.Format("{{ \"name\":\"{0}\", \"value\":{1} }}", name, value));
-        }
-
-        public void SaveSchema(Dictionary<Identity, string> monikers)
-        {
-            if (HasOption(SerializationOptions.CompressSchema))
+            if (!_propertiesOpen)
             {
-                List<string> list = null;
-                NewScope();
-
-                foreach (var kv in monikers)
-                {
-                    var current = new StringBuilder("{");
-
-                    current.AppendKey("id");
-                    current.AppendString(kv.Value);
-                    current.AppendKey("name", true);
-                    current.AppendString(kv.Key.Key);
-                    current.Append("}");
-
-                    _scopes.Peek().Add(current.ToString());
-                }
-
-                list = _scopes.Pop();
-                if (list.Count > 0)
-                {
-                    var current = new StringBuilder();
-                    current.Append(String.Join(", ", list));
-                    current.Append("]");
-                    _scopes.Peek().Insert(0, current.ToString());
-                }
+                WriteKey("properties", true);
+                Write("[");
+                _propertiesOpen = true;
             }
-        }
-        public void ReduceScope(string tag)
-        {
-            var list = _scopes.Pop();
-            if (list.Count > 0)
+            else
             {
-                var current = new StringBuilder();
-                current.AppendKey(tag);
+                Write(",");
+            }
+            _stream.Write("{{ \"name\":\"{0}\", \"value\":{1} }}", name, value);
+        }
 
-                current.Append("[");
-                current.Append(String.Join(", ", list));
-                current.Append("]");
+        public void SaveSchema(System.IO.StreamWriter writer, IEnumerable<MonikerEntry> monikers)
+        {
+            if (HasOption(SerializationOptions.CompressSchema) && monikers.Any())
+            {
+                writer.Write("\"schemas\" : [");
+                bool first = true;
+                foreach (var schemas in monikers.GroupBy(s => s.SchemaName))
+                {
+                    if (!first)
+                        writer.Write(",");
+                    first = false;
+                    writer.Write("{{ \"name\" : \"{0}\", \"elements\" : [", schemas.Key);
+                    bool first2 = true;
+                    foreach (var moniker in schemas)
+                    {
+                        if (!first2)
+                            writer.Write(",");
+                        first2 = false;
+                        writer.Write("{{ \"id\" : \"{0}\", \"name\":\"{1}\"}}", moniker.Moniker, moniker.Schema.Id.Key);
+                    }
+                    writer.Write("] }");
+                }
 
-                _scopes.Peek().Add(current.ToString());
+                writer.Write("], ");
             }
         }
 
-        public void SaveTo(System.IO.Stream stream, IDomainModel domain)
+        public void Save(Stream stream, IEnumerable<MonikerEntry> monikers)
         {
             var writer = new System.IO.StreamWriter(stream);
 
-            var list = _scopes.Pop();
             writer.Write("{");
-            writer.Write("\"name\":\"{0}\",", domain.Name);
-            if (domain.ExtensionName != null)
-                writer.Write("\"extension\":\"{0}\",", domain.ExtensionName);
-            if (list.Count > 0)
-                writer.Write(String.Join(",", list));
+            writer.Write("\"name\":\"{0}\",", _domain.Name);
+            if (_domain.ExtensionName != null)
+                writer.Write("\"extension\":\"{0}\",", _domain.ExtensionName);
+            SaveSchema(writer, monikers);
+            _stream.Flush();
+            writer.Write(_stream.ToString());
             writer.Write("}");
             writer.Flush();
+        }
+
+        void Write(string txt)
+        {
+            _stream.Write(txt);
+        }
+
+        void WriteString(string value)
+        {
+            _stream.Write("\"");
+            _stream.Write(value);
+            _stream.Write("\"");
+        }
+
+        void WriteKey(string name, bool prefixWithColon = false)
+        {
+            if (prefixWithColon)
+                _stream.Write(",");
+            WriteString(name);
+            _stream.Write(":");
         }
     }
 }

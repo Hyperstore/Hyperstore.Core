@@ -1,9 +1,11 @@
 ﻿using Hyperstore.Modeling;
+using Hyperstore.Modeling.Serialization;
 using Hyperstore.Tests.Model;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,16 +20,83 @@ namespace Hyperstore.Bench
 
         static void Main(string[] args)
         {
-            var cx = 0;
+            var p = new Program();
+            p.SerializatonBench(1000).Wait();
+            //for (; ; )
+            //{
+            //    var p = new Program();
+            //    p.BenchWithConstraints(cx).Wait();
+            //    if (Console.ReadKey().Key == ConsoleKey.Escape)
+            //        break;
+            //    cx++;
+            //}
+        }
 
-            for (; ; )
+        public async Task SerializatonBench(int cx)
+        {
+            store = await StoreBuilder.New().CreateAsync();
+            await store.Schemas.New<LibraryDefinition>().CreateAsync();
+
+            var domain = await store.DomainModels
+                                    .New()
+                                        .UsingIdGenerator(services => new Hyperstore.Modeling.Domain.LongIdGenerator())
+                                    .CreateAsync("Test");
+
+            var sw = new Stopwatch();
+
+            Console.WriteLine("Benchmark serializing {0} elements...", cx*2);
+
+            Library lib;
+            using (var session = store.BeginSession())
             {
-                var p = new Program();
-                p.BenchWithConstraints(cx).Wait();
-                if (Console.ReadKey().Key == ConsoleKey.Escape)
-                    break;
-                cx++;
+                lib = new Library(domain);
+                lib.Name = "Lib1";
+                session.AcceptChanges();
             }
+
+            Parallel.For(0, cx, (i) =>
+            {
+                using (var session = store.BeginSession())
+                {
+                    var b = new Book(domain);
+                    b.Title = "Book \"book\" " + i.ToString();
+                    b.Copies = i + 1;
+                    lib.Books.Add(b);
+
+                    var m = new Member(domain);
+                    m.Name = "Book " + i.ToString();
+                    lib.Members.Add(m);
+                    session.AcceptChanges();
+                }
+            });
+          //  Console.ReadKey();
+            //Console.Write("xml ...");
+            //sw.Start();
+            //using (var stream = File.Open("test.xml",FileMode.Create))
+            //{
+            //    HyperstoreSerializer.Serialize(stream, domain);
+            //}
+            //Console.WriteLine(" : serialize {1:n}bytes in {0}ms ", sw.ElapsedMilliseconds, new FileInfo("test.xml").Length);
+
+            //Console.Write("json ...");
+            sw.Restart();
+            using (var stream = File.Open("test.json", FileMode.Create))
+            {
+                HyperstoreSerializer.Serialize(stream, domain, new SerializationSettings { Options = SerializationOptions.Json | SerializationOptions.CompressSchema });
+            }
+           // Console.WriteLine(" : serialize {1:n}bytes in {0}ms ", sw.ElapsedMilliseconds, new FileInfo("test.json").Length);
+
+            //Console.Write("old xml ...");
+            //sw.Restart();
+            //using (var stream = File.Open("test2.xml", FileMode.Create))
+            //{
+            //    var ser = new XmlDomainModelSerializer();
+            //    await ser.Serialize(domain, stream, XmlSerializationOptions.Elements);
+            //}
+            //Console.WriteLine(" : serialize {1:n}bytes in {0}ms ", sw.ElapsedMilliseconds, new FileInfo("test2.xml").Length);
+
+
+          //  Console.ReadKey();
         }
 
         public async Task BenchWithConstraints(int cx)

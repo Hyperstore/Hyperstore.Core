@@ -78,6 +78,9 @@
     <None Include="Model\Definition.domain">
       <Generator>MSBuild:Compile</Generator>
     </None>
+    <None Include="Model\Library.domain">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

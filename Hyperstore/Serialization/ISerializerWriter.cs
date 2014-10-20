@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 using System;
 namespace Hyperstore.Modeling.Serialization
 {
@@ -26,11 +26,10 @@ namespace Hyperstore.Modeling.Serialization
 
     interface ISerializerWriter
     {
-        void NewScope();
+        void NewScope(string tag);
         void PushElement(string name, string id, string schemaId, string startId = null, string startSchemaId = null, string endId = null, string endSchemaId = null);
         void PushProperty(string tag, string name, object value);
-        void ReduceScope(string tag);
-        void SaveTo(System.IO.Stream stream, Hyperstore.Modeling.IDomainModel domain);
-        void SaveSchema(System.Collections.Generic.Dictionary<Identity, string> monikers);
+        void ReduceScope();
+        void Save(System.IO.Stream stream, System.Collections.Generic.IEnumerable<MonikerEntry> monikers);
     }
 }

@@ -27,13 +27,18 @@ namespace Hyperstore.Modeling.Serialization
 {
     class XmlWriter : Hyperstore.Modeling.Serialization.ISerializerWriter
     {
-        private Stack<List<XElement>> _scopes = new Stack<List<XElement>>();
         private SerializationOptions _options;
+        private Stack<XElement> _scopes = new Stack<XElement>();
+        private XElement _current;
 
-        public XmlWriter(SerializationOptions options)
+        public XmlWriter(SerializationOptions options, IDomainModel domain)
         {
             this._options = options;
-            NewScope();
+
+            var root = new XElement("domain", new XAttribute("name", domain.Name));
+            if (domain.ExtensionName != null)
+                root.Add(new XAttribute("extension", domain.ExtensionName));
+            _scopes.Push(root);
         }
 
         private bool HasOption(SerializationOptions option)
@@ -41,82 +46,69 @@ namespace Hyperstore.Modeling.Serialization
             return (_options & option) == option;
         }
 
-        public void NewScope()
+        public void NewScope(string tag)
         {
-            _scopes.Push(new List<XElement>());
+            _scopes.Push(new XElement(tag));
         }
 
-        public void SaveTo(Stream stream, IDomainModel domain)
+        public void ReduceScope()
         {
-            var writer = global::System.Xml.XmlWriter.Create(stream);
+            var elem = _scopes.Pop();
 
-            var list = _scopes.Pop();
-            var root = new XElement("domain", new XAttribute("name", domain.Name));
-            if (domain.ExtensionName != null)
-                root.Add(new XAttribute("extension", domain.ExtensionName));
-            if (list.Count > 0)
-                root.Add(list);
-            root.WriteTo(writer);
-            writer.Flush();
-        }
-
-        public void ReduceScope(string tag)
-        {
-            var list = _scopes.Pop();
-
-            if (list.Count > 0)
+            if (elem.HasElements || elem.HasAttributes)
             {
-                var current = new XElement(tag, list);
-                _scopes.Peek().Add(current);
+                _scopes.Peek().Add(elem);
             }
         }
 
         public void PushElement(string name, string id, string schemaId, string startId = null, string startSchemaId = null, string endId = null, string endSchemaId = null)
         {
-
-            var current = new XElement(name, new XAttribute("id", id), new XAttribute("schema", schemaId));
-
+            _current = new XElement(name, new XAttribute("id", id), new XAttribute("schema", schemaId));
+            _scopes.Peek().Add(_current);
             if (startId != null)
             {
-                current.Add(
+                _current.Add(
                              new XAttribute("start", startId), new XAttribute("startSchema", startSchemaId),
                              new XAttribute("end", endId), new XAttribute("endSchema", endSchemaId));
             }
-
-            var list = _scopes.Pop();
-            if (list.Count > 0)
-            {
-                current.Add(new XElement("properties", list));
-            }
-
-            _scopes.Peek().Add(current);
         }
 
         public void PushProperty(string tag, string name, object value)
         {
+            if( _current.Name != "properties")
+            {
+                var tmp = new XElement("properties");
+                _current.Add(tmp);
+                _current = tmp;
+            }
             var elem = new XElement(tag, new XAttribute("name", name), new XElement("value", value));
-            _scopes.Peek().Add(elem);
+            _current.Add(elem);
         }
 
-        public void SaveSchema(Dictionary<Identity, string> monikers)
+        public void Save(Stream stream, IEnumerable<MonikerEntry> monikers)
         {
-            if (HasOption(SerializationOptions.CompressSchema))
+            var writer = global::System.Xml.XmlWriter.Create(stream);
+            SaveSchema(monikers);
+            var elem = _scopes.Pop();
+            elem.WriteTo(writer);
+            writer.Flush();
+        }
+
+        public void SaveSchema(IEnumerable<MonikerEntry> monikers)
+        {
+            if (HasOption(SerializationOptions.CompressSchema) && monikers.Any())
             {
-                List<XElement> list = null;
-                NewScope();
-
-                foreach (var kv in monikers)
+                var current = new XElement("schemas");
+                foreach (var schemas in monikers.GroupBy(s => s.SchemaName))
                 {
-                    var current = new XElement("add", new XAttribute("id", kv.Value), new XAttribute("name", kv.Key));
-                    _scopes.Peek().Add(current);
+                    var schema = new XElement("schema", new XAttribute("name", schemas.Key));
+                    current.Add(schema);
+                    foreach (var moniker in schemas)
+                    {
+                        schema.Add(new XElement("add", new XAttribute("id", moniker.Moniker), new XAttribute("name", moniker.Schema.Id.Key)));
+                    }
                 }
-
-                list = _scopes.Pop();
-                if (list.Count > 0)
-                {
-                    var current = new XElement("schemas", list);
-                    _scopes.Peek().Insert(0, current);
-                }
+                _scopes.Peek().AddFirst(current);
             }
         }
     }
