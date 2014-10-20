@@ -1,0 +1,31 @@
+﻿[observable]
+domain Hyperstore.Tests.Model.Library
+{
+ 
+    def entity NamedElement {
+        Name : string check error "Name is required" { !String.IsNullOrEmpty(self.Name)};
+    } 	 
+
+    def entity Library extends NamedElement
+    {
+        Books   => Book*   : LibraryHasBooks;			
+        Members => Member* : LibraryHasMembers;
+        Loans   => Loan*   : LibraryHasLoans;
+		BooksA  : LibraryHasBooks where { item.Title.StartsWith("a")};
+    }
+
+    def entity Book {
+        Title  : string;
+        Copies : int;
+		Library *<= Library : LibraryHasBooks;
+    }
+
+    def entity Member extends NamedElement {
+        //Library *<- Library : LibraryHasMembers;
+    }
+
+    def entity Loan {
+        Book   -> Book   : LoanReferencesBook; 
+        Member -> Member : LoanReferencesMember;
+    }
+}
