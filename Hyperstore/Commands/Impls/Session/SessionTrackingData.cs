@@ -283,7 +283,7 @@ namespace Hyperstore.Modeling.Commands
                                  DomainName = @event.DomainModel,
                                  Extension = @event.ExtensionName,
                                  State = TrackingState.Added,
-                                 Id = addRelationMetadataEvent.Id,
+                                 Id = addRelationMetadataEvent.RelationshipId,
                                  SchemaId = addRelationMetadataEvent.SchemaRelationshipId,
                                  StartId = addRelationMetadataEvent.Start,
                                  StartSchemaId = addRelationMetadataEvent.StartSchema,

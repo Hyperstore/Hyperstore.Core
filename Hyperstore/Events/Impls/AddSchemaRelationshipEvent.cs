@@ -84,7 +84,7 @@ namespace Hyperstore.Modeling.Events
             Contract.Requires(endId, "endId");
             Contract.Requires(endSchema, "endSchema");
 
-            Id = id;
+            RelationshipId = id;
             SchemaRelationshipId = schemaRelationshipId;
             Start = startId;
             StartSchema = startSchema;
@@ -100,7 +100,7 @@ namespace Hyperstore.Modeling.Events
         ///  The identifier.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity Id { get; set; }
+        public Identity RelationshipId { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -162,7 +162,7 @@ namespace Hyperstore.Modeling.Events
         ///-------------------------------------------------------------------------------------------------
         public override string ToString()
         {
-            return String.Format("Add schema relationship {0}", Id);
+            return String.Format("Add schema relationship {0}", RelationshipId);
         }
     }
 }

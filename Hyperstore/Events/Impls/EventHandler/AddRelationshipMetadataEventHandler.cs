@@ -49,7 +49,7 @@ namespace Hyperstore.Modeling.Events
             Contract.Requires(@event, "@event");
 
             var metadata = domainModel.Store.GetSchemaRelationship(@event.SchemaRelationshipId);
-            if (domainModel.GetRelationship(@event.Id, metadata) == null)
+            if (domainModel.GetRelationship(@event.RelationshipId, metadata) == null)
             {
                 var start = domainModel.Store.GetSchemaElement(@event.Start);
                 if (start == null)
@@ -58,7 +58,7 @@ namespace Hyperstore.Modeling.Events
                 if (end == null)
                     throw new InvalidElementException( @event.End);
 
-                yield return new AddSchemaRelationshipCommand(domainModel as ISchema, @event.Id, metadata, start, end);
+                yield return new AddSchemaRelationshipCommand(domainModel as ISchema, @event.RelationshipId, metadata, start, end);
             }
         }
     }
