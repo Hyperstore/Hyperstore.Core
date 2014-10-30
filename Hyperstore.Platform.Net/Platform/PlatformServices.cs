@@ -29,10 +29,10 @@ namespace Hyperstore.Modeling.Platform
             Current = this;
         }
 
-        protected override Modeling.IJsonSerializer CreateObjectSerializer()
-        {
-            return new Hyperstore.Modeling.Platform.Net.JSonSerializer();
-        }
+        //protected override Modeling.IJsonSerializer CreateObjectSerializer()
+        //{
+        //    return new Hyperstore.Modeling.Platform.Net.JSonSerializer();
+        //}
 
         public override Hyperstore.Modeling.Commands.ITransactionScope CreateTransactionScope(Modeling.Session session, Modeling.SessionConfiguration cfg)
         {

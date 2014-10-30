@@ -72,18 +72,16 @@ namespace Hyperstore.Modeling.Events
         ///  The version.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public RemovePropertyEvent(string domainModelName, string extensionName, Identity ownerId, Identity schemaElementId, Identity schemaPropertyId, string propertyName, string oldValue, int correlationId, long version)
+        public RemovePropertyEvent(string domainModelName, string extensionName, Identity ownerId, Identity schemaElementId, string propertyName, string oldValue, int correlationId, long version)
             : base(domainModelName, extensionName, version, correlationId)
         {
             Contract.Requires(ownerId, "ownerId");
-            Contract.Requires(schemaPropertyId, "schemaPropertyId");
             Contract.Requires(schemaElementId, "schemaElementId");
             Contract.RequiresNotEmpty(propertyName, "propertyName");
 
             OldValue = oldValue;
-            ElementId = ownerId;
-            SchemaElementId = schemaElementId;
-            SchemaPropertyId = schemaPropertyId;
+            Id = ownerId;
+            SchemaId = schemaElementId;
             PropertyName = propertyName;
         }
 
@@ -95,7 +93,7 @@ namespace Hyperstore.Modeling.Events
         ///  The identifier of the element.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity ElementId { get; set; }
+        public Identity Id { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -105,17 +103,7 @@ namespace Hyperstore.Modeling.Events
         ///  The identifier of the schema element.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity SchemaElementId { get; set; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets or sets the identifier of the schema property.
-        /// </summary>
-        /// <value>
-        ///  The identifier of the schema property.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public Identity SchemaPropertyId { get; set; }
+        public Identity SchemaId { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -150,7 +138,7 @@ namespace Hyperstore.Modeling.Events
         ///-------------------------------------------------------------------------------------------------
         public IEvent GetReverseEvent(int correlationId)
         {
-            return new ChangePropertyValueEvent(DomainModel, ExtensionName, ElementId, SchemaElementId, SchemaPropertyId, PropertyName, OldValue, null, correlationId, Version);
+            return new ChangePropertyValueEvent(Domain, ExtensionName, Id, SchemaId, PropertyName, OldValue, null, correlationId, Version);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -163,7 +151,7 @@ namespace Hyperstore.Modeling.Events
         ///-------------------------------------------------------------------------------------------------
         public override string ToString()
         {
-            return String.Format("Remove property {0}.{1}", ElementId, PropertyName);
+            return String.Format("Remove property {0}.{1}", Id, PropertyName);
         }
     }
 }

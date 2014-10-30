@@ -58,7 +58,6 @@
     <Compile Include="Platform\DefaultCodeMarkerListener.cs" />
     <Compile Include="InProcChannel.cs" />
     <Compile Include="Platform\Dispatcher.cs" />
-    <Compile Include="Platform\JSonHelper.cs" />
     <Compile Include="Platform\ModelElementFactory.cs" />
     <Compile Include="Platform\PlatformServices.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

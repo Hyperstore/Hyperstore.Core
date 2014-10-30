@@ -27,38 +27,22 @@ namespace Hyperstore.Modeling
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  true this instance to the given stream.
+        ///  Deserialize a json string
         /// </summary>
-        /// <param name="implementationType">
-        ///  Type of the implementation.
-        /// </param>
         /// <param name="data">
         ///  The data.
         /// </param>
         /// <param name="defaultValue">
         ///  The default value.
         /// </param>
+        /// <param name="obj">
+        ///  (Optional) the object.
+        /// </param>
         /// <returns>
         ///  An object.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        object Deserialize(Type implementationType, string data, object defaultValue);
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  true this instance to the given stream.
-        /// </summary>
-        /// <typeparam name="T">
-        ///  Generic type parameter.
-        /// </typeparam>
-        /// <param name="data">
-        ///  The data.
-        /// </param>
-        /// <returns>
-        ///  A T.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        T Deserialize<T>(string data);
+        object Deserialize(string data, object defaultValue, object obj = null);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

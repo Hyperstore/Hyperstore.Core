@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 using Hyperstore.Modeling.Events;
 using System;
 using System.Collections.Generic;
@@ -73,7 +73,7 @@ namespace Hyperstore.Modeling.Messaging
         ///  (Optional) the domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public ChannelFilter(ChannelPolicy outputProperty, ChannelPolicy inputProperty, IDomainModel domainModel=null)
+        public ChannelFilter(ChannelPolicy outputProperty, ChannelPolicy inputProperty, IDomainModel domainModel = null)
         {
             OutputProperty = outputProperty;
             InputProperty = inputProperty;
@@ -93,8 +93,9 @@ namespace Hyperstore.Modeling.Messaging
         ///-------------------------------------------------------------------------------------------------
         public virtual bool ShouldBePropagated(IEvent evt)
         {
-            return OutputProperty != null 
-                && (DomainModel == null || String.Compare(DomainModel.Name, evt.DomainModel, StringComparison.OrdinalIgnoreCase) == 0)
+            return OutputProperty != null
+                && evt.TopEvent
+                && (DomainModel == null || String.Compare(DomainModel.Name, evt.Domain, StringComparison.OrdinalIgnoreCase) == 0)
                 && (String.Compare(DomainModel.ExtensionName, evt.ExtensionName, StringComparison.OrdinalIgnoreCase) == 0)
                 && OutputProperty.ShouldBePropagated(evt);
         }
@@ -112,8 +113,9 @@ namespace Hyperstore.Modeling.Messaging
         ///-------------------------------------------------------------------------------------------------
         public virtual bool CanReceive(IEvent evt)
         {
-            return InputProperty != null 
-                && (DomainModel == null || String.Compare(DomainModel.Name, evt.DomainModel, StringComparison.OrdinalIgnoreCase) == 0)
+            return InputProperty != null
+                && evt.TopEvent
+                && (DomainModel == null || String.Compare(DomainModel.Name, evt.Domain, StringComparison.OrdinalIgnoreCase) == 0)
                 && (String.Compare(DomainModel.ExtensionName, evt.ExtensionName, StringComparison.OrdinalIgnoreCase) == 0)
                 && InputProperty.CanReceive(evt);
         }

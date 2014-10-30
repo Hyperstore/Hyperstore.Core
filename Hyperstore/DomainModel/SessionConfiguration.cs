@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -71,6 +71,16 @@ namespace Hyperstore.Modeling
                 _settings.Set(DomainModelIndex, value != null);
             }
         }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets or sets the origin store id
+        /// </summary>
+        /// <value>
+        ///  The origin.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public string Origin { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

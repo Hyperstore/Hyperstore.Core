@@ -45,6 +45,6 @@ namespace Hyperstore.Modeling.Messaging
         ///  The events.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        void ProcessEvents(Guid origin, SessionMode mode, IEnumerable<IEvent> events);
+        void ProcessEvents(string origin, SessionMode mode, IEnumerable<IEvent> events);
     }
 }

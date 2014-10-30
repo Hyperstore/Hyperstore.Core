@@ -253,7 +253,7 @@ namespace Hyperstore.Modeling.Adapters
             DebugContract.Requires(session);
 
             var originId = session.OriginStoreId;
-            if (session.IsAborted || !session.Events.Any() || _disposed || (originId != Guid.Empty && originId != Store.Id) || (session.Mode & SessionMode.Loading) == SessionMode.Loading || (session.Mode & SessionMode.LoadingSchema) == SessionMode.LoadingSchema)
+            if (session.IsAborted || !session.Events.Any() || _disposed || (originId != null && originId != Store.Id) || (session.Mode & SessionMode.Loading) == SessionMode.Loading || (session.Mode & SessionMode.LoadingSchema) == SessionMode.LoadingSchema)
                 return;
 
             var elements = session.TrackingData.InvolvedTrackedElements.Where(e => String.Compare(e.DomainName, DomainModel.Name, StringComparison.OrdinalIgnoreCase) == 0 && String.Compare(e.Extension, DomainModel.ExtensionName, StringComparison.OrdinalIgnoreCase) == 0);

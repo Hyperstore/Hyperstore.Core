@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -71,7 +71,7 @@ namespace Hyperstore.Modeling
         ///  true if this instance has errors, false if not.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        bool HasErrors { get; }  
+        bool HasErrors { get; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -91,7 +91,7 @@ namespace Hyperstore.Modeling
         ///  true if succeed, false if not.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        bool Succeed { get; }  
+        bool Succeed { get; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -121,7 +121,7 @@ namespace Hyperstore.Modeling
         ///  The identifier of the origin store.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        Guid OriginStoreId { get; }
+        string OriginStoreId { get; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

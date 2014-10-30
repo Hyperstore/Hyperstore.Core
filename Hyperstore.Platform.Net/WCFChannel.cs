@@ -106,12 +106,12 @@ namespace Hyperstore.Modeling.Messaging
 
             var events = new List<IEvent>();
 
-            foreach (var envelope in data.Events)
+            foreach (var envelope in data.events)
             {
                 var @event = envelope.DeserializeEvent();
                 if (@event == null)
                 {
-                    Trace.WriteLine("Ignore event : " + envelope.EventType);
+                    Trace.WriteLine("Ignore event : " + envelope.eventName);
                     continue;
                 }
 
@@ -119,7 +119,7 @@ namespace Hyperstore.Modeling.Messaging
                     events.Add(@event);
             }
 
-            EventsProcessor.ProcessEvents(data.OriginStoreId, data.Mode, events);
+            EventsProcessor.ProcessEvents(data.origin, data.sessionMode, events);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -155,7 +155,7 @@ namespace Hyperstore.Modeling.Messaging
         ///  A Message.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected override Message SendMessage(Guid originStoreId, SessionMode mode, int sessionId, IEnumerable<IEvent> events)
+        protected override Message SendMessage(string originStoreId, SessionMode mode, int sessionId, IEnumerable<IEvent> events)
         {
             var msg = base.SendMessage(originStoreId, mode, sessionId, events);
             Channel.ProcessEvents(msg);

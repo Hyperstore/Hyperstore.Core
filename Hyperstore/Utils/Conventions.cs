@@ -25,6 +25,12 @@ namespace Hyperstore.Modeling
 {
     internal static class Conventions
     {
+        internal static string ToJsonName(string name)
+        {
+            DebugContract.Assert(name.Length > 0);
+            return Char.ToLower(name[0]) + name.Substring(1);
+        }
+
         internal static void CheckValidDomainName(string name)
         {
             if (name == null || name == "$")

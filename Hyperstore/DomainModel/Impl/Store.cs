@@ -146,7 +146,7 @@ namespace Hyperstore.Modeling
         ///  The identifier.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Guid Id { get; protected set; }
+        public string Id { get; protected set; }
 
         #endregion
 
@@ -159,7 +159,7 @@ namespace Hyperstore.Modeling
         /// <param name="options">  (Optional) options for controlling the operation. </param>
         /// <param name="id">       (Optional) The identifier. </param>
         ///-------------------------------------------------------------------------------------------------
-        internal Store(IServicesContainer services, StoreOptions options = StoreOptions.None, Guid? id = null)
+        internal Store(IServicesContainer services, StoreOptions options = StoreOptions.None, string id = null)
         {
             Contract.Requires(services, "services");
 
@@ -167,7 +167,7 @@ namespace Hyperstore.Modeling
             InitializeSchemaInfoCache();
 
             _options = options;
-            Id = id ?? Guid.NewGuid();
+            Id = id ?? Guid.NewGuid().ToString("N");
             _statistics = new Statistics.Statistics();
 
             var container = new ServicesContainer();

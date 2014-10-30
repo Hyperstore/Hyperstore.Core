@@ -62,7 +62,7 @@ namespace Hyperstore.Modeling
         ///  The identifier of the origin store.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Guid OriginStoreId { get; private set; }
+        public string OriginStoreId { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

@@ -70,7 +70,7 @@ namespace Hyperstore.Modeling.Events
             Contract.Requires(schemaEntityId, "schemaEntityId");
 
             Id = id;
-            SchemaEntityId = schemaEntityId;
+            SchemaId = schemaEntityId;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -91,7 +91,7 @@ namespace Hyperstore.Modeling.Events
         ///  The identifier of the schema entity.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity SchemaEntityId { get; set; }
+        public Identity SchemaId { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -106,7 +106,7 @@ namespace Hyperstore.Modeling.Events
         ///-------------------------------------------------------------------------------------------------
         public IEvent GetReverseEvent(int correlationId)
         {
-            return new AddEntityEvent(DomainModel, ExtensionName, Id, SchemaEntityId, correlationId, Version);
+            return new AddEntityEvent(Domain, ExtensionName, Id, SchemaId, correlationId, Version);
         }
 
         ///-------------------------------------------------------------------------------------------------

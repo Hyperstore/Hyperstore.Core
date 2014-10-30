@@ -35,7 +35,7 @@ namespace Hyperstore.Modeling.Messaging
             ///  The origin.
             /// </summary>
             ///-------------------------------------------------------------------------------------------------
-            public Guid Origin;
+            public string Origin;
 
             ///-------------------------------------------------------------------------------------------------
             /// <summary>
@@ -64,7 +64,7 @@ namespace Hyperstore.Modeling.Messaging
             _store = store;
         }
 
-        void IEventsProcessor.ProcessEvents(Guid origin, SessionMode mode, IEnumerable<IEvent> events)
+        void IEventsProcessor.ProcessEvents(string origin, SessionMode mode, IEnumerable<IEvent> events)
         {
             ProcessInfo pi;
             pi.Events = events;
@@ -100,10 +100,10 @@ namespace Hyperstore.Modeling.Messaging
             var tx = _store.BeginSession(new SessionConfiguration
                                                      {
                                                          IsolationLevel = SessionIsolationLevel.Serializable,
-                                                         Mode = info.Mode
+                                                         Mode = info.Mode,
+                                                         Origin = info.Origin
                                                      });
 
-            ((ISessionInternal)tx).SetOriginStoreId(info.Origin);
             _store.Trace.WriteTrace(TraceCategory.EventBus, "Process events from {0} for Store {1}", info.Origin, _store.Id);
 
             try
@@ -134,7 +134,7 @@ namespace Hyperstore.Modeling.Messaging
 
         private IEventDispatcher GetEventDispatcher(IEvent @event)
         {
-            var domainModel = _store.GetDomainModel(@event.DomainModel);
+            var domainModel = _store.GetDomainModel(@event.Domain);
             if (domainModel.EventDispatcher != null)
                 return domainModel.EventDispatcher;
             if (_defaultDispatcher == null)

@@ -101,22 +101,22 @@ namespace Hyperstore.Modeling
             var query3 = DomainModel.Events.PropertyChanged;
 
             relationshipAddedSubscription = query.Subscribe(a => Notify(
-                Source != null ? a.Event.End : a.Event.Start,
-                Source != null ? a.Event.EndSchema : a.Event.StartSchema,
-                Source != null ? a.Event.Start : a.Event.End,
-                a.Event.SchemaRelationshipId,
+                Source != null ? a.Event.EndId : a.Event.StartId,
+                Source != null ? a.Event.EndSchemaId : a.Event.StartSchemaId,
+                Source != null ? a.Event.StartId : a.Event.EndId,
+                a.Event.Id,
                 NotifyCollectionChangedAction.Add));
 
             relationshipRemovedSubscription = query2.Subscribe(a => Notify(
-                Source != null ? a.Event.End : a.Event.Start,
-                Source != null ? a.Event.EndSchema : a.Event.StartSchema,
-                Source != null ? a.Event.Start : a.Event.End,
-                a.Event.SchemaRelationshipId,
+                Source != null ? a.Event.EndId : a.Event.StartId,
+                Source != null ? a.Event.EndSchemaId : a.Event.StartSchemaId,
+                Source != null ? a.Event.StartId : a.Event.EndId,
+                a.Event.SchemaId,
                 NotifyCollectionChangedAction.Remove));
 
             propertyChangedSubscription = query3.Subscribe(a => NotifyPropertyChanged(
-                a.Event.ElementId,
-                a.Event.SchemaElementId));
+                a.Event.Id,
+                a.Event.SchemaId));
         }
 
         ///-------------------------------------------------------------------------------------------------

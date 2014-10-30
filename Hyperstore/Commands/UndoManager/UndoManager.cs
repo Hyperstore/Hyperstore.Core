@@ -238,7 +238,7 @@ namespace Hyperstore.Modeling.Commands
                     {
                         /*e.IsTopLevelEvent &&*/
                         DomainInfo info;
-                        if (!_domainModels.TryGetValue(e.DomainModel, out info))
+                        if (!_domainModels.TryGetValue(e.Domain, out info))
                             return false;
                         return info.Filter == null || info.Filter(e);
                     });
@@ -310,10 +310,10 @@ namespace Hyperstore.Modeling.Commands
                             var evt = @event.GetReverseEvent(session.SessionId);
                             if (evt == null)
                                 continue;
-                            if (domainModelName != evt.DomainModel)
+                            if (domainModelName != evt.Domain)
                             {
-                                dispatcher = _domainModels[evt.DomainModel].Dispatcher;
-                                domainModelName = evt.DomainModel;
+                                dispatcher = _domainModels[evt.Domain].Dispatcher;
+                                domainModelName = evt.Domain;
                             }
                             dispatcher.HandleEvent(evt);
 

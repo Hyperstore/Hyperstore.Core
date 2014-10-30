@@ -49,13 +49,13 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Instance Id.
+        ///  Store Id.
         /// </summary>
         /// <value>
-        ///  The identifier.
+        ///  The instance id.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        Guid Id { get; }
+        string Id { get; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -602,7 +602,7 @@ namespace Hyperstore.Modeling
         ///  The schema.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        Task<ISchema<T>> LoadSchemaAsync<T>(T definition, IServicesContainer parentContainer = null) where T: class, ISchemaDefinition;
+        Task<ISchema<T>> LoadSchemaAsync<T>(T definition, IServicesContainer parentContainer = null) where T : class, ISchemaDefinition;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

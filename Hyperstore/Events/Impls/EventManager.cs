@@ -511,7 +511,7 @@ namespace Hyperstore.Modeling.Events
             DebugContract.Requires(log, "log");
             DebugContract.Requires(ev, "ev");
 
-            if (String.Compare(ev.DomainModel, _domainModel.Name, StringComparison.OrdinalIgnoreCase) != 0)
+            if (String.Compare(ev.Domain, _domainModel.Name, StringComparison.OrdinalIgnoreCase) != 0)
                 return;
 
             // Event for extendee domain will be raised to its extension
@@ -555,7 +555,7 @@ namespace Hyperstore.Modeling.Events
             DebugContract.Requires(session, "session");
             DebugContract.Requires(log, "log");
 
-            if (!session.Events.Any(e => String.Compare(e.DomainModel, _domainModel.Name, StringComparison.OrdinalIgnoreCase) == 0 && (e.ExtensionName == null || e.ExtensionName == _domainModel.ExtensionName)))
+            if (!session.Events.Any(e => String.Compare(e.Domain, _domainModel.Name, StringComparison.OrdinalIgnoreCase) == 0 && (e.ExtensionName == null || e.ExtensionName == _domainModel.ExtensionName)))
                 return;
 
             try
@@ -573,7 +573,7 @@ namespace Hyperstore.Modeling.Events
                 var notifiedProperties = new HashSet<Identity>();
                 var notifications = PrepareNotificationList(session);
 
-                foreach (var ev in session.Events.Where(e => String.Compare(e.DomainModel, _domainModel.Name, StringComparison.OrdinalIgnoreCase) == 0))
+                foreach (var ev in session.Events.Where(e => String.Compare(e.Domain, _domainModel.Name, StringComparison.OrdinalIgnoreCase) == 0))
                 {
                     // Utiliser plutot le eventbus
                     // this._eventDispatcher.HandleEvent(ev);
@@ -588,17 +588,17 @@ namespace Hyperstore.Modeling.Events
                             var evt = (AddRelationshipEvent)ev;
                             _relationshipAdded.OnNext(new EventContext<AddRelationshipEvent>(session, evt));
 
-                            var relationshipSchema = session.Store.GetSchemaRelationship(evt.SchemaRelationshipId, false);
+                            var relationshipSchema = session.Store.GetSchemaRelationship(evt.Id, false);
                             if (relationshipSchema != null && (relationshipSchema.Schema.Behavior & DomainBehavior.Observable) == DomainBehavior.Observable)
                             {
                                 IModelElement mel;
-                                if (notifications.TryGetValue(evt.Start, out mel) && relationshipSchema.StartPropertyName != null)
+                                if (notifications.TryGetValue(evt.StartId, out mel) && relationshipSchema.StartPropertyName != null)
                                 {
                                     var key = mel.Id.CreateAttributeIdentity(relationshipSchema.StartPropertyName);
                                     if (notifiedProperties.Add(key))
                                         NotifyPropertyChanged(mel, relationshipSchema.StartPropertyName);
                                 }
-                                if (notifications.TryGetValue(evt.End, out mel) && relationshipSchema.EndPropertyName != null)
+                                if (notifications.TryGetValue(evt.EndId, out mel) && relationshipSchema.EndPropertyName != null)
                                 {
                                     var key = mel.Id.CreateAttributeIdentity(relationshipSchema.EndPropertyName);
                                     if (notifiedProperties.Add(key))
@@ -611,17 +611,17 @@ namespace Hyperstore.Modeling.Events
                             var evt = (RemoveRelationshipEvent)ev;
                             _relationshipRemoved.OnNext(new EventContext<RemoveRelationshipEvent>(session, evt));
 
-                            var relationshipSchema = session.Store.GetSchemaRelationship(evt.SchemaRelationshipId, false);
+                            var relationshipSchema = session.Store.GetSchemaRelationship(evt.SchemaId, false);
                             if (relationshipSchema != null && (relationshipSchema.Schema.Behavior & DomainBehavior.Observable) == DomainBehavior.Observable)
                             {
                                 IModelElement mel;
-                                if (notifications.TryGetValue(evt.Start, out mel) && relationshipSchema.StartPropertyName != null)
+                                if (notifications.TryGetValue(evt.StartId, out mel) && relationshipSchema.StartPropertyName != null)
                                 {
                                     var key = mel.Id.CreateAttributeIdentity(relationshipSchema.StartPropertyName);
                                     if (notifiedProperties.Add(key))
                                         NotifyPropertyChanged(mel, relationshipSchema.StartPropertyName);
                                 }
-                                if (notifications.TryGetValue(evt.End, out mel) && relationshipSchema.EndPropertyName != null)
+                                if (notifications.TryGetValue(evt.EndId, out mel) && relationshipSchema.EndPropertyName != null)
                                 {
                                     var key = mel.Id.CreateAttributeIdentity(relationshipSchema.EndPropertyName);
                                     if (notifiedProperties.Add(key))
@@ -807,7 +807,7 @@ namespace Hyperstore.Modeling.Events
                 }
 
                 IModelElement mel;
-                if (notifications.TryGetValue(cmd.ElementId, out mel))
+                if (notifications.TryGetValue(cmd.Id, out mel))
                 {
                     var propertyName = cmd.PropertyName;
                     NotifyPropertyChanged(mel, propertyName);

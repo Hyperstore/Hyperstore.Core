@@ -85,12 +85,12 @@ namespace Hyperstore.Modeling.Events
             Contract.Requires(startSchema, "startSchema");
             Contract.Requires(endSchema, "endSchema");
 
-            RelationshipId = relationshipId;
-            Start = startId;
-            End = endId;
-            SchemaRelationshipId = schemaRelationshipId;
-            StartSchema = startSchema;
-            EndSchema = endSchema;
+            Id = relationshipId;
+            StartId = startId;
+            EndId = endId;
+            SchemaId = schemaRelationshipId;
+            StartSchemaId = startSchema;
+            EndSchemaId = endSchema;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ namespace Hyperstore.Modeling.Events
         ///  The start.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity Start { get; set; }
+        public Identity StartId { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -111,7 +111,7 @@ namespace Hyperstore.Modeling.Events
         ///  The start schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity StartSchema { get; set; }
+        public Identity StartSchemaId { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -121,7 +121,7 @@ namespace Hyperstore.Modeling.Events
         ///  The end.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity End { get; set; }
+        public Identity EndId { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -131,7 +131,7 @@ namespace Hyperstore.Modeling.Events
         ///  The end schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity EndSchema { get; set; }
+        public Identity EndSchemaId { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -141,7 +141,7 @@ namespace Hyperstore.Modeling.Events
         ///  The identifier.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity RelationshipId { get; set; }
+        public Identity Id { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -151,7 +151,7 @@ namespace Hyperstore.Modeling.Events
         ///  The identifier of the schema relationship.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity SchemaRelationshipId { get; set; }
+        public Identity SchemaId { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -166,7 +166,7 @@ namespace Hyperstore.Modeling.Events
         ///-------------------------------------------------------------------------------------------------
         public IEvent GetReverseEvent(int correlationId)
         {
-            return new AddRelationshipEvent(DomainModel, ExtensionName, RelationshipId, SchemaRelationshipId, Start, StartSchema, End, EndSchema, correlationId, Version);
+            return new AddRelationshipEvent(Domain, ExtensionName, Id, SchemaId, StartId, StartSchemaId, EndId, EndSchemaId, correlationId, Version);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -179,7 +179,7 @@ namespace Hyperstore.Modeling.Events
         ///-------------------------------------------------------------------------------------------------
         public override string ToString()
         {
-            return String.Format("Remove {0} -[{2}]-> {1}", Start, End, SchemaRelationshipId);
+            return String.Format("Remove {0} -[{2}]-> {1}", StartId, EndId, SchemaId);
         }
     }
 }

@@ -178,12 +178,12 @@ namespace Hyperstore.Modeling.Messaging
         ///  A Message.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected virtual Message SendMessage(Guid originStoreId, SessionMode mode, int sessionId, IEnumerable<IEvent> events)
+        protected virtual Message SendMessage(string originStoreId, SessionMode mode, int sessionId, IEnumerable<IEvent> events)
         {
-            var msg = new Message { Mode = mode, Events = new List<Enveloppe>() };
-            msg.OriginStoreId = originStoreId;
-            msg.CorrelationId = sessionId;
-            msg.Events = events.Select(e => new Enveloppe(e)).ToList();
+            var msg = new Message { sessionMode = mode, events = new List<Enveloppe>() };
+            msg.origin = originStoreId;
+            msg.sessionId = sessionId;
+            msg.events = events.Select(e => new Enveloppe(e)).ToList();
             return msg;
         }
 

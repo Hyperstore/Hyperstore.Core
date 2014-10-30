@@ -15,13 +15,14 @@
 // limitations under the License.
  
 #region Imports
-
+using System.Linq;
 using System;
 using System.Runtime.Serialization;
 using Hyperstore.Modeling.Events;
 using Hyperstore.Modeling.Metadata;
 using Hyperstore.Modeling.Platform;
-
+using System.Collections.Generic;
+using System.Reflection;
 #endregion
 
 namespace Hyperstore.Modeling.Messaging
@@ -45,16 +46,11 @@ namespace Hyperstore.Modeling.Messaging
         public Enveloppe(IEvent @event)
         {
             Contract.Requires(@event, "@event");
-            if (@event is ICustomEventSerializer)
-            {
-                Data = ((ICustomEventSerializer)@event).Serialize();
-                Flags |= 0x01;
-            }
-            else
-            {
-                Data = PlatformServices.Current.ObjectSerializer.Serialize(@event);
-            }
-            EventType = Hyperstore.Modeling.Utils.ReflectionHelper.GetNameWithSimpleAssemblyName(@event.GetType());
+
+            var dic = new Dictionary<string, object>();
+
+            data = PlatformServices.Current.ObjectSerializer.Serialize(@event);
+            eventName = @event.GetType().Name;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -75,7 +71,7 @@ namespace Hyperstore.Modeling.Messaging
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         [DataMember]
-        public string EventType { get; set; }
+        public string eventName { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -86,29 +82,7 @@ namespace Hyperstore.Modeling.Messaging
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         [DataMember]
-        public string Data { get; set; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets or sets the identifier of the message.
-        /// </summary>
-        /// <value>
-        ///  The identifier of the message.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        [DataMember]
-        public string MessageId { get; set; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets or sets the flags.
-        /// </summary>
-        /// <value>
-        ///  The flags.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        [DataMember]
-        public byte Flags { get; set; }
+        public string data { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -120,21 +94,22 @@ namespace Hyperstore.Modeling.Messaging
         ///-------------------------------------------------------------------------------------------------
         public IEvent DeserializeEvent()
         {
-            var eventType = Type.GetType(EventType, false);
+            var name = eventName;
+            var eventType = Type.GetType(name, false);
             if (eventType == null)
-                return null; // TODO
-
-            if ((Flags & 0x01) == 0x01)
             {
-                var evt = Activator.CreateInstance(eventType) as ICustomEventSerializer;
-                if (evt != null)
-                {
-                    evt.Deserialize(Data);
-                    return evt;
-                }
+                name = "Hyperstore.Modeling.Events." + name;
+                eventType = Type.GetType(name, false);
+                if (eventType == null)
+                    return null;
             }
 
-            return (IEvent) PlatformServices.Current.ObjectSerializer.Deserialize(eventType, Data, null);
+            var ctor = eventType.GetTypeInfo().DeclaredConstructors.FirstOrDefault(c => c.GetParameters().Length == 0);
+            if (ctor == null)
+                return null;
+
+            return (IEvent) PlatformServices.Current.ObjectSerializer.Deserialize(data, null, ctor.Invoke(null));
         }
+
     }
 }

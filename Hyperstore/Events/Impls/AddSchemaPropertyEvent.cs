@@ -69,7 +69,7 @@ namespace Hyperstore.Modeling.Events
             Contract.Requires(schemaPropertyId, "schemaPropertyId");
 
             Id = id;
-            SchemaPropertyId = schemaPropertyId;
+            SchemaId = schemaPropertyId;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -90,7 +90,7 @@ namespace Hyperstore.Modeling.Events
         ///  The schema property identifier.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity SchemaPropertyId { get; set; }
+        public Identity SchemaId { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

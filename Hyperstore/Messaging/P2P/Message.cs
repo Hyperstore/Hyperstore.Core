@@ -38,7 +38,7 @@ namespace Hyperstore.Modeling.Messaging
         ///  The mode.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public SessionMode Mode { get; set; }
+        public SessionMode sessionMode { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -48,7 +48,7 @@ namespace Hyperstore.Modeling.Messaging
         ///  The identifier of the origin store.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Guid OriginStoreId { get; set; }
+        public string origin { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -58,7 +58,7 @@ namespace Hyperstore.Modeling.Messaging
         ///  The events.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public List<Enveloppe> Events { get; set; }
+        public List<Enveloppe> events { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -68,6 +68,6 @@ namespace Hyperstore.Modeling.Messaging
         ///  The identifier of the session.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public int CorrelationId { get; set; }
+        public int sessionId { get; set; }
     }
 }

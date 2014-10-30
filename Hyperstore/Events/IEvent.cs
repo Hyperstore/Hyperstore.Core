@@ -57,7 +57,7 @@ namespace Hyperstore.Modeling.Events
         ///  The domain model.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        string DomainModel { get; }
+        string Domain { get; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -77,6 +77,6 @@ namespace Hyperstore.Modeling.Events
         ///  <c>true</c> if [is top level event]; otherwise, <c>false</c>.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        bool IsTopLevelEvent { get; set; }
+        bool TopEvent { get; set; }
     }
 }

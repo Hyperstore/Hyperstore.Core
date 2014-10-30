@@ -134,11 +134,11 @@ namespace Hyperstore.Modeling.Commands
             {
                 var entity = new TrackedElement
                              {
-                                 DomainName = @event.DomainModel,
+                                 DomainName = @event.Domain,
                                  Extension = @event.ExtensionName,
                                  State = TrackingState.Added,
                                  Id = addEvent.Id,
-                                 SchemaId = addEvent.SchemaEntityId,
+                                 SchemaId = addEvent.SchemaId,
                                  Version = @event.Version
                              };
                 _elements.Add(entity.Id, entity);
@@ -156,11 +156,11 @@ namespace Hyperstore.Modeling.Commands
                 {
                     entity = new TrackedElement
                              {
-                                 DomainName = @event.DomainModel,
+                                 DomainName = @event.Domain,
                                  Extension = @event.ExtensionName,
                                  State = TrackingState.Removed,
                                  Id = removeEvent.Id,
-                                 SchemaId = removeEvent.SchemaEntityId
+                                 SchemaId = removeEvent.SchemaId
                              };
                     _elements.Add(entity.Id, entity);
                 }
@@ -178,11 +178,11 @@ namespace Hyperstore.Modeling.Commands
             {
                 var entity = new TrackedElement
                              {
-                                 DomainName = @event.DomainModel,
+                                 DomainName = @event.Domain,
                                  Extension = @event.ExtensionName,
                                  State = TrackingState.Added,
                                  Id = addMetadataEvent.Id,
-                                 SchemaId = addMetadataEvent.SchemaEntityId,
+                                 SchemaId = addMetadataEvent.SchemaId,
                                  IsSchema = true,
                                  Version = @event.Version
                              };
@@ -197,24 +197,24 @@ namespace Hyperstore.Modeling.Commands
             if (changeEvent != null)
             {
                 TrackedElement entity;
-                if (!_elements.TryGetValue(changeEvent.ElementId, out entity))
+                if (!_elements.TryGetValue(changeEvent.Id, out entity))
                 {
                     entity = new TrackedElement
                              {
-                                 DomainName = @event.DomainModel,
+                                 DomainName = @event.Domain,
                                  Extension = @event.ExtensionName,
                                  State = TrackingState.Updated,
-                                 Id = changeEvent.ElementId,
-                                 SchemaId = changeEvent.SchemaElementId
+                                 Id = changeEvent.Id,
+                                 SchemaId = changeEvent.SchemaId
                              };
                     _elements.Add(entity.Id, entity);
                 }
 
                 var prop = new PropertyValue
                            {
-                               Value = changeEvent.InternalValue,
+                               Value = changeEvent.GetInternalValue(),
                                CurrentVersion = changeEvent.Version,
-                               OldValue = changeEvent.InternalOldValue
+                               OldValue = changeEvent.GetInternalOldValue()
                            };
                 entity.Properties[changeEvent.PropertyName] = prop;
                 entity.Version = Math.Max(entity.Version, changeEvent.Version);
@@ -229,15 +229,15 @@ namespace Hyperstore.Modeling.Commands
             {
                 var entity = new TrackedRelationship
                              {
-                                 DomainName = @event.DomainModel,
+                                 DomainName = @event.Domain,
                                  Extension = @event.ExtensionName,
                                  State = TrackingState.Added,
-                                 Id = addRelationEvent.RelationshipId,
-                                 SchemaId = addRelationEvent.SchemaRelationshipId,
-                                 StartId = addRelationEvent.Start,
-                                 StartSchemaId = addRelationEvent.StartSchema,
-                                 EndId = addRelationEvent.End,
-                                 EndSchemaId = addRelationEvent.EndSchema,
+                                 Id = addRelationEvent.Id,
+                                 SchemaId = addRelationEvent.SchemaId,
+                                 StartId = addRelationEvent.StartId,
+                                 StartSchemaId = addRelationEvent.StartSchemaId,
+                                 EndId = addRelationEvent.EndId,
+                                 EndSchemaId = addRelationEvent.EndSchemaId,
                                  Version = @event.Version
                              };
                 _elements.Add(entity.Id, entity);
@@ -251,19 +251,19 @@ namespace Hyperstore.Modeling.Commands
             if (removeRelationshipEvent != null)
             {
                 TrackedElement entity;
-                if (!_elements.TryGetValue(removeRelationshipEvent.RelationshipId, out entity))
+                if (!_elements.TryGetValue(removeRelationshipEvent.Id, out entity))
                 {
                     entity = new TrackedRelationship
                              {
-                                 DomainName = @event.DomainModel,
+                                 DomainName = @event.Domain,
                                  Extension = @event.ExtensionName,
                                  State = TrackingState.Removed,
-                                 Id = removeRelationshipEvent.RelationshipId,
-                                 SchemaId = removeRelationshipEvent.SchemaRelationshipId,
-                                 StartId = removeRelationshipEvent.Start,
-                                 StartSchemaId = removeRelationshipEvent.StartSchema,
-                                 EndId = removeRelationshipEvent.End,
-                                 EndSchemaId = removeRelationshipEvent.EndSchema
+                                 Id = removeRelationshipEvent.Id,
+                                 SchemaId = removeRelationshipEvent.SchemaId,
+                                 StartId = removeRelationshipEvent.StartId,
+                                 StartSchemaId = removeRelationshipEvent.StartSchemaId,
+                                 EndId = removeRelationshipEvent.EndId,
+                                 EndSchemaId = removeRelationshipEvent.EndSchemaId
                              };
                     _elements.Add(entity.Id, entity);
                 }
@@ -280,15 +280,15 @@ namespace Hyperstore.Modeling.Commands
             {
                 var entity = new TrackedRelationship
                              {
-                                 DomainName = @event.DomainModel,
+                                 DomainName = @event.Domain,
                                  Extension = @event.ExtensionName,
                                  State = TrackingState.Added,
-                                 Id = addRelationMetadataEvent.RelationshipId,
-                                 SchemaId = addRelationMetadataEvent.SchemaRelationshipId,
-                                 StartId = addRelationMetadataEvent.Start,
-                                 StartSchemaId = addRelationMetadataEvent.StartSchema,
-                                 EndId = addRelationMetadataEvent.End,
-                                 EndSchemaId = addRelationMetadataEvent.EndSchema,
+                                 Id = addRelationMetadataEvent.Id,
+                                 SchemaId = addRelationMetadataEvent.SchemaId,
+                                 StartId = addRelationMetadataEvent.StartId,
+                                 StartSchemaId = addRelationMetadataEvent.StartSchemaId,
+                                 EndId = addRelationMetadataEvent.EndId,
+                                 EndSchemaId = addRelationMetadataEvent.EndSchemaId,
                                  IsSchema = true,
                                  Version = @event.Version
                              };

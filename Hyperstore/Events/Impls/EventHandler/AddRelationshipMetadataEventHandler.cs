@@ -48,17 +48,17 @@ namespace Hyperstore.Modeling.Events
             Contract.Requires(domainModel, "domainModel");
             Contract.Requires(@event, "@event");
 
-            var metadata = domainModel.Store.GetSchemaRelationship(@event.SchemaRelationshipId);
-            if (domainModel.GetRelationship(@event.RelationshipId, metadata) == null)
+            var metadata = domainModel.Store.GetSchemaRelationship(@event.SchemaId);
+            if (domainModel.GetRelationship(@event.Id, metadata) == null)
             {
-                var start = domainModel.Store.GetSchemaElement(@event.Start);
+                var start = domainModel.Store.GetSchemaElement(@event.StartId);
                 if (start == null)
-                    throw new InvalidElementException( @event.Start);
-                var end = domainModel.Store.GetSchemaElement(@event.End);
+                    throw new InvalidElementException( @event.StartId);
+                var end = domainModel.Store.GetSchemaElement(@event.EndId);
                 if (end == null)
-                    throw new InvalidElementException( @event.End);
+                    throw new InvalidElementException( @event.EndId);
 
-                yield return new AddSchemaRelationshipCommand(domainModel as ISchema, @event.RelationshipId, metadata, start, end);
+                yield return new AddSchemaRelationshipCommand(domainModel as ISchema, @event.Id, metadata, start, end);
             }
         }
     }

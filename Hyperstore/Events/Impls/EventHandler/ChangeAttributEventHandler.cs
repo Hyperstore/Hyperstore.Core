@@ -44,12 +44,12 @@ namespace Hyperstore.Modeling.Events
             Contract.Requires(domainModel, "domainModel");
             Contract.Requires(@event, "@event");
 
-            var metadata = domainModel.Store.GetSchemaEntity(@event.SchemaElementId);
-            var mel = domainModel.GetElement(@event.ElementId, metadata);
+            var metadata = domainModel.Store.GetSchemaEntity(@event.SchemaId);
+            var mel = domainModel.GetElement(@event.Id, metadata);
             if (mel == null)
                 yield break;
 
-            var propertyMetadata = domainModel.Store.GetSchemaInfo(@event.SchemaPropertyId) as ISchemaProperty;
+            var propertyMetadata = domainModel.Store.GetSchemaInfo(@event.PropertySchemaId) as ISchemaProperty;
 
             yield return new ChangePropertyValueCommand(mel, propertyMetadata, propertyMetadata.Deserialize(new SerializationContext(propertyMetadata, @event.Value)), @event.Version);
         }

@@ -44,8 +44,8 @@ namespace Hyperstore.Modeling.Events
             Contract.Requires(domainModel, "domainModel");
             Contract.Requires(@event, "@event");
 
-            var metadata = domainModel.Store.GetSchemaRelationship(@event.SchemaRelationshipId);
-            var mel = domainModel.GetRelationship(@event.RelationshipId, metadata);
+            var metadata = domainModel.Store.GetSchemaRelationship(@event.SchemaId);
+            var mel = domainModel.GetRelationship(@event.Id, metadata);
             if (mel != null)
                 yield return new RemoveRelationshipCommand(mel);
         }

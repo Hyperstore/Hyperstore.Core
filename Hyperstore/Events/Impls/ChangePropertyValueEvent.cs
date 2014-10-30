@@ -56,9 +56,6 @@ namespace Hyperstore.Modeling.Events
         /// <param name="schemaElementId">
         ///  The identifier of the schema element.
         /// </param>
-        /// <param name="schemaPropertyId">
-        ///  The identifier of the schema property.
-        /// </param>
         /// <param name="propertyName">
         ///  The name of the property.
         /// </param>
@@ -75,17 +72,15 @@ namespace Hyperstore.Modeling.Events
         ///  The version.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public ChangePropertyValueEvent(string domainModelName, string extensionName, Identity elementId, Identity schemaElementId, Identity schemaPropertyId, string propertyName, string value, string oldValue, int correlationId, long version)
+        public ChangePropertyValueEvent(string domainModelName, string extensionName, Identity elementId, Identity schemaElementId, string propertyName, string value, string oldValue, int correlationId, long version)
                 : base(domainModelName, extensionName, version, correlationId)
         {
             Contract.Requires(elementId, "elementId");
             Contract.Requires(schemaElementId, "schemaElementId");
-            Contract.Requires(schemaPropertyId, "schemaPropertyId");
             Contract.RequiresNotEmpty(propertyName, "propertyName");
 
-            ElementId = elementId;
-            SchemaElementId = schemaElementId;
-            SchemaPropertyId = schemaPropertyId;
+            Id = elementId;
+            SchemaId = schemaElementId;
             PropertyName = propertyName;
             Value = value;
             OldValue = oldValue;
@@ -99,7 +94,7 @@ namespace Hyperstore.Modeling.Events
         ///  The identifier of the element.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity ElementId { get; set; }
+        public Identity Id { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -109,17 +104,7 @@ namespace Hyperstore.Modeling.Events
         ///  The identifier of the schema element.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity SchemaElementId { get; set; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets or sets the identifier of the schema property.
-        /// </summary>
-        /// <value>
-        ///  The identifier of the schema property.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public Identity SchemaPropertyId { get; set; }
+        public Identity SchemaId { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -151,9 +136,6 @@ namespace Hyperstore.Modeling.Events
         ///-------------------------------------------------------------------------------------------------
         public string PropertyName { get; set; }
 
-        internal object InternalValue { get; private set; }
-        internal object InternalOldValue { get; private set; }
-
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Gets the reverse event.
@@ -167,7 +149,7 @@ namespace Hyperstore.Modeling.Events
         ///-------------------------------------------------------------------------------------------------
         public virtual IEvent GetReverseEvent(int correlationId)
         {
-            return new ChangePropertyValueEvent(DomainModel, ExtensionName, ElementId, SchemaElementId, SchemaPropertyId, PropertyName, OldValue, Value, correlationId, Version);
+            return new ChangePropertyValueEvent(Domain, ExtensionName, Id, SchemaId, PropertyName, OldValue, Value, correlationId, Version);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -180,8 +162,14 @@ namespace Hyperstore.Modeling.Events
         ///-------------------------------------------------------------------------------------------------
         public override string ToString()
         {
-            return String.Format("Change {0}.{1} = {2} (V{3})", ElementId, PropertyName, Value, Version);
+            return String.Format("Change {0}.{1} = {2} (V{3})", Id, PropertyName, Value, Version);
         }
+
+        private object _internalValue;
+        private object _internalOldValue;
+
+        internal object GetInternalValue() { return _internalValue; }
+        internal object GetInternalOldValue() { return _internalOldValue; }
 
         /// <summary>
         ///     Used to optimize local value propagation (see SessionTrackingData)
@@ -190,8 +178,8 @@ namespace Hyperstore.Modeling.Events
         /// <param name="oldValue"></param>
         internal void SetInternalValue(object value, object oldValue)
         {
-            InternalValue = value;
-            InternalOldValue = OldValue;
+            _internalValue = value;
+            _internalOldValue = OldValue;
         }
     }
 }

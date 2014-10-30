@@ -93,7 +93,7 @@ namespace Hyperstore.Modeling
                           ReadOnly = cfg.Readonly,
                           ReadOnlyStatus = cfg.Readonly,
                           Current = this,
-                          OriginStoreId = store.Id,
+                          OriginStoreId = cfg.Origin ?? store.Id,
                           Mode = cfg.Mode,
                           SessionId = cfg.SessionId != 0 ? cfg.SessionId : Interlocked.Increment(ref s_sessionIdSequences),
                           Store = store,
@@ -347,13 +347,13 @@ namespace Hyperstore.Modeling
         ///  The identifier of the origin store.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Guid OriginStoreId
+        public string OriginStoreId
         {
             get
             {
                 var ctx = SessionDataContext;
                 if (ctx == null)
-                    return Guid.Empty;
+                    return null;
                 return ctx.OriginStoreId;
             }
         }
@@ -667,14 +667,6 @@ namespace Hyperstore.Modeling
                 infos[key] = value;
         }
 
-        void ISessionInternal.SetOriginStoreId(Guid id)
-        {
-            var ctx = SessionDataContext;
-            if (ctx == null || ctx.Depth == 0)
-                return;
-            ctx.OriginStoreId = id;
-        }
-
         void ISession.SetMode(SessionMode mode)
         {
             var ctx = SessionDataContext;
@@ -755,7 +747,7 @@ namespace Hyperstore.Modeling
             if (SessionDataContext.ReadOnly)
                 throw new ReadOnlyException("Read only session can not be modified");
 
-            @event.IsTopLevelEvent = IsInTopLevelCommandScope();
+            @event.TopEvent = IsInTopLevelCommandScope();
             SessionDataContext.Events.Add(@event);
             SessionDataContext.TrackingData.OnEvent(@event);
 

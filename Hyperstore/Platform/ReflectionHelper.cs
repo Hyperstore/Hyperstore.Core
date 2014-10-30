@@ -54,6 +54,20 @@ namespace Hyperstore.Modeling.Utils
             return sb.ToString();
         }
 
+        internal static IEnumerable<PropertyInfo> GetProperties(Type type)
+        {
+            while(!(type == typeof(Object)))
+            { 
+                var info = type.GetTypeInfo();
+                foreach (var p in info.DeclaredProperties)
+                {
+                    if( p.CanRead)
+                    yield return p;
+                }
+                type = info.BaseType;
+            }
+        }
+
         internal static IEnumerable<ConstructorInfo> GetConstructor(Type type, params Type[] types)
         {
             //var results = from m in type.GetTypeInfo().DeclaredConstructors

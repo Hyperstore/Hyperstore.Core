@@ -36,7 +36,7 @@ namespace Hyperstore.Modeling
         private StoreOptions _options = StoreOptions.None;
         private List<Assembly> _assemblies;
         private ServicesContainer _services = new ServicesContainer();
-        private Guid? _id;
+        private string _id;
 
         private StoreBuilder()
         {
@@ -108,7 +108,7 @@ namespace Hyperstore.Modeling
         ///  A StoreBuilder.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public StoreBuilder WithId(Guid id)
+        public StoreBuilder WithId(string id)
         {
             _id = id;
             return this;

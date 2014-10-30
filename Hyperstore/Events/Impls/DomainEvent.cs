@@ -80,7 +80,7 @@ namespace Hyperstore.Modeling.Events
         {
             Contract.RequiresNotEmpty(domainModel, "domainModel");
 
-            DomainModel = domainModel;
+            Domain = domainModel;
             CorrelationId = correlationId;
             Version = version;
             ExtensionName = extensionName;
@@ -110,7 +110,7 @@ namespace Hyperstore.Modeling.Events
         ///  <c>true</c> if [is top level event]; otherwise, <c>false</c>.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public bool IsTopLevelEvent
+        public bool TopEvent
         {
             [DebuggerStepThrough]
             get;
@@ -142,7 +142,7 @@ namespace Hyperstore.Modeling.Events
         ///  The domain model.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public string DomainModel
+        public string Domain
         {
             [DebuggerStepThrough]
             get;

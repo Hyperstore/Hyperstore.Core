@@ -78,7 +78,7 @@ namespace Hyperstore.Modeling.Messaging
         {
             return (
                     PropagationStrategy == EventPropagationStrategy.All 
-                        || (PropagationStrategy == EventPropagationStrategy.TopLevelOnly && @event.IsTopLevelEvent)
+                        || (PropagationStrategy == EventPropagationStrategy.TopLevelOnly && @event.TopEvent)
                    )
                    && (Filter == null || Filter(@event));
         }

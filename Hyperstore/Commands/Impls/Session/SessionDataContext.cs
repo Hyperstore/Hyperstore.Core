@@ -113,7 +113,7 @@ namespace Hyperstore.Modeling.Commands
         ///  Identifier for the origin store.
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
-        public Guid OriginStoreId;
+        public string OriginStoreId;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

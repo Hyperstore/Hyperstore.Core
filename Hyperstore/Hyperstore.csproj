@@ -119,6 +119,7 @@
     <Compile Include="Platform\IConcurrentQueue.cs" />
     <Compile Include="Platform\IObjectSerializer.cs" />
     <Compile Include="Platform\DefaultCodeMarkerListener.cs" />
+    <Compile Include="Platform\JSonDeserializer.cs" />
     <Compile Include="Platform\PlatformServices.cs" />
     <Compile Include="Platform\ReflectionHelper.cs" />
     <Compile Include="Platform\ConcurrentDictionary.cs" />
@@ -392,7 +393,6 @@
     <Compile Include="Exceptions\SerializableTransactionException.cs" />
     <Compile Include="MemoryStore\TransactionStatus.cs" />
     <Compile Include="Messaging\P2P\Enveloppe.cs" />
-    <Compile Include="Messaging\P2P\ICustomEventSerializer.cs" />
     <Compile Include="Messaging\P2P\Message.cs" />
     <Compile Include="Messaging\EventBus.cs" />
     <Compile Include="Messaging\IEventBus.cs" />

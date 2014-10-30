@@ -48,19 +48,19 @@ namespace Hyperstore.Tests.Commands
             domain.Events.CustomEventRaised.Subscribe(e =>
             {
                 // Il est le seul en top level
-                Assert.True(e.Event.IsTopLevelEvent);
+                Assert.True(e.Event.TopEvent);
                 cx++;
             });
  
             domain.Events.EntityAdded.Subscribe(e =>
             {
-                Assert.False(e.Event.IsTopLevelEvent);
+                Assert.False(e.Event.TopEvent);
                 cx++;
             });
 
             domain.Events.PropertyChanged.Subscribe(e =>
             {
-                Assert.False(e.Event.IsTopLevelEvent);
+                Assert.False(e.Event.TopEvent);
                 cx++;
             });
 
@@ -73,9 +73,9 @@ namespace Hyperstore.Tests.Commands
 
             domain.Events.PropertyChanged.Subscribe(e =>
             {
-                if (e.Event.ElementId == new Identity("Test", "1"))
+                if (e.Event.Id == new Identity("Test", "1"))
                 {
-                    Assert.False(e.Event.IsTopLevelEvent);
+                    Assert.False(e.Event.TopEvent);
                     cx++;
                 }
             });
@@ -100,13 +100,13 @@ namespace Hyperstore.Tests.Commands
             // Abonnements aux events
             domain.Events.EntityRemoved.Subscribe(e =>
             {
-                Assert.True(e.Event.IsTopLevelEvent);
+                Assert.True(e.Event.TopEvent);
                 cx++;
             });
 
             domain.Events.PropertyRemoved.Subscribe(e =>
             {
-                Assert.False(e.Event.IsTopLevelEvent);
+                Assert.False(e.Event.TopEvent);
                 cx++;
             });
 
