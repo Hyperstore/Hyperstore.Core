@@ -21,6 +21,7 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Reflection;
 
 namespace Hyperstore.Modeling.Platform
 {
@@ -34,13 +35,10 @@ namespace Hyperstore.Modeling.Platform
             if (data is string)
                 return (string)data;
 
-            if (data is IModelElement)
-                return Hyperstore.Modeling.Serialization.JSonSerializer.Serialize(data as IModelElement);
-
             var sb = new StringBuilder();
-            if (data is IEvent)
+            if (!data.GetType().GetTypeInfo().IsPrimitive)
             {
-                SerializeEvent((IEvent)data, sb);
+                SerializeObject((IEvent)data, sb);
             }
             else { 
                 SerializeValue(data, sb);
@@ -48,7 +46,7 @@ namespace Hyperstore.Modeling.Platform
             return sb.ToString();
         }
 
-        private void SerializeEvent(IEvent o, StringBuilder sb)
+        private void SerializeObject(object o, StringBuilder sb)
         {
             bool first = true;
             Type type = o.GetType();

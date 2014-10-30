@@ -160,5 +160,27 @@ namespace Hyperstore.Modeling
                 Exception != null ? String.Format("{0} : {1}", Exception.GetType().Name, Exception.Message) : String.Empty
                 );
         }
+
+        public string ToJson()
+        {
+            var json = Platform.PlatformServices.Current.ObjectSerializer;
+            var sb = new System.Text.StringBuilder("{");
+            sb.Append("\"message\":\"");
+            json.Serialize(this.Message);
+            sb.Append("\", \"messageType\":");
+            sb.Append((int)this.MessageType);
+            if( this.PropertyName != null) {
+                sb.Append(",\"propertyName\":\"");
+                json.Serialize(this.PropertyName);
+                sb.Append("\"");
+            }
+            if( this.Element != null) {
+                sb.Append(",\"id\":\"");
+                json.Serialize(this.Element.Id.ToString());
+                sb.Append("\"");
+            }
+            sb.Append("}");
+            return sb.ToString();
+        }
     }
 }
