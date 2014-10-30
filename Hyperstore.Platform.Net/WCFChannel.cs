@@ -155,9 +155,9 @@ namespace Hyperstore.Modeling.Messaging
         ///  A Message.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected override Message SendMessage(string originStoreId, SessionMode mode, int sessionId, IEnumerable<IEvent> events)
+        protected override Message SendMessage(string originStoreId, ISessionInformation session, IEnumerable<IEvent> events)
         {
-            var msg = base.SendMessage(originStoreId, mode, sessionId, events);
+            var msg = base.SendMessage(originStoreId, session, events);
             Channel.ProcessEvents(msg);
             return msg;
         }

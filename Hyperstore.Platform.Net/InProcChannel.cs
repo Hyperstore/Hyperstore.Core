@@ -106,9 +106,9 @@ namespace Hyperstore.Modeling.Messaging
         ///  A Message.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected override Message SendMessage(string originStoreId, SessionMode mode, int sessionId, IEnumerable<IEvent> events)
+        protected override Message SendMessage(string originStoreId, ISessionInformation session, IEnumerable<IEvent> events)
         {
-            EventQueue.Add(new InprocMessage { Mode = mode, OriginStoreId = originStoreId, Events = events.ToList() });
+            EventQueue.Add(new InprocMessage { Mode = session.Mode, OriginStoreId = originStoreId, Events = events.ToList() });
             return null;
         }
 

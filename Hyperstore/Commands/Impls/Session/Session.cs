@@ -85,7 +85,7 @@ namespace Hyperstore.Modeling
                 // _statSessionCount.Incr();
                 
                 // Nouvelle session
-                ctx = new SessionDataContext
+                ctx = new SessionDataContext // TODO optimize memory size
                       {
                           TrackingData = new SessionTrackingData(this),
                           SessionIsolationLevel = cfg.IsolationLevel,
@@ -100,7 +100,8 @@ namespace Hyperstore.Modeling
                           CancellationToken = cfg.CancellationToken,
                           Enlistment = new List<ISessionEnlistmentNotification>(),
                           SessionInfos = new Stack<SessionLocalInfo>(),
-                          TopLevelSession = this
+                          TopLevelSession = this,
+                          DefaultDomainModel = cfg.DefaultDomainModel,
                       };
 
                 SessionDataContext = ctx;
@@ -112,8 +113,9 @@ namespace Hyperstore.Modeling
 
             ctx.SessionInfos.Push(new SessionLocalInfo
                                   {
-                                      DefaultDomainModel = cfg.DefaultDomainModel,
-                                      Mode = cfg.Mode | Mode
+                                      DefaultDomainModel = cfg.DefaultDomainModel ?? ctx.DefaultDomainModel,
+                                      Mode = cfg.Mode | ctx.Mode,
+                                      OriginStoreId = cfg.Origin ?? ctx.OriginStoreId
                                   });
         }
 
@@ -295,8 +297,8 @@ namespace Hyperstore.Modeling
                 var ctx = SessionDataContext;
                 if (ctx == null || ctx.Depth == 0)
                     return null;
-                return ctx.SessionInfos.Peek()
-                        .DefaultDomainModel;
+                
+                return ctx.SessionInfos.Peek().DefaultDomainModel;
             }
         }
 
@@ -354,7 +356,7 @@ namespace Hyperstore.Modeling
                 var ctx = SessionDataContext;
                 if (ctx == null)
                     return null;
-                return ctx.OriginStoreId;
+                return ctx.SessionInfos.Peek().OriginStoreId;
             }
         }
 

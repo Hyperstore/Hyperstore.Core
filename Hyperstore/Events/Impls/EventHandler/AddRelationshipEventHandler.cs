@@ -58,8 +58,8 @@ namespace Hyperstore.Modeling.Events
             if (end == null)
                 throw new InvalidElementException(@event.EndId);
 
-            var metadata = domainModel.Store.GetSchemaRelationship(@event.Id);
-            yield return new AddRelationshipCommand(metadata, start, end, @event.SchemaId);
+            var metadata = domainModel.Store.GetSchemaRelationship(@event.SchemaId);
+            yield return new AddRelationshipCommand(metadata, start, end, @event.Id);
         }
     }
 }

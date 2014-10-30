@@ -66,6 +66,9 @@ namespace Hyperstore.Modeling.Messaging
 
         void IEventsProcessor.ProcessEvents(string origin, SessionMode mode, IEnumerable<IEvent> events)
         {
+            if (origin == _store.Id)
+                return;
+
             ProcessInfo pi;
             pi.Events = events;
             pi.Origin = origin;
@@ -94,14 +97,10 @@ namespace Hyperstore.Modeling.Messaging
 
         private void ProcessEvents(ProcessInfo info)
         {
-            if (info.Origin == _store.Id)
-                return;
-
             var tx = _store.BeginSession(new SessionConfiguration
                                                      {
                                                          IsolationLevel = SessionIsolationLevel.Serializable,
-                                                         Mode = info.Mode,
-                                                         Origin = info.Origin
+                                                         Mode = info.Mode
                                                      });
 
             _store.Trace.WriteTrace(TraceCategory.EventBus, "Process events from {0} for Store {1}", info.Origin, _store.Id);

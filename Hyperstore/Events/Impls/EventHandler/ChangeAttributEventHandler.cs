@@ -49,9 +49,11 @@ namespace Hyperstore.Modeling.Events
             if (mel == null)
                 yield break;
 
-            var propertyMetadata = domainModel.Store.GetSchemaInfo(@event.PropertySchemaId) as ISchemaProperty;
-
-            yield return new ChangePropertyValueCommand(mel, propertyMetadata, propertyMetadata.Deserialize(new SerializationContext(propertyMetadata, @event.Value)), @event.Version);
+            var prop = metadata.GetProperty(@event.PropertyName);
+            if (prop != null)
+            {
+                yield return new ChangePropertyValueCommand(mel, prop, prop.Deserialize(new SerializationContext(prop, @event.Value)), @event.Version);
+            }
         }
     }
 }

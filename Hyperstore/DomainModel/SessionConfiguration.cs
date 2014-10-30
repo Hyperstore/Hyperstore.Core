@@ -175,6 +175,7 @@ namespace Hyperstore.Modeling
             sc.CancellationToken = cfg.CancellationToken;
             sc.SessionId = cfg.SessionId;
             sc.Mode = cfg.Mode | Mode;
+            sc.Origin = cfg.Origin;
 
             // Overridable properties
             sc.DefaultDomainModel = cfg._settings.Get(DomainModelIndex) ? cfg.DefaultDomainModel : DefaultDomainModel;

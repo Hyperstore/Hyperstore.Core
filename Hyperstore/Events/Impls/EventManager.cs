@@ -588,7 +588,7 @@ namespace Hyperstore.Modeling.Events
                             var evt = (AddRelationshipEvent)ev;
                             _relationshipAdded.OnNext(new EventContext<AddRelationshipEvent>(session, evt));
 
-                            var relationshipSchema = session.Store.GetSchemaRelationship(evt.Id, false);
+                            var relationshipSchema = session.Store.GetSchemaRelationship(evt.SchemaId, false);
                             if (relationshipSchema != null && (relationshipSchema.Schema.Behavior & DomainBehavior.Observable) == DomainBehavior.Observable)
                             {
                                 IModelElement mel;

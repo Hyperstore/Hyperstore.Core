@@ -104,7 +104,7 @@ namespace Hyperstore.Modeling
                 Source != null ? a.Event.EndId : a.Event.StartId,
                 Source != null ? a.Event.EndSchemaId : a.Event.StartSchemaId,
                 Source != null ? a.Event.StartId : a.Event.EndId,
-                a.Event.Id,
+                a.Event.SchemaId,
                 NotifyCollectionChangedAction.Add));
 
             relationshipRemovedSubscription = query2.Subscribe(a => Notify(

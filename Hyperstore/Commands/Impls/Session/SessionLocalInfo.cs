@@ -47,5 +47,11 @@ namespace Hyperstore.Modeling.Commands
         ///-------------------------------------------------------------------------------------------------
         public Dictionary<string, object> Infos = new Dictionary<string, object>();
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Identifier for the origin store.
+        /// </summary>
+        ///-------------------------------------------------------------------------------------------------
+        public string OriginStoreId;
     }
 }

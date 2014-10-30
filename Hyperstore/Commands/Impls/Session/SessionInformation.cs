@@ -204,7 +204,7 @@ namespace Hyperstore.Modeling
             Store = session.Store;
             IsReadOnly = session.IsReadOnly;
             Mode = info.Mode;
-            OriginStoreId = session.OriginStoreId;
+            OriginStoreId = info.OriginStoreId;
             SessionId = session.SessionId;
             DefaultDomainModel = info.DefaultDomainModel;
             _contextInfos = info.Infos;

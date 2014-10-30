@@ -141,7 +141,6 @@ namespace Hyperstore.Modeling.Commands
                                                    DomainModel.ExtensionName,
                                                    Element.Id,
                                                    Element.SchemaInfo.Id,
-                                                   SchemaProperty.Id,
                                                    SchemaProperty.Name,
                                                    SchemaProperty.PropertySchema.Serialize(Value),
                                                    SchemaProperty.PropertySchema.Serialize(OldValue),

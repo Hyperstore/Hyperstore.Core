@@ -167,7 +167,7 @@ namespace Hyperstore.Modeling.Events
         ///-------------------------------------------------------------------------------------------------
         public IEvent GetReverseEvent(int correlationId)
         {
-            return new RemoveRelationshipEvent(Domain, ExtensionName, SchemaId, Id, StartId, StartSchemaId, EndId, EndSchemaId, correlationId, Version);
+            return new RemoveRelationshipEvent(Domain, ExtensionName, Id, SchemaId, StartId, StartSchemaId, EndId, EndSchemaId, correlationId, Version);
         }
 
         ///-------------------------------------------------------------------------------------------------

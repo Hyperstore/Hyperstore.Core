@@ -313,7 +313,7 @@ namespace Hyperstore.Modeling
             var tmp = SessionCompleting;
             if (tmp != null)
             {
-                tmp(this, new SessionCompletingEventArgs(session));
+                tmp(this, e);
             }
         }
 

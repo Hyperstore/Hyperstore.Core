@@ -154,7 +154,7 @@ namespace Hyperstore.Modeling.Messaging
 
             if (events.Count > 0)
             {             
-                SendMessage(origin, session.Mode, session.SessionId, events);
+                SendMessage(origin, session, events);
             }
         }
 
@@ -178,11 +178,11 @@ namespace Hyperstore.Modeling.Messaging
         ///  A Message.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected virtual Message SendMessage(string originStoreId, SessionMode mode, int sessionId, IEnumerable<IEvent> events)
+        protected virtual Message SendMessage(string originStoreId, ISessionInformation session, IEnumerable<IEvent> events)
         {
-            var msg = new Message { sessionMode = mode, events = new List<Enveloppe>() };
+            var msg = new Message { sessionMode = session.Mode, events = new List<Enveloppe>() };
             msg.origin = originStoreId;
-            msg.sessionId = sessionId;
+            msg.sessionId = session.SessionId;
             msg.events = events.Select(e => new Enveloppe(e)).ToList();
             return msg;
         }
