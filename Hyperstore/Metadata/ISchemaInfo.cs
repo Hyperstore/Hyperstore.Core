@@ -106,14 +106,11 @@ namespace Hyperstore.Modeling
         /// <param name="value">
         ///  Value to serialized.
         /// </param>
-        /// <param name="serializer">
-        ///  (Optional) the serializer.
-        /// </param>
         /// <returns>
         ///  A string.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        string Serialize(object value, Hyperstore.Modeling.IJsonSerializer serializer=null);
+        object Serialize(object value);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

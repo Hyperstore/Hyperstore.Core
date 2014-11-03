@@ -142,8 +142,8 @@ namespace Hyperstore.Modeling.Commands
                                                    Element.Id,
                                                    Element.SchemaInfo.Id,
                                                    SchemaProperty.Name,
-                                                   SchemaProperty.PropertySchema.Serialize(Value),
-                                                   SchemaProperty.PropertySchema.Serialize(OldValue),
+                                                   Value,
+                                                   OldValue,
                                                    context.CurrentSession.SessionId,
                                                    Version.Value);
             evt.SetInternalValue(Value, OldValue);

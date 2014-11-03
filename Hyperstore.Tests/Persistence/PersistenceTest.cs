@@ -203,32 +203,15 @@ namespace Hyperstore.Tests.Commands
 
             var sw = new Stopwatch();
             sw.Start();
-            var size1 = 0L;
-            for (int i = 0; i < 40; i++)
-            {
-                using (var writer = new FileStream("test2.xml", FileMode.Create))
-                {
-                    var domain2 = await store.DomainModels.New().CreateAsync("Test2");
-                    var ser = new XmlDomainModelSerializer();
-                    await ser.Serialize(domain2, writer, XmlSerializationOptions.Elements);
-                    store.DomainModels.Unload(domain2);
-                    size1 += writer.Length;
-                }
-            }
-            var time1 = sw.ElapsedMilliseconds;
 
-            sw.Restart();
-            var size2 = 0L;
             for (int i = 0; i < 40; i++)
             {
                 var domain2 = await store.DomainModels.New().CreateAsync("Test2");
                 var text = Hyperstore.Modeling.Serialization.HyperstoreSerializer.Serialize(domain2);
                 store.DomainModels.Unload(domain2);
-                size2 += text.Length;
             }
             var time2 = sw.ElapsedMilliseconds;
-            Assert.True(time2 < time1, String.Format("XmlDomainSerializer should have an execution time {0} greater than XmlSerializer {1}", time1, time2));
-            Assert.True(size2 < size1, String.Format("XmlDomainSerializer should have a generated size file {0} greater than XmlSerializer {1}", size1, size2));
+            Assert.True(time2 < 800);
         }
 
 

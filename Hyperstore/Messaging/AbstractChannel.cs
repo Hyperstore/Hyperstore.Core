@@ -39,6 +39,13 @@ namespace Hyperstore.Modeling.Messaging
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
+        ///  Gets or sets a value indicating whether the channel operates in routing mode (aka resends all events)
+        /// </summary>
+        ///-------------------------------------------------------------------------------------------------
+        public bool RoutingMode { get; set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
         ///  Gets the event bus.
         /// </summary>
         /// <value>
@@ -135,8 +142,8 @@ namespace Hyperstore.Modeling.Messaging
                 return;
 
             var origin = session.OriginStoreId;
-            if (origin != Store.Id)
-                return;
+            //if (origin != Store.Id)
+            //    return;
 
             bool first = true;
             List<IEvent> events = new List<IEvent>();

@@ -38,49 +38,6 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         public IdentityPrimitive(ISchema domainModel)
             : base(domainModel, typeof(Identity))
         {
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  override this instance to the given stream.
-        /// </summary>
-        /// <param name="ctx">
-        ///  The context.
-        /// </param>
-        /// <returns>
-        ///  An object.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override object Deserialize(SerializationContext ctx)
-        {
-            DebugContract.Requires(ctx);
-
-            if (ctx.Value == null)
-                return null;
-            if (ctx.Value is Identity)
-                return ctx.Value;
-            return Identity.Parse((string) ctx.Value);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  override this instance to the given stream.
-        /// </summary>
-        /// <param name="data">
-        ///  The data.
-        /// </param>
-        /// <param name="serializer">
-        ///  The serializer.
-        /// </param>
-        /// <returns>
-        ///  A string.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override string Serialize(object data, IJsonSerializer serializer)
-        {
-            if (data == null)
-                return null;
-            return data.ToString();
-        }
+        } 
     }
 }

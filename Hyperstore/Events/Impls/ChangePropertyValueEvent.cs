@@ -72,7 +72,7 @@ namespace Hyperstore.Modeling.Events
         ///  The version.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public ChangePropertyValueEvent(string domainModelName, string extensionName, Identity elementId, Identity schemaElementId, string propertyName, string value, string oldValue, int correlationId, long version)
+        public ChangePropertyValueEvent(string domainModelName, string extensionName, Identity elementId, Identity schemaElementId, string propertyName, object value, object oldValue, int correlationId, long version)
                 : base(domainModelName, extensionName, version, correlationId)
         {
             Contract.Requires(elementId, "elementId");
@@ -114,7 +114,7 @@ namespace Hyperstore.Modeling.Events
         ///  The value.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public string Value { get; set; }
+        public object Value { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -124,7 +124,7 @@ namespace Hyperstore.Modeling.Events
         ///  The old value.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public string OldValue { get; set; }
+        public object OldValue { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

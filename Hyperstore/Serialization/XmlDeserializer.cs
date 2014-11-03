@@ -32,7 +32,7 @@ namespace Hyperstore.Modeling.Serialization
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  A son serialization settings.
+    ///  A xml serialization settings.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     public class XmlDeserializationSettings
@@ -69,7 +69,7 @@ namespace Hyperstore.Modeling.Serialization
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  A son domain model serializer.
+    ///  A xml domain model serializer.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     public partial class XmlDeserializer
@@ -84,7 +84,7 @@ namespace Hyperstore.Modeling.Serialization
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  true this instance to the given stream.
+        ///  Deserialize a domain in xml
         /// </summary>
         /// <param name="stream">
         ///  The stream.
@@ -275,9 +275,10 @@ namespace Hyperstore.Modeling.Serialization
                     var vElem = ReadNextElement();
                     if (vElem != "value")
                         throw new XmlSerializationException(String.Format("Value expected for property {1} of element {1}", name, element.Id));
-                    
+
                     _reader.Read();
-                    var cmd = new Hyperstore.Modeling.Commands.ChangePropertyValueCommand(element, prop, prop.PropertySchema.Deserialize(new SerializationContext(prop, _reader.Value)));
+                    var val = PlatformServices.Current.ObjectSerializer.Deserialize(_reader.Value, null);
+                    var cmd = new Hyperstore.Modeling.Commands.ChangePropertyValueCommand(element, prop, prop.PropertySchema.Deserialize(new SerializationContext(prop, val)));
                     Session.Current.Execute(cmd);
                 }
             }

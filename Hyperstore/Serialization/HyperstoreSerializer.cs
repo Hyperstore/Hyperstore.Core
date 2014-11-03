@@ -99,6 +99,8 @@ namespace Hyperstore.Modeling.Serialization
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
     ///  Hyperstore serializer. Allow to serialize a domain or a list of elements in XML or JSon format.
+    ///  Serialize domain as a graph with entity and separate relationshsips.
+    ///  Use this serialize to communicate with others hyperstore instance.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     public partial class HyperstoreSerializer
@@ -258,7 +260,7 @@ namespace Hyperstore.Modeling.Serialization
                 var value = element.GetPropertyValue(prop);
                 if (value.HasValue)
                 {
-                    _writer.PushProperty("property", prop.Name, prop.Serialize(value.Value, _serializer));
+                    _writer.PushProperty("property", prop.Name, Platform.PlatformServices.Current.ObjectSerializer.Serialize( prop.Serialize(value.Value)));
                 }
             }
         }

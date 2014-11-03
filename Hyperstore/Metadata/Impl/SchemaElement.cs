@@ -104,5 +104,54 @@ namespace Hyperstore.Modeling.Metadata
         {
             get { return String.Format("Name={0}, Id={1}", Name, ((IModelElement) this).Id); }
         }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Deserializes an element from the specified context.
+        /// </summary>
+        /// <exception cref="Exception">
+        ///  Thrown when an exception error condition occurs.
+        /// </exception>
+        /// <param name="ctx">
+        ///  Serialization context.
+        /// </param>
+        /// <returns>
+        ///  An object.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        protected override object Deserialize(SerializationContext ctx)
+        {
+            Contract.Requires(ctx, "ctx");
+            var upd = ctx.DomainModel as IUpdatableDomainModel;
+            if (upd == null)
+                throw new ReadOnlyException(string.Format(ExceptionMessages.DomainModelIsReadOnlyCantCreateElementFormat, ctx.Id));
+
+            var mel = upd.ModelElementFactory.InstanciateModelElement(ctx.Schema, ImplementedType ?? typeof(DynamicModelEntity));
+            var element = mel as ISerializableModelElement;
+            if (element != null)
+            {
+                var c = ctx.Schema as ISchemaElement;
+                Debug.Assert(c != null);
+                element.OnDeserializing(c, ctx.DomainModel, ctx.Id.Key, ctx.StartId, ctx.EndId, ctx.EndSchemaId);
+            }
+
+            return mel;
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Serializes the specified data.
+        /// </summary>
+        /// <param name="data">
+        ///  The data.
+        /// </param>
+        /// <returns>
+        ///  A string.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        protected override object Serialize(object data)
+        {
+            return null;
+        }
     }
 }

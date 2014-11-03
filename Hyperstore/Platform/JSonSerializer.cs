@@ -30,13 +30,10 @@ namespace Hyperstore.Modeling.Platform
         public string Serialize(object data)
         {
             if (data == null)
-                return null;
-
-            if (data is string)
-                return (string)data;
+                return "null";
 
             var sb = new StringBuilder();
-            if (!data.GetType().GetTypeInfo().IsPrimitive)
+            if (!(data is string || data.GetType().GetTypeInfo().IsPrimitive))
             {
                 SerializeObject((IEvent)data, sb);
             }

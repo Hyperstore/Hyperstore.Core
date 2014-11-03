@@ -349,6 +349,9 @@ namespace Hyperstore.Modeling.Platform
                 {
                     if (prop.PropertyType == typeof(Identity))
                         value = Identity.Parse((string)value);
+                    else if (prop.PropertyType == typeof(string))
+                        value = value.ToString();
+
                     prop.SetValue(obj, value);
                 }
                 if (lexer.Current.Kind == TokenKind.Comma)

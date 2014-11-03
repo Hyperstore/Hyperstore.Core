@@ -18,17 +18,17 @@ namespace Hyperstore.XTests
         {
 
         }
-        protected override string Serialize(object data, IJsonSerializer serializer)
+        protected override object Serialize(object data)
         {
-            if (data == null)
-                return null;
-            return ((CultureInfo)data).DisplayName;
+            var c = data as CultureInfo;
+            return c == null ? null : c.DisplayName;
         }
 
         protected override object Deserialize(SerializationContext ctx)
         {
             if (ctx.Value == null)
-                return DefaultValue;
+                return null;
+
             return new CultureInfo((string)ctx.Value);
         }
     }

@@ -68,6 +68,8 @@ namespace Hyperstore.Tests.Commands
         [Fact]
         public async Task EventLevel()
         {
+            Hyperstore.Modeling.Metadata.PrimitivesSchema.Raz();
+
             var store = await StoreBuilder.New().CreateAsync();
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test"); 

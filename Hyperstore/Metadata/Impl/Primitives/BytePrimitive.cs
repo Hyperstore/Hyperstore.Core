@@ -68,29 +68,10 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///-------------------------------------------------------------------------------------------------
         public override object Deserialize(SerializationContext ctx)
         {
-            return DeserializeValue(ctx);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Deserialize value.
-        /// </summary>
-        /// <param name="ctx">
-        ///  The context.
-        /// </param>
-        /// <returns>
-        ///  An object.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public static object DeserializeValue(SerializationContext ctx)
-        {
             DebugContract.Requires(ctx);
 
             if (ctx.Value == null)
-                return false;
-
-            if (ctx.Value is Byte)
-                return ctx.Value;
+                return '\0';
 
             return Convert.FromBase64String((string)ctx.Value)[0];
         }
@@ -109,23 +90,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  A string.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public override string Serialize(object data, IJsonSerializer serializer)
-        {
-            return SerializeValue(data);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Serialize value.
-        /// </summary>
-        /// <param name="data">
-        ///  The data.
-        /// </param>
-        /// <returns>
-        ///  A string.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public static string SerializeValue(object data)
+        public override object Serialize(object data)
         {
             if (data == null)
                 return null;

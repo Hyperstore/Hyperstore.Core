@@ -30,6 +30,8 @@ namespace Hyperstore.Modeling.Metadata.Primitives
     ///-------------------------------------------------------------------------------------------------
     public sealed class ByteArrayPrimitive : PrimitiveMetaValue
     {
+        private static Byte[] Empty = new Byte[0];
+
         #pragma warning disable 0628 // Hyperstore deserialization need a protected parameterless constructeur
 
         ///-------------------------------------------------------------------------------------------------
@@ -68,29 +70,10 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///-------------------------------------------------------------------------------------------------
         public override object Deserialize(SerializationContext ctx)
         {
-            return DeserializeValue(ctx);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Deserialize value.
-        /// </summary>
-        /// <param name="ctx">
-        ///  The context.
-        /// </param>
-        /// <returns>
-        ///  An object.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public static object DeserializeValue(SerializationContext ctx)
-        {
             DebugContract.Requires(ctx);
 
             if (ctx.Value == null)
-                return false;
-
-            if (ctx.Value is Byte)
-                return ctx.Value;
+                return Empty;
 
             return Convert.FromBase64String((string)ctx.Value);
         }
@@ -102,30 +85,11 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         /// <param name="data">
         ///  The data.
         /// </param>
-        /// <param name="serializer">
-        ///  The serializer.
-        /// </param>
         /// <returns>
         ///  A string.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public override string Serialize(object data, IJsonSerializer serializer)
-        {
-            return SerializeValue(data);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Serialize value.
-        /// </summary>
-        /// <param name="data">
-        ///  The data.
-        /// </param>
-        /// <returns>
-        ///  A string.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public static string SerializeValue(object data)
+        public override object Serialize(object data)
         {
             if (data == null)
                 return null;

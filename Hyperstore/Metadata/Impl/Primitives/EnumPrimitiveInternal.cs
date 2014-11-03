@@ -42,48 +42,6 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         public EnumPrimitiveInternal(ISchema schema, Type tenum)
             : base(schema, tenum)
         {
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Serializes the specified data.
-        /// </summary>
-        /// <param name="mel">
-        ///  The data.
-        /// </param>
-        /// <param name="serializer">
-        ///  The serializer.
-        /// </param>
-        /// <returns>
-        ///  A string.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override string Serialize(object mel, IJsonSerializer serializer)
-        {
-            return mel != null ? ((Enum)mel).ToString("F") : null;
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Deserializes an element from the specified context.
-        /// </summary>
-        /// <param name="ctx">
-        ///  Serialization context.
-        /// </param>
-        /// <returns>
-        ///  An object.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override object Deserialize(SerializationContext ctx)
-        {
-            DebugContract.Requires(ctx);
-            if (ctx.Value == null)
-                return DefaultValue;
-
-            if (ctx.Value.GetType() == ImplementedType)
-                return ctx.Value;
-
-            return Enum.Parse(ImplementedType, ctx.Value.ToString());
-        }
+        }  
     }
 }

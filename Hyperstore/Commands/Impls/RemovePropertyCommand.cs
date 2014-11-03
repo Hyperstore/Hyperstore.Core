@@ -138,7 +138,7 @@ namespace Hyperstore.Modeling.Commands
                 {
                     OldValue = pv.Value;
                     OldVersion = pv.CurrentVersion;
-                    return new RemovePropertyEvent(DomainModel.Name, DomainModel.ExtensionName, ElementId, SchemaElement.Id, SchemaProperty.Name, SchemaProperty.PropertySchema.Serialize(OldValue), context.CurrentSession.SessionId, OldVersion);
+                    return new RemovePropertyEvent(DomainModel.Name, DomainModel.ExtensionName, ElementId, SchemaElement.Id, SchemaProperty.Name, OldValue, context.CurrentSession.SessionId, OldVersion);
                 }
             }
             return null;

@@ -116,7 +116,6 @@
     <Compile Include="Model\TestBase.cs" />
     <Compile Include="Model\TestDomainModel.cs" />
     <Compile Include="Metadata\PrimitivesTest.cs" />
-    <Compile Include="Persistence\JSonDeserialization.cs" />
     <Compile Include="Persistence\JSonSerialization.cs" />
     <Compile Include="Persistence\PersistenceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

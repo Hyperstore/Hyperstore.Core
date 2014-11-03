@@ -253,16 +253,13 @@ namespace Hyperstore.Modeling.Metadata
         /// <param name="data">
         ///  The data.
         /// </param>
-        /// <param name="serializer">
-        ///  The serializer.
-        /// </param>
         /// <returns>
         ///  A string.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected override string Serialize(object data, IJsonSerializer serializer=null)
+        protected override object Serialize(object data)
         {
-            return PropertySchema.Serialize(data, serializer);
+            return PropertySchema.Serialize(data);
         }
 
         ///-------------------------------------------------------------------------------------------------

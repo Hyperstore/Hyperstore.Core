@@ -217,14 +217,11 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         /// <param name="data">
         ///  The data.
         /// </param>
-        /// <param name="serializer">
-        ///  The serializer.
-        /// </param>
         /// <returns>
         ///  A string.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual string Serialize(object data, IJsonSerializer serializer)
+        public virtual object Serialize(object data)
         {
             if (data == null)
                 return null;
@@ -233,7 +230,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             if (mel == null)
                 throw new HyperstoreException(ExceptionMessages.InvalidClassSerialization);
 
-            return (serializer ?? PlatformServices.Current.ObjectSerializer).Serialize(mel.Id);
+            return mel.Id;
         }
 
         ///-------------------------------------------------------------------------------------------------

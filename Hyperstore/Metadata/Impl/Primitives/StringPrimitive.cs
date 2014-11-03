@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 using System;
 namespace Hyperstore.Modeling.Metadata.Primitives
 {
@@ -25,7 +25,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
     ///-------------------------------------------------------------------------------------------------
     public sealed class StringPrimitive : PrimitiveMetaValue
     {
-        #pragma warning disable 0628 // Hyperstore deserialization need a protected parameterless constructeur
+#pragma warning disable 0628 // Hyperstore deserialization need a protected parameterless constructeur
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -35,7 +35,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         protected StringPrimitive()
         {
         }
-        #pragma warning restore 0628
+#pragma warning restore 0628
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -49,86 +49,6 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             : base(schema, typeof(string))
         {
             DebugContract.Requires(schema, "schema");
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  true this instance to the given stream.
-        /// </summary>
-        /// <param name="ctx">
-        ///  The context.
-        /// </param>
-        /// <returns>
-        ///  An object.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override object Deserialize(SerializationContext ctx)
-        {
-            return DeserializeValue(ctx);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Deserialize value.
-        /// </summary>
-        /// <param name="ctx">
-        ///  The context.
-        /// </param>
-        /// <returns>
-        ///  An object.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public static object DeserializeValue(SerializationContext ctx)
-        {
-            DebugContract.Requires(ctx);
-
-            var str = ctx.Value as string;
-            if (str == null || str.Length == 0)
-                return null;
-
-            if (str[0] == '"')
-                return str.Substring(1, str.Length - 2).Replace(@"\""", "\"");
-
-            return str.Replace(@"\""", "\"");
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  true this instance to the given stream.
-        /// </summary>
-        /// <param name="data">
-        ///  The data.
-        /// </param>
-        /// <param name="serializer">
-        ///  The serializer.
-        /// </param>
-        /// <returns>
-        ///  A string.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override string Serialize(object data, IJsonSerializer serializer)
-        {
-            return SerializeValue(data);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Serialize value.
-        /// </summary>
-        /// <param name="data">
-        ///  The data.
-        /// </param>
-        /// <returns>
-        ///  A string.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public static string SerializeValue(object data)
-        {
-            var str = data as string;
-            if (str == null)
-                return null;
-
-            return String.Format("\"{0}\"", str.Replace("\"", @"\"""));
-        }
+        } 
     }
 }

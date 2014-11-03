@@ -35,19 +35,47 @@ namespace Hyperstore.Tests.Model
 
     public class EmailSchema : Hyperstore.Modeling.Metadata.SchemaValueObject<string>, ICheckValueObjectConstraint<string>
     {
+        private ISchemaInfo _underlyingSchema;
+        private object _defautValue;
+        private bool _defaultInitialized;
+
         public EmailSchema(ISchema schema)
             : base(schema)
+        {            
+        }
+
+        protected override void Initialize(ISchemaElement schemaElement, IDomainModel domainModel)
         {
+            base.Initialize(schemaElement, domainModel);
+            _underlyingSchema = domainModel.Store.GetSchemaInfo<string>();
         }
 
         protected override object Deserialize(SerializationContext ctx)
         {
-            return Hyperstore.Modeling.Metadata.Primitives.StringPrimitive.DeserializeValue(ctx);
+            return _underlyingSchema.Deserialize( ctx );
         }
 
-        protected override string Serialize(object data, IJsonSerializer serializer)
+        protected override object Serialize(object data)
         {
-            return Hyperstore.Modeling.Metadata.Primitives.StringPrimitive.SerializeValue(data);
+            return _underlyingSchema.Serialize(data);
+        }
+
+        protected override object DefaultValue
+        {
+            get
+            {
+                if (!_defaultInitialized)
+                {
+                    _defautValue = _underlyingSchema.DefaultValue;
+                    _defaultInitialized = true;
+                }
+                return _defautValue;
+            }
+            set
+            {
+                _defaultInitialized = true;
+                _defautValue = value;
+            }
         }
 
         public void ExecuteConstraint(string value, string oldValue, ConstraintContext ctx)

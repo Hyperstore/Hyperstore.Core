@@ -315,21 +315,7 @@ namespace Hyperstore.Modeling.Metadata
         ///-------------------------------------------------------------------------------------------------
         protected virtual object Deserialize(SerializationContext ctx)
         {
-            Contract.Requires(ctx, "ctx");
-            var upd = ctx.DomainModel as IUpdatableDomainModel;
-            if (upd == null)
-                throw new ReadOnlyException(string.Format(ExceptionMessages.DomainModelIsReadOnlyCantCreateElementFormat, ctx.Id));
-
-            var mel = upd.ModelElementFactory.InstanciateModelElement(ctx.Schema, ImplementedType ?? typeof(DynamicModelEntity));
-            var element = mel as ISerializableModelElement;
-            if (element != null)
-            {
-                var c = ctx.Schema as ISchemaElement;
-                Debug.Assert(c != null);
-                element.OnDeserializing(c, ctx.DomainModel, ctx.Id.Key, ctx.StartId, ctx.EndId, ctx.EndSchemaId);
-            }
-
-            return mel;
+            return ctx.Value;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -339,16 +325,13 @@ namespace Hyperstore.Modeling.Metadata
         /// <param name="data">
         ///  The data.
         /// </param>
-        /// <param name="serializer">
-        ///  The serializer.
-        /// </param>
         /// <returns>
         ///  A string.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected virtual string Serialize(object data, IJsonSerializer serializer)
+        protected virtual object Serialize(object data)
         {
-            return null;
+            return data;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -659,9 +642,9 @@ namespace Hyperstore.Modeling.Metadata
             return Deserialize(ctx);
         }
 
-        string ISchemaInfo.Serialize(object value, IJsonSerializer serializer)
+        object ISchemaInfo.Serialize(object value)
         {
-            return Serialize(value, serializer);
+            return Serialize(value);
         }
 
         bool ISchemaInfo.IsA(ISchemaInfo metaClass)
@@ -687,17 +670,5 @@ namespace Hyperstore.Modeling.Metadata
             throw new ReadOnlyException(ExceptionMessages.CantRemoveSchemaElementSchemaIsImmutable);
         }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the JSON serializer.
-        /// </summary>
-        /// <value>
-        ///  The JSON serializer.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        protected IJsonSerializer JsonSerializer
-        {
-            get { return PlatformServices.Current.ObjectSerializer; }
-        }
     }
 }

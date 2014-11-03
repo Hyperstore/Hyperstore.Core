@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -93,6 +93,11 @@ namespace Hyperstore.Modeling.Metadata
         public override void Dispose()
         {
             base.Dispose();
+            Raz();
+        }
+
+        internal static void Raz()
+        {
             StringSchema = null;
             BooleanSchema = null;
             DateTimeSchema = null;
@@ -102,7 +107,7 @@ namespace Hyperstore.Modeling.Metadata
             UInt16Schema = null;
             UInt32Schema = null;
             UInt64Schema = null;
-            Int16Schema = null; 
+            Int16Schema = null;
             Int32Schema = null;
             Int64Schema = null;
             DoubleSchema = null;
@@ -123,7 +128,6 @@ namespace Hyperstore.Modeling.Metadata
             SchemaElementHasPropertiesSchema = null;
             SchemaElementReferencesSuperElementSchema = null;
             SchemaPropertyReferencesSchemaEntitySchema = null;
-
         }
 
         ///-------------------------------------------------------------------------------------------------

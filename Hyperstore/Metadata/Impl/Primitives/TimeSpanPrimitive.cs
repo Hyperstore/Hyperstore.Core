@@ -70,18 +70,8 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///-------------------------------------------------------------------------------------------------
         public override object Deserialize(SerializationContext ctx)
         {
-            return DeserializeValue(ctx);
-        }
-
-        private static object DeserializeValue(SerializationContext ctx)
-        {
             DebugContract.Requires(ctx);
-
-            if (ctx.Value == null)
-                return default(TimeSpan);
-            if (ctx.Value is TimeSpan)
-                return ctx.Value;
-            return TimeSpan.Parse((string)ctx.Value, CultureInfo.InvariantCulture);
+            return new TimeSpan((long)ctx.Value);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -98,27 +88,13 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  A string.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public override string Serialize(object data, IJsonSerializer serializer)
-        {
-            return SerializeValue(data);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Serialize value.
-        /// </summary>
-        /// <param name="data">
-        ///  The data.
-        /// </param>
-        /// <returns>
-        ///  A string.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public static string SerializeValue(object data)
+        public override object Serialize(object data)
         {
             if (data == null)
                 return null;
-            return ((TimeSpan)data).ToString(null, CultureInfo.InvariantCulture);
+
+            return ((TimeSpan)data).Ticks;
+
         }
     }
 }

@@ -42,53 +42,5 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             : base(domainModel, typeof(Cardinality))
         {
         }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  override this instance to the given stream.
-        /// </summary>
-        /// <exception cref="SerializationException">
-        ///  Thrown when a Serialization error condition occurs.
-        /// </exception>
-        /// <param name="ctx">
-        ///  The context.
-        /// </param>
-        /// <returns>
-        ///  An object.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override object Deserialize(SerializationContext ctx)
-        {
-            DebugContract.Requires(ctx);
-
-            if (ctx.Value == null)
-                throw new SerializationException("RelationshipType cannot be null");
-
-            if (ctx.Value is Cardinality)
-                return ctx.Value;
-
-            return Enum.Parse(typeof(Cardinality), (string)ctx.Value);
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  override this instance to the given stream.
-        /// </summary>
-        /// <param name="data">
-        ///  The data.
-        /// </param>
-        /// <param name="serializer">
-        ///  The serializer.
-        /// </param>
-        /// <returns>
-        ///  A string.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public override string Serialize(object data, IJsonSerializer serializer)
-        {
-            if (data == null)
-                return null;
-            return ((Cardinality)data).ToString();
-        }
     }
 }

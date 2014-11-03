@@ -72,7 +72,7 @@ namespace Hyperstore.Modeling.Events
         ///  The version.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public RemovePropertyEvent(string domainModelName, string extensionName, Identity ownerId, Identity schemaElementId, string propertyName, string oldValue, int correlationId, long version)
+        public RemovePropertyEvent(string domainModelName, string extensionName, Identity ownerId, Identity schemaElementId, string propertyName, object oldValue, int correlationId, long version)
             : base(domainModelName, extensionName, version, correlationId)
         {
             Contract.Requires(ownerId, "ownerId");
@@ -123,7 +123,7 @@ namespace Hyperstore.Modeling.Events
         ///  The old value.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public string OldValue { get; set; }
+        public object OldValue { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

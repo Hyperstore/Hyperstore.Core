@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 using Hyperstore.Modeling.Platform;
 using Hyperstore.Modeling.Traversal;
 using System;
@@ -122,7 +122,7 @@ namespace Hyperstore.Modeling.Serialization
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  A Json domain model serializer.
+    ///  A Json domain model serializer. 
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     public class JSonSerializer
@@ -177,7 +177,7 @@ namespace Hyperstore.Modeling.Serialization
             using (var sw = new StreamWriter(stream))
             {
                 var ser = new JSonSerializer(sw, new JSonSerializationSettings { Options = option });
-                ser.Serialize( domain.GetElements());
+                ser.Serialize(domain.GetElements());
             }
         }
 
@@ -398,24 +398,24 @@ namespace Hyperstore.Modeling.Serialization
 
         private void Write(string text, bool indent = true)
         {
-             WriteIndent(indent);
-             _writer.Write(text);
+            WriteIndent(indent);
+            _writer.Write(text);
         }
 
         private void Write(char ch, bool indent = false)
         {
-             WriteIndent(indent);
-             _writer.Write(ch);
+            WriteIndent(indent);
+            _writer.Write(ch);
         }
 
         private void WriteIndent(bool indent)
         {
             if (HasOption(JSonSerializationOption.Indent))
             {
-                 _writer.WriteLine();
+                _writer.WriteLine();
                 for (int i = 0; i < _depth * 2; i++)
                 {
-                     _writer.Write(' ');
+                    _writer.Write(' ');
                 }
             }
         }
@@ -462,7 +462,7 @@ namespace Hyperstore.Modeling.Serialization
                 var value = element.GetPropertyValue(prop);
                 if (value.HasValue)
                 {
-                    WriteKeyValue(prop.Name, prop.Serialize(value.Value, _serializer), insertComma);
+                    WriteKeyValue(prop.Name, Platform.PlatformServices.Current.ObjectSerializer.Serialize( prop.Serialize(value.Value)), insertComma);
                     insertComma = true;
                 }
             }

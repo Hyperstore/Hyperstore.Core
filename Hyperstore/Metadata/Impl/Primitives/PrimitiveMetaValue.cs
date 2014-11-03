@@ -55,5 +55,47 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             : base(domainModel, implementedType, PrimitivesSchema.SchemaValueObjectSchema)
         {
         }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  override this instance to the given stream.
+        /// </summary>
+        /// <param name="ctx">
+        ///  The context.
+        /// </param>
+        /// <returns>
+        ///  An object.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        public override object Deserialize(SerializationContext ctx)
+        {
+            DebugContract.Requires(ctx);
+
+            if (ctx.Value == null)
+                return false;
+
+            return ctx.Value;
+        }
+
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  override this instance to the given stream.
+        /// </summary>
+        /// <param name="data">
+        ///  The data.
+        /// </param>
+        /// <param name="serializer">
+        ///  The serializer.
+        /// </param>
+        /// <returns>
+        ///  An object.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
+        public override object Serialize(object data)
+        {
+            return data;
+        }
+
     }
 }

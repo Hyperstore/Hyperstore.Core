@@ -59,8 +59,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
 
             if (ctx.Value == null)
                 return null;
-            if (ctx.Value is Type)
-                return ctx.Value;
+
             return Type.GetType((string)ctx.Value, false);
         }
 
@@ -78,7 +77,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  A string.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public override string Serialize(object data, IJsonSerializer serializer)
+        public override object Serialize(object data)
         {
             return data != null ? Hyperstore.Modeling.Utils.ReflectionHelper.GetNameWithSimpleAssemblyName(((Type)data)) : null;
         }

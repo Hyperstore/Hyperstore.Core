@@ -400,15 +400,11 @@
     <Compile Include="Messaging\EventProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\ISerializerWriter.cs" />
-    <Compile Include="Serialization\JSonDeserializer.cs" />
-    <Compile Include="Serialization\JsonReader.cs" />
     <Compile Include="Serialization\JsonWriter.cs" />
     <Compile Include="Serialization\SerializerWriter.cs" />
     <Compile Include="Serialization\XmlDeserializer.cs" />
-    <Compile Include="Serialization\XmlSerializer.cs" />
+    <Compile Include="Serialization\HyperstoreSerializer.cs" />
     <Compile Include="Serialization\JSonSerializer.cs" />
-    <Compile Include="Serialization\XmlDomainModelSerializer.cs" />
-    <Compile Include="Serialization\SerializationOption.cs" />
     <Compile Include="Utils\CompletedTask.cs" />
     <Compile Include="Utils\DebugHyperstoreTrace.cs" />
     <Compile Include="Platform\Dispatcher.cs" />
