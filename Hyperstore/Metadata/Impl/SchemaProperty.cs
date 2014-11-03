@@ -83,7 +83,7 @@ namespace Hyperstore.Modeling.Metadata
         ///-------------------------------------------------------------------------------------------------
         protected override ISchemaElement DefaultSuperClass
         {
-            get { return PrimitivesSchema.SchemaPropertySchema; }
+            get { return Schema.Store.PrimitivesSchema.SchemaPropertySchema; }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -164,7 +164,7 @@ namespace Hyperstore.Modeling.Metadata
             //if (InvalidPropertyNames.Any(p => String.Compare(p, propertyName, StringComparison.OrdinalIgnoreCase) == 0))
             //    throw new Exception(ExceptionMessages.InvalidPropertyNameCantBeAPropertyOfIModelElement);
 
-            ConstructInternal(owner.Schema, implementedType ?? typeof(SchemaProperty), owner.Id.CreateMetaPropertyIdentity(propertyName), propertyName, null, PrimitivesSchema.SchemaPropertySchema,
+            ConstructInternal(owner.Schema, implementedType ?? typeof(SchemaProperty), owner.Id.CreateMetaPropertyIdentity(propertyName), propertyName, null, owner.Schema.Store.PrimitivesSchema.SchemaPropertySchema,
                     (dm, melId, m) => new AddSchemaPropertyCommand(dm as ISchema, melId, (ISchemaEntity)m));
 
             // Attention ici toutes les propriétés doivent avoir été déclarées sous peine de rentrer dans une bouble infini
@@ -193,7 +193,7 @@ namespace Hyperstore.Modeling.Metadata
         protected override void Initialize(ISchemaElement schemaElement, IDomainModel domainModel)
         {
             base.Initialize(schemaElement, domainModel);
-            _propertyMetadataReference = new ReferenceHandler(this, PrimitivesSchema.SchemaPropertyReferencesSchemaEntitySchema);
+            _propertyMetadataReference = new ReferenceHandler(this, Schema.Store.PrimitivesSchema.SchemaPropertyReferencesSchemaEntitySchema);
             _defaultValueProperty = ((IModelElement)this).SchemaInfo.GetProperty("DefaultValue");
         }
 

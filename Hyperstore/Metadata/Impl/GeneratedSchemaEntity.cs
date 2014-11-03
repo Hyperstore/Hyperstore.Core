@@ -24,8 +24,8 @@ namespace Hyperstore.Modeling.Metadata
 {
     internal class GeneratedSchemaEntity : SchemaEntity
     {
-        internal GeneratedSchemaEntity(ISchema schema, string name, Type type) 
-            : base(schema, name, PrimitivesSchema.SchemaEntitySchema, PrimitivesSchema.GeneratedSchemaEntitySchema, type)
+        internal GeneratedSchemaEntity(ISchema schema, string name, Type type)
+            : base(schema, name, schema.Store.PrimitivesSchema.SchemaEntitySchema, schema.Store.PrimitivesSchema.GeneratedSchemaEntitySchema, type)
         {
         }
     }

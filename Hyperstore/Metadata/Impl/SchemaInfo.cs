@@ -64,7 +64,7 @@ namespace Hyperstore.Modeling.Metadata
         ///-------------------------------------------------------------------------------------------------
         protected virtual ISchemaElement DefaultSuperClass
         {
-            get { return PrimitivesSchema.ModelEntitySchema; }
+            get { return Schema.Store.PrimitivesSchema.ModelEntitySchema; }
         }
 
 
@@ -518,7 +518,7 @@ namespace Hyperstore.Modeling.Metadata
 
             var type = GetType();
             if (type == typeof(SchemaEntity)) // Evite boucle infinie
-                return PrimitivesSchema.SchemaEntitySchema;
+                return domainModel.Store.PrimitivesSchema.SchemaEntitySchema;
 
             return base.EnsuresSchemaExists(domainModel, name);
         }
@@ -609,8 +609,8 @@ namespace Hyperstore.Modeling.Metadata
         {
             base.Initialize(schemaElement, domainModel);
 
-            _superClassHandler = new ReferenceHandler(this, PrimitivesSchema.SchemaElementReferencesSuperElementSchema);
-            _properties = new ModelElementCollection<ISchemaProperty>(this, PrimitivesSchema.SchemaElementHasPropertiesSchema);
+            _superClassHandler = new ReferenceHandler(this, domainModel.Store.PrimitivesSchema.SchemaElementReferencesSuperElementSchema);
+            _properties = new ModelElementCollection<ISchemaProperty>(this, domainModel.Store.PrimitivesSchema.SchemaElementHasPropertiesSchema);
             _propertiesByName = PlatformServices.Current.CreateConcurrentDictionary<string, ISchemaProperty>();
         }
 

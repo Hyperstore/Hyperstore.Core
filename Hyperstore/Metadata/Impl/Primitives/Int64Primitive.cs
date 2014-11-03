@@ -52,7 +52,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        internal Int64Primitive(ISchema domainModel)
+        internal Int64Primitive(PrimitivesSchema domainModel)
             : base(domainModel, typeof(Int64))
         {
         } 

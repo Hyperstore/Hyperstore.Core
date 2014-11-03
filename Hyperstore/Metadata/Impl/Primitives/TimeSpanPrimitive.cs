@@ -52,7 +52,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        internal TimeSpanPrimitive(ISchema domainModel)
+        internal TimeSpanPrimitive(PrimitivesSchema domainModel)
             : base(domainModel, typeof(TimeSpan))
         {
         }

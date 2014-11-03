@@ -149,7 +149,7 @@ namespace Hyperstore.Modeling.Metadata
             _end = end;
 
             name = Conventions.ExtractMetaElementName(start.DomainModel.Name, name);
-            ConstructInternal(start.DomainModel, implementedType, new Identity(start.Schema.Name, name), name, inheritedSchema, PrimitivesSchema.SchemaRelationshipSchema,
+            ConstructInternal(start.DomainModel, implementedType, new Identity(start.Schema.Name, name), name, inheritedSchema, start.Schema.Store.PrimitivesSchema.SchemaRelationshipSchema,
                     (dm, melId, mid) => new AddSchemaRelationshipCommand(dm as ISchema, melId, (ISchemaRelationship)mid, start, end));
 
             if (!Hyperstore.Modeling.Utils.ReflectionHelper.IsAssignableFrom(typeof(IModelRelationship), ImplementedType))
@@ -211,7 +211,7 @@ namespace Hyperstore.Modeling.Metadata
         ///-------------------------------------------------------------------------------------------------
         protected override ISchemaElement DefaultSuperClass
         {
-            get { return PrimitivesSchema.ModelRelationshipSchema; }
+            get { return Schema.Store.PrimitivesSchema.ModelRelationshipSchema; }
         }
 
         ///-------------------------------------------------------------------------------------------------

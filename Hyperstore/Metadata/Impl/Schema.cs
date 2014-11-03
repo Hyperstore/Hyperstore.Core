@@ -406,7 +406,7 @@ namespace Hyperstore.Modeling.Metadata
         public virtual IEnumerable<ISchemaInfo> GetSchemaInfos()
         {
             return GetElements()
-                    .Where(g => g.SchemaInfo != PrimitivesSchema.GeneratedSchemaEntitySchema)
+                    .Where(g => g.SchemaInfo != Store.PrimitivesSchema.GeneratedSchemaEntitySchema)
                     .OfType<ISchemaInfo>();
         }
 

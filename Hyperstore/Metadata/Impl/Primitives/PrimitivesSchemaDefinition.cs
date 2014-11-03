@@ -54,72 +54,72 @@ namespace Hyperstore.Modeling.Metadata
             var metaModel = schema as PrimitivesSchema;
 
             // La méta classe de base de tous les métadonnées
-            metaModel.RegisterMetadata(PrimitivesSchema.SchemaElementSchema = new PrimitiveMetaEntity(schema, null, null, "SchemaElement", new Identity(schema.Name, "SEL")));
-            metaModel.RegisterMetadata(PrimitivesSchema.SchemaEntitySchema = new PrimitiveMetaEntity(schema, typeof(SchemaEntity), PrimitivesSchema.SchemaElementSchema, null, new Identity(schema.Name, "SEN")));
-            metaModel.RegisterMetadata(PrimitivesSchema.GeneratedSchemaEntitySchema = new PrimitiveMetaEntity(schema, typeof(SchemaEntity), PrimitivesSchema.SchemaElementSchema, typeof(GeneratedSchemaEntity).FullName, new Identity(schema.Name, "$EN")));
-            metaModel.RegisterMetadata(PrimitivesSchema.SchemaValueObjectSchema = new PrimitiveMetaEntity(schema, typeof(SchemaValueObject), PrimitivesSchema.SchemaElementSchema, null, new Identity(schema.Name, "SVO")));
+            metaModel.RegisterMetadata(metaModel.SchemaElementSchema = new PrimitiveMetaEntity(schema, null, null, "SchemaElement", new Identity(schema.Name, "SEL")));
+            metaModel.RegisterMetadata(metaModel.SchemaEntitySchema = new PrimitiveMetaEntity(schema, typeof(SchemaEntity), metaModel.SchemaElementSchema, null, new Identity(schema.Name, "SEN")));
+            metaModel.RegisterMetadata(metaModel.GeneratedSchemaEntitySchema = new PrimitiveMetaEntity(schema, typeof(SchemaEntity), metaModel.SchemaElementSchema, typeof(GeneratedSchemaEntity).FullName, new Identity(schema.Name, "$EN")));
+            metaModel.RegisterMetadata(metaModel.SchemaValueObjectSchema = new PrimitiveMetaEntity(schema, typeof(SchemaValueObject), metaModel.SchemaElementSchema, null, new Identity(schema.Name, "SVO")));
 
             // Les types primitifs simples
-            metaModel.RegisterMetadata(PrimitivesSchema.StringSchema = new StringPrimitive(schema));
-            metaModel.RegisterMetadata(PrimitivesSchema.BooleanSchema = new BooleanPrimitive(schema));
-            metaModel.RegisterMetadata(PrimitivesSchema.UInt16Schema = new UInt16Primitive(schema));
-            metaModel.RegisterMetadata(PrimitivesSchema.UInt32Schema = new UInt32Primitive(schema));
-            metaModel.RegisterMetadata(PrimitivesSchema.UInt64Schema = new UInt64Primitive(schema));
-            metaModel.RegisterMetadata(PrimitivesSchema.Int16Schema = new Int16Primitive(schema));
-            metaModel.RegisterMetadata(PrimitivesSchema.Int32Schema = new Int32Primitive(schema));
-            metaModel.RegisterMetadata(PrimitivesSchema.Int64Schema = new Int64Primitive(schema));
-            metaModel.RegisterMetadata(PrimitivesSchema.DateTimeSchema = new DateTimePrimitive(schema));
-            metaModel.RegisterMetadata(PrimitivesSchema.TimeSpanSchema = new TimeSpanPrimitive(schema));
-            metaModel.RegisterMetadata(PrimitivesSchema.DecimalSchema = new DecimalPrimitive(schema));
-            metaModel.RegisterMetadata(PrimitivesSchema.SingleSchema = new SinglePrimitive(schema));
-            metaModel.RegisterMetadata(PrimitivesSchema.DoubleSchema = new DoublePrimitive(schema));
-            metaModel.RegisterMetadata(PrimitivesSchema.GuidSchema = new GuidPrimitive(schema));
-            metaModel.RegisterMetadata(PrimitivesSchema.TypeSchema = new TypePrimitive(schema));
-            metaModel.RegisterMetadata(PrimitivesSchema.IdentitySchema = new IdentityPrimitive(schema));
-            metaModel.RegisterMetadata(PrimitivesSchema.SchemaPropertyReferencesSchemaEntitySchema = new PrimitiveMetaRelationship(schema, "SchemaPropertyReferencesSchemaElement", "PropertySchema", null, Cardinality.OneToOne));
-            metaModel.RegisterMetadata(PrimitivesSchema.CharSchema = new CharPrimitive(schema));
-            metaModel.RegisterMetadata(PrimitivesSchema.ByteSchema = new BytePrimitive(schema));
-            metaModel.RegisterMetadata(PrimitivesSchema.ByteArraySchema = new ByteArrayPrimitive(schema));
+            metaModel.RegisterMetadata(metaModel.StringSchema = new StringPrimitive(metaModel));
+            metaModel.RegisterMetadata(metaModel.BooleanSchema = new BooleanPrimitive(metaModel));
+            metaModel.RegisterMetadata(metaModel.UInt16Schema = new UInt16Primitive(metaModel));
+            metaModel.RegisterMetadata(metaModel.UInt32Schema = new UInt32Primitive(metaModel));
+            metaModel.RegisterMetadata(metaModel.UInt64Schema = new UInt64Primitive(metaModel));
+            metaModel.RegisterMetadata(metaModel.Int16Schema = new Int16Primitive(metaModel));
+            metaModel.RegisterMetadata(metaModel.Int32Schema = new Int32Primitive(metaModel));
+            metaModel.RegisterMetadata(metaModel.Int64Schema = new Int64Primitive(metaModel));
+            metaModel.RegisterMetadata(metaModel.DateTimeSchema = new DateTimePrimitive(metaModel));
+            metaModel.RegisterMetadata(metaModel.TimeSpanSchema = new TimeSpanPrimitive(metaModel));
+            metaModel.RegisterMetadata(metaModel.DecimalSchema = new DecimalPrimitive(metaModel));
+            metaModel.RegisterMetadata(metaModel.SingleSchema = new SinglePrimitive(metaModel));
+            metaModel.RegisterMetadata(metaModel.DoubleSchema = new DoublePrimitive(metaModel));
+            metaModel.RegisterMetadata(metaModel.GuidSchema = new GuidPrimitive(metaModel));
+            metaModel.RegisterMetadata(metaModel.TypeSchema = new TypePrimitive(metaModel));
+            metaModel.RegisterMetadata(metaModel.IdentitySchema = new IdentityPrimitive(metaModel));
+            metaModel.RegisterMetadata(metaModel.SchemaPropertyReferencesSchemaEntitySchema = new PrimitiveMetaRelationship(metaModel, "SchemaPropertyReferencesSchemaElement", "PropertySchema", null, Cardinality.OneToOne));
+            metaModel.RegisterMetadata(metaModel.CharSchema = new CharPrimitive(metaModel));
+            metaModel.RegisterMetadata(metaModel.ByteSchema = new BytePrimitive(metaModel));
+            metaModel.RegisterMetadata(metaModel.ByteArraySchema = new ByteArrayPrimitive(metaModel));
 
             // Les propriétés de la MetaClass (On a attendu que les types primtitifs soient enregistrés)
-            PrimitivesSchema.SchemaElementSchema.DefineProperty("ImplementedType", PrimitivesSchema.TypeSchema);
-            PrimitivesSchema.SchemaElementSchema.DefineProperty("Name", PrimitivesSchema.StringSchema);
-            //PrimitivesSchema.GeneratedSchemaEntitySchema.DefineProperty("ImplementedType", PrimitivesSchema.TypeSchema);
-            //PrimitivesSchema.GeneratedSchemaEntitySchema.DefineProperty("Name", PrimitivesSchema.StringSchema);
+            metaModel.SchemaElementSchema.DefineProperty("ImplementedType", metaModel.TypeSchema);
+            metaModel.SchemaElementSchema.DefineProperty("Name", metaModel.StringSchema);
+            //metaModel.GeneratedSchemaEntitySchema.DefineProperty("ImplementedType", metaModel.TypeSchema);
+            //metaModel.GeneratedSchemaEntitySchema.DefineProperty("Name", metaModel.StringSchema);
 
-            var cardinality = new CardinalityPrimitive(schema);
+            var cardinality = new CardinalityPrimitive(metaModel);
             metaModel.RegisterMetadata(cardinality);
 
             // MetaProperty
-            metaModel.RegisterMetadata(PrimitivesSchema.SchemaPropertySchema = new PrimitiveMetaEntity<SchemaProperty>(schema));
+            metaModel.RegisterMetadata(metaModel.SchemaPropertySchema = new PrimitiveMetaEntity<SchemaProperty>(metaModel));
             // PrimitivesDomainModel.MetaProperty.DefineProperty("PropertyMetadata", PrimitivesDomainModel.MetaPropertyReferencesMetadata);
-            PrimitivesSchema.SchemaPropertySchema.DefineProperty("DefaultValue", PrimitivesSchema.StringSchema);
-            PrimitivesSchema.SchemaPropertySchema.DefineProperty("Kind", new EnumPrimitiveInternal(metaModel, typeof(PropertyKind)));
+            metaModel.SchemaPropertySchema.DefineProperty("DefaultValue", metaModel.StringSchema);
+            metaModel.SchemaPropertySchema.DefineProperty("Kind", new EnumPrimitiveInternal(metaModel, typeof(PropertyKind)));
 
             // MetaRelationship
-            metaModel.RegisterMetadata(PrimitivesSchema.SchemaRelationshipSchema = new PrimitiveMetaRelationship(schema, new Identity(schema.Name, "SER")));
-            PrimitivesSchema.SchemaRelationshipSchema.DefineProperty("Cardinality", cardinality);
-            PrimitivesSchema.SchemaRelationshipSchema.DefineProperty("IsEmbedded", PrimitivesSchema.BooleanSchema);
-            PrimitivesSchema.SchemaRelationshipSchema.DefineProperty("StartId", PrimitivesSchema.IdentitySchema);
-            PrimitivesSchema.SchemaRelationshipSchema.DefineProperty("EndId", PrimitivesSchema.IdentitySchema);
-            PrimitivesSchema.SchemaRelationshipSchema.DefineProperty("StartMetaclassId", PrimitivesSchema.IdentitySchema);
-            PrimitivesSchema.SchemaRelationshipSchema.DefineProperty("EndMetaclassId", PrimitivesSchema.IdentitySchema);
-            PrimitivesSchema.SchemaRelationshipSchema.DefineProperty("StartPropertyName", PrimitivesSchema.StringSchema);
-            PrimitivesSchema.SchemaRelationshipSchema.DefineProperty("EndPropertyName", PrimitivesSchema.StringSchema);
+            metaModel.RegisterMetadata(metaModel.SchemaRelationshipSchema = new PrimitiveMetaRelationship(metaModel, new Identity(schema.Name, "SER")));
+            metaModel.SchemaRelationshipSchema.DefineProperty("Cardinality", cardinality);
+            metaModel.SchemaRelationshipSchema.DefineProperty("IsEmbedded", metaModel.BooleanSchema);
+            metaModel.SchemaRelationshipSchema.DefineProperty("StartId", metaModel.IdentitySchema);
+            metaModel.SchemaRelationshipSchema.DefineProperty("EndId", metaModel.IdentitySchema);
+            metaModel.SchemaRelationshipSchema.DefineProperty("StartMetaclassId", metaModel.IdentitySchema);
+            metaModel.SchemaRelationshipSchema.DefineProperty("EndMetaclassId", metaModel.IdentitySchema);
+            metaModel.SchemaRelationshipSchema.DefineProperty("StartPropertyName", metaModel.StringSchema);
+            metaModel.SchemaRelationshipSchema.DefineProperty("EndPropertyName", metaModel.StringSchema);
 
             // MetadataHasProperties : Relations vers les propriétés
             metaModel.RegisterMetadata(
-                                       PrimitivesSchema.SchemaElementHasPropertiesSchema =
-                                               new PrimitiveMetaRelationship(schema, "SchemaElementHasPropertiesSchema", "Properties", null, Cardinality.OneToMany, true, null, PrimitivesSchema.SchemaElementSchema, PrimitivesSchema.SchemaPropertySchema));
+                                       metaModel.SchemaElementHasPropertiesSchema =
+                                               new PrimitiveMetaRelationship(metaModel, "SchemaElementHasPropertiesSchema", "Properties", null, Cardinality.OneToMany, true, null, metaModel.SchemaElementSchema, metaModel.SchemaPropertySchema));
 
             // ModelElementMetadata
-            metaModel.RegisterMetadata(PrimitivesSchema.ModelEntitySchema = new PrimitiveModelElementMetaClass(schema));
+            metaModel.RegisterMetadata(metaModel.ModelEntitySchema = new PrimitiveModelElementMetaClass(metaModel));
 
             // ModelRelationshipMetadata
-            metaModel.RegisterMetadata(PrimitivesSchema.ModelRelationshipSchema = new PrimitiveModelRelationshipMetaClass(schema));
+            metaModel.RegisterMetadata(metaModel.ModelRelationshipSchema = new PrimitiveModelRelationshipMetaClass(metaModel));
 
             // SuperTypeRelationship : Relation vers le superType
-            metaModel.RegisterMetadata(PrimitivesSchema.SchemaElementReferencesSuperElementSchema = new PrimitiveMetaRelationship(schema, "SchemaElementReferencesSuperElement", "Super", "null", Cardinality.OneToOne));
+            metaModel.RegisterMetadata(metaModel.SchemaElementReferencesSuperElementSchema = new PrimitiveMetaRelationship(metaModel, "SchemaElementReferencesSuperElement", "Super", "null", Cardinality.OneToOne));
         }
 
         ///-------------------------------------------------------------------------------------------------

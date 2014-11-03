@@ -41,7 +41,7 @@ namespace Hyperstore.Tests.MemoryStore
         class Data : GraphNode
         {
             public Data(string key, int v)
-                : base(new Identity("test", key), PrimitivesSchema.Int32Schema.Id, NodeType.Node, value:v)
+                : base(new Identity("test", key), new Identity("$","System.Int32"), NodeType.Node, value:v)
             {
             }
         }

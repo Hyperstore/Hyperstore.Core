@@ -50,8 +50,8 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        internal BooleanPrimitive(ISchema domainModel)
-            : base(domainModel, typeof(bool))
+        internal BooleanPrimitive(PrimitivesSchema schema)
+            : base(schema, typeof(bool))
         {
         }
    

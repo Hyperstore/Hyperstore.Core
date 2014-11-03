@@ -40,8 +40,8 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  the identifier.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public PrimitiveMetaRelationship(ISchema domainModel, Identity id)
-            : base(domainModel, typeof(SchemaRelationship), PrimitivesSchema.SchemaEntitySchema, null, id)
+        public PrimitiveMetaRelationship(PrimitivesSchema domainModel, Identity id)
+            : base(domainModel, typeof(SchemaRelationship), domainModel.SchemaEntitySchema, null, id)
         {
             DebugContract.Requires(domainModel);
         }
@@ -158,12 +158,12 @@ namespace Hyperstore.Modeling.Metadata.Primitives
 
         ISchemaElement ISchemaRelationship.Start
         {
-            get { return this._start ?? PrimitivesSchema.SchemaElementSchema; }
+            get { return this._start ?? this.Schema.Store.PrimitivesSchema.SchemaElementSchema; }
         }
 
         ISchemaElement ISchemaRelationship.End
         {
-            get { return this._end ?? PrimitivesSchema.SchemaElementSchema; }
+            get { return this._end ?? Schema.Store.PrimitivesSchema.SchemaElementSchema; }
         }
 
         IModelElement IModelRelationship.Start

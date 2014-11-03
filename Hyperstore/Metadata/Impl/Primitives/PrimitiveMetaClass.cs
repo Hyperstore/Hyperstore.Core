@@ -37,8 +37,8 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public PrimitiveMetaEntity(ISchema domainModel)
-            : base(domainModel, typeof(T), PrimitivesSchema.SchemaEntitySchema)
+        public PrimitiveMetaEntity(PrimitivesSchema domainModel)
+            : base(domainModel, typeof(T), domainModel.SchemaEntitySchema)
         {
         }
     }
@@ -307,7 +307,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             DebugContract.RequiresNotEmpty(name, "name");
             DebugContract.Requires(metadata, "metadata");
 
-            var prop = new PrimitiveMetaProperty(Schema, new Identity(Schema.Name, Name + "." + name), name, metadata);
+            var prop = new PrimitiveMetaProperty((PrimitivesSchema)Schema, new Identity(Schema.Name, Name + "." + name), name, metadata);
             _properties.Add(name, prop);
             return prop;
         }
@@ -396,7 +396,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///-------------------------------------------------------------------------------------------------
         public ISchemaElement SchemaInfo
         {
-            get { return PrimitivesSchema.SchemaEntitySchema; }
+            get { return _domainModel.Store.PrimitivesSchema.SchemaEntitySchema; }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -429,7 +429,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             DebugContract.Requires(metaClass, "metaClass");
 
             // $/$ == $/0
-            if (Id == PrimitivesSchema.GeneratedSchemaEntitySchema.Id && metaClass.Id == PrimitivesSchema.SchemaElementSchema.Id)
+            if (Id == _domainModel.Store.PrimitivesSchema.GeneratedSchemaEntitySchema.Id && metaClass.Id == _domainModel.Store.PrimitivesSchema.SchemaElementSchema.Id)
                 return true;
 
             return (metaClass != null && metaClass.Id == Id) || (SuperClass != null && SuperClass.IsA(metaClass));

@@ -41,14 +41,14 @@ namespace Hyperstore.Tests.MemoryStore
             var store = await StoreBuilder.New().CreateAsync();
             await store.DomainModels.New().CreateAsync("test");
 
-            var metaClass = PrimitivesSchema.SchemaEntitySchema;
+            var metaClass = store.PrimitivesSchema.SchemaEntitySchema;
             Assert.True(metaClass.IsA(metaClass));
 
-            var metaRel = PrimitivesSchema.SchemaRelationshipSchema;
+            var metaRel = store.PrimitivesSchema.SchemaRelationshipSchema;
             Assert.True(metaRel.IsA(metaRel));
             Assert.True(metaRel.IsA(metaClass));
 
-            Assert.True(PrimitivesSchema.StringSchema.IsA(PrimitivesSchema.SchemaElementSchema));
+            Assert.True(store.PrimitivesSchema.StringSchema.IsA(store.PrimitivesSchema.SchemaElementSchema));
         }
 
         [Fact]
@@ -61,7 +61,7 @@ namespace Hyperstore.Tests.MemoryStore
 
             var a = store.GetSchemaInfo<CultureInfo>();
 
-            Assert.True(a.SchemaInfo.IsA(PrimitivesSchema.SchemaElementSchema));
+            Assert.True(a.SchemaInfo.IsA(store.PrimitivesSchema.SchemaElementSchema));
         }
 
         [Fact]
@@ -80,9 +80,9 @@ namespace Hyperstore.Tests.MemoryStore
             }
 
             Assert.True(a.SchemaInfo.IsA(store.GetSchemaEntity<XExtendsBaseClass>()));
-            Assert.True(a.SchemaInfo.IsA(PrimitivesSchema.ModelEntitySchema));
-            Assert.True(a.SchemaInfo.SchemaInfo.IsA(PrimitivesSchema.SchemaEntitySchema));
-            Assert.False(a.SchemaInfo.IsA(PrimitivesSchema.SchemaEntitySchema));
+            Assert.True(a.SchemaInfo.IsA(store.PrimitivesSchema.ModelEntitySchema));
+            Assert.True(a.SchemaInfo.SchemaInfo.IsA(store.PrimitivesSchema.SchemaEntitySchema));
+            Assert.False(a.SchemaInfo.IsA(store.PrimitivesSchema.SchemaEntitySchema));
         }
 
         [Fact]
@@ -102,7 +102,7 @@ namespace Hyperstore.Tests.MemoryStore
 
             Assert.True(a.SchemaInfo.IsA(schema.Definition.AbstractClass));
 
-            Assert.True(a.SchemaInfo.IsA(PrimitivesSchema.ModelEntitySchema));
+            Assert.True(a.SchemaInfo.IsA(store.PrimitivesSchema.ModelEntitySchema));
             Assert.False(((ISchemaElement)schema.Definition.AbstractClass).IsA(a.SchemaInfo));
         }
 

@@ -83,7 +83,7 @@ namespace Hyperstore.Modeling
             if (ctx == null)
             {
                 // _statSessionCount.Incr();
-                
+
                 // Nouvelle session
                 ctx = new SessionDataContext // TODO optimize memory size
                       {
@@ -297,7 +297,7 @@ namespace Hyperstore.Modeling
                 var ctx = SessionDataContext;
                 if (ctx == null || ctx.Depth == 0)
                     return null;
-                
+
                 return ctx.SessionInfos.Peek().DefaultDomainModel;
             }
         }

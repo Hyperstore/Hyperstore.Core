@@ -35,7 +35,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public IdentityPrimitive(ISchema domainModel)
+        public IdentityPrimitive(PrimitivesSchema domainModel)
             : base(domainModel, typeof(Identity))
         {
         } 

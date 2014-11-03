@@ -51,7 +51,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        internal GuidPrimitive(ISchema domainModel)
+        internal GuidPrimitive(PrimitivesSchema domainModel)
             : base(domainModel, typeof(Guid))
         {
         }  

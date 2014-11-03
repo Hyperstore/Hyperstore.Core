@@ -36,10 +36,10 @@ namespace Hyperstore.Tests.Metadata
         {
             var store = await StoreBuilder.New().CreateAsync();
             IDomainModel dm = await store.DomainModels.New().CreateAsync("Test");
-            Assert.True((bool)PrimitivesSchema.BooleanSchema.Deserialize(new SerializationContext(PrimitivesSchema.BooleanSchema, PrimitivesSchema.BooleanSchema.Serialize(true))));
-            Assert.False((bool)PrimitivesSchema.BooleanSchema.Deserialize(new SerializationContext(PrimitivesSchema.BooleanSchema, PrimitivesSchema.BooleanSchema.Serialize(false))));
-            Assert.False((bool)PrimitivesSchema.BooleanSchema.Deserialize(new SerializationContext(PrimitivesSchema.BooleanSchema, null)));
-            Assert.Null(PrimitivesSchema.BooleanSchema.Serialize(null));
+            Assert.True((bool)store.PrimitivesSchema.BooleanSchema.Deserialize(new SerializationContext(store.PrimitivesSchema.BooleanSchema, store.PrimitivesSchema.BooleanSchema.Serialize(true))));
+            Assert.False((bool)store.PrimitivesSchema.BooleanSchema.Deserialize(new SerializationContext(store.PrimitivesSchema.BooleanSchema, store.PrimitivesSchema.BooleanSchema.Serialize(false))));
+            Assert.False((bool)store.PrimitivesSchema.BooleanSchema.Deserialize(new SerializationContext(store.PrimitivesSchema.BooleanSchema, null)));
+            Assert.Null(store.PrimitivesSchema.BooleanSchema.Serialize(null));
         }
 
         [Fact]
@@ -48,8 +48,8 @@ namespace Hyperstore.Tests.Metadata
             var store = await StoreBuilder.New().CreateAsync();
             var dt = DateTime.Today;
             IDomainModel dm = await store.DomainModels.New().CreateAsync("Test");
-            Assert.Equal(dt, (DateTime)PrimitivesSchema.DateTimeSchema.Deserialize(new SerializationContext(PrimitivesSchema.DateTimeSchema, PrimitivesSchema.DateTimeSchema.Serialize(dt))));
-            Assert.Null(PrimitivesSchema.DateTimeSchema.Serialize(null));
+            Assert.Equal(dt, (DateTime)store.PrimitivesSchema.DateTimeSchema.Deserialize(new SerializationContext(store.PrimitivesSchema.DateTimeSchema, store.PrimitivesSchema.DateTimeSchema.Serialize(dt))));
+            Assert.Null(store.PrimitivesSchema.DateTimeSchema.Serialize(null));
         }
 
         [Fact]
@@ -58,8 +58,8 @@ namespace Hyperstore.Tests.Metadata
             var store = await StoreBuilder.New().CreateAsync();
             var dt = 10.2;
             IDomainModel dm = await store.DomainModels.New().CreateAsync("Test");
-            Assert.Equal(dt, (Double)PrimitivesSchema.DoubleSchema.Deserialize(new SerializationContext( PrimitivesSchema.DoubleSchema, PrimitivesSchema.DoubleSchema.Serialize(dt))));
-            Assert.Null(PrimitivesSchema.DoubleSchema.Serialize(null));
+            Assert.Equal(dt, (Double)store.PrimitivesSchema.DoubleSchema.Deserialize(new SerializationContext( store.PrimitivesSchema.DoubleSchema, store.PrimitivesSchema.DoubleSchema.Serialize(dt))));
+            Assert.Null(store.PrimitivesSchema.DoubleSchema.Serialize(null));
         }
 
         [Fact]
@@ -68,8 +68,8 @@ namespace Hyperstore.Tests.Metadata
             var store = await StoreBuilder.New().CreateAsync();
             var dt = DateTime.Now.TimeOfDay;
             IDomainModel dm = await store.DomainModels.New().CreateAsync("Test");
-            Assert.Equal((TimeSpan)PrimitivesSchema.TimeSpanSchema.Deserialize(new SerializationContext( PrimitivesSchema.TimeSpanSchema, PrimitivesSchema.TimeSpanSchema.Serialize(dt))), dt);
-            Assert.Null(PrimitivesSchema.TimeSpanSchema.Serialize(null));
+            Assert.Equal((TimeSpan)store.PrimitivesSchema.TimeSpanSchema.Deserialize(new SerializationContext( store.PrimitivesSchema.TimeSpanSchema, store.PrimitivesSchema.TimeSpanSchema.Serialize(dt))), dt);
+            Assert.Null(store.PrimitivesSchema.TimeSpanSchema.Serialize(null));
         }
 
         [Fact]
@@ -78,8 +78,8 @@ namespace Hyperstore.Tests.Metadata
             var store = await StoreBuilder.New().CreateAsync();
             var dt = 10.2;
             IDomainModel dm = await store.DomainModels.New().CreateAsync("Test");
-            Assert.True((Double)PrimitivesSchema.SingleSchema.Deserialize(new SerializationContext(PrimitivesSchema.SingleSchema, PrimitivesSchema.SingleSchema.Serialize(dt))) - dt < 0.01);
-            Assert.Null(PrimitivesSchema.SingleSchema.Serialize(null));
+            Assert.True((Double)store.PrimitivesSchema.SingleSchema.Deserialize(new SerializationContext(store.PrimitivesSchema.SingleSchema, store.PrimitivesSchema.SingleSchema.Serialize(dt))) - dt < 0.01);
+            Assert.Null(store.PrimitivesSchema.SingleSchema.Serialize(null));
         }
 
         private enum X { A, B,C };
@@ -92,9 +92,9 @@ namespace Hyperstore.Tests.Metadata
         //    {
         //        ISerializableModelElement ser = new EnumPrimitive<X>(dm.Schema);
         //        // TODO accès aux méthodes privees
-        //        Assert.Equal(X.B, (X)ser.Deserialize(new SerializationContext(dm, Identity.Empty, PrimitivesSchema.SchemaEntitySchema, ser.Serialize(X.B))));
-        //        Assert.Equal(X.B | X.C, (X)ser.Deserialize(new SerializationContext(dm, Identity.Empty, PrimitivesSchema.SchemaEntitySchema, ser.Serialize(X.C | X.B))));
-        //        Assert.Null(PrimitivesSchema.SingleSchema.Serialize(null));
+        //        Assert.Equal(X.B, (X)ser.Deserialize(new SerializationContext(dm, Identity.Empty, store.PrimitivesSchema.SchemaEntitySchema, ser.Serialize(X.B))));
+        //        Assert.Equal(X.B | X.C, (X)ser.Deserialize(new SerializationContext(dm, Identity.Empty, store.PrimitivesSchema.SchemaEntitySchema, ser.Serialize(X.C | X.B))));
+        //        Assert.Null(store.PrimitivesSchema.SingleSchema.Serialize(null));
         //        s.AcceptChanges();
         //    }
         //}

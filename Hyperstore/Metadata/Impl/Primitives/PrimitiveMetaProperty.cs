@@ -44,7 +44,8 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  The metadata.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public PrimitiveMetaProperty(ISchema domainModel, Identity id, string name, ISchemaValueObject metadata) : base(domainModel, typeof (SchemaProperty), PrimitivesSchema.SchemaEntitySchema, name: name, id: id)
+        public PrimitiveMetaProperty(PrimitivesSchema domainModel, Identity id, string name, ISchemaValueObject metadata)
+            : base(domainModel, typeof(SchemaProperty), domainModel.SchemaEntitySchema, name: name, id: id)
         {
             DebugContract.Requires(domainModel, "domainModel");
             DebugContract.RequiresNotEmpty(name);

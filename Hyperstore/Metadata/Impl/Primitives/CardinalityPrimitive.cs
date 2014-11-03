@@ -38,7 +38,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public CardinalityPrimitive(ISchema domainModel)
+        public CardinalityPrimitive(PrimitivesSchema domainModel)
             : base(domainModel, typeof(Cardinality))
         {
         }

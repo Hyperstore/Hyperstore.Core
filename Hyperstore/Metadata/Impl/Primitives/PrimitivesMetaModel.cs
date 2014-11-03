@@ -93,11 +93,7 @@ namespace Hyperstore.Modeling.Metadata
         public override void Dispose()
         {
             base.Dispose();
-            Raz();
-        }
 
-        internal static void Raz()
-        {
             StringSchema = null;
             BooleanSchema = null;
             DateTimeSchema = null;
@@ -138,7 +134,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The string schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaValueObject StringSchema { get; internal set; }
+        public ISchemaValueObject StringSchema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -148,7 +144,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The boolean schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaValueObject BooleanSchema { get; internal set; }
+        public  ISchemaValueObject BooleanSchema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -158,7 +154,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The date time schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaValueObject DateTimeSchema { get; internal set; }
+        public  ISchemaValueObject DateTimeSchema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -168,7 +164,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The time span schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaValueObject TimeSpanSchema { get; internal set; }
+        public  ISchemaValueObject TimeSpanSchema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -178,7 +174,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The single schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaValueObject SingleSchema { get; internal set; }
+        public  ISchemaValueObject SingleSchema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -188,7 +184,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The decimal schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaValueObject DecimalSchema { get; internal set; }
+        public  ISchemaValueObject DecimalSchema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -198,7 +194,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The u int 16 schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaValueObject UInt16Schema { get; internal set; }
+        public  ISchemaValueObject UInt16Schema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -208,7 +204,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The u int 32 schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaValueObject UInt32Schema { get; internal set; }
+        public  ISchemaValueObject UInt32Schema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -218,7 +214,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The u int 64 schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaValueObject UInt64Schema { get; internal set; }
+        public  ISchemaValueObject UInt64Schema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -228,7 +224,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The int 16 schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaValueObject Int16Schema { get; internal set; }
+        public  ISchemaValueObject Int16Schema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -238,7 +234,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The int 64 schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaValueObject Int64Schema { get; internal set; }
+        public  ISchemaValueObject Int64Schema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -248,7 +244,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The int 32 schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaValueObject Int32Schema { get; internal set; }
+        public  ISchemaValueObject Int32Schema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -258,7 +254,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The double schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaValueObject DoubleSchema { get; internal set; }
+        public  ISchemaValueObject DoubleSchema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -268,7 +264,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The unique identifier schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaValueObject GuidSchema { get; internal set; }
+        public  ISchemaValueObject GuidSchema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -278,7 +274,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The character schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaValueObject CharSchema { get; internal set; }
+        public  ISchemaValueObject CharSchema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -288,7 +284,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The byte schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaValueObject ByteSchema { get; internal set; }
+        public  ISchemaValueObject ByteSchema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -298,7 +294,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The byte array schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaValueObject ByteArraySchema { get; internal set; }
+        public  ISchemaValueObject ByteArraySchema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -308,7 +304,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The schema entity schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaEntity SchemaEntitySchema { get; internal set; }
+        public  ISchemaEntity SchemaEntitySchema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -318,7 +314,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The schema element schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaEntity SchemaElementSchema { get; internal set; }
+        public  ISchemaEntity SchemaElementSchema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -328,7 +324,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The schema value object schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaEntity SchemaValueObjectSchema { get; internal set; }
+        public  ISchemaEntity SchemaValueObjectSchema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -338,7 +334,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The generated schema entity schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaEntity GeneratedSchemaEntitySchema { get; internal set; }
+        public  ISchemaEntity GeneratedSchemaEntitySchema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -348,7 +344,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The schema property schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaEntity SchemaPropertySchema { get; internal set; }
+        public  ISchemaEntity SchemaPropertySchema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -358,7 +354,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The identity schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaValueObject IdentitySchema { get; internal set; }
+        public  ISchemaValueObject IdentitySchema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -368,7 +364,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The type schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaValueObject TypeSchema { get; internal set; }
+        public  ISchemaValueObject TypeSchema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -378,7 +374,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The schema relationship schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaRelationship SchemaRelationshipSchema { get; internal set; }
+        public  ISchemaRelationship SchemaRelationshipSchema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -388,7 +384,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The model entity schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaEntity ModelEntitySchema { get; internal set; }
+        public  ISchemaEntity ModelEntitySchema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -398,7 +394,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The model relationship schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaRelationship ModelRelationshipSchema { get; internal set; }
+        public  ISchemaRelationship ModelRelationshipSchema { get; internal set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -408,7 +404,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The schema element has properties schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaRelationship SchemaElementHasPropertiesSchema { get; set; }
+        public  ISchemaRelationship SchemaElementHasPropertiesSchema { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -418,8 +414,8 @@ namespace Hyperstore.Modeling.Metadata
         ///  The schema element references super element schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public static ISchemaRelationship SchemaElementReferencesSuperElementSchema { get; internal set; }
-        internal static ISchemaRelationship SchemaPropertyReferencesSchemaEntitySchema { get; set; }
+        public  ISchemaRelationship SchemaElementReferencesSuperElementSchema { get; internal set; }
+        internal  ISchemaRelationship SchemaPropertyReferencesSchemaEntitySchema { get; set; }
 
     }
 }

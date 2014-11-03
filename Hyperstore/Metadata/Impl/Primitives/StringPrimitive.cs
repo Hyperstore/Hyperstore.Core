@@ -45,7 +45,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        internal StringPrimitive(ISchema schema)
+        internal StringPrimitive(PrimitivesSchema schema)
             : base(schema, typeof(string))
         {
             DebugContract.Requires(schema, "schema");

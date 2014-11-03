@@ -51,8 +51,8 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  Type of the implemented.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        protected PrimitiveMetaValue(ISchema domainModel, Type implementedType)
-            : base(domainModel, implementedType, PrimitivesSchema.SchemaValueObjectSchema)
+        protected PrimitiveMetaValue(PrimitivesSchema schema, Type implementedType)
+            : base(schema, implementedType, schema.SchemaValueObjectSchema)
         {
         }
 

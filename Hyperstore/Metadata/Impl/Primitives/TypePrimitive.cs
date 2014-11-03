@@ -36,7 +36,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public TypePrimitive(ISchema domainModel)
+        public TypePrimitive(PrimitivesSchema domainModel)
             : base(domainModel, typeof(Type))
         {
             DebugContract.Requires(domainModel, "domainModel");

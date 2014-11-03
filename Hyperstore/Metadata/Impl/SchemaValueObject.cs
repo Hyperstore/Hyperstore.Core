@@ -90,7 +90,7 @@ namespace Hyperstore.Modeling.Metadata
             if (ReflectionHelper.IsGenericType(GetType(), typeof(SchemaValueObject<>)))
             {
                 // Optimisation
-                return PrimitivesSchema.SchemaEntitySchema;
+                return Schema.Store.PrimitivesSchema.SchemaEntitySchema;
             }
 
             return base.EnsuresSchemaExists(domainModel, name);

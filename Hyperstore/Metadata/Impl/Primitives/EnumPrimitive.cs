@@ -32,7 +32,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///  The schema.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public EnumPrimitive(ISchema schema)
+        public EnumPrimitive(PrimitivesSchema schema)
             : base(schema, typeof(TEnum))
         {
         }

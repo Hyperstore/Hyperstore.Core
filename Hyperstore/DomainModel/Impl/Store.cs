@@ -76,12 +76,26 @@ namespace Hyperstore.Modeling
         private readonly ILockManager _lockManager;
         private Statistics.Statistics _statistics;
         private bool _disposed;
+        private PrimitivesSchema _primitivesSchema;
         private int _initialized;
         private readonly StoreOptions _options;
         private Dictionary<string, ISchemaInfo> _schemaInfosCache;
         #endregion
 
         #region Properties
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the primitives schema.
+        /// </summary>
+        /// <value>
+        ///  The primitives schema.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public PrimitivesSchema PrimitivesSchema
+        {
+            get { return _primitivesSchema; }
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Gets options for controlling the operation. </summary>
@@ -1395,7 +1409,7 @@ namespace Hyperstore.Modeling
 
                 _schemaInfosCache.Clear();
                 _notifiersCache.Clear();
-
+                _primitivesSchema = null;
                 CodeMarker.Dispose();
             }
         }
@@ -1434,7 +1448,7 @@ namespace Hyperstore.Modeling
 
             if (System.Threading.Interlocked.CompareExchange(ref _initialized, 1, 0) == 0)
             {
-                await manager.LoadSchemaAsync(new PrimitivesSchemaDefinition());
+                _primitivesSchema = await manager.LoadSchemaAsync(new PrimitivesSchemaDefinition()) as PrimitivesSchema;
             }
         }
 

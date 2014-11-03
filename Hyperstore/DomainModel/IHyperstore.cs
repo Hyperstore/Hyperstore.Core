@@ -39,6 +39,16 @@ namespace Hyperstore.Modeling
     {
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
+        ///  Gets the primitives schema.
+        /// </summary>
+        /// <value>
+        ///  The primitives schema.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        Hyperstore.Modeling.Metadata.PrimitivesSchema PrimitivesSchema { get; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
         ///  Gets the lock manager.
         /// </summary>
         /// <value>
