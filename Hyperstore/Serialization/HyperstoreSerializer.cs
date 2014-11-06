@@ -28,7 +28,7 @@ namespace Hyperstore.Modeling.Serialization
 {
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  Serialization options
+    ///  Serialization options.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     [Flags]
@@ -60,7 +60,7 @@ namespace Hyperstore.Modeling.Serialization
         ///  JSon serializer used to serialize value object.
         /// </summary>
         /// <value>
-        ///  A serializer or null to used the default serializer
+        ///  A serializer or null to used the default serializer.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         public IJsonSerializer Serializer { get; set; }
@@ -98,9 +98,9 @@ namespace Hyperstore.Modeling.Serialization
 
     ///-------------------------------------------------------------------------------------------------
     /// <summary>
-    ///  Hyperstore serializer. Allow to serialize a domain or a list of elements in XML or JSon format.
-    ///  Serialize domain as a graph with entity and separate relationshsips.
-    ///  Use this serialize to communicate with others hyperstore instance.
+    ///  Hyperstore serializer. Allow to serialize a domain or a list of elements in XML or JSon
+    ///  format. Serialize domain as a graph with entity and separate relationshsips. Use this
+    ///  serialize to communicate with others hyperstore instance.
     /// </summary>
     ///-------------------------------------------------------------------------------------------------
     public partial class HyperstoreSerializer
@@ -115,6 +115,23 @@ namespace Hyperstore.Modeling.Serialization
 
         #region static
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  true this instance to the given stream.
+        /// </summary>
+        /// <param name="stream">
+        ///  The stream.
+        /// </param>
+        /// <param name="domain">
+        ///  The domain.
+        /// </param>
+        /// <param name="settings">
+        ///  (Optional) options for controlling the operation.
+        /// </param>
+        /// <param name="elements">
+        ///  (Optional) the elements.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         public static void Serialize(Stream stream, IDomainModel domain, SerializationSettings settings = null, IEnumerable<IModelElement> elements = null)
         {
             Contract.Requires(stream, "stream");
@@ -128,6 +145,23 @@ namespace Hyperstore.Modeling.Serialization
                 elements != null ? elements.OfType<IModelRelationship>() : domain.GetRelationships());
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  true this instance to the given stream.
+        /// </summary>
+        /// <param name="domain">
+        ///  The domain.
+        /// </param>
+        /// <param name="settings">
+        ///  (Optional) options for controlling the operation.
+        /// </param>
+        /// <param name="elements">
+        ///  (Optional) the elements.
+        /// </param>
+        /// <returns>
+        ///  A string.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public static string Serialize(IDomainModel domain, SerializationSettings settings = null, IEnumerable<IModelElement> elements = null)
         {
             string result = null;

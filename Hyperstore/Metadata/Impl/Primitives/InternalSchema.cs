@@ -42,8 +42,6 @@ namespace Hyperstore.Modeling.Metadata
         private readonly string _name;
         private readonly string _instanceId;
         private readonly IServicesContainer _services;
-        private static ISchema _instance;
-        internal static ISchema Current { get { return _instance; } }
 
         internal InternalSchema(IServicesContainer services)
             : this(services, "{2C7C8DA4-5146-4478-9C1E-9DCC2C15481B}", "$$")
@@ -68,7 +66,6 @@ namespace Hyperstore.Modeling.Metadata
         {
             Store = services.Resolve<IHyperstore>();
             _services = services;
-            _instance = this;
             _name = name;
             _instanceId = instanceId;
         }
@@ -620,7 +617,6 @@ namespace Hyperstore.Modeling.Metadata
             _metadatas = null;
             _metadatasByName = null;
             Store = null;
-            _instance = null;
         }
 
         ///-------------------------------------------------------------------------------------------------

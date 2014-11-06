@@ -56,9 +56,6 @@ namespace Hyperstore.Modeling.Events
         /// <param name="schemaElementId">
         ///  The identifier of the schema element.
         /// </param>
-        /// <param name="schemaPropertyId">
-        ///  The identifier of the schema property.
-        /// </param>
         /// <param name="propertyName">
         ///  The name of the property.
         /// </param>

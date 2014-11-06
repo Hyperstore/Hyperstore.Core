@@ -67,6 +67,7 @@ namespace Hyperstore.Modeling
         ///  The value.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
+        [DebuggerStepThrough]
         public SerializationContext(ISchemaProperty schemaProperty, object value)
         {
             Contract.Requires(schemaProperty, "schemaProperty");
@@ -85,6 +86,7 @@ namespace Hyperstore.Modeling
         ///  The value.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
+        [DebuggerStepThrough]
         public SerializationContext(ISchemaValueObject schemaValueObject, object value)
         {
             Contract.Requires(schemaValueObject, "schemaValueObject");
@@ -115,7 +117,12 @@ namespace Hyperstore.Modeling
         ///  The domain model.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IDomainModel DomainModel { get; private set; }
+        public IDomainModel DomainModel
+        {
+            [DebuggerStepThrough]
+            get;
+            private set;
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -125,7 +132,12 @@ namespace Hyperstore.Modeling
         ///  The value.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public object Value { get; private set; }
+        public object Value
+        {
+            [DebuggerStepThrough]
+            get;
+            private set;
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -135,7 +147,12 @@ namespace Hyperstore.Modeling
         ///  The identifier of the start.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity StartId { get; private set; }
+        public Identity StartId
+        {
+            [DebuggerStepThrough]
+            get;
+            private set;
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -145,7 +162,12 @@ namespace Hyperstore.Modeling
         ///  The identifier of the end.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity EndId { get; private set; }
+        public Identity EndId
+        {
+            [DebuggerStepThrough]
+            get;
+            private set;
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -155,7 +177,12 @@ namespace Hyperstore.Modeling
         ///  The identifier of the start schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity StartSchemaId { get; private set; }
+        public Identity StartSchemaId
+        {
+            [DebuggerStepThrough]
+            get;
+            private set;
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -165,7 +192,12 @@ namespace Hyperstore.Modeling
         ///  The identifier of the end schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity EndSchemaId { get; private set; }
+        public Identity EndSchemaId
+        {
+            [DebuggerStepThrough]
+            get;
+            private set;
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -175,7 +207,12 @@ namespace Hyperstore.Modeling
         ///  The identifier.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity Id { get; private set; }
+        public Identity Id
+        {
+            [DebuggerStepThrough]
+            get;
+            private set;
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -185,6 +222,11 @@ namespace Hyperstore.Modeling
         ///  The schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public ISchemaInfo Schema { get; set; }
+        public ISchemaInfo Schema
+        {
+            [DebuggerStepThrough]
+            get;
+            set;
+        }
     }
 }

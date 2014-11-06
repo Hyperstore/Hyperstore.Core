@@ -78,7 +78,7 @@ namespace Hyperstore.Tests.Metadata
             var store = await StoreBuilder.New().CreateAsync();
             var dt = 10.2;
             IDomainModel dm = await store.DomainModels.New().CreateAsync("Test");
-            Assert.True((Double)store.PrimitivesSchema.SingleSchema.Deserialize(new SerializationContext(store.PrimitivesSchema.SingleSchema, store.PrimitivesSchema.SingleSchema.Serialize(dt))) - dt < 0.01);
+            Assert.True((Single)store.PrimitivesSchema.SingleSchema.Deserialize(new SerializationContext(store.PrimitivesSchema.SingleSchema, store.PrimitivesSchema.SingleSchema.Serialize(dt))) - dt < 0.01);
             Assert.Null(store.PrimitivesSchema.SingleSchema.Serialize(null));
         }
 

@@ -94,6 +94,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public PrimitivesSchema PrimitivesSchema
         {
+            [DebuggerStepThrough]
             get { return _primitivesSchema; }
         }
 
@@ -103,6 +104,7 @@ namespace Hyperstore.Modeling
         ///-------------------------------------------------------------------------------------------------
         public StoreOptions Options
         {
+            [DebuggerStepThrough]
             get { return _options; }
         }
 
@@ -978,7 +980,7 @@ namespace Hyperstore.Modeling
             Contract.RequiresNotEmpty(name, "name");
 
             if (name == PrimitivesSchema.DomainModelName)
-                return PrimitivesSchema.Current;
+                return _primitivesSchema;
 
             return _domainControler.GetActiveScope(name, CurrentSessionId) ?? GetSchema(name);
         }
@@ -1452,6 +1454,17 @@ namespace Hyperstore.Modeling
             }
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Loads dependent schemas.
+        /// </summary>
+        /// <param name="desc">
+        ///  The description.
+        /// </param>
+        /// <returns>
+        ///  The dependent schemas.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         protected virtual async Task LoadDependentSchemas(ISchemaDefinition desc)
         {
             foreach (var dependent in desc.GetDependentSchemas())

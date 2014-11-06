@@ -161,6 +161,14 @@ namespace Hyperstore.Modeling
                 );
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Converts this instance to a JSON.
+        /// </summary>
+        /// <returns>
+        ///  This instance as a string.
+        /// </returns>
+        ///-------------------------------------------------------------------------------------------------
         public string ToJson()
         {
             var json = Platform.PlatformServices.Current.ObjectSerializer;

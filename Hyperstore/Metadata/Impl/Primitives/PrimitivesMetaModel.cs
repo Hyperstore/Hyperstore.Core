@@ -90,6 +90,12 @@ namespace Hyperstore.Modeling.Metadata
             return base.GetSchemaInfo(id, throwErrorIfNotExists);
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged
+        ///  resources.
+        /// </summary>
+        ///-------------------------------------------------------------------------------------------------
         public override void Dispose()
         {
             base.Dispose();

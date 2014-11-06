@@ -46,7 +46,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <param name="domainModel">
+        /// <param name="schema">
         ///  The domain model.
         /// </param>
         ///-------------------------------------------------------------------------------------------------

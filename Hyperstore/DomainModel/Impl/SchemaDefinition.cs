@@ -37,6 +37,14 @@ namespace Hyperstore.Modeling
         private readonly string _name;
         private DomainBehavior _behavior;
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets the name of the schema.
+        /// </summary>
+        /// <value>
+        ///  The name of the schema.
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
         public string SchemaName { get { return _name; } }
 
         ///-------------------------------------------------------------------------------------------------
@@ -69,6 +77,9 @@ namespace Hyperstore.Modeling
         /// </param>
         /// <param name="behavior">
         ///  (Optional) the behavior.
+        /// </param>
+        /// <param name="desc">
+        ///  (Optional) the description.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         protected SchemaDefinition(string name, DomainBehavior behavior = DomainBehavior.Standard, ISchemaDefinition desc = null)

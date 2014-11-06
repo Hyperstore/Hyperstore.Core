@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -44,7 +44,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <param name="domainModel">
+        /// <param name="schema">
         ///  The domain model.
         /// </param>
         /// <param name="implementedType">
@@ -72,11 +72,20 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             DebugContract.Requires(ctx);
 
             if (ctx.Value == null)
-                return false;
+                return this.DefaultValue;
 
-            return ctx.Value;
+            if (ctx.Value.GetType() == this.ImplementedType)
+                return ctx.Value;
+
+            try
+            {
+                return Convert.ChangeType(ctx.Value, this.ImplementedType);
+            }
+            catch
+            {
+                throw new InvalidCastException(String.Format("Unable to cast property value for element {0} - Expected type {1}, current is {0}", ctx.Id, this.ImplementedType.FullName, ctx.Value.GetType().FullName));
+            }
         }
-
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -84,9 +93,6 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         /// </summary>
         /// <param name="data">
         ///  The data.
-        /// </param>
-        /// <param name="serializer">
-        ///  The serializer.
         /// </param>
         /// <returns>
         ///  An object.
