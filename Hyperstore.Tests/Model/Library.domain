@@ -18,7 +18,7 @@ domain Hyperstore.Tests.Model.Library
 
     def entity Book {
         Title  : string;
-        Copies : int;
+        Copies : double;
 		Library *<= Library : LibraryHasBooks;
     }
 

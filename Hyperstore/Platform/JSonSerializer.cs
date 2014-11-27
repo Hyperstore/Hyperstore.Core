@@ -33,7 +33,7 @@ namespace Hyperstore.Modeling.Platform
                 return "null";
 
             var sb = new StringBuilder();
-            if (!(data is string || data.GetType().GetTypeInfo().IsPrimitive))
+            if (data is IEvent)
             {
                 SerializeObject((IEvent)data, sb);
             }

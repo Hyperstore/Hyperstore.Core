@@ -59,6 +59,16 @@ namespace Hyperstore.Modeling.Serialization
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
+        ///  If false, raise an exception if an exlement already exists
+        /// </summary>
+        /// <value>
+        ///  false to raise an exception
+        /// </value>
+        ///-------------------------------------------------------------------------------------------------
+        public bool AllowElementOverriding { get; set; }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
         ///  Default constructor.
         /// </summary>
         ///-------------------------------------------------------------------------------------------------
@@ -79,6 +89,7 @@ namespace Hyperstore.Modeling.Serialization
         private readonly IDomainModel _domain;
         private IJsonSerializer _serializer;
         private XmlReader _reader;
+        private bool _allowElementOverriding;
 
         #region static
 
@@ -113,6 +124,7 @@ namespace Hyperstore.Modeling.Serialization
             {
                 _serializer = settings.Serializer;
                 _schema = settings.Schema;
+                _allowElementOverriding = settings.AllowElementOverriding;
             }
         }
 
@@ -233,7 +245,14 @@ namespace Hyperstore.Modeling.Serialization
                     if (endSchema == null)
                         throw new MetadataNotFoundException(String.Format("Invalid end metadata {0} for relationship {1}", emetadata, id));
 
-                    var entity = _domain.CreateRelationship(schema, startId, startSchema, endId, endSchema, id);
+                    IModelRelationship entity=null;
+                    if( _allowElementOverriding )
+                    {
+                        entity = _domain.GetRelationship(id, schema);
+                    }
+
+                    if(entity == null)
+                        entity = _domain.CreateRelationship(schema, startId, startSchema, endId, endSchema, id);
 
                     elem = ReadProperties(entity, schema);
                 }
@@ -253,7 +272,14 @@ namespace Hyperstore.Modeling.Serialization
                     if (schema == null)
                         throw new MetadataNotFoundException(String.Format("Invalid metadata {0} for entity {1}", metadata, id));
 
-                    var entity = _domain.CreateEntity(schema, id);
+                    IModelEntity entity=null;
+                    if( _allowElementOverriding )
+                    {
+                        entity = _domain.GetEntity(id, schema);
+                    }
+
+                    if(entity == null)
+                        entity = _domain.CreateEntity(schema, id);
 
                     elem = ReadProperties(entity, schema);
                 }

@@ -141,7 +141,7 @@ namespace Hyperstore.Tests.Commands
                 {
                     var b = new Book(domain);
                     b.Title = "Book \"book\" " + i.ToString();
-                    b.Copies = i + 1;
+                    b.Copies = 0.000002;
                     lib.Books.Add(b);
 
                     var m = new Member(domain);

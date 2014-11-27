@@ -35,7 +35,7 @@ namespace Hyperstore.Modeling.Serialization
     public enum SerializationOptions
     {
         /// <summary>
-        ///  Serialize using Hyperstore format
+        ///  Serialize using Hyperstore XML format
         /// </summary>
         Normal = 0,
         /// <summary>
@@ -244,6 +244,19 @@ namespace Hyperstore.Modeling.Serialization
 
         private void Serialize(Stream stream, IEnumerable<IModelEntity> entities, IEnumerable<IModelRelationship> relationships)
         {
+            ISession session = null;
+            if (Session.Current != null)
+            {
+                Session.Current.SetMode(SessionMode.Serializing);
+            }
+            else
+            {
+                IHyperstore store = _domain.Store;
+                SessionConfiguration sessionConfiguration = new SessionConfiguration();
+                sessionConfiguration.Mode = SessionMode.Serializing;
+                session = store.BeginSession(sessionConfiguration);
+            }
+
             try
             {
                 _monikers = new Dictionary<Identity, MonikerEntry>();
@@ -254,6 +267,11 @@ namespace Hyperstore.Modeling.Serialization
             }
             finally
             {
+                if (session != null)
+                {
+                    session.AcceptChanges();
+                    session.Dispose();
+                }
                 _monikers = null;
                 _monikerSequence = 0;
             }

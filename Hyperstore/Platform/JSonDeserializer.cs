@@ -149,7 +149,7 @@ namespace Hyperstore.Modeling.Platform
             {
                 var sb = new StringBuilder();
                 var ch = PeekChar();
-                while (ch == '_' || ch == '+' || ch == 'e' || ch == 'E' || ch == '.' || Char.IsDigit(ch))
+                while (ch == '-' || ch == '+' || ch == 'e' || ch == 'E' || ch == '.' || Char.IsDigit(ch))
                 {
                     sb.Append(ch);
                     AdvanceChar();
@@ -291,7 +291,7 @@ namespace Hyperstore.Modeling.Platform
                     if (Int64.TryParse(input, NumberStyles.Integer, CultureInfo.InvariantCulture, out l))
                     {
                         return l;
-                    }
+                    }               
                 }
 
                 decimal dec;
