@@ -103,7 +103,7 @@ namespace Hyperstore.Modeling.Domain
             }
         }
 
-        internal IModelElement GetElement(Identity id)
+        internal IModelElement GetElement(Identity id, ISchemaElement schemaElement)
         {
             DebugContract.Requires(id);
             IModelElement elem;
@@ -125,7 +125,7 @@ namespace Hyperstore.Modeling.Domain
                 }
             }
 
-            elem = InnerGraph.GetElement(id);
+            elem = InnerGraph.GetElement(id, schemaElement);
             if (elem != null && Session.Current != null && Session.Current.TrackingData.GetTrackedElementState(elem.Id) == TrackingState.Removed)
                 return null;
 

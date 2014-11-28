@@ -94,7 +94,7 @@ namespace Hyperstore.Tests.Mocks
             remove { throw new NotImplementedException(); }
         }
 
-        IModelElement IDomainModel.GetElement(Identity id)
+        IModelElement IDomainModel.GetElement(Identity id, ISchemaElement schema)
         {
             throw new NotImplementedException();
         }
@@ -104,7 +104,7 @@ namespace Hyperstore.Tests.Mocks
             throw new NotImplementedException();
         }
 
-        IModelEntity IDomainModel.GetEntity(Identity id)
+        IModelEntity IDomainModel.GetEntity(Identity id, ISchemaEntity schemaEntity)
         {
             throw new NotImplementedException();
         }
@@ -134,7 +134,7 @@ namespace Hyperstore.Tests.Mocks
             throw new NotImplementedException();
         }
 
-        IModelRelationship IDomainModel.GetRelationship(Identity id)
+        IModelRelationship IDomainModel.GetRelationship(Identity id, ISchemaRelationship schema)
         {
             throw new NotImplementedException();
         }

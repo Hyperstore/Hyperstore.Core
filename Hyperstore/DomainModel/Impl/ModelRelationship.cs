@@ -69,18 +69,18 @@ namespace Hyperstore.Modeling
         ///  (Optional) the schema relationship.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public ModelRelationship(IDomainModel domainModel, Identity startId, ISchemaElement startSchema, Identity endId, ISchemaRelationship schemaRelationship = null)
+        public ModelRelationship(IDomainModel domainModel, IModelElement start, Identity endId, ISchemaElement endSchema, ISchemaRelationship schemaRelationship = null)
         {
             Contract.Requires(domainModel, "domainModel");
-            Contract.Requires(startId, "startId");
-            Contract.Requires(startSchema, "startSchema");
+            Contract.Requires(start, "start");
+            Contract.Requires(endSchema, "endSchema");
             Contract.Requires(endId, "endId");
 
-            _startId = startId;
+            _startId = start.Id;
             _endId = endId;
 
             // Appel du ctor hérité
-            Super(domainModel, schemaRelationship, (dm, melId, mid) => new AddRelationshipCommand(dm, mid as ISchemaRelationship, _startId, _endId, melId));
+            Super(domainModel, schemaRelationship, (dm, melId, mid) => new AddRelationshipCommand(mid as ISchemaRelationship, start, _endId, melId));
 
             if (((IModelRelationship)this).SchemaRelationship == null)
                 throw new TypeMismatchException(ExceptionMessages.SchemaMismatch);
@@ -111,7 +111,7 @@ namespace Hyperstore.Modeling
             _startId = start.Id;
             _endId = end.Id;
             // Appel du ctor hérité
-            Super(start.DomainModel, schemaRelationship, (dm, melId, mid) => new AddRelationshipCommand(mid as ISchemaRelationship, start, end, melId));
+            Super(start.DomainModel, schemaRelationship, (dm, melId, mid) => new AddRelationshipCommand(mid as ISchemaRelationship, start, end.Id, melId));
 
             if (((IModelRelationship)this).SchemaRelationship == null)
                 throw new TypeMismatchException(ExceptionMessages.SchemaMismatch);

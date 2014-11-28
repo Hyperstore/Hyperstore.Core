@@ -322,7 +322,7 @@ namespace Hyperstore.Modeling
         ///  The element.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IModelElement GetElement(Identity id);
+        IModelElement GetElement(Identity id, ISchemaElement schemaElement=null);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -351,7 +351,7 @@ namespace Hyperstore.Modeling
         ///  The entity.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IModelEntity GetEntity(Identity id);
+        IModelEntity GetEntity(Identity id, ISchemaEntity schemaEntity=null);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -441,7 +441,7 @@ namespace Hyperstore.Modeling
         ///  The relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IModelRelationship GetRelationship(Identity id);
+        IModelRelationship GetRelationship(Identity id, ISchemaRelationship schemaRelationship=null);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

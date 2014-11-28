@@ -74,19 +74,6 @@ namespace Hyperstore.Modeling.HyperGraph
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the element.
-        /// </summary>
-        /// <param name="id">
-        ///  The id.
-        /// </param>
-        /// <returns>
-        ///  The entity.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        IModelEntity GetEntity(Identity id);
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
         ///  Adds the relationship.
         /// </summary>
         /// <param name="endSchema">
@@ -114,18 +101,6 @@ namespace Hyperstore.Modeling.HyperGraph
         ///-------------------------------------------------------------------------------------------------
         GraphNode CreateRelationship(Identity id, ISchemaRelationship schemaRelationship, Identity startId, Identity endId);
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the relationship.
-        /// </summary>
-        /// <param name="id">
-        ///  The id.
-        /// </param>
-        /// <returns>
-        ///  The relationship.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        IModelRelationship GetRelationship(Identity id);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -170,7 +145,7 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  The element.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IModelElement GetElement(Identity id);
+        IModelElement GetElement(Identity id, ISchemaElement schemaElement=null);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

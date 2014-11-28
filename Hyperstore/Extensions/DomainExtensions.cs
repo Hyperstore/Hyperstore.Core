@@ -130,7 +130,11 @@ namespace Hyperstore.Modeling
             if (Session.Current == null)
                 throw new SessionRequiredException();
 
-            var cmd = new AddRelationshipCommand(domain, schema, startId, endId, id);
+            var start = domain.GetElement(startId);
+            if (start == null)
+                throw new InvalidElementException(startId);
+
+            var cmd = new AddRelationshipCommand(schema, start, endId, id);
             Session.Current.Execute(cmd);
             return cmd.Relationship;
         }

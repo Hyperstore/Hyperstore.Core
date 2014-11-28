@@ -34,7 +34,7 @@ namespace Hyperstore.Modeling.Commands
     {
         private readonly IDomainModel _domainModel;
         private readonly IModelElement _start;
-        private readonly IModelElement _end;
+        private readonly ISchemaElement _endSchema;
         private IModelRelationship _element;
 
         ///-------------------------------------------------------------------------------------------------
@@ -56,89 +56,37 @@ namespace Hyperstore.Modeling.Commands
             _element = relationship;
         }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Initializes a new instance of the <see cref="AddRelationshipCommand" /> class.
-        /// </summary>
-        /// <exception cref="Exception">
-        ///  Thrown when an exception error condition occurs.
-        /// </exception>
-        /// <param name="domainModel">
-        ///  The domain model.
-        /// </param>
-        /// <param name="relationshipSchema">
-        ///  The relationship schema.
-        /// </param>
-        /// <param name="startId">
-        ///  The start identifier.
-        /// </param>
-        /// <param name="startSchema">
-        ///  The start schema.
-        /// </param>
-        /// <param name="endId">
-        ///  The end identifier.
-        /// </param>
-        /// <param name="endSchema">
-        ///  The end schema.
-        /// </param>
-        /// <param name="id">
-        ///  (Optional) The identifier.
-        /// </param>
-        /// <param name="version">
-        ///  (Optional) the version.
-        /// </param>
-        ///-------------------------------------------------------------------------------------------------
-        public AddRelationshipCommand(IDomainModel domainModel, ISchemaRelationship relationshipSchema, Identity startId, Identity endId, Identity id = null, long? version = null)
-            : base(domainModel, version)
+        public AddRelationshipCommand(ISchemaRelationship relationshipSchema, IModelElement start, IModelElement end,
+                              Identity id = null, long? version = null)
+            : this(relationshipSchema, start, end.Id, id, version)
         {
-            Contract.Requires(startId, "startId");
-            Contract.Requires(endId, "endId");
-            Contract.Requires(endId, "endId");
-            Contract.Requires(relationshipSchema, "relationshipSchema");
-            Contract.Requires(domainModel, "domainModel");
-
-            StartId = startId;
-            EndId = endId;
-            _domainModel = domainModel;
-            Id = id ?? DomainModel.IdGenerator.NextValue(relationshipSchema);
-            if (String.Compare(Id.DomainModelName, domainModel.Name, StringComparison.OrdinalIgnoreCase) != 0)
-                throw new InvalidIdException("The id must be an id of the specified domain model.");
-
-            if (relationshipSchema.IsEmbedded && startId == endId)
-                throw new CircularReferenceException("An element can not contain itself.");
-
-            SchemaRelationship = relationshipSchema;
         }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Initializes a new instance of the <see cref="AddRelationshipCommand" /> class.
         /// </summary>
-        /// <param name="relationshipSchema">
-        ///  The relationship schema.
-        /// </param>
-        /// <param name="start">
-        ///  The start.
-        /// </param>
-        /// <param name="end">
-        ///  The end.
-        /// </param>
-        /// <param name="id">
-        ///  (Optional) The identifier.
-        /// </param>
-        /// <param name="version">
-        ///  (Optional) the version.
-        /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public AddRelationshipCommand(ISchemaRelationship relationshipSchema, IModelElement start, IModelElement end, Identity id = null, long? version = null)
-            : this(start.DomainModel, relationshipSchema, start.Id, end.Id, id, version)
+        public AddRelationshipCommand(ISchemaRelationship relationshipSchema, IModelElement start, Identity endId, 
+                                      Identity id = null, long? version = null)
+            : base(start.DomainModel, version)
         {
             Contract.Requires(start, "start");
-            Contract.Requires(end, "end");
+            Contract.Requires(endId, "endId");
+            Contract.Requires(endId, "endId");
             Contract.Requires(relationshipSchema, "relationshipSchema");
 
-            _start = start;
-            _end = end;
+            Start = start;
+            EndId = endId;
+            _domainModel = start.DomainModel;
+            Id = id ?? DomainModel.IdGenerator.NextValue(relationshipSchema);
+            if (String.Compare(Id.DomainModelName, start.DomainModel.Name, StringComparison.OrdinalIgnoreCase) != 0)
+                throw new InvalidIdException("The id must be an id of the specified domain model.");
+
+            if (relationshipSchema.IsEmbedded && start.Id == endId)
+                throw new CircularReferenceException("An element can not contain itself.");
+
+            SchemaRelationship = relationshipSchema;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -164,13 +112,13 @@ namespace Hyperstore.Modeling.Commands
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the start identifier.
+        ///  Gets the start element.
         /// </summary>
         /// <value>
-        ///  The start identifier.
+        ///  The start element.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public Identity StartId { get; private set; }
+        public IModelElement Start { get; private set; }
 
 
         ///-------------------------------------------------------------------------------------------------
@@ -217,22 +165,21 @@ namespace Hyperstore.Modeling.Commands
             if (dm == null)
                 return null;
 
-            var start = _start ?? DomainModel.Store.GetElement(StartId);
-            if (start == null)
-                throw new InvalidElementException(StartId, "Source element must exists to create a relationship");
+            if (_start == null)
+                 new InvalidElementException(_start.Id, "Source element must exists to create a relationship");
 
-            if (String.Compare(start.Id.DomainModelName, EndId.DomainModelName, StringComparison.OrdinalIgnoreCase) == 0)
+            if (String.Compare(_start.Id.DomainModelName, EndId.DomainModelName, StringComparison.OrdinalIgnoreCase) == 0)
             {
-                if ((_end ?? DomainModel.Store.GetElement(EndId)) == null)
+                if (DomainModel.Store.GetElement(EndId) == null)
                     throw new InvalidElementException(EndId, "Target element must exists to create a relationship.");
             }
 
             using (CodeMarker.MarkBlock("AddRelationshipCommand.Handle"))
             {
-                dm.CreateRelationship(Id, SchemaRelationship, start, EndId, _element);
+                dm.CreateRelationship(Id, SchemaRelationship, _start, EndId, _element);
             }
 
-            return new AddRelationshipEvent(_domainModel.Name, DomainModel.ExtensionName, Id, SchemaRelationship.Id, StartId, EndId, context.CurrentSession.SessionId, Version.Value);
+            return new AddRelationshipEvent(_domainModel.Name, DomainModel.ExtensionName, Id, SchemaRelationship.Id, _start.Id, EndId, context.CurrentSession.SessionId, Version.Value);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -245,7 +192,7 @@ namespace Hyperstore.Modeling.Commands
         ///-------------------------------------------------------------------------------------------------
         public override string ToString()
         {
-            return String.Format("Add '{0}--[{2}]->{1}", StartId, EndId, Id);
+            return String.Format("Add '{0}--[{2}]->{1}", _start.Id, EndId, Id);
         }
     }
 }

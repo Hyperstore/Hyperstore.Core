@@ -847,14 +847,14 @@ namespace Hyperstore.Modeling.Domain
         ///  The element.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual IModelElement GetElement(Identity id)
+        public virtual IModelElement GetElement(Identity id, ISchemaElement schemaElement=null)
         {
             CheckInitialized();
 
             if (id == null)
                 return null;
 
-            IModelElement elem = L1Cache.GetElement(id);
+            IModelElement elem = L1Cache.GetElement(id, schemaElement);
             return elem;
         }
 
@@ -874,7 +874,7 @@ namespace Hyperstore.Modeling.Domain
         ///-------------------------------------------------------------------------------------------------
         public TElement GetElement<TElement>(Identity id) where TElement : IModelElement
         {
-            return (TElement)GetElement(id);
+            return (TElement)GetElement(id, this.Store.GetSchemaElement<TElement>());
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -888,9 +888,9 @@ namespace Hyperstore.Modeling.Domain
         ///  The entity.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual IModelEntity GetEntity(Identity id)
+        public virtual IModelEntity GetEntity(Identity id, ISchemaEntity schemaEntity=null)
         {
-            return GetElement(id) as IModelEntity;
+            return GetElement(id, schemaEntity) as IModelEntity;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -909,7 +909,7 @@ namespace Hyperstore.Modeling.Domain
         ///-------------------------------------------------------------------------------------------------
         public TElement GetEntity<TElement>(Identity id) where TElement : IModelEntity
         {
-            return (TElement)GetEntity(id);
+            return (TElement)GetElement(id, this.Store.GetSchemaEntity<TElement>());
         }
 
 
@@ -1131,12 +1131,12 @@ namespace Hyperstore.Modeling.Domain
         ///  The relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual IModelRelationship GetRelationship(Identity id)
+        public virtual IModelRelationship GetRelationship(Identity id, ISchemaRelationship schemaRelationship=null)
         {
             Contract.Requires(id, "id");
 
             CheckInitialized();
-            return L1Cache.GetElement(id) as IModelRelationship;
+            return L1Cache.GetElement(id, schemaRelationship) as IModelRelationship;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -1155,7 +1155,7 @@ namespace Hyperstore.Modeling.Domain
         ///-------------------------------------------------------------------------------------------------
         public TRelationship GetRelationship<TRelationship>(Identity id) where TRelationship : IModelRelationship
         {
-            return (TRelationship)GetRelationship(id);
+            return (TRelationship)GetRelationship(id, this.Store.GetSchemaRelationship<TRelationship>());
         }
 
         ///-------------------------------------------------------------------------------------------------

@@ -363,7 +363,7 @@ namespace Hyperstore.Modeling
         {
             Contract.Requires(id, "id");
 
-            var mel = GetElement(id);
+            var mel = GetElement(id, this.GetSchemaElement<T>());
             return (T)mel;
         }
 
@@ -385,7 +385,7 @@ namespace Hyperstore.Modeling
         {
             Contract.Requires(id, "id");
 
-            var mel = GetEntity(id);
+            var mel = GetEntity(id, this.GetSchemaEntity<T>());
             return (T)mel;
         }
 
@@ -400,7 +400,7 @@ namespace Hyperstore.Modeling
         ///  The entity.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IModelEntity GetEntity(Identity id)
+        public IModelEntity GetEntity(Identity id, ISchemaEntity schemaEntity=null)
         {
             Contract.Requires(id, "id");
 
@@ -421,14 +421,14 @@ namespace Hyperstore.Modeling
         ///  The element.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IModelElement GetElement(Identity id)
+        public IModelElement GetElement(Identity id, ISchemaElement schemaElement=null)
         {
             Contract.Requires(id, "id");
 
             var domainModel = GetDomainModel(id.DomainModelName);
             if (domainModel == null)
                 return null;
-            return domainModel.GetElement(id);
+            return domainModel.GetElement(id, schemaElement);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -1086,12 +1086,12 @@ namespace Hyperstore.Modeling
         ///  The relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IModelRelationship GetRelationship(Identity id)
+        public IModelRelationship GetRelationship(Identity id, ISchemaRelationship schemaRelationship=null)
         {
             Contract.Requires(id, "id");
 
             var domainModel = GetDomainModel(id.DomainModelName);
-            return domainModel == null ? null : domainModel.GetRelationship(id);
+            return domainModel == null ? null : domainModel.GetRelationship(id, schemaRelationship);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -1112,7 +1112,7 @@ namespace Hyperstore.Modeling
         {
             Contract.Requires(id, "id");
 
-            return (T)GetRelationship(id);
+            return (T)GetRelationship(id, this.GetSchemaRelationship<T>());
         }
 
         ///-------------------------------------------------------------------------------------------------

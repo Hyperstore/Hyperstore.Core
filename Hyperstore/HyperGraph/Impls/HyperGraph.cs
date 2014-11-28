@@ -322,7 +322,7 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  The element.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IModelElement GetElement(Identity id)
+        public IModelElement GetElement(Identity id, ISchemaElement schemaElement)
         {
             Contract.Requires(id, "id");
 
@@ -331,6 +331,8 @@ namespace Hyperstore.Modeling.HyperGraph
                 return null;
 
             var metadata = _domainModel.Store.GetSchemaElement(v.SchemaId);
+            if (schemaElement != null && schemaElement.IsA(metadata))
+                metadata = schemaElement;
 
             return (IModelElement)metadata.Deserialize(new SerializationContext(_domainModel, metadata, v));
         }
@@ -372,32 +374,6 @@ namespace Hyperstore.Modeling.HyperGraph
             return direction == Direction.Incoming ? node.Incomings : node.Outgoings;
         }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the element.
-        /// </summary>
-        /// <param name="id">
-        ///  .
-        /// </param>
-        /// <param name="metaclass">
-        ///  .
-        /// </param>
-        /// <returns>
-        ///  The entity.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public IModelEntity GetEntity(Identity id)
-        {
-            Contract.Requires(id, "id");
-
-            GraphNode v;
-            if (!GetGraphNode(id, NodeType.Node, out v) || v == null)
-                return null;
-
-            var metadata = _domainModel.Store.GetSchemaEntity(v.SchemaId);
-
-            return (IModelEntity)metadata.Deserialize(new SerializationContext(_domainModel, metadata, v));
-        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -482,23 +458,6 @@ namespace Hyperstore.Modeling.HyperGraph
                     }
                 }
             }
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the relationship.
-        /// </summary>
-        /// <param name="id">
-        ///  .
-        /// </param>
-        /// <returns>
-        ///  The relationship.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public IModelRelationship GetRelationship(Identity id)
-        {
-            DebugContract.Requires(id);
-            return (IModelRelationship)GetElement(id); // TODO voir si cela a un interet
         }
 
         ///-------------------------------------------------------------------------------------------------

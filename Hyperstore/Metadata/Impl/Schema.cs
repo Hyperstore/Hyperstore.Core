@@ -505,7 +505,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The element.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public override IModelElement GetElement(Identity id)
+        public override IModelElement GetElement(Identity id, ISchemaElement schemaElement=null)
         {
             Contract.Requires(id, "id");
 
@@ -513,7 +513,7 @@ namespace Hyperstore.Modeling.Metadata
             if (_elements.TryGetValue(id, out mel))
                 return mel;
 
-            mel = InnerGraph.GetElement(id);
+            mel = InnerGraph.GetElement(id, schemaElement) as IModelElement;
             if (mel != null)
                 _elements.TryAdd(id, mel);
 
@@ -531,7 +531,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public override IModelRelationship GetRelationship(Identity id)
+        public override IModelRelationship GetRelationship(Identity id, ISchemaRelationship schemaRelationship=null)
         {
             Contract.Requires(id, "id");
 
@@ -539,7 +539,7 @@ namespace Hyperstore.Modeling.Metadata
             if (_relationships.TryGetValue(id, out mel))
                 return mel;
 
-            mel = InnerGraph.GetRelationship(id);
+            mel = InnerGraph.GetElement(id, schemaRelationship) as IModelRelationship;
             if (mel != null)
                 _relationships.TryAdd(id, mel);
 

@@ -656,13 +656,13 @@ namespace Hyperstore.Modeling.Metadata
         {
             get { throw new NotSupportedException(); }
         }
-        IModelElement IDomainModel.GetElement(Identity id)
+        IModelElement IDomainModel.GetElement(Identity id, ISchemaElement schemaElement)
         {
             DebugContract.Requires(id);
             return ((ISchema)this).GetSchemaInfo(id);
         }
 
-        IModelEntity IDomainModel.GetEntity(Identity id)
+        IModelEntity IDomainModel.GetEntity(Identity id, ISchemaEntity schemaEntity)
         {
             throw new NotSupportedException();
         }
@@ -697,7 +697,7 @@ namespace Hyperstore.Modeling.Metadata
             throw new NotSupportedException();
         }
 
-        IModelRelationship IDomainModel.GetRelationship(Identity id)
+        IModelRelationship IDomainModel.GetRelationship(Identity id, ISchemaRelationship schemaRelationship)
         {
             throw new NotSupportedException();
         }
