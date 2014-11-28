@@ -136,6 +136,7 @@ namespace Hyperstore.Modeling.Serialization
         private int _depth;
         private Queue<IModelElement> _elements;
         private readonly ISchema _schema;
+        private IDomainModel _domain;
 
         #region static
 
@@ -326,6 +327,10 @@ namespace Hyperstore.Modeling.Serialization
 
         private void Serialize(IEnumerable<IModelElement> elements)
         {
+            var elem = _elements.FirstOrDefault();
+            if (elem != null)
+                _domain = elem.DomainModel;
+
             _serialized = new HashSet<Identity>();
             _schemaElements = new Dictionary<Identity, int>();
             _elements = new Queue<IModelElement>(elements);
@@ -531,11 +536,11 @@ namespace Hyperstore.Modeling.Serialization
                     if (!HasOption(JSonSerializationOption.SerializeIdentity))
                         throw new JsonSerializationException("Circular dependency detected. You must set the JSonSerializationOption.SerializeIdentity to serialize this object graph.");
 
-                    WriteKeyString("_eid", terminal.Id.ToString(), false);
+                    WriteKeyString("_eid", GetId( terminal ), false);
 
                     if (HasOption(JSonSerializationOption.SerializeRelationship))
                     {
-                        WriteKeyString("_rid", rel.Id.ToString());
+                        WriteKeyString("_rid", GetId( rel ));
                     }
                     if (HasOption(JSonSerializationOption.SerializeSchemaIdentity))
                     {
@@ -572,6 +577,16 @@ namespace Hyperstore.Modeling.Serialization
             return _toSerialize.Contains(rel);
         }
 
+        private string GetId(IModelElement element)
+        {
+            if (String.Compare(element.Id.DomainModelName, _domain.Name, StringComparison.OrdinalIgnoreCase) == 0)
+            {
+                return element.Id.Key;
+            }
+
+            return element.Id.ToString();
+        }
+
         private Dictionary<Identity, string> _identityMaps;
         private int _sequence;
 
@@ -592,7 +607,7 @@ namespace Hyperstore.Modeling.Serialization
             {
                 if (HasOption(JSonSerializationOption.SerializeIdentity))
                 {
-                    WriteKeyString("_id", mel.Id.ToString(), insertComma);
+                    WriteKeyString("_id", GetId( mel ), insertComma);
                     insertComma = true;
                 }
 
@@ -607,8 +622,8 @@ namespace Hyperstore.Modeling.Serialization
                     var rel = mel as IModelRelationship;
                     if (HasOption(JSonSerializationOption.SerializeIdentity))
                     {
-                        WriteKeyString("_sid", rel.Start.Id.ToString());
-                        WriteKeyString("_eid", rel.End.Id.ToString());
+                        WriteKeyString("_sid", GetId( rel.Start ));
+                        WriteKeyString("_eid", GetId( rel.End ));
                     }
 
                     if (HasOption(JSonSerializationOption.SerializeSchemaIdentity))

@@ -37,7 +37,8 @@ namespace Hyperstore.Modeling.Platform
             {
                 SerializeObject((IEvent)data, sb);
             }
-            else { 
+            else
+            {
                 SerializeValue(data, sb);
             }
             return sb.ToString();
@@ -67,7 +68,7 @@ namespace Hyperstore.Modeling.Platform
                     continue;
 
                 if (!first) sb.Append(',');
-                SerializeString(Conventions.ToJsonName( propInfo.Name ), sb);
+                SerializeString(Conventions.ToJsonName(propInfo.Name), sb);
                 sb.Append(':');
                 SerializeValue(val, sb);
                 first = false;
@@ -75,7 +76,7 @@ namespace Hyperstore.Modeling.Platform
             sb.Append('}');
         }
 
-        public object Deserialize(string data, object defaultValue, object obj=null)
+        public object Deserialize(string data, object defaultValue, object obj = null)
         {
             if (data == null)
                 return defaultValue;
@@ -170,7 +171,7 @@ namespace Hyperstore.Modeling.Platform
             {
                 sb.Append(((short)o).ToString("d", CultureInfo.InvariantCulture));
                 return;
-            }            
+            }
             if (o is Decimal)
             {
                 sb.Append(((Decimal)o).ToString("r", CultureInfo.InvariantCulture));
@@ -305,28 +306,33 @@ namespace Hyperstore.Modeling.Platform
             }
 
             var b = new StringBuilder();
-            int startIndex = 0;
-            int count = 0;
             for (int i = 0; i < value.Length; i++)
             {
                 char c = value[i];
 
-                // Append the unhandled characters (that do not require special treament)
-                // to the string builder when special characters are detected.
-                if (CharRequiresJavaScriptEncoding(c))
+                if (c == '\\')
                 {
-                    if (b == null)
+                    b.Append(c);
+                    b.Append(c);
+                    c = value[++i];
+                    switch (c)
                     {
-                        b = new StringBuilder(value.Length + 5);
+                        case 'r':
+                        case 'b':
+                        case 't':
+                        case 'n':
+                        case 'f':
+                            b.Append(c);
+                            break;
+                        case 'u':
+                            b.Append(c);
+                            for (var j = 0; j < 4; j++)
+                            {
+                                b.Append(value[++i]);
+                            }
+                            break;
                     }
-
-                    if (count > 0)
-                    {
-                        b.Append(value, startIndex, count);
-                    }
-
-                    startIndex = i + 1;
-                    count = 0;
+                    continue;
                 }
 
                 switch (c)
@@ -337,12 +343,6 @@ namespace Hyperstore.Modeling.Platform
                     case '\t':
                         b.Append("\\t");
                         break;
-                    case '\"':
-                        b.Append("\\\"");
-                        break;
-                    case '\\':
-                        b.Append("\\\\");
-                        break;
                     case '\n':
                         b.Append("\\n");
                         break;
@@ -352,44 +352,17 @@ namespace Hyperstore.Modeling.Platform
                     case '\f':
                         b.Append("\\f");
                         break;
+                    case '"':
+                        b.Append('\\');
+                        b.Append('"');
+                        break;
                     default:
-                        if (CharRequiresJavaScriptEncoding(c))
-                        {
-                            b.Append("\\u");
-                            b.Append(((int)c).ToString("x4", CultureInfo.InvariantCulture));
-                        }
-                        else
-                        {
-                            count++;
-                        }
+                        b.Append(c);
                         break;
                 }
             }
 
-            if (b == null)
-            {
-                return value;
-            }
-
-            if (count > 0)
-            {
-                b.Append(value, startIndex, count);
-            }
-
             return b.ToString();
-        }
-
-        private bool CharRequiresJavaScriptEncoding(char c)
-        {
-            return c < 0x20 // control chars always have to be encoded
-                || c == '\"' // chars which must be encoded per JSON spec
-                || c == '\\'
-                || c == '\'' // HTML-sensitive chars encoded for safety
-                || c == '<'
-                || c == '>'
-                || c == '\u0085' 
-                || c == '\u2028'
-                || c == '\u2029';
         }
     }
 }

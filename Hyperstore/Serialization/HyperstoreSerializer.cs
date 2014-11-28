@@ -262,7 +262,7 @@ namespace Hyperstore.Modeling.Serialization
                 _monikers = new Dictionary<Identity, MonikerEntry>();
                 SerializeEntities(entities);
                 SerializeRelationships(relationships);
-
+                
                 _writer.Save(stream, _monikers.Values);
             }
             finally
@@ -312,7 +312,7 @@ namespace Hyperstore.Modeling.Serialization
                 var value = element.GetPropertyValue(prop);
                 if (value.HasValue)
                 {
-                    _writer.PushProperty("property", prop.Name, Platform.PlatformServices.Current.ObjectSerializer.Serialize( prop.Serialize(value.Value)));
+                    _writer.PushProperty("property", prop.Name, Platform.PlatformServices.Current.ObjectSerializer.Serialize(prop.Serialize(value.Value)));
                 }
             }
         }
