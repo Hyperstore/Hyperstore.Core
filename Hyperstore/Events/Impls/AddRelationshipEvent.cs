@@ -59,14 +59,8 @@ namespace Hyperstore.Modeling.Events
         /// <param name="startId">
         ///  The start identifier.
         /// </param>
-        /// <param name="startSchema">
-        ///  The start schema.
-        /// </param>
         /// <param name="endId">
         ///  The end identifier.
-        /// </param>
-        /// <param name="endSchema">
-        ///  The end schema.
         /// </param>
         /// <param name="correlationId">
         ///  Identifier for the correlation.
@@ -75,21 +69,17 @@ namespace Hyperstore.Modeling.Events
         ///  (Optional) the version.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public AddRelationshipEvent(string domainModelName, string extensionName, Identity relationshipId, Identity schemaRelationshipId, Identity startId, Identity startSchema, Identity endId, Identity endSchema, int correlationId, long version)
+        public AddRelationshipEvent(string domainModelName, string extensionName, Identity relationshipId, Identity schemaRelationshipId, Identity startId, Identity endId, int correlationId, long version)
             : base(domainModelName, extensionName, version, correlationId)
         {
             Contract.Requires(relationshipId, "relationshipId");
             Contract.Requires(startId, "startId");
-            Contract.Requires(startSchema, "startSchema");
             Contract.Requires(schemaRelationshipId, "schemaRelationshipId");
             Contract.Requires(endId, "endId");
-            Contract.Requires(endSchema, "endSchema");
 
             SchemaId = schemaRelationshipId;
             StartId = startId;
-            StartSchemaId = startSchema;
             EndId = endId;
-            EndSchemaId = endSchema;
             Id = relationshipId;
         }
 
@@ -106,16 +96,6 @@ namespace Hyperstore.Modeling.Events
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets or sets the start schema.
-        /// </summary>
-        /// <value>
-        ///  The start schema.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public Identity StartSchemaId { get; set; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
         ///  Gets or sets the end.
         /// </summary>
         /// <value>
@@ -123,16 +103,6 @@ namespace Hyperstore.Modeling.Events
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         public Identity EndId { get; set; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets or sets the end schema.
-        /// </summary>
-        /// <value>
-        ///  The end schema.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public Identity EndSchemaId { get; set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -167,7 +137,7 @@ namespace Hyperstore.Modeling.Events
         ///-------------------------------------------------------------------------------------------------
         public IEvent GetReverseEvent(int correlationId)
         {
-            return new RemoveRelationshipEvent(Domain, ExtensionName, Id, SchemaId, StartId, StartSchemaId, EndId, EndSchemaId, correlationId, Version);
+            return new RemoveRelationshipEvent(Domain, ExtensionName, Id, SchemaId, StartId, EndId, correlationId, Version);
         }
 
         ///-------------------------------------------------------------------------------------------------

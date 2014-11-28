@@ -49,7 +49,7 @@ namespace Hyperstore.Tests.Hypergraph
             var cx = domain.Traversal.OnEveryPath(
                 // Filtre personnalisé 
                 // On prend en compte les chemins dont le noeud terminal est le 7 et on ignore les autres
-                    p => p.EndElement.Id.Key == "7"
+                    p => p.EndElement.Key == "7"
                         ? GraphTraversalEvaluatorResult.IncludeAndContinue
                         : GraphTraversalEvaluatorResult.ExcludeAndContinue
                     )
@@ -57,7 +57,7 @@ namespace Hyperstore.Tests.Hypergraph
 
             Assert.Equal(3, cx);
 
-            var p2 = domain.Traversal.OnEveryPath(p => p.EndElement.Id.Key == "7" ? GraphTraversalEvaluatorResult.IncludeAndExit : GraphTraversalEvaluatorResult.ExcludeAndContinue)
+            var p2 = domain.Traversal.OnEveryPath(p => p.EndElement.Key == "7" ? GraphTraversalEvaluatorResult.IncludeAndExit : GraphTraversalEvaluatorResult.ExcludeAndContinue)
                                      .PathTraverser(new GraphDepthFirstTraverser())
                                      .GetPaths(new NodeInfo(new Identity("test", "1"), metadata.Id)).First();
             Assert.Equal(2, p2.Length);
@@ -72,7 +72,7 @@ namespace Hyperstore.Tests.Hypergraph
             await store.Schemas.New<TestDomainDefinition>().CreateAsync();
             var domain = await store.DomainModels.New().CreateAsync("Test");
 
-            var start = new NodeInfo(new Identity("test", "1"), Identity.Empty);
+            var start = new Identity("test", "1");
             var p = new GraphPath(domain, start);
             var p2 = new GraphPath(domain, start);
 
@@ -82,8 +82,8 @@ namespace Hyperstore.Tests.Hypergraph
             Assert.Equal(start, p.StartElement);
             Assert.Equal(start, p.EndElement);
 
-            var end = new NodeInfo(new Identity("test", "3"), Identity.Empty);
-            var edge = new EdgeInfo(new Identity("test", "2"), new Identity("test", "Has"), end.Id, end.SchemaId);
+            var end = new Identity("test", "3");
+            var edge = new EdgeInfo(new Identity("test", "2"), new Identity("test", "Has"), end);
 
             p = p.Create(end, edge);
             p2 = p2.Create(end, edge);
@@ -95,8 +95,8 @@ namespace Hyperstore.Tests.Hypergraph
             Assert.Equal(end, p.EndElement);
 
 
-            end = new NodeInfo(new Identity("test", "5"), Identity.Empty);
-            edge = new EdgeInfo(new Identity("test", "4"), new Identity("test", "Has"), end.Id, end.SchemaId);
+            end = new Identity("test", "5");
+            edge = new EdgeInfo(new Identity("test", "4"), new Identity("test", "Has"), end);
 
             p = p.Create(end, edge);
             p2 = p2.Create(end, edge);

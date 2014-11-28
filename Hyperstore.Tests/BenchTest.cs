@@ -134,7 +134,7 @@ namespace Hyperstore.Tests
             {
                 using (var tx = store.BeginSession())
                 {
-                    IModelElement a = store.GetElement(ids[i], schema.Definition.XExtendsBaseClass);
+                    IModelElement a = store.GetElement(ids[i]);
                     //if (a != null)
                     {
                         Identity id;

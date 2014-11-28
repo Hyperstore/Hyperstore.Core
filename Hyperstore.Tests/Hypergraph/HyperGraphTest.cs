@@ -60,12 +60,12 @@ namespace Hyperstore.Tests.HyperGraph
             {
                 Graph.CreateEntity(aid, store.PrimitivesSchema.SchemaEntitySchema);
 
-                Assert.NotNull(Graph.GetElement(aid, store.PrimitivesSchema.SchemaEntitySchema));
+                Assert.NotNull(Graph.GetElement(aid));
                 session.AcceptChanges();
             }
             using (var session = domain.Store.BeginSession(new SessionConfiguration { Readonly = true }))
             {
-                Assert.NotNull(Graph.GetElement(aid, store.PrimitivesSchema.SchemaEntitySchema));
+                Assert.NotNull(Graph.GetElement(aid));
             }
         }
 
@@ -85,7 +85,7 @@ namespace Hyperstore.Tests.HyperGraph
             }
             using (var session = domain.Store.BeginSession(new SessionConfiguration { Readonly = true }))
             {
-                Assert.NotNull(Graph.GetElement(aid, store.PrimitivesSchema.SchemaEntitySchema));
+                Assert.NotNull(Graph.GetElement(aid));
             }
         }
 
@@ -102,12 +102,12 @@ namespace Hyperstore.Tests.HyperGraph
             using (var session = domain.Store.BeginSession())
             {
                 Graph.CreateEntity(aid, store.PrimitivesSchema.SchemaEntitySchema);
-                Assert.NotNull(Graph.GetElement(aid, store.PrimitivesSchema.SchemaEntitySchema));
+                Assert.NotNull(Graph.GetElement(aid));
             }
 
             using (var session = domain.Store.BeginSession(new SessionConfiguration { Readonly = true }))
             {
-                Assert.Null(Graph.GetElement(aid, store.PrimitivesSchema.SchemaEntitySchema));
+                Assert.Null(Graph.GetElement(aid));
             }
         }
 
@@ -124,10 +124,10 @@ namespace Hyperstore.Tests.HyperGraph
 
             var aid = Id(1);
             var metadata = schema.Definition.XExtendsBaseClass;
-            var mel = domain.GetElement(aid, metadata);
+            var mel = domain.GetElement(aid);
             var namePropertyMetadata = mel.SchemaInfo.GetProperty("Name");
 
-                var prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo, mel.SchemaInfo.GetProperty("Name"));
+                var prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo.GetProperty("Name"));
                 Assert.Null(prop);
 
             using (var session = domain.Store.BeginSession())
@@ -136,18 +136,18 @@ namespace Hyperstore.Tests.HyperGraph
                 session.AcceptChanges();
             }
 
-                Assert.True(Graph.GetElement(aid, metadata) != null);
+                Assert.True(Graph.GetElement(aid) != null);
              //   Assert.True(Graph.GetElement(aid.CreateAttributeIdentity("Name"), null, true) != null);
 
             using (var session = domain.Store.BeginSession())
             {
-                Graph.RemoveEntity(aid, metadata, true);
+                Graph.RemoveEntity(aid, true);
                 session.AcceptChanges();
             }
 
             using (var session = domain.Store.BeginSession(new SessionConfiguration { Readonly = true }))
             {
-                Assert.False(Graph.GetElement(aid, metadata) != null);
+                Assert.False(Graph.GetElement(aid) != null);
               //  Assert.False(Graph.GetElement(aid.CreateAttributeIdentity("Name"), null, true) != null);
             }
         }
@@ -169,7 +169,7 @@ namespace Hyperstore.Tests.HyperGraph
             using (var session = domain.Store.BeginSession(new SessionConfiguration { Readonly = true }))
             {
                 metadata = schema.Definition.XExtendsBaseClass;
-                mel = domain.GetElement(aid, metadata);
+                mel = domain.GetElement(aid);
             }
 
             var version = 0L;
@@ -180,8 +180,8 @@ namespace Hyperstore.Tests.HyperGraph
                 session.AcceptChanges();
             }
 
-            mel = domain.GetElement(aid, metadata);
-            var prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo, mel.SchemaInfo.GetProperty("Name"));
+            mel = domain.GetElement(aid);
+            var prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo.GetProperty("Name"));
             Assert.NotNull(prop);
             Assert.Equal("am", prop.Value);
 
@@ -194,7 +194,7 @@ namespace Hyperstore.Tests.HyperGraph
                 // Rollback
             }
 
-            prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo, mel.SchemaInfo.GetProperty("Name"));
+            prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo.GetProperty("Name"));
             Assert.NotNull(prop);
             Assert.Equal("am", prop.Value);
             Assert.Equal(version, prop.CurrentVersion);
@@ -273,9 +273,9 @@ namespace Hyperstore.Tests.HyperGraph
             ISchemaEntity metadata;
             IModelElement mel;
             metadata = schema.Definition.XExtendsBaseClass;
-            mel = domain.GetElement(aid, metadata);
+            mel = domain.GetElement(aid);
 
-            var prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo, mel.SchemaInfo.GetProperty("Name"));
+            var prop = Graph.GetPropertyValue(mel.Id,  mel.SchemaInfo.GetProperty("Name"));
             Assert.Null(prop);
 
             var version = 0L;
@@ -288,7 +288,7 @@ namespace Hyperstore.Tests.HyperGraph
 
             await Task.Delay(20); // Délai mini entre diffèrents Ticks de UtcNow 
 
-            prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo, mel.SchemaInfo.GetProperty("Name"));
+            prop = Graph.GetPropertyValue(mel.Id,  mel.SchemaInfo.GetProperty("Name"));
             Assert.NotNull(prop);
             Assert.Equal("am", prop.Value);
             Assert.Equal(version, prop.CurrentVersion);
@@ -301,7 +301,7 @@ namespace Hyperstore.Tests.HyperGraph
                 version = v;
             }
 
-            prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo, mel.SchemaInfo.GetProperty("Name"));
+            prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo.GetProperty("Name"));
             Assert.NotNull(prop);
             Assert.Equal("am2", prop.Value);
             Assert.Equal(version, prop.CurrentVersion);
@@ -322,7 +322,7 @@ namespace Hyperstore.Tests.HyperGraph
             ISchemaEntity metadata;
             IModelElement mel;
             metadata = schema.Definition.XExtendsBaseClass;
-            mel = domain.GetElement(aid, metadata);
+            mel = domain.GetElement(aid);
             var gate = new System.Threading.ManualResetEvent(false);
 
             var factory = new TaskFactory();
@@ -349,7 +349,7 @@ namespace Hyperstore.Tests.HyperGraph
 
             Task.WaitAll(t1, t2);
 
-            var prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo, mel.SchemaInfo.GetProperty("Name"));
+            var prop = Graph.GetPropertyValue(mel.Id, mel.SchemaInfo.GetProperty("Name"));
             Assert.NotNull(prop);
             Assert.Equal("am2", prop.Value);
         }
@@ -461,16 +461,16 @@ namespace Hyperstore.Tests.HyperGraph
                 session.Execute(new Hyperstore.Modeling.Commands.AddEntityCommand(domain, store.PrimitivesSchema.SchemaEntitySchema, id1));
                 session.Execute(new Hyperstore.Modeling.Commands.AddEntityCommand(dm2, store.PrimitivesSchema.SchemaEntitySchema, id2));
 
-                var source = store.GetElement(id1, store.PrimitivesSchema.SchemaEntitySchema);
-                var target = store.GetElement(id2, store.PrimitivesSchema.SchemaEntitySchema);
+                var source = store.GetElement(id1);
+                var target = store.GetElement(id2);
                 session.Execute(new Hyperstore.Modeling.Commands.AddRelationshipCommand(store.PrimitivesSchema.ModelRelationshipSchema, source, target, new Identity("Test1", "10")));
                 session.AcceptChanges();
             }
 
             using (var session = domain.Store.BeginSession(new SessionConfiguration { Readonly = true }))
             {
-                var src = store.GetElement(id1, store.PrimitivesSchema.SchemaEntitySchema);
-                var end = store.GetElement(id2, store.PrimitivesSchema.SchemaEntitySchema);
+                var src = store.GetElement(id1);
+                var end = store.GetElement(id2);
 
                 Assert.Equal(1, domain.GetRelationships(start: src).Count());
                 Assert.Equal(0, dm2.GetRelationships(end: end).Count());

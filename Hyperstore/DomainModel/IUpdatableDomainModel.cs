@@ -71,9 +71,6 @@ namespace Hyperstore.Modeling
         /// <param name="endId">
         ///  .
         /// </param>
-        /// <param name="endSchema">
-        ///  .
-        /// </param>
         /// <param name="relationship">
         ///  (Optional) The relationship.
         /// </param>
@@ -81,7 +78,7 @@ namespace Hyperstore.Modeling
         ///  The new relation ship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IModelRelationship CreateRelationship(Identity id, ISchemaRelationship relationshipSchema, IModelElement start, Identity endId, ISchemaElement endSchema, IModelRelationship relationship = null);
+        IModelRelationship CreateRelationship(Identity id, ISchemaRelationship relationshipSchema, IModelElement start, Identity endId, IModelRelationship relationship = null);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -90,17 +87,14 @@ namespace Hyperstore.Modeling
         /// <param name="id">
         ///  The id.
         /// </param>
-        /// <param name="relationshipSchema">
-        ///  The relationship Schema.
-        /// </param>
         /// <param name="throwExceptionIfNotExists">
         ///  if set to <c>true</c> [throw exception if not exists].
         /// </param>
         /// <returns>
-        ///  true if it succeeds, false if it fails.
+        ///  An ISchemaRelationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        bool RemoveRelationship(Identity id, ISchemaRelationship relationshipSchema, bool throwExceptionIfNotExists);
+        ISchemaRelationship RemoveRelationship(Identity id,  bool throwExceptionIfNotExists);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -109,17 +103,14 @@ namespace Hyperstore.Modeling
         /// <param name="id">
         ///  The id.
         /// </param>
-        /// <param name="entitySchema">
-        ///  The entity schema.
-        /// </param>
         /// <param name="throwExceptionIfNotExists">
         ///  if set to <c>true</c> [throw exception if not exists].
         /// </param>
         /// <returns>
-        ///  true if it succeeds, false if it fails.
+        ///  An ISchemaEntity.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        bool RemoveEntity(Identity id, ISchemaEntity entitySchema, bool throwExceptionIfNotExists);
+        ISchemaEntity RemoveEntity(Identity id, bool throwExceptionIfNotExists);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

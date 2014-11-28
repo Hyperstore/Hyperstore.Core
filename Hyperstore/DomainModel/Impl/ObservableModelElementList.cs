@@ -102,14 +102,12 @@ namespace Hyperstore.Modeling
 
             relationshipAddedSubscription = query.Subscribe(a => Notify(
                 Source != null ? a.Event.EndId : a.Event.StartId,
-                Source != null ? a.Event.EndSchemaId : a.Event.StartSchemaId,
                 Source != null ? a.Event.StartId : a.Event.EndId,
                 a.Event.SchemaId,
                 NotifyCollectionChangedAction.Add));
 
             relationshipRemovedSubscription = query2.Subscribe(a => Notify(
                 Source != null ? a.Event.EndId : a.Event.StartId,
-                Source != null ? a.Event.EndSchemaId : a.Event.StartSchemaId,
                 Source != null ? a.Event.StartId : a.Event.EndId,
                 a.Event.SchemaId,
                 NotifyCollectionChangedAction.Remove));
@@ -144,30 +142,30 @@ namespace Hyperstore.Modeling
             if (!valid)
                 return;
 
-            var item = (T)DomainModel.Store.GetElement(elementId, schema);
+            var item = (T)DomainModel.Store.GetElement(elementId);
             if (item == null)
                 return;
 
             if (_items.Contains(elementId))
             {
                 if (!WhereClause((T)item))
-                    NotifyChange(elementId, schemaId, NotifyCollectionChangedAction.Remove, item);
+                    NotifyChange(elementId, NotifyCollectionChangedAction.Remove, item);
                 return;
             }
 
             if (WhereClause((T)item))
-                NotifyChange(elementId, schemaId, NotifyCollectionChangedAction.Add, item);
+                NotifyChange(elementId, NotifyCollectionChangedAction.Add, item);
         }
 
-        private void Notify(Identity elementId, Identity schemaId, Identity startId, Identity rid, NotifyCollectionChangedAction defaultAction)
+        private void Notify(Identity elementId, Identity startId, Identity rid, NotifyCollectionChangedAction defaultAction)
         {
             if (DomainModel == null || rid != SchemaRelationship.Id || (Source != null && startId != Source.Id) || (End != null && startId != End.Id))
                 return;
 
-            NotifyChange(elementId, schemaId, defaultAction, null);
+            NotifyChange(elementId, defaultAction, null);
         }
 
-        private void NotifyChange(Identity elementId, Identity schemaId, NotifyCollectionChangedAction defaultAction, IModelElement item)
+        private void NotifyChange(Identity elementId, NotifyCollectionChangedAction defaultAction, IModelElement item)
         {
             int index = _items.IndexOf(elementId);
             if (defaultAction == NotifyCollectionChangedAction.Remove)
@@ -187,9 +185,8 @@ namespace Hyperstore.Modeling
             if (index >= 0)
                 return;
 
-            var schema = DomainModel.Store.GetSchemaElement(schemaId);
             if (item == null)
-                item = (T)DomainModel.Store.GetElement(elementId, schema);
+                item = (T)DomainModel.Store.GetElement(elementId);
 
             if (item == null || WhereClause != null && !WhereClause((T)item))
                 return;
@@ -268,7 +265,7 @@ namespace Hyperstore.Modeling
         }
 
 
-        struct Iterator : IEnumerator<T> 
+        struct Iterator : IEnumerator<T>
         {
             private ObservableModelElementList<T> list;
             private T current;

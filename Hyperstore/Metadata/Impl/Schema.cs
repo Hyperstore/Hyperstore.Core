@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System.Collections.Generic;
@@ -29,11 +29,11 @@ using Hyperstore.Modeling.Metadata.Constraints;
 
 namespace Hyperstore.Modeling.Metadata
 {
-    internal class DomainSchema<T> : DomainSchema, ISchema<T> where T:class, ISchemaDefinition
+    internal class DomainSchema<T> : DomainSchema, ISchema<T> where T : class, ISchemaDefinition
     {
         private readonly T _schemaDefinition;
 
-        public DomainSchema(T desc, string name, IServicesContainer services, DomainBehavior behavior = DomainBehavior.DisableL1Cache, IConstraintsManager constraints = null)
+        public DomainSchema(T desc, string name, IServicesContainer services, DomainBehavior behavior = DomainBehavior.Standard, IConstraintsManager constraints = null)
             : base(name, services, behavior, constraints)
         {
             DebugContract.Requires(desc);
@@ -73,7 +73,7 @@ namespace Hyperstore.Modeling.Metadata
         ///  The constraints.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public DomainSchema(string name, IServicesContainer services, DomainBehavior behavior = DomainBehavior.DisableL1Cache, IConstraintsManager constraints = null)
+        public DomainSchema(string name, IServicesContainer services, DomainBehavior behavior = DomainBehavior.Standard, IConstraintsManager constraints = null)
             : base(services, name)
         {
             Contract.Requires(services, "services");
@@ -217,7 +217,7 @@ namespace Hyperstore.Modeling.Metadata
         {
             Contract.Requires(id, "id");
 
-            var mel = GetElement(id, null) as ISchemaInfo;
+            var mel = GetElement(id) as ISchemaInfo;
             if (mel == null && throwErrorIfNotExists)
                 throw new MetadataNotFoundException(id.ToString());
             return mel;
@@ -267,7 +267,7 @@ namespace Hyperstore.Modeling.Metadata
             Contract.Requires(id, "id");
 
 
-            var mel = GetElement(id, null) as ISchemaEntity;
+            var mel = GetElement(id) as ISchemaEntity;
             if (mel == null && throwErrorIfNotExists)
                 throw new MetadataNotFoundException(id.ToString());
             return mel;
@@ -359,7 +359,7 @@ namespace Hyperstore.Modeling.Metadata
             Contract.Requires(id, "id");
 
 
-            var mel = GetElement(id, null) as ISchemaElement;
+            var mel = GetElement(id) as ISchemaElement;
             if (mel == null && throwErrorIfNotExists)
                 throw new MetadataNotFoundException(id.ToString());
             return mel;
@@ -451,7 +451,7 @@ namespace Hyperstore.Modeling.Metadata
         {
             Contract.Requires(id, "id");
 
-            var rel = GetRelationship(id, null) as ISchemaRelationship;
+            var rel = GetRelationship(id) as ISchemaRelationship;
             if (rel == null && throwErrorIfNotExists)
                 throw new MetadataNotFoundException(id.ToString());
             return rel;
@@ -501,14 +501,11 @@ namespace Hyperstore.Modeling.Metadata
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="metaclass">
-        ///  The metaclass.
-        /// </param>
         /// <returns>
         ///  The element.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public override IModelElement GetElement(Identity id, ISchemaElement metaclass)
+        public override IModelElement GetElement(Identity id)
         {
             Contract.Requires(id, "id");
 
@@ -516,7 +513,7 @@ namespace Hyperstore.Modeling.Metadata
             if (_elements.TryGetValue(id, out mel))
                 return mel;
 
-            mel = InnerGraph.GetElement(id, metaclass);
+            mel = InnerGraph.GetElement(id);
             if (mel != null)
                 _elements.TryAdd(id, mel);
 
@@ -530,14 +527,11 @@ namespace Hyperstore.Modeling.Metadata
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="metaclass">
-        ///  the metadata.
-        /// </param>
         /// <returns>
         ///  The relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public override IModelRelationship GetRelationship(Identity id, ISchemaRelationship metaclass)
+        public override IModelRelationship GetRelationship(Identity id)
         {
             Contract.Requires(id, "id");
 
@@ -545,7 +539,7 @@ namespace Hyperstore.Modeling.Metadata
             if (_relationships.TryGetValue(id, out mel))
                 return mel;
 
-            mel = InnerGraph.GetRelationship(id, metaclass);
+            mel = InnerGraph.GetRelationship(id);
             if (mel != null)
                 _relationships.TryAdd(id, mel);
 
@@ -587,7 +581,7 @@ namespace Hyperstore.Modeling.Metadata
 
             using (var session = EnsuresRunInSession())
             {
-                ((IUpdatableDomainModel)this).CreateRelationship(id, metaclass, start, end.Id, end.SchemaInfo);
+                ((IUpdatableDomainModel)this).CreateRelationship(id, metaclass, start, end.Id);
 
                 if (session != null)
                     session.AcceptChanges();

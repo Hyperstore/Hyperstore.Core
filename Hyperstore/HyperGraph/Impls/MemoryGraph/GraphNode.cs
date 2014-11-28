@@ -84,21 +84,18 @@ namespace Hyperstore.Modeling.HyperGraph
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         internal GraphNode(Identity id, Identity schemaId, NodeType nodetype,
-                            Identity start = null, Identity startSchema = null,
-                            Identity end = null, Identity endSchema = null,
+                            Identity start = null,
+                            Identity end = null, 
                             object value = null, long? version = null,
                             IEnumerable<EdgeInfo> outgoings = null, IEnumerable<EdgeInfo> incomings = null
             )
-            : base(id, schemaId, end, endSchema)
+            : base(id, schemaId, end)
         {
             DebugContract.Requires(id, "id");
             DebugContract.Requires(schemaId, "schemaId");
-            DebugContract.Requires(start == null || startSchema != null, "start");
-            DebugContract.Requires(end == null || endSchema != null, "end");
             DebugContract.Requires(start == null || end != null, "start/end");
 
             StartId = start;
-            StartSchemaId = startSchema;
 
             Value = value;
             Version = version ?? DateTime.UtcNow.Ticks;
@@ -111,7 +108,7 @@ namespace Hyperstore.Modeling.HyperGraph
         }
 
         private GraphNode(GraphNode copy)
-            : this(copy.Id, copy.SchemaId, copy.NodeType, copy.StartId, copy.StartSchemaId, copy.EndId, copy.EndSchemaId, copy.Value, outgoings: copy.Outgoings, incomings: copy.Incomings)
+            : this(copy.Id, copy.SchemaId, copy.NodeType, copy.StartId, copy.EndId, copy.Value, outgoings: copy.Outgoings, incomings: copy.Incomings)
         {
             DebugContract.Requires(copy, "copy");
         }
@@ -140,15 +137,6 @@ namespace Hyperstore.Modeling.HyperGraph
         ///-------------------------------------------------------------------------------------------------
         public Identity StartId { get; private set; }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the start meta class id.
-        /// </summary>
-        /// <value>
-        ///  The identifier of the start schema.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public Identity StartSchemaId { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -233,12 +221,11 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  A GraphNode.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual GraphNode AddEdge(Identity id, ISchemaRelationship schemaRelationship, Direction direction, Identity endId, Identity endSchemaId)
+        public virtual GraphNode AddEdge(Identity id, ISchemaRelationship schemaRelationship, Direction direction, Identity endId)
         {
             DebugContract.Requires(id, "id");
             DebugContract.Requires(schemaRelationship, "schemaRelationship");
             DebugContract.Requires(endId, "endId");
-            DebugContract.Requires(endSchemaId, "endSchemaId");
 
             if ((direction & Direction.Outgoing) == Direction.Outgoing && _outgoings.ContainsKey(id)
                 || (direction & Direction.Incoming) == Direction.Incoming && _incomings.ContainsKey(id))
@@ -251,7 +238,7 @@ namespace Hyperstore.Modeling.HyperGraph
             //    if (_incomings.Any(r => r.Value.SchemaId == schemaRelationship.Id))
             //        return null;
             //}
-            var edge = new EdgeInfo(id, schemaRelationship.Id, endId, endSchemaId);
+            var edge = new EdgeInfo(id, schemaRelationship.Id, endId);
 
             return new GraphNode(this,
                     (direction & Direction.Outgoing) == Direction.Outgoing ? _outgoings.Add(id, edge) : _outgoings,

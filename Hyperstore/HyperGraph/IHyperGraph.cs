@@ -63,17 +63,14 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="id">
         ///  The id.
         /// </param>
-        /// <param name="schemaEntity">
-        ///  The meta class.
-        /// </param>
         /// <param name="throwExceptionIfNotExists">
         ///  if set to <c>true</c> [throw exception if not exists].
         /// </param>
         /// <returns>
-        ///  true if it succeeds, false if it fails.
+        ///  the schema of the removed entity or null
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        bool RemoveEntity(Identity id, ISchemaEntity schemaEntity, bool throwExceptionIfNotExists);
+        ISchemaEntity RemoveEntity(Identity id, bool throwExceptionIfNotExists);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -82,19 +79,23 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="id">
         ///  The id.
         /// </param>
-        /// <param name="schemaEntity">
-        ///  The schema Container.
-        /// </param>
         /// <returns>
         ///  The entity.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IModelEntity GetEntity(Identity id, ISchemaEntity schemaEntity);
+        IModelEntity GetEntity(Identity id);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
         ///  Adds the relationship.
         /// </summary>
+        /// <param name="endSchema">
+        ///  The end schema.
+        /// </param>
+        ///
+        /// <param name="startSchema">
+        ///  .
+        /// </param>
         /// <param name="id">
         ///  The id.
         /// </param>
@@ -104,20 +105,14 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="startId">
         ///  The start.
         /// </param>
-        /// <param name="startSchema">
-        ///  .
-        /// </param>
         /// <param name="endId">
         ///  The end.
-        /// </param>
-        /// <param name="endSchema">
-        ///  The end schema.
         /// </param>
         /// <returns>
         ///  The new relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        GraphNode CreateRelationship(Identity id, ISchemaRelationship schemaRelationship, Identity startId, ISchemaElement startSchema, Identity endId, ISchemaElement endSchema);
+        GraphNode CreateRelationship(Identity id, ISchemaRelationship schemaRelationship, Identity startId, Identity endId);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -126,14 +121,11 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="id">
         ///  The id.
         /// </param>
-        /// <param name="schemaRelationship">
-        ///  The schema relationship.
-        /// </param>
         /// <returns>
         ///  The relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IModelRelationship GetRelationship(Identity id, ISchemaRelationship schemaRelationship);
+        IModelRelationship GetRelationship(Identity id);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -142,17 +134,14 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="id">
         ///  The id.
         /// </param>
-        /// <param name="schemaRelationship">
-        ///  The schema relationship.
-        /// </param>
         /// <param name="throwExceptionIfNotExists">
         ///  if set to <c>true</c> [throw exception if not exists].
         /// </param>
         /// <returns>
-        ///  true if it succeeds, false if it fails.
+        ///  the schema of the removed relationship or null
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        bool RemoveRelationship(Identity id, ISchemaRelationship schemaRelationship, bool throwExceptionIfNotExists);
+        ISchemaRelationship RemoveRelationship(Identity id, bool throwExceptionIfNotExists);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -161,9 +150,6 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="ownerId">
         ///  The owner id.
         /// </param>
-        /// <param name="ownerSchema">
-        ///  The schema that owns this item.
-        /// </param>
         /// <param name="schemaProperty">
         ///  The schema property.
         /// </param>
@@ -171,7 +157,7 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  The property value.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        PropertyValue GetPropertyValue(Identity ownerId, ISchemaElement ownerSchema, ISchemaProperty schemaProperty);
+        PropertyValue GetPropertyValue(Identity ownerId, ISchemaProperty schemaProperty);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -180,14 +166,11 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="schemaElement">
-        ///  The schema container.
-        /// </param>
         /// <returns>
         ///  The element.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IModelElement GetElement(Identity id, ISchemaElement schemaElement);
+        IModelElement GetElement(Identity id);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

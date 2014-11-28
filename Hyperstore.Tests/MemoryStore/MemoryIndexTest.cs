@@ -79,12 +79,12 @@ namespace Hyperstore.Tests.Memory
                 a.Name = "momo";
                 s.AcceptChanges();
                 // Est visible dans la transaction
-                Assert.NotNull(domain.GetElement(index.Get("momo"), schema.Definition.XExtendsBaseClass));
+                Assert.NotNull(domain.GetElement(index.Get("momo")));
             }
 
             using (var session = domain.Store.BeginSession(new SessionConfiguration { Readonly = true }))
             {
-                Assert.NotNull(domain.GetElement(index.Get("momo"), schema.Definition.XExtendsBaseClass));
+                Assert.NotNull(domain.GetElement(index.Get("momo")));
             }
         }
 
@@ -109,7 +109,7 @@ namespace Hyperstore.Tests.Memory
             dynamic mel;
             using (var session = domain.Store.BeginSession(new SessionConfiguration { Readonly = true }))
             {
-                mel = domain.GetElement(index.Get("momo"), schema.Definition.XExtendsBaseClass);
+                mel = domain.GetElement(index.Get("momo"));
                 Assert.NotNull(mel);
             }
             using (var s = domain.Store.BeginSession())
@@ -120,8 +120,8 @@ namespace Hyperstore.Tests.Memory
 
             using (var session = domain.Store.BeginSession(new SessionConfiguration { Readonly = true }))
             {
-                Assert.Null(domain.GetElement(index.Get("momo"), schema.Definition.XExtendsBaseClass));
-                Assert.NotNull(domain.GetElement(index.Get("mama"), schema.Definition.XExtendsBaseClass));
+                Assert.Null(domain.GetElement(index.Get("momo")));
+                Assert.NotNull(domain.GetElement(index.Get("mama")));
             }
         }
 
@@ -146,10 +146,10 @@ namespace Hyperstore.Tests.Memory
                 s.AcceptChanges();
             }
 
-            dynamic mel = domain.GetElement(index1.Get("momo"), schema.Definition.XExtendsBaseClass);
+            dynamic mel = domain.GetElement(index1.Get("momo"));
             Assert.NotNull(mel);
 
-            mel = domain.GetElement(index2.Get(10), schema.Definition.XExtendsBaseClass);
+            mel = domain.GetElement(index2.Get(10));
             Assert.NotNull(mel);
 
             using (var s = domain.Store.BeginSession())
@@ -158,14 +158,14 @@ namespace Hyperstore.Tests.Memory
                 s.AcceptChanges();
 
                 // Ne doit plus être visible ds la transaction
-                Assert.Null(domain.GetElement(index1.Get("momo"), schema.Definition.XExtendsBaseClass));
-                Assert.Null(domain.GetElement(index2.Get(10), schema.Definition.XExtendsBaseClass));
+                Assert.Null(domain.GetElement(index1.Get("momo")));
+                Assert.Null(domain.GetElement(index2.Get(10)));
             }
 
             using (var session = domain.Store.BeginSession(new SessionConfiguration { Readonly = true }))
             {
-                Assert.Null(domain.GetElement(index1.Get("momo"), schema.Definition.XExtendsBaseClass));
-                Assert.Null(domain.GetElement(index2.Get(10), schema.Definition.XExtendsBaseClass));
+                Assert.Null(domain.GetElement(index1.Get("momo")));
+                Assert.Null(domain.GetElement(index2.Get(10)));
             }
         }
     }

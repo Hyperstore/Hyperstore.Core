@@ -327,7 +327,7 @@ namespace Hyperstore.Modeling.Serialization
 
         private void Serialize(IEnumerable<IModelElement> elements)
         {
-            var elem = _elements.FirstOrDefault();
+            var elem = elements.FirstOrDefault();
             if (elem != null)
                 _domain = elem.DomainModel;
 

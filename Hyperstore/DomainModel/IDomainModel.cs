@@ -182,14 +182,11 @@ namespace Hyperstore.Modeling
         /// <param name="id">
         ///  The id of the element.
         /// </param>
-        /// <param name="containerSchema">
-        ///  The container schema.
-        /// </param>
         /// <returns>
         ///  Null if the element doesn't exist in the domain model.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IModelElement GetElement(Identity id, ISchemaElement containerSchema);
+        IModelElement GetElement(Identity id);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -214,14 +211,11 @@ namespace Hyperstore.Modeling
         /// <param name="id">
         ///  The id.
         /// </param>
-        /// <param name="entitySchema">
-        ///  The entity schema.
-        /// </param>
         /// <returns>
         ///  The entity.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IModelEntity GetEntity(Identity id, ISchemaEntity entitySchema);
+        IModelEntity GetEntity(Identity id);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -244,7 +238,7 @@ namespace Hyperstore.Modeling
         ///  Gets all element or relationships.
         /// </summary>
         /// <param name="containerSchema">
-        ///  (Optional) The container schema.
+        ///  (Optional) The schema element.
         /// </param>
         /// <param name="skip">
         ///  (Optional) The skip.
@@ -253,7 +247,7 @@ namespace Hyperstore.Modeling
         ///  An enumerator that allows foreach to be used to process the elements in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<IModelElement> GetElements(ISchemaElement containerSchema = null, int skip = 0);
+        IEnumerable<IModelElement> GetElements(ISchemaElement schemaElement = null, int skip = 0);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -294,9 +288,6 @@ namespace Hyperstore.Modeling
         /// <param name="ownerId">
         ///  The identifier that owns this item.
         /// </param>
-        /// <param name="ownerSchema">
-        ///  The schema that owns this item.
-        /// </param>
         /// <param name="propertySchema">
         ///  The property schema.
         /// </param>
@@ -304,7 +295,7 @@ namespace Hyperstore.Modeling
         ///  The property value.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        PropertyValue GetPropertyValue(Identity ownerId, ISchemaElement ownerSchema, ISchemaProperty propertySchema);
+        PropertyValue GetPropertyValue(Identity ownerId,  ISchemaProperty propertySchema);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -313,14 +304,11 @@ namespace Hyperstore.Modeling
         /// <param name="id">
         ///  The id.
         /// </param>
-        /// <param name="relationshipSchema">
-        ///  The relationship schema.
-        /// </param>
         /// <returns>
         ///  The relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IModelRelationship GetRelationship(Identity id, ISchemaRelationship relationshipSchema);
+        IModelRelationship GetRelationship(Identity id);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

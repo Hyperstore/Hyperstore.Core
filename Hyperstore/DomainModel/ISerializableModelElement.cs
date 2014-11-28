@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 namespace Hyperstore.Modeling
 {
     ///-------------------------------------------------------------------------------------------------
@@ -42,10 +42,7 @@ namespace Hyperstore.Modeling
         /// <param name="end">
         ///  (Optional) The end.
         /// </param>
-        /// <param name="endSchemaId">
-        ///  (Optional) the end schema identifier.
-        /// </param>
         ///-------------------------------------------------------------------------------------------------
-        void OnDeserializing(ISchemaElement containerSchema, IDomainModel domainModel, string key, Identity start = null, Identity end = null, Identity endSchemaId=null);
+        void OnDeserializing(ISchemaElement containerSchema, IDomainModel domainModel, string key, Identity start = null, Identity end = null);
     }
 }

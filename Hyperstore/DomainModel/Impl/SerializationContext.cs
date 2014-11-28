@@ -105,8 +105,6 @@ namespace Hyperstore.Modeling
             StartId = v.StartId;
             EndId = v.EndId;
             Schema = schemaElement;
-            EndSchemaId = v.EndSchemaId;
-            StartSchemaId = v.StartSchemaId;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -163,36 +161,6 @@ namespace Hyperstore.Modeling
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         public Identity EndId
-        {
-            [DebuggerStepThrough]
-            get;
-            private set;
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the identifier of the start schema.
-        /// </summary>
-        /// <value>
-        ///  The identifier of the start schema.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public Identity StartSchemaId
-        {
-            [DebuggerStepThrough]
-            get;
-            private set;
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the identifier of the end schema.
-        /// </summary>
-        /// <value>
-        ///  The identifier of the end schema.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public Identity EndSchemaId
         {
             [DebuggerStepThrough]
             get;

@@ -215,9 +215,9 @@ namespace Hyperstore.Modeling
         {
         }
 
-        void ISerializableModelElement.OnDeserializing(ISchemaElement schemaElement, IDomainModel domainModel, string key, Identity start, Identity end, Identity endSchemaId)
+        void ISerializableModelElement.OnDeserializing(ISchemaElement schemaElement, IDomainModel domainModel, string key, Identity start, Identity end)
         {
-            OnDeserializing(schemaElement, domainModel, key, start, end, endSchemaId);
+            OnDeserializing(schemaElement, domainModel, key, start, end);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -232,19 +232,16 @@ namespace Hyperstore.Modeling
         ///  .
         /// </param>
         /// <param name="key">
-        ///  .
+        ///  The key.
         /// </param>
         /// <param name="start">
-        ///  .
+        ///  The start.
         /// </param>
         /// <param name="end">
         ///  .
         /// </param>
-        /// <param name="endSchemaId">
-        ///  The end schema identifier.
-        /// </param>
         ///-------------------------------------------------------------------------------------------------
-        protected virtual void OnDeserializing(ISchemaElement schemaElement, IDomainModel domainModel, string key, Identity start, Identity end, Identity endSchemaId)
+        protected virtual void OnDeserializing(ISchemaElement schemaElement, IDomainModel domainModel, string key, Identity start, Identity end)
         {
             Contract.Requires(schemaElement, "schemaElement");
             Contract.Requires(domainModel, "domainModel");
@@ -455,7 +452,7 @@ namespace Hyperstore.Modeling
 
             IModelRelationship relationship = null;
             if (relationshipId != null)
-                relationship = DomainModel.GetRelationship(relationshipId, relationshipSchema);
+                relationship = DomainModel.GetRelationship(relationshipId);
 
             if (relationship == null)
             {
@@ -471,11 +468,7 @@ namespace Hyperstore.Modeling
                 var opposite = isOpposite ? relationship.Start : relationship.End;
                 if (opposite != null)
                 {
-                    var metaclass = opposite.SchemaInfo;
-                    if (metaclass == null)
-                        throw new MetadataNotFoundException(ExceptionMessages.InvalidMetaclassForReference);
-
-                    var mel = _store.GetElement(opposite.Id, metaclass);
+                    var mel = _store.GetElement(opposite.Id);
                     if (mel == null)
                         throw new InvalidElementException(opposite.Id, ExceptionMessages.InvalidReference);
 
@@ -537,7 +530,7 @@ namespace Hyperstore.Modeling
 
                 // Si l'identifiant est fourni c'est que la relation existe surement dèjà
                 if (relationshipId != null)
-                    relationship = DomainModel.GetRelationship(relationshipId, relationshipSchema);
+                    relationship = DomainModel.GetRelationship(relationshipId);
 
                 if (relationship == null)
                 {
@@ -909,7 +902,7 @@ namespace Hyperstore.Modeling
         {
             Contract.Requires(property, "property");
 
-            var pv = DomainModel.GetPropertyValue(_id, _schema, property);
+            var pv = DomainModel.GetPropertyValue(_id, property);
             SetCalculatedPropertySource(property.Name);
             return pv;
         }

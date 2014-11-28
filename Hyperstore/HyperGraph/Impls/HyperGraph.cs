@@ -227,27 +227,19 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="startId">
         ///  The start identifier.
         /// </param>
-        /// <param name="startSchema">
-        ///  The start schema.
-        /// </param>
         /// <param name="endId">
         ///  The end.
-        /// </param>
-        /// <param name="endSchema">
-        ///  The end meta class.
         /// </param>
         /// <returns>
         ///  The new relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual GraphNode CreateRelationship(Identity id, ISchemaRelationship metaRelationship, Identity startId, ISchemaElement startSchema, Identity endId, ISchemaElement endSchema)
+        public virtual GraphNode CreateRelationship(Identity id, ISchemaRelationship metaRelationship, Identity startId, Identity endId)
         {
             DebugContract.Requires(id);
             DebugContract.Requires(metaRelationship);
             DebugContract.Requires(startId);
-            DebugContract.Requires(startSchema);
             DebugContract.Requires(endId);
-            DebugContract.Requires(endSchema);
 
             if (Session.Current == null)
                 throw new SessionRequiredException();
@@ -260,10 +252,10 @@ namespace Hyperstore.Modeling.HyperGraph
 
             using (var tx = BeginTransaction())
             {
-                var node = new GraphNode(id, metaRelationship.Id, NodeType.Edge, startId, startSchema.Id, endId, endSchema.Id);
+                var node = new GraphNode(id, metaRelationship.Id, NodeType.Edge, startId, endId);
                 _storage.AddNode(node);
 
-                var terminals = GetTerminalNodes(startId, startSchema, endId, endSchema);
+                var terminals = GetTerminalNodes(metaRelationship, startId, endId);
                 var start = terminals.Item1;
                 var end = terminals.Item2;
 
@@ -273,18 +265,18 @@ namespace Hyperstore.Modeling.HyperGraph
                 // Mise à jour des infos sur les relations propres à un noeud
                 if (startId == endId)
                 {
-                    start = start.AddEdge(id, metaRelationship, Direction.Both, startId, startSchema.Id);
+                    start = start.AddEdge(id, metaRelationship, Direction.Both, startId);
                     _storage.UpdateNode(start);
                 }
                 else
                 {
-                    start = start.AddEdge(id, metaRelationship, Direction.Outgoing, endId, endSchema.Id);
+                    start = start.AddEdge(id, metaRelationship, Direction.Outgoing, endId);
                     _storage.UpdateNode(start);
 
                     // Relation uni-directionnelle entre domaine.
                     if (end != null)
                     {
-                        var tmp = end.AddEdge(id, metaRelationship, Direction.Incoming, startId, startSchema.Id);
+                        var tmp = end.AddEdge(id, metaRelationship, Direction.Incoming, startId);
                         if (tmp == null)
                             throw new HypergraphException(String.Format("Element {0} can not have multi parent", end.Id));
                         _storage.UpdateNode(tmp);
@@ -305,7 +297,7 @@ namespace Hyperstore.Modeling.HyperGraph
             }
         }
 
-        protected virtual Tuple<GraphNode, GraphNode> GetTerminalNodes(Identity startId, ISchemaInfo startSchema, Identity endId, ISchemaInfo endSchema)
+        protected virtual Tuple<GraphNode, GraphNode> GetTerminalNodes(ISchemaRelationship schema, Identity startId, Identity endId)
         {
             var start = _storage.GetNode(startId) as GraphNode;
 
@@ -330,22 +322,20 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  The element.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IModelElement GetElement(Identity id, ISchemaElement metaclass)
+        public IModelElement GetElement(Identity id)
         {
             Contract.Requires(id, "id");
 
             GraphNode v;
-            if (!GetGraphNode(id, NodeType.EdgeOrNode, metaclass, out v) || v == null)
+            if (!GetGraphNode(id, NodeType.EdgeOrNode, out v) || v == null)
                 return null;
 
             var metadata = _domainModel.Store.GetSchemaElement(v.SchemaId);
-            if (metaclass != null && metaclass.IsA(metadata))
-                metadata = metaclass;
 
             return (IModelElement)metadata.Deserialize(new SerializationContext(_domainModel, metadata, v));
         }
 
-        internal virtual bool GetGraphNode(Identity id, NodeType nodeType, ISchemaInfo schemaElement, out GraphNode node)
+        internal virtual bool GetGraphNode(Identity id, NodeType nodeType, out GraphNode node)
         {
             node = _storage.GetNode(id);
             if (node == null && nodeType != NodeType.Property && _lazyLoader != null)
@@ -358,7 +348,7 @@ namespace Hyperstore.Modeling.HyperGraph
             return true; // it has not been deleted
         }
 
-        internal virtual bool GraphNodeExists(Identity id, ISchemaElement schemaElement)
+        internal virtual bool GraphNodeExists(Identity id)
         {
             var exists = _storage.Exists(id);
             if (exists == false && _lazyLoader != null)
@@ -376,7 +366,7 @@ namespace Hyperstore.Modeling.HyperGraph
             return _storage.GetAllNodes(nodetype);
         }
 
-        internal virtual IEnumerable<EdgeInfo> GetGraphEdges(GraphNode source, ISchemaElement sourceSchema, Direction direction)
+        internal virtual IEnumerable<EdgeInfo> GetGraphEdges(GraphNode source, Direction direction)
         {
             var node = source as GraphNode;
             return direction == Direction.Incoming ? node.Incomings : node.Outgoings;
@@ -396,17 +386,15 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  The entity.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IModelEntity GetEntity(Identity id, ISchemaEntity metaclass)
+        public IModelEntity GetEntity(Identity id)
         {
             Contract.Requires(id, "id");
 
             GraphNode v;
-            if (!GetGraphNode(id, NodeType.Node, metaclass, out v) || v == null)
+            if (!GetGraphNode(id, NodeType.Node, out v) || v == null)
                 return null;
 
             var metadata = _domainModel.Store.GetSchemaEntity(v.SchemaId);
-            if (metaclass != null && metaclass.IsA(metadata))
-                metadata = metaclass;
 
             return (IModelEntity)metadata.Deserialize(new SerializationContext(_domainModel, metadata, v));
         }
@@ -503,17 +491,14 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="id">
         ///  .
         /// </param>
-        /// <param name="metaclass">
-        ///  .
-        /// </param>
         /// <returns>
         ///  The relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IModelRelationship GetRelationship(Identity id, ISchemaRelationship metaclass)
+        public IModelRelationship GetRelationship(Identity id)
         {
             DebugContract.Requires(id);
-            return (IModelRelationship)GetElement(id, metaclass); // TODO voir si cela a un interet
+            return (IModelRelationship)GetElement(id); // TODO voir si cela a un interet
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -541,25 +526,25 @@ namespace Hyperstore.Modeling.HyperGraph
             return GetRelationships<IModelRelationship>(metadata, start, end, skip);
         }
 
-        protected IEnumerable<EdgeInfo> GetEdges(Identity sourceId, ISchemaElement sourceSchema, Direction direction, ISchemaRelationship metadata, Identity oppositeId = null)
+        protected IEnumerable<EdgeInfo> GetEdges(Identity sourceId, Direction direction, ISchemaRelationship metadata, Identity oppositeId = null)
         {
             DebugContract.Requires(sourceId);
 
             GraphNode v;
-            if (!GetGraphNode(sourceId, NodeType.EdgeOrNode, sourceSchema, out v) || v == null)
+            if (!GetGraphNode(sourceId, NodeType.EdgeOrNode, out v) || v == null)
                 return Enumerable.Empty<EdgeInfo>();
 
-            return GetEdgesCore(v, sourceSchema, direction, metadata, oppositeId);
+            return GetEdgesCore(v, direction, metadata, oppositeId);
         }
 
-        protected IEnumerable<EdgeInfo> GetEdgesCore(GraphNode source, ISchemaElement sourceSchema, Direction direction, ISchemaRelationship metadata, Identity oppositeId = null)
+        protected IEnumerable<EdgeInfo> GetEdgesCore(GraphNode source, Direction direction, ISchemaRelationship metadata, Identity oppositeId = null)
         {
             if (source == null)
                 yield break;
 
             if ((direction & Direction.Outgoing) == Direction.Outgoing)
             {
-                foreach (var info in GetGraphEdges(source, sourceSchema, Direction.Outgoing))
+                foreach (var info in GetGraphEdges(source, Direction.Outgoing))
                 {
                     if (oppositeId == null || info.EndId == oppositeId)
                     {
@@ -579,7 +564,7 @@ namespace Hyperstore.Modeling.HyperGraph
 
             if ((direction & Direction.Incoming) == Direction.Incoming)
             {
-                foreach (var info in GetGraphEdges(source, sourceSchema, Direction.Incoming))
+                foreach (var info in GetGraphEdges(source, Direction.Incoming))
                 {
                     if (oppositeId == null || info.EndId == oppositeId)
                     {
@@ -626,12 +611,12 @@ namespace Hyperstore.Modeling.HyperGraph
             IEnumerable<NodeInfo> query;
             if (start != null)
             {
-                query = GetEdges(start.Id, start.SchemaInfo, Direction.Outgoing, metadata, end != null ? end.Id : null);
+                query = GetEdges(start.Id, Direction.Outgoing, metadata, end != null ? end.Id : null);
                 return GetRelationshipsCore<T>(query, skip, metadata);
             }
             else if (end != null)
             {
-                query = GetEdges(end.Id, end.SchemaInfo, Direction.Incoming, metadata);
+                query = GetEdges(end.Id, Direction.Incoming, metadata);
                 return GetRelationshipsCore<T>(query, skip, metadata);
             }
 
@@ -651,13 +636,12 @@ namespace Hyperstore.Modeling.HyperGraph
                 if (cx++ < skip)
                     continue;
 
-                if (currentMetadata == null || currentMetadata.Id != edge.SchemaId)
-                    currentMetadata = _domainModel.Store.GetSchemaRelationship(edge.SchemaId);
-
                 GraphNode node;
-                if (!GetGraphNode(edge.Id, NodeType.Edge, currentMetadata, out node) || node == null)
+                if (!GetGraphNode(edge.Id, NodeType.Edge, out node) || node == null)
                     continue;
 
+                if (currentMetadata == null || edge.SchemaId != currentMetadata.Id)
+                    currentMetadata = _domainModel.Store.GetSchemaRelationship(edge.SchemaId);
                 var ctx = new SerializationContext(_domainModel, currentMetadata, node);
                 yield return (T)currentMetadata.Deserialize(ctx);
             }
@@ -665,48 +649,38 @@ namespace Hyperstore.Modeling.HyperGraph
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Removes the element.
+        ///  Removes an entity
         /// </summary>
-        /// <exception cref="Exception">
-        ///  Thrown when an exception error condition occurs.
-        /// </exception>
         /// <exception cref="InvalidElementException">
         ///  Thrown when an Invalid Element error condition occurs.
         /// </exception>
         /// <param name="id">
-        ///  .
-        /// </param>
-        /// <param name="schemaEntity">
-        ///  The meta class.
+        ///  entity id
         /// </param>
         /// <param name="throwExceptionIfNotExists">
         ///  true to throw exception if not exists.
         /// </param>
         /// <returns>
-        ///  true if it succeeds, false if it fails.
+        ///  the schema element of the removed entity or null
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual bool RemoveEntity(Identity id, ISchemaEntity schemaEntity, bool throwExceptionIfNotExists)
+        public virtual ISchemaEntity RemoveEntity(Identity id, bool throwExceptionIfNotExists)
         {
             DebugContract.Requires(id);
-            DebugContract.Requires(schemaEntity);
             DebugContract.Requires(Session.Current);
-
-            if (schemaEntity is ISchemaRelationship)
-                throw new HypergraphException(ExceptionMessages.UseRemoveRelationshipToRemoveRelationship);
 
             Session.Current.AcquireLock(LockType.Exclusive, id);
 
             GraphNode node;
-            if (!GetGraphNode(id, NodeType.Node, schemaEntity, out node))
+            if (!GetGraphNode(id, NodeType.Node, out node))
             {
                 if (!throwExceptionIfNotExists)
-                    return false;
+                    return null;
 
                 throw new InvalidElementException(id);
             }
 
-
+            var schemaEntity = this._domainModel.Store.GetSchemaEntity(node.SchemaId);
             RemoveDependencies(node);
 
             _trace.WriteTrace(TraceCategory.Hypergraph, "Remove element {0}", id);
@@ -730,7 +704,7 @@ namespace Hyperstore.Modeling.HyperGraph
                 tx.Commit();
             }
 
-            return true;
+            return schemaEntity;
         }
 
         private void RemoveDependencies(GraphNode node)
@@ -739,19 +713,19 @@ namespace Hyperstore.Modeling.HyperGraph
             {
                 var visitor = new DeleteDependencyVisitor();
                 _domainModel.Traversal.WithVisitor(visitor).Traverse(node);
-                List<IDomainCommand> commands=null;
+                List<IDomainCommand> commands = null;
 
                 foreach (var incoming in node.Incomings)
                 {
-                    if( commands == null)
-                        commands  = new List<IDomainCommand>();
+                    if (commands == null)
+                        commands = new List<IDomainCommand>();
                     commands.Add(new RemoveRelationshipCommand(this._domainModel, incoming.Id, incoming.SchemaId));
                 }
 
                 if (commands != null || visitor.Commands.Any())
                 {
                     var cmds = commands != null ? visitor.Commands.Concat(commands) : visitor.Commands;
-                    
+
                     using (var session = _domainModel.Store.BeginSession())
                     {
                         session.SetContextInfo("$$remove$$", true); // loop guard
@@ -773,11 +747,11 @@ namespace Hyperstore.Modeling.HyperGraph
                 if (prop.PropertySchema is ISchemaRelationship)
                     continue;
 
-                var pnode = GetPropertyValue(id, schemaEntity, prop);
+                var pnode = GetPropertyValue(id, prop);
                 if (pnode != null)
                 {
                     _trace.WriteTrace(TraceCategory.Hypergraph, "Remove property {0}.{1}", id, prop.Name);
-                    commands.Add(new RemovePropertyCommand(_domainModel, id, schemaEntity, prop));
+                    commands.Add(new RemovePropertyCommand(_domainModel, id, schemaEntity.Id, prop));
                 }
             }
             if (commands.Count > 0)
@@ -794,33 +768,31 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  Thrown when an Invalid Element error condition occurs.
         /// </exception>
         /// <param name="id">
-        ///  .
-        /// </param>
-        /// <param name="schemaRelationship">
-        ///  The meta class.
+        ///  relationship id
         /// </param>
         /// <param name="throwExceptionIfNotExists">
         ///  true to throw exception if not exists.
         /// </param>
         /// <returns>
-        ///  true if it succeeds, false if it fails.
+        ///  the schema element of the removed entity or null
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual bool RemoveRelationship(Identity id, ISchemaRelationship schemaRelationship, bool throwExceptionIfNotExists)
+        public virtual ISchemaRelationship RemoveRelationship(Identity id, bool throwExceptionIfNotExists)
         {
             DebugContract.Requires(id);
-            DebugContract.Requires(schemaRelationship);
             DebugContract.Requires(Session.Current);
 
             Session.Current.AcquireLock(LockType.Exclusive, id);
 
             GraphNode edge;
-            if (!GetGraphNode(id, NodeType.Node, schemaRelationship, out edge))
+            if (!GetGraphNode(id, NodeType.Node, out edge))
             {
                 if (!throwExceptionIfNotExists)
-                    return false;
+                    return null;
                 throw new InvalidElementException(id);
             }
+
+            var schemaRelationship = this._domainModel.Store.GetSchemaRelationship(edge.SchemaId);
 
             Session.Current.AcquireLock(LockType.Exclusive, edge.StartId);
             Session.Current.AcquireLock(LockType.Exclusive, edge.EndId);
@@ -834,7 +806,7 @@ namespace Hyperstore.Modeling.HyperGraph
             {
                 if (_storage.RemoveNode(id))
                 {
-                    var terminals = GetTerminalNodes(edge.StartId, DomainModel.Store.GetSchemaInfo(edge.StartSchemaId), edge.EndId, DomainModel.Store.GetSchemaInfo(edge.EndSchemaId));
+                    var terminals = GetTerminalNodes(schemaRelationship, edge.StartId, edge.EndId);
                     var start = terminals.Item1;
                     var end = terminals.Item2;
 
@@ -887,7 +859,7 @@ namespace Hyperstore.Modeling.HyperGraph
                 tx.Commit();
             }
 
-            return true;
+            return schemaRelationship;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -910,18 +882,18 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  The property value or null if not exists.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public PropertyValue GetPropertyValue(Identity ownerId, ISchemaElement ownerSchema, ISchemaProperty property)
+        public PropertyValue GetPropertyValue(Identity ownerId, ISchemaProperty property)
         {
             DebugContract.Requires(ownerId);
             DebugContract.Requires(property);
 
             GraphNode v;
-            if (!GraphNodeExists(ownerId, ownerSchema))
+            if (!GraphNodeExists(ownerId))
                 throw new InvalidElementException(ownerId);
 
             var pid = ownerId.CreateAttributeIdentity(property.Name);
 
-            if (!GetGraphNode(pid, NodeType.Property, property, out v) || v == null)
+            if (!GetGraphNode(pid, NodeType.Property, out v) || v == null)
                 return null;
 
             var p = v as GraphNode;
@@ -969,7 +941,7 @@ namespace Hyperstore.Modeling.HyperGraph
             using (var tx = BeginTransaction())
             {
                 // Vérification si le owner existe
-                if (!GraphNodeExists(owner.Id, owner.SchemaInfo))
+                if (!GraphNodeExists(owner.Id))
                     throw new InvalidElementException(owner.Id);
 
                 var pid = owner.Id.CreateAttributeIdentity(property.Name);
@@ -1153,18 +1125,17 @@ namespace Hyperstore.Modeling.HyperGraph
 
                         // Si ce noeud n'existe pas dans le cache, on le met
                         GraphNode graphNode;
-                        GetGraphNode(result.Id, result.NodeType, nodeMetaclass, out graphNode);
+                        GetGraphNode(result.Id, result.NodeType, out graphNode);
                         var node = graphNode as GraphNode;
                         if (node == null)
                         {
                             if (result.NodeType == NodeType.Edge)
                             {
+                                var rSchema = nodeMetaclass as ISchemaRelationship;
                                 node = CreateRelationship(result.Id,
-                                                          nodeMetaclass as ISchemaRelationship,
+                                                          rSchema,
                                                           result.StartId,
-                                                          DomainModel.Store.GetSchemaElement(result.StartSchemaId),
-                                                          result.EndId,
-                                                          DomainModel.Store.GetSchemaElement(result.EndSchemaId)
+                                                          result.EndId
                                                          ) as GraphNode;
                             }
                             else
@@ -1179,12 +1150,12 @@ namespace Hyperstore.Modeling.HyperGraph
                             foreach (var edge in result.Outgoings)
                             {
                                 var edgeSchema = _domainModel.Store.GetSchemaRelationship(edge.SchemaId);
-                                node = node.AddEdge(edge.Id, edgeSchema, Direction.Outgoing, edge.EndId, edge.EndSchemaId);
+                                node = node.AddEdge(edge.Id, edgeSchema, Direction.Outgoing, edge.EndId);
                             }
                             foreach (var edge in result.Incomings)
                             {
                                 var edgeSchema = _domainModel.Store.GetSchemaRelationship(edge.SchemaId);
-                                node = node.AddEdge(edge.Id, edgeSchema, Direction.Incoming, edge.EndId, edge.EndSchemaId);
+                                node = node.AddEdge(edge.Id, edgeSchema, Direction.Incoming, edge.EndId);
                             }
                         }
 
@@ -1201,7 +1172,7 @@ namespace Hyperstore.Modeling.HyperGraph
                                         SetPropertyValue(mel, property.Key, property.Value.Value, property.Value.CurrentVersion);
                                     else if (option == MergeOption.PreserveChanges)
                                     {
-                                        if (GetPropertyValue(node.Id, nodeMetaclass, property.Key) == null)
+                                        if (GetPropertyValue(node.Id, property.Key) == null)
                                             SetPropertyValue(mel, property.Key, property.Value.Value, property.Value.CurrentVersion);
                                     }
                                 }

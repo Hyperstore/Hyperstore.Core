@@ -235,9 +235,7 @@ namespace Hyperstore.Modeling.Commands
                                  Id = addRelationEvent.Id,
                                  SchemaId = addRelationEvent.SchemaId,
                                  StartId = addRelationEvent.StartId,
-                                 StartSchemaId = addRelationEvent.StartSchemaId,
                                  EndId = addRelationEvent.EndId,
-                                 EndSchemaId = addRelationEvent.EndSchemaId,
                                  Version = @event.Version
                              };
                 _elements.Add(entity.Id, entity);
@@ -261,9 +259,7 @@ namespace Hyperstore.Modeling.Commands
                                  Id = removeRelationshipEvent.Id,
                                  SchemaId = removeRelationshipEvent.SchemaId,
                                  StartId = removeRelationshipEvent.StartId,
-                                 StartSchemaId = removeRelationshipEvent.StartSchemaId,
                                  EndId = removeRelationshipEvent.EndId,
-                                 EndSchemaId = removeRelationshipEvent.EndSchemaId
                              };
                     _elements.Add(entity.Id, entity);
                 }
@@ -286,9 +282,7 @@ namespace Hyperstore.Modeling.Commands
                                  Id = addRelationMetadataEvent.Id,
                                  SchemaId = addRelationMetadataEvent.SchemaId,
                                  StartId = addRelationMetadataEvent.StartId,
-                                 StartSchemaId = addRelationMetadataEvent.StartSchemaId,
                                  EndId = addRelationMetadataEvent.EndId,
-                                 EndSchemaId = addRelationMetadataEvent.EndSchemaId,
                                  IsSchema = true,
                                  Version = @event.Version
                              };
@@ -331,8 +325,7 @@ namespace Hyperstore.Modeling.Commands
                     {
                         if (relationship.State != TrackingState.Removed)
                         {
-                            var metadata = _session.Store.GetSchemaRelationship(relationship.SchemaId);
-                            var rel = _session.Store.GetRelationship(relationship.Id, metadata);
+                            var rel = _session.Store.GetRelationship(relationship.Id);
                             if (rel != null)
                             {
                                 if (isAborted)
@@ -345,7 +338,7 @@ namespace Hyperstore.Modeling.Commands
 
                         if (set.Add(relationship.StartId) && GetTrackedElementState(relationship.StartId) != TrackingState.Removed)
                         {
-                            var mel = _session.Store.GetElement(relationship.StartId, _session.Store.GetSchemaElement(relationship.StartSchemaId));
+                            var mel = _session.Store.GetElement(relationship.StartId);
                             if (mel != null) // Au cas ou il a été supprimé
                             {
                                 TrackedElement data;
@@ -365,7 +358,7 @@ namespace Hyperstore.Modeling.Commands
 
                         if (set.Add(relationship.EndId) && GetTrackedElementState(relationship.EndId) != TrackingState.Removed)
                         {
-                            var mel = _session.Store.GetElement(relationship.EndId, _session.Store.GetSchemaElement(relationship.EndSchemaId));
+                            var mel = _session.Store.GetElement(relationship.EndId);
                             if (mel != null) // Au cas ou il a été supprimé
                             {
                                 TrackedElement data;
@@ -395,8 +388,7 @@ namespace Hyperstore.Modeling.Commands
                     {
                         if (set.Add(element.Id))
                         {
-                            var metadata = _session.Store.GetSchemaElement(element.SchemaId);
-                            var mel = _session.Store.GetElement(element.Id, metadata);
+                            var mel = _session.Store.GetElement(element.Id);
                             if (mel != null)
                             {
                                 if (element.State != TrackingState.Removed)

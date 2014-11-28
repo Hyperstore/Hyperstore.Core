@@ -88,27 +88,17 @@ namespace Hyperstore.Modeling.Commands
         ///  (Optional) the version.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public AddRelationshipCommand(IDomainModel domainModel, ISchemaRelationship relationshipSchema, Identity startId, ISchemaElement startSchema, Identity endId, ISchemaElement endSchema, Identity id = null, long? version = null)
+        public AddRelationshipCommand(IDomainModel domainModel, ISchemaRelationship relationshipSchema, Identity startId, Identity endId, Identity id = null, long? version = null)
             : base(domainModel, version)
         {
             Contract.Requires(startId, "startId");
             Contract.Requires(endId, "endId");
-            Contract.Requires(startSchema, "startSchema");
             Contract.Requires(endId, "endId");
-            Contract.Requires(endSchema, "endSchema");
             Contract.Requires(relationshipSchema, "relationshipSchema");
             Contract.Requires(domainModel, "domainModel");
 
-            if (!startSchema.IsA(relationshipSchema.Start))
-                throw new TypeMismatchException(string.Format(ExceptionMessages.TypeMismatchStartElementMustBeAFormat, relationshipSchema.Start.Name));
-
-            if (!endSchema.IsA(relationshipSchema.End))
-                throw new TypeMismatchException(string.Format(ExceptionMessages.TypeMismatchEndElementMustBeAFormat, relationshipSchema.End.Name));
-
             StartId = startId;
             EndId = endId;
-            StartSchema = startSchema;
-            EndSchema = endSchema;
             _domainModel = domainModel;
             Id = id ?? DomainModel.IdGenerator.NextValue(relationshipSchema);
             if (String.Compare(Id.DomainModelName, domainModel.Name, StringComparison.OrdinalIgnoreCase) != 0)
@@ -141,7 +131,7 @@ namespace Hyperstore.Modeling.Commands
         /// </param>
         ///-------------------------------------------------------------------------------------------------
         public AddRelationshipCommand(ISchemaRelationship relationshipSchema, IModelElement start, IModelElement end, Identity id = null, long? version = null)
-            : this(start.DomainModel, relationshipSchema, start.Id, start.SchemaInfo, end.Id, end.SchemaInfo, id, version)
+            : this(start.DomainModel, relationshipSchema, start.Id, end.Id, id, version)
         {
             Contract.Requires(start, "start");
             Contract.Requires(end, "end");
@@ -182,15 +172,6 @@ namespace Hyperstore.Modeling.Commands
         ///-------------------------------------------------------------------------------------------------
         public Identity StartId { get; private set; }
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the start schema.
-        /// </summary>
-        /// <value>
-        ///  The start schema.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public ISchemaElement StartSchema { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -204,16 +185,6 @@ namespace Hyperstore.Modeling.Commands
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the end schema.
-        /// </summary>
-        /// <value>
-        ///  The end schema.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public ISchemaElement EndSchema { get; private set; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
         ///  Gets the relation ship.
         /// </summary>
         /// <value>
@@ -222,7 +193,7 @@ namespace Hyperstore.Modeling.Commands
         ///-------------------------------------------------------------------------------------------------
         public IModelRelationship Relationship
         {
-            get { return _element ?? (_element = DomainModel.GetRelationship(Id, SchemaRelationship)); }
+            get { return _element ?? (_element = DomainModel.GetRelationship(Id)); }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -246,22 +217,22 @@ namespace Hyperstore.Modeling.Commands
             if (dm == null)
                 return null;
 
-            var start = _start ?? DomainModel.Store.GetElement(StartId, StartSchema);
+            var start = _start ?? DomainModel.Store.GetElement(StartId);
             if (start == null)
                 throw new InvalidElementException(StartId, "Source element must exists to create a relationship");
 
             if (String.Compare(start.Id.DomainModelName, EndId.DomainModelName, StringComparison.OrdinalIgnoreCase) == 0)
             {
-                if ((_end ?? DomainModel.Store.GetElement(EndId, EndSchema)) == null)
+                if ((_end ?? DomainModel.Store.GetElement(EndId)) == null)
                     throw new InvalidElementException(EndId, "Target element must exists to create a relationship.");
             }
 
             using (CodeMarker.MarkBlock("AddRelationshipCommand.Handle"))
             {
-                dm.CreateRelationship(Id, SchemaRelationship, start, EndId, EndSchema, _element);
+                dm.CreateRelationship(Id, SchemaRelationship, start, EndId, _element);
             }
 
-            return new AddRelationshipEvent(_domainModel.Name, DomainModel.ExtensionName, Id, SchemaRelationship.Id, StartId, StartSchema.Id, EndId, EndSchema.Id, context.CurrentSession.SessionId, Version.Value);
+            return new AddRelationshipEvent(_domainModel.Name, DomainModel.ExtensionName, Id, SchemaRelationship.Id, StartId, EndId, context.CurrentSession.SessionId, Version.Value);
         }
 
         ///-------------------------------------------------------------------------------------------------

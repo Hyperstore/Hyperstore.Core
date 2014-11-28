@@ -103,13 +103,12 @@ namespace Hyperstore.Modeling.Domain
             }
         }
 
-        internal IModelElement GetElement(Identity id, ISchemaElement metaclass)
+        internal IModelElement GetElement(Identity id)
         {
             DebugContract.Requires(id);
             IModelElement elem;
 
-            var cacheEnabled = (metaclass.Schema.Behavior & DomainBehavior.DisableL1Cache) != DomainBehavior.DisableL1Cache
-                                || (Session.Current != null && (Session.Current.Mode & SessionMode.IgnoreCache) != SessionMode.IgnoreCache);
+            var cacheEnabled = (Session.Current == null || (Session.Current.Mode & SessionMode.IgnoreCache) == SessionMode.IgnoreCache);
 
             if (cacheEnabled)
             {
@@ -126,7 +125,7 @@ namespace Hyperstore.Modeling.Domain
                 }
             }
 
-            elem = InnerGraph.GetElement(id, metaclass);
+            elem = InnerGraph.GetElement(id);
             if (elem != null && Session.Current != null && Session.Current.TrackingData.GetTrackedElementState(elem.Id) == TrackingState.Removed)
                 return null;
 
@@ -150,8 +149,7 @@ namespace Hyperstore.Modeling.Domain
         {
             DebugContract.Requires(instance);
 
-            if ((instance.SchemaInfo.Schema.Behavior & DomainBehavior.DisableL1Cache) == DomainBehavior.DisableL1Cache
-                 || (Session.Current != null && (Session.Current.Mode & SessionMode.IgnoreCache) == SessionMode.IgnoreCache))
+            if ( (Session.Current != null && (Session.Current.Mode & SessionMode.IgnoreCache) == SessionMode.IgnoreCache))
                 return instance;
 
             return _cache.GetOrAdd(instance.Id, instance);
@@ -178,9 +176,9 @@ namespace Hyperstore.Modeling.Domain
             return mel;
         }
 
-        internal IModelRelationship CreateRelationship(Identity id, ISchemaRelationship relationshipSchema, IModelElement start, Identity endId, ISchemaElement endSchema, IModelRelationship relationship)
+        internal IModelRelationship CreateRelationship(Identity id, ISchemaRelationship relationshipSchema, IModelElement start, Identity endId,  IModelRelationship relationship)
         {
-            var r = InnerGraph.CreateRelationship(id, relationshipSchema, start.Id, start.SchemaInfo, endId, endSchema);
+            var r = InnerGraph.CreateRelationship(id, relationshipSchema, start.Id, endId);
 
             if (relationship == null)
             {

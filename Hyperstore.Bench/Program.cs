@@ -192,14 +192,13 @@ namespace Hyperstore.Bench
 
         private void ReadElement(int max)
         {
-            var schema = store.GetSchemaElement<XExtendsBaseClass>();
 
             //Parallel.For(0, max, i =>
             for (int i = 0; i < max; i++)
             {
                 using (var tx = store.BeginSession(new SessionConfiguration { Mode = SessionMode.SkipConstraints | SessionMode.SkipNotifications, Readonly = true }))
                 {
-                    var a = store.GetElement(ids[i], schema) as XExtendsBaseClass;
+                    var a = store.GetElement(ids[i]) as XExtendsBaseClass;
                     // var x = a.Name;
                     //  tx.AcceptChanges();
                 }

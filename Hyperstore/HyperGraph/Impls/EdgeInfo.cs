@@ -47,13 +47,12 @@ namespace Hyperstore.Modeling.HyperGraph
         ///  The end schema identifier.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public EdgeInfo(Identity id, Identity schemaId, Identity endId, Identity endSchemaId) : base(id, schemaId)
+        public EdgeInfo(Identity id, Identity schemaId, Identity endId) : base(id, schemaId)
         {
             Contract.Requires(id, "id");
             Contract.Requires(schemaId, "schemaId");
 
             EndId = endId;
-            EndSchemaId = endSchemaId;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -65,15 +64,5 @@ namespace Hyperstore.Modeling.HyperGraph
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         public Identity EndId { get; private set; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets or sets the identifier of the end schema.
-        /// </summary>
-        /// <value>
-        ///  The identifier of the end schema.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public Identity EndSchemaId { get; private set; }
     }
 }

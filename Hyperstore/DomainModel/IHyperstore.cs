@@ -318,14 +318,11 @@ namespace Hyperstore.Modeling
         /// <param name="id">
         ///  The id.
         /// </param>
-        /// <param name="entitySchema">
-        ///  The entity schema.
-        /// </param>
         /// <returns>
         ///  The element.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IModelElement GetElement(Identity id, ISchemaElement entitySchema);
+        IModelElement GetElement(Identity id);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -350,14 +347,11 @@ namespace Hyperstore.Modeling
         /// <param name="id">
         ///  The id.
         /// </param>
-        /// <param name="entitySchema">
-        ///  The entity schema.
-        /// </param>
         /// <returns>
         ///  The entity.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IModelEntity GetEntity(Identity id, ISchemaEntity entitySchema);
+        IModelEntity GetEntity(Identity id);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -443,14 +437,11 @@ namespace Hyperstore.Modeling
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="relationshipSchema">
-        ///  The relationship schema.
-        /// </param>
         /// <returns>
         ///  The relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IModelRelationship GetRelationship(Identity id, ISchemaRelationship relationshipSchema);
+        IModelRelationship GetRelationship(Identity id);
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>

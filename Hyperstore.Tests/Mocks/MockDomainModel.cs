@@ -94,7 +94,7 @@ namespace Hyperstore.Tests.Mocks
             remove { throw new NotImplementedException(); }
         }
 
-        IModelElement IDomainModel.GetElement(Identity id, ISchemaElement containerSchema)
+        IModelElement IDomainModel.GetElement(Identity id)
         {
             throw new NotImplementedException();
         }
@@ -104,7 +104,7 @@ namespace Hyperstore.Tests.Mocks
             throw new NotImplementedException();
         }
 
-        IModelEntity IDomainModel.GetEntity(Identity id, ISchemaEntity entitySchema)
+        IModelEntity IDomainModel.GetEntity(Identity id)
         {
             throw new NotImplementedException();
         }
@@ -129,12 +129,12 @@ namespace Hyperstore.Tests.Mocks
             throw new NotImplementedException();
         }
 
-        PropertyValue IDomainModel.GetPropertyValue(Identity ownerId, ISchemaElement ownerSchema, ISchemaProperty propertySchema)
+        PropertyValue IDomainModel.GetPropertyValue(Identity ownerId, ISchemaProperty propertySchema)
         {
             throw new NotImplementedException();
         }
 
-        IModelRelationship IDomainModel.GetRelationship(Identity id, ISchemaRelationship relationshipSchema)
+        IModelRelationship IDomainModel.GetRelationship(Identity id)
         {
             throw new NotImplementedException();
         }

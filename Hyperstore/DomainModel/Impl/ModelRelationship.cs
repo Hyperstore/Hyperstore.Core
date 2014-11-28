@@ -32,13 +32,10 @@ namespace Hyperstore.Modeling
     ///-------------------------------------------------------------------------------------------------
     public class ModelRelationship : ModelElement, IModelRelationship
     {
-        private readonly ISchemaElement _endMetadata;
-        private readonly ISchemaElement _startMetadata;
         //  private IModelElement _end;
         private Identity _endId;
         //  private IModelElement _start;
         private Identity _startId;
-        private Identity _endSchemaId;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -68,29 +65,22 @@ namespace Hyperstore.Modeling
         /// <param name="endId">
         ///  The end identifier.
         /// </param>
-        /// <param name="endSchema">
-        ///  The end schema.
-        /// </param>
         /// <param name="schemaRelationship">
         ///  (Optional) the schema relationship.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public ModelRelationship(IDomainModel domainModel, Identity startId, ISchemaElement startSchema, Identity endId, ISchemaElement endSchema, ISchemaRelationship schemaRelationship = null)
+        public ModelRelationship(IDomainModel domainModel, Identity startId, ISchemaElement startSchema, Identity endId, ISchemaRelationship schemaRelationship = null)
         {
             Contract.Requires(domainModel, "domainModel");
             Contract.Requires(startId, "startId");
             Contract.Requires(startSchema, "startSchema");
             Contract.Requires(endId, "endId");
-            Contract.Requires(endSchema, "endSchema");
 
             _startId = startId;
             _endId = endId;
-            _startMetadata = startSchema;
-            _endMetadata = endSchema;
-            _endSchemaId = endSchema.Id;
 
             // Appel du ctor hérité
-            Super(domainModel, schemaRelationship, (dm, melId, mid) => new AddRelationshipCommand(dm, mid as ISchemaRelationship, _startId, _startMetadata, _endId, _endMetadata, melId));
+            Super(domainModel, schemaRelationship, (dm, melId, mid) => new AddRelationshipCommand(dm, mid as ISchemaRelationship, _startId, _endId, melId));
 
             if (((IModelRelationship)this).SchemaRelationship == null)
                 throw new TypeMismatchException(ExceptionMessages.SchemaMismatch);
@@ -120,7 +110,6 @@ namespace Hyperstore.Modeling
 
             _startId = start.Id;
             _endId = end.Id;
-            _endSchemaId = end.SchemaInfo.Id;
             // Appel du ctor hérité
             Super(start.DomainModel, schemaRelationship, (dm, melId, mid) => new AddRelationshipCommand(mid as ISchemaRelationship, start, end, melId));
 
@@ -135,7 +124,7 @@ namespace Hyperstore.Modeling
 
         IModelElement IModelRelationship.Start
         {
-            get { return (DomainModel.GetElement(this._startId, ((ISchemaRelationship)((IModelElement)this).SchemaInfo).Start)); }
+            get { return DomainModel.GetElement(this._startId); }
         }
 
         Identity IModelRelationship.EndId
@@ -143,14 +132,10 @@ namespace Hyperstore.Modeling
             get { return _endId; }
         }
 
-        Identity IModelRelationship.EndSchemaId
-        {
-            get { return _endSchemaId; }
-        }
 
         IModelElement IModelRelationship.End
         {
-            get { return (Store.GetElement(this._endId, ((ISchemaRelationship)((IModelElement)this).SchemaInfo).End)); }
+            get { return Store.GetElement(this._endId); }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -172,20 +157,16 @@ namespace Hyperstore.Modeling
         /// <param name="end">
         ///  The end.
         /// </param>
-        /// <param name="endSchemaId">
-        ///  The end schema identifier.
-        /// </param>
         ///-------------------------------------------------------------------------------------------------
-        protected override void OnDeserializing(ISchemaElement schemaElement, IDomainModel domainModel, string key, Identity start, Identity end, Identity endSchemaId)
+        protected override void OnDeserializing(ISchemaElement schemaElement, IDomainModel domainModel, string key, Identity start, Identity end)
         {
             DebugContract.Requires(start);
             DebugContract.Requires(end);
 
-            base.OnDeserializing(schemaElement, domainModel, key, start, end, endSchemaId);
+            base.OnDeserializing(schemaElement, domainModel, key, start, end);
 
             _startId = start;
             _endId = end;
-            _endSchemaId = endSchemaId; // Traitement spécial pour les noeuds terminaux faisant partie d'un autre domaine qui n'est peut-être pas chargé
         }
 
         ///-------------------------------------------------------------------------------------------------

@@ -114,7 +114,7 @@ namespace Hyperstore.Modeling.Commands
         ///-------------------------------------------------------------------------------------------------
         public IModelEntity Entity
         {
-            get { return _element ?? (_element = DomainModel.GetEntity(Id, SchemaEntity)); }
+            get { return _element ?? (_element = DomainModel.GetEntity(Id)); }
         }
 
         ///-------------------------------------------------------------------------------------------------

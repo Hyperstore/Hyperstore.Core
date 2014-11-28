@@ -233,26 +233,16 @@ namespace Hyperstore.Modeling.Serialization
                     if (schema == null)
                         throw new MetadataNotFoundException(String.Format("Invalid metadata {0} for relationship {1}", metadata, id));
 
-                    var smetadata = ReadAttribute("startSchema");
                     var startId = ReadId("start");
-                    var startSchema = GetSchemaFromMoniker(smetadata);
-                    if (startSchema == null)
-                        throw new MetadataNotFoundException(String.Format("Invalid start metadata {0} for relationship {1}", smetadata, id));
-
-                    var emetadata = ReadAttribute("endSchema");
                     var endId = ReadId("end");
-                    var endSchema = GetSchemaFromMoniker(emetadata);
-                    if (endSchema == null)
-                        throw new MetadataNotFoundException(String.Format("Invalid end metadata {0} for relationship {1}", emetadata, id));
-
                     IModelRelationship entity=null;
                     if( _allowElementOverriding )
                     {
-                        entity = _domain.GetRelationship(id, schema);
+                        entity = _domain.GetRelationship(id);
                     }
 
                     if(entity == null)
-                        entity = _domain.CreateRelationship(schema, startId, startSchema, endId, endSchema, id);
+                        entity = _domain.CreateRelationship(schema, startId, endId, id);
 
                     elem = ReadProperties(entity, schema);
                 }
@@ -275,7 +265,7 @@ namespace Hyperstore.Modeling.Serialization
                     IModelEntity entity=null;
                     if( _allowElementOverriding )
                     {
-                        entity = _domain.GetEntity(id, schema);
+                        entity = _domain.GetEntity(id);
                     }
 
                     if(entity == null)

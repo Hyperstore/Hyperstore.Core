@@ -45,7 +45,7 @@ namespace Hyperstore.Modeling.Events
             Contract.Requires(@event, "@event");
 
             var metadata = domainModel.Store.GetSchemaEntity(@event.SchemaId);
-            if (domainModel.GetElement(@event.Id, metadata) == null)
+            if (domainModel.GetElement(@event.Id) == null)
                 yield return new AddEntityCommand(domainModel, metadata, @event.Id);
         }
     }

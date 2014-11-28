@@ -69,9 +69,6 @@ namespace Hyperstore.Modeling.Commands
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="schemaEntityId">
-        ///  The schema entity identifier.
-        /// </param>
         /// <param name="throwExceptionIfNotExists">
         ///  (Optional) if set to <c>true</c> [throw exception if not exists].
         /// </param>
@@ -79,15 +76,13 @@ namespace Hyperstore.Modeling.Commands
         ///  (Optional) the version.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public RemoveEntityCommand(IDomainModel domainModel, Identity id, Identity schemaEntityId, bool throwExceptionIfNotExists = true, long? version = null)
+        public RemoveEntityCommand(IDomainModel domainModel, Identity id, bool throwExceptionIfNotExists = true, long? version = null)
             : base(domainModel, version)
         {
             Contract.Requires(id, "id");
             Contract.Requires(domainModel, "domainModel");
-            Contract.Requires(schemaEntityId, "schemaEntityId");
 
-            var metadata = domainModel.Store.GetSchemaEntity(schemaEntityId);
-            Entity = domainModel.Store.GetEntity(id, metadata);
+            Entity = domainModel.Store.GetEntity(id);
             if (Entity == null && throwExceptionIfNotExists)
                 throw new InvalidElementException(id);
             _throwExceptionIfNotExists = throwExceptionIfNotExists;
@@ -123,7 +118,7 @@ namespace Hyperstore.Modeling.Commands
 
             using (CodeMarker.MarkBlock("RemoveEntityCommand.Handle"))
             {
-                if (!dm.RemoveEntity(Entity.Id, (ISchemaEntity)Entity.SchemaInfo, _throwExceptionIfNotExists))
+                if (dm.RemoveEntity(Entity.Id, _throwExceptionIfNotExists) == null)
                     return null;
             }
             return new RemoveEntityEvent(DomainModel.Name, DomainModel.ExtensionName, Entity.Id, Entity.SchemaInfo.Id, context.CurrentSession.SessionId, Version.Value);

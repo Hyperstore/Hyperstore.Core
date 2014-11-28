@@ -110,14 +110,8 @@ namespace Hyperstore.Modeling
         /// <param name="startId">
         ///  The start identifier.
         /// </param>
-        /// <param name="startSchema">
-        ///  The start schema.
-        /// </param>
         /// <param name="endId">
         ///  The end identifier.
-        /// </param>
-        /// <param name="endSchema">
-        ///  The end schema.
         /// </param>
         /// <param name="id">
         ///  (Optional) the identifier.
@@ -126,18 +120,17 @@ namespace Hyperstore.Modeling
         ///  The new relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public static IModelRelationship CreateRelationship(this IDomainModel domain, ISchemaRelationship schema, Identity startId, ISchemaElement startSchema, Identity endId, ISchemaElement endSchema, Identity id = null)
+        public static IModelRelationship CreateRelationship(this IDomainModel domain, ISchemaRelationship schema, Identity startId, Identity endId, Identity id = null)
         {
             Contract.Requires(domain != null, "domain");
             Contract.Requires(schema != null, "schema");
             Contract.Requires(startId != null, "startId");
             Contract.Requires(endId != null, "endId");
-            Contract.Requires(startSchema != null, "startSchema");
-            Contract.Requires(endSchema != null, "endSchema");
+
             if (Session.Current == null)
                 throw new SessionRequiredException();
 
-            var cmd = new AddRelationshipCommand(domain, schema, startId, startSchema, endId, endSchema, id);
+            var cmd = new AddRelationshipCommand(domain, schema, startId, endId, id);
             Session.Current.Execute(cmd);
             return cmd.Relationship;
         }

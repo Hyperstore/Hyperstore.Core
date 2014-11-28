@@ -363,11 +363,7 @@ namespace Hyperstore.Modeling
         {
             Contract.Requires(id, "id");
 
-            var metaclass = GetSchemaElement<T>(false);
-            if (metaclass == null)
-                return default(T);
-
-            var mel = GetElement(id, metaclass);
+            var mel = GetElement(id);
             return (T)mel;
         }
 
@@ -389,11 +385,7 @@ namespace Hyperstore.Modeling
         {
             Contract.Requires(id, "id");
 
-            var metaclass = GetSchemaEntity<T>(false);
-            if (metaclass == null)
-                return default(T);
-
-            var mel = GetEntity(id, metaclass);
+            var mel = GetEntity(id);
             return (T)mel;
         }
 
@@ -404,22 +396,18 @@ namespace Hyperstore.Modeling
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="metaclass">
-        ///  the metaclass.
-        /// </param>
         /// <returns>
         ///  The entity.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IModelEntity GetEntity(Identity id, ISchemaEntity metaclass)
+        public IModelEntity GetEntity(Identity id)
         {
             Contract.Requires(id, "id");
-            Contract.Requires(metaclass, "metaclass");
 
             var domainModel = GetDomainModel(id.DomainModelName);
             if (domainModel == null)
                 return null;
-            return domainModel.GetEntity(id, metaclass);
+            return domainModel.GetEntity(id);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -429,22 +417,18 @@ namespace Hyperstore.Modeling
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="schemaElement">
-        ///  the metaclass.
-        /// </param>
         /// <returns>
         ///  The element.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IModelElement GetElement(Identity id, ISchemaElement schemaElement)
+        public IModelElement GetElement(Identity id)
         {
             Contract.Requires(id, "id");
-            Contract.Requires(schemaElement, "schemaElement");
 
             var domainModel = GetDomainModel(id.DomainModelName);
             if (domainModel == null)
                 return null;
-            return domainModel.GetElement(id, schemaElement);
+            return domainModel.GetElement(id);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -1098,20 +1082,16 @@ namespace Hyperstore.Modeling
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="metaRelationship">
-        ///  The meta relationship.
-        /// </param>
         /// <returns>
         ///  The relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public IModelRelationship GetRelationship(Identity id, ISchemaRelationship metaRelationship)
+        public IModelRelationship GetRelationship(Identity id)
         {
             Contract.Requires(id, "id");
-            Contract.Requires(metaRelationship, "metaRelationship");
 
             var domainModel = GetDomainModel(id.DomainModelName);
-            return domainModel == null ? null : domainModel.GetRelationship(id, metaRelationship);
+            return domainModel == null ? null : domainModel.GetRelationship(id);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -1132,11 +1112,7 @@ namespace Hyperstore.Modeling
         {
             Contract.Requires(id, "id");
 
-            var metaclass = GetSchemaRelationship<T>(false);
-            if (metaclass == null)
-                return default(T);
-
-            return (T)GetRelationship(id, metaclass);
+            return (T)GetRelationship(id);
         }
 
         ///-------------------------------------------------------------------------------------------------

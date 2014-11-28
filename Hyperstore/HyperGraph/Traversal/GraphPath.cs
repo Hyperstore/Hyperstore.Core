@@ -46,7 +46,7 @@ namespace Hyperstore.Modeling.Traversal
         public IDomainModel DomainModel { get; private set; }
 
 
-        internal GraphPath(IDomainModel domain, NodeInfo node)
+        internal GraphPath(IDomainModel domain, Identity node)
         {
             DebugContract.Requires(node, "node");
 
@@ -54,7 +54,7 @@ namespace Hyperstore.Modeling.Traversal
             EndElement = node;
         }
 
-        private GraphPath(GraphPath parent, NodeInfo node, EdgeInfo fromEdge)
+        private GraphPath(GraphPath parent, Identity node, EdgeInfo fromEdge)
         {
             DomainModel = parent.DomainModel;
             _parent = parent;
@@ -62,7 +62,7 @@ namespace Hyperstore.Modeling.Traversal
             LastTraversedRelationship = fromEdge;
         }
 
-        internal GraphPath Create(NodeInfo node, EdgeInfo fromEdge)
+        internal GraphPath Create(Identity node, EdgeInfo fromEdge)
         {
             DebugContract.Requires(node);
 
@@ -87,7 +87,7 @@ namespace Hyperstore.Modeling.Traversal
         ///  The elements.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public IEnumerable<NodeInfo> Elements { get { return IterateToRoot().Where(p => p.EndElement != null).Select(p => p.EndElement); } }
+        public IEnumerable<Identity> Elements { get { return IterateToRoot().Where(p => p.EndElement != null).Select(p => p.EndElement); } }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -97,7 +97,7 @@ namespace Hyperstore.Modeling.Traversal
         ///  The start element.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public NodeInfo StartElement
+        public Identity StartElement
         {
             get
             {
@@ -134,7 +134,7 @@ namespace Hyperstore.Modeling.Traversal
         ///  The end element.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public NodeInfo EndElement
+        public Identity EndElement
         {
             get;
             private set;
@@ -230,7 +230,7 @@ namespace Hyperstore.Modeling.Traversal
             foreach (var mel in Elements)
             {
                 stack.Push("]");
-                stack.Push(mel.Id.ToString());
+                stack.Push(mel.ToString());
                 if (iterator.MoveNext())
                 {
                     stack.Push(" --> [");

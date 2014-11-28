@@ -136,7 +136,7 @@ namespace Hyperstore.Modeling.Commands
                 updatableMetaModel.AddRelationshipSchema(Id, SchemaRelationship, Start, End);
             }
 
-            return new AddSchemaRelationshipEvent(DomainModel.Name, DomainModel.ExtensionName, Id, SchemaRelationship.Id, Start.Id, Start.SchemaInfo.Id, End.Id, End.SchemaInfo.Id, context.CurrentSession.SessionId, Version.Value);
+            return new AddSchemaRelationshipEvent(DomainModel.Name, DomainModel.ExtensionName, Id, SchemaRelationship.Id, Start.Id, End.Id, context.CurrentSession.SessionId, Version.Value);
         }
 
         ///-------------------------------------------------------------------------------------------------

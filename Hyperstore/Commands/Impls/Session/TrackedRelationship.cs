@@ -36,16 +36,6 @@ namespace Hyperstore.Modeling.Commands
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the identifier of the start schema.
-        /// </summary>
-        /// <value>
-        ///  The identifier of the start schema.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public Identity StartSchemaId { get; internal set; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
         ///  Gets the identifier of the end.
         /// </summary>
         /// <value>
@@ -53,15 +43,5 @@ namespace Hyperstore.Modeling.Commands
         /// </value>
         ///-------------------------------------------------------------------------------------------------
         public Identity EndId { get; internal set; }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///  Gets the identifier of the end schema.
-        /// </summary>
-        /// <value>
-        ///  The identifier of the end schema.
-        /// </value>
-        ///-------------------------------------------------------------------------------------------------
-        public Identity EndSchemaId { get; internal set; }
     }
 }

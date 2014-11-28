@@ -149,7 +149,7 @@ namespace Hyperstore.Modeling.Metadata.Constraints
         {
             foreach (var msg in Messages.Where(m => m.Element != null))
             {
-                var mel = msg.Element.DomainModel.Store.GetElement(msg.Element.Id, msg.Element.SchemaInfo); // ensures getting it in the L1Cache
+                var mel = msg.Element.DomainModel.Store.GetElement(msg.Element.Id); // ensures getting it in the L1Cache
                 ((Hyperstore.Modeling.Domain.IDataErrorNotifier)mel).NotifyDataErrors(this);
             }
         }

@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using Hyperstore.Modeling.HyperGraph;
@@ -41,6 +41,6 @@ namespace Hyperstore.Modeling.Traversal
         ///  An enumerator that allows foreach to be used to process from in this collection.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        IEnumerable<EdgeInfo> From(NodeInfo node);
+        IEnumerable<EdgeInfo> From(Identity node);
     }
 }

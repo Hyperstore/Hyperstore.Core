@@ -803,9 +803,9 @@ namespace Hyperstore.Modeling.Domain
             private set;
         }
 
-        bool IUpdatableDomainModel.RemoveEntity(Identity id, ISchemaEntity metadata, bool throwExceptionIfNotExists)
+        ISchemaEntity IUpdatableDomainModel.RemoveEntity(Identity id, bool throwExceptionIfNotExists)
         {
-            return RemoveEntityCore(id, metadata, throwExceptionIfNotExists);
+            return RemoveEntityCore(id, throwExceptionIfNotExists);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -815,25 +815,21 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="metadata">
-        ///  the metadata.
-        /// </param>
         /// <param name="throwExceptionIfNotExists">
         ///  true to throw exception if not exists.
         /// </param>
         /// <returns>
-        ///  true if it succeeds, false if it fails.
+        ///  An ISchemaEntity.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected virtual bool RemoveEntityCore(Identity id, ISchemaEntity metadata, bool throwExceptionIfNotExists)
+        protected virtual ISchemaEntity RemoveEntityCore(Identity id, bool throwExceptionIfNotExists)
         {
             Contract.Requires(id, "id");
-            Contract.Requires(metadata, "metadata");
             CheckInitialized();
 
             using (var session = EnsuresRunInSession())
             {
-                var r = InnerGraph.RemoveEntity(id, metadata, throwExceptionIfNotExists);
+                var r = InnerGraph.RemoveEntity(id, throwExceptionIfNotExists);
                 if (session != null)
                     session.AcceptChanges();
                 return r;
@@ -847,23 +843,18 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="metaclass">
-        ///  The metaclass.
-        /// </param>
         /// <returns>
         ///  The element.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual IModelElement GetElement(Identity id, ISchemaElement metaclass)
+        public virtual IModelElement GetElement(Identity id)
         {
             CheckInitialized();
 
             if (id == null)
                 return null;
 
-            // Dans le cas d'une extension de de domaine, il faut s'assurer de ne conserver dans le cache que les instances
-            // d'un type du domaine sous peine d'avoir des casts invalides si le domaine est déchargé
-            IModelElement elem = L1Cache.GetElement(id, metaclass);
+            IModelElement elem = L1Cache.GetElement(id);
             return elem;
         }
 
@@ -883,7 +874,7 @@ namespace Hyperstore.Modeling.Domain
         ///-------------------------------------------------------------------------------------------------
         public TElement GetElement<TElement>(Identity id) where TElement : IModelElement
         {
-            return (TElement)GetElement(id, Store.GetSchemaElement<TElement>());
+            return (TElement)GetElement(id);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -893,16 +884,13 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="metaclass">
-        ///  The metaclass.
-        /// </param>
         /// <returns>
         ///  The entity.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual IModelEntity GetEntity(Identity id, ISchemaEntity metaclass)
+        public virtual IModelEntity GetEntity(Identity id)
         {
-            return GetElement(id, metaclass) as IModelEntity;
+            return GetElement(id) as IModelEntity;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -921,7 +909,7 @@ namespace Hyperstore.Modeling.Domain
         ///-------------------------------------------------------------------------------------------------
         public TElement GetEntity<TElement>(Identity id) where TElement : IModelEntity
         {
-            return (TElement)GetEntity(id, Store.GetSchemaEntity<TElement>());
+            return (TElement)GetEntity(id);
         }
 
 
@@ -992,9 +980,6 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="ownerId">
         ///  The identifier that owns this item.
         /// </param>
-        /// <param name="ownerSchema">
-        ///  The schema that owns this item.
-        /// </param>
         /// <param name="property">
         ///  The property.
         /// </param>
@@ -1002,13 +987,13 @@ namespace Hyperstore.Modeling.Domain
         ///  The property value.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual PropertyValue GetPropertyValue(Identity ownerId, ISchemaElement ownerSchema, ISchemaProperty property)
+        public virtual PropertyValue GetPropertyValue(Identity ownerId, ISchemaProperty property)
         {
             Contract.Requires(ownerId, "ownerId");
             Contract.Requires(property, "property");
             CheckInitialized();
 
-            var prop = InnerGraph.GetPropertyValue(ownerId, ownerSchema, property);
+            var prop = InnerGraph.GetPropertyValue(ownerId, property);
             if (prop == null || prop.CurrentVersion == 0)
             {
                 prop = new PropertyValue { Value = property.DefaultValue, CurrentVersion = 0 };
@@ -1056,9 +1041,9 @@ namespace Hyperstore.Modeling.Domain
             }
         }
 
-        IModelRelationship IUpdatableDomainModel.CreateRelationship(Identity id, ISchemaRelationship relationshipSchema, IModelElement start, Identity endId, ISchemaElement endSchema, IModelRelationship relationship)
+        IModelRelationship IUpdatableDomainModel.CreateRelationship(Identity id, ISchemaRelationship relationshipSchema, IModelElement start, Identity endId, IModelRelationship relationship)
         {
-            return CreateRelationshipCore(id, relationshipSchema, start, endId, endSchema, relationship);
+            return CreateRelationshipCore(id, relationshipSchema, start, endId, relationship);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -1077,9 +1062,6 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="endId">
         ///  The end identifier.
         /// </param>
-        /// <param name="endSchema">
-        ///  The end schema.
-        /// </param>
         /// <param name="relationship">
         ///  The relationship.
         /// </param>
@@ -1087,18 +1069,17 @@ namespace Hyperstore.Modeling.Domain
         ///  The new relationship core.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected virtual IModelRelationship CreateRelationshipCore(Identity id, ISchemaRelationship relationshipSchema, IModelElement start, Identity endId, ISchemaElement endSchema, IModelRelationship relationship)
+        protected virtual IModelRelationship CreateRelationshipCore(Identity id, ISchemaRelationship relationshipSchema, IModelElement start, Identity endId, IModelRelationship relationship)
         {
             Contract.Requires(id, "id");
             Contract.Requires(relationshipSchema, "relationshipSchema");
             Contract.Requires(start, "start");
             Contract.Requires(endId, "endId");
-            Contract.Requires(endSchema, "endSchema");
 
             CheckInitialized();
             using (var session = EnsuresRunInSession())
             {
-                relationship = L1Cache.CreateRelationship(id, relationshipSchema, start, endId, endSchema, relationship);
+                relationship = L1Cache.CreateRelationship(id, relationshipSchema, start, endId, relationship);
 
                 if (session != null)
                     session.AcceptChanges();
@@ -1106,9 +1087,9 @@ namespace Hyperstore.Modeling.Domain
             }
         }
 
-        bool IUpdatableDomainModel.RemoveRelationship(Identity id, ISchemaRelationship metadata, bool throwExceptionIfNotExists)
+        ISchemaRelationship IUpdatableDomainModel.RemoveRelationship(Identity id, bool throwExceptionIfNotExists)
         {
-            return RemoveRelationshipCore(id, metadata, throwExceptionIfNotExists);
+            return RemoveRelationshipCore(id, throwExceptionIfNotExists);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -1118,9 +1099,6 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="metadata">
-        ///  the metadata.
-        /// </param>
         /// <param name="throwExceptionIfNotExists">
         ///  true to throw exception if not exists.
         /// </param>
@@ -1128,15 +1106,14 @@ namespace Hyperstore.Modeling.Domain
         ///  true if it succeeds, false if it fails.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        protected virtual bool RemoveRelationshipCore(Identity id, ISchemaRelationship metadata, bool throwExceptionIfNotExists)
+        protected virtual ISchemaRelationship RemoveRelationshipCore(Identity id, bool throwExceptionIfNotExists)
         {
             Contract.Requires(id, "id");
-            Contract.Requires(metadata, "metadata");
 
             CheckInitialized();
             using (var session = EnsuresRunInSession())
             {
-                var r = InnerGraph.RemoveRelationship(id, metadata, throwExceptionIfNotExists);
+                var r = InnerGraph.RemoveRelationship(id, throwExceptionIfNotExists);
                 if (session != null)
                     session.AcceptChanges();
                 return r;
@@ -1150,20 +1127,16 @@ namespace Hyperstore.Modeling.Domain
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="metadata">
-        ///  the metadata.
-        /// </param>
         /// <returns>
         ///  The relationship.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public virtual IModelRelationship GetRelationship(Identity id, ISchemaRelationship metadata)
+        public virtual IModelRelationship GetRelationship(Identity id)
         {
             Contract.Requires(id, "id");
-            Contract.Requires(metadata, "metadata");
 
             CheckInitialized();
-            return L1Cache.GetElement(id, metadata) as IModelRelationship;
+            return L1Cache.GetElement(id) as IModelRelationship;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -1182,7 +1155,7 @@ namespace Hyperstore.Modeling.Domain
         ///-------------------------------------------------------------------------------------------------
         public TRelationship GetRelationship<TRelationship>(Identity id) where TRelationship : IModelRelationship
         {
-            return (TRelationship)GetRelationship(id, Store.GetSchemaRelationship<TRelationship>());
+            return (TRelationship)GetRelationship(id);
         }
 
         ///-------------------------------------------------------------------------------------------------

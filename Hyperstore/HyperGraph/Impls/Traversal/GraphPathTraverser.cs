@@ -74,7 +74,7 @@ namespace Hyperstore.Modeling.Traversal
                 yield break;
 
             // Constitution du Path courant
-            var path = new GraphPath(_query.DomainModel, node);
+            var path = new GraphPath(_query.DomainModel, node.Id);
 
             // Initialisation du container avec le 1er noeud
             paths.Insert(new[] { path });
@@ -112,17 +112,18 @@ namespace Hyperstore.Modeling.Traversal
                     {
   //                      _trace.WriteTrace(TraceCategory.Traverser, "Visit : {1} for {0}", path, rel.Id);
 
-                        NodeInfo childNode = null;
                         if (String.Compare(rel.EndId.DomainModelName, _query.DomainModel.Name, StringComparison.OrdinalIgnoreCase) == 0)
-                            childNode = new NodeInfo(rel.EndId, rel.EndSchemaId);
-                        
-                        var p = path.Create(childNode, rel);
-
-                        // Si ce chemin n'a pas dèjà été traité, on l'ajoute dans la liste des chemins à traiter
-                        if (!_query.UnicityPolicy.IsVisited(p))
                         {
-  //                          _trace.WriteTrace(TraceCategory.Traverser, "Push : {0}", p);
-                            childPaths.Add(p);
+                            var childNode = rel.EndId;
+
+                            var p = path.Create(childNode, rel);
+
+                            // Si ce chemin n'a pas dèjà été traité, on l'ajoute dans la liste des chemins à traiter
+                            if (!_query.UnicityPolicy.IsVisited(p))
+                            {
+                                //                          _trace.WriteTrace(TraceCategory.Traverser, "Push : {0}", p);
+                                childPaths.Add(p);
+                            }
                         }
                     }
                     paths.Insert(childPaths);

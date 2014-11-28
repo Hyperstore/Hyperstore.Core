@@ -49,7 +49,7 @@ namespace Hyperstore.Modeling.Events
             Contract.Requires(@event, "@event");
 
             var metadata = domainModel.Store.GetSchemaRelationship(@event.SchemaId);
-            if (domainModel.GetRelationship(@event.Id, metadata) == null)
+            if (domainModel.GetRelationship(@event.Id) == null)
             {
                 var start = domainModel.Store.GetSchemaElement(@event.StartId);
                 if (start == null)

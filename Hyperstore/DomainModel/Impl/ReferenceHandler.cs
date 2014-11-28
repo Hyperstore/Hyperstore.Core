@@ -152,7 +152,7 @@ namespace Hyperstore.Modeling
         {
             if (_id == null)
                 GetReference(); // Recherche id - Normal qu'il n'y ait pas d'affectation
-            return _id != null ? _owner.Store.GetRelationship(_id, _relationshipMetadata) : null;
+            return _id != null ? _owner.Store.GetRelationship(_id) : null;
         }
 
         ///-------------------------------------------------------------------------------------------------

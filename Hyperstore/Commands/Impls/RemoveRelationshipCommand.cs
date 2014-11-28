@@ -34,7 +34,6 @@ namespace Hyperstore.Modeling.Commands
     {
         private readonly bool _throwExceptionIfNotExists;
         private readonly Identity _startId;
-        private readonly Identity _startSchemaId;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -66,14 +65,13 @@ namespace Hyperstore.Modeling.Commands
             Contract.Requires(id, "id");
             Contract.Requires(schemaRelationshipId, "schemaRelationshipId");
 
-            var metadata = domainModel.Store.GetSchemaRelationship(schemaRelationshipId);
-            Relationship = domainModel.Store.GetRelationship(id, metadata);
+            Relationship = domainModel.Store.GetRelationship(id);
             if (Relationship == null)
                 throw new InvalidElementException(id);
             _throwExceptionIfNotExists = throwExceptionIfNotExists;
             _startId = Relationship.Start.Id;
-            _startSchemaId = Relationship.Start.SchemaInfo.Id;
         }
+
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -92,7 +90,6 @@ namespace Hyperstore.Modeling.Commands
             Contract.Requires(relationship, "relationship");
             Relationship = relationship;
             _startId = Relationship.Start.Id;
-            _startSchemaId = Relationship.Start.SchemaInfo.Id;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -126,7 +123,6 @@ namespace Hyperstore.Modeling.Commands
             // Le noeud terminal n'existe peut-être pas réellement (si il fait partie d'un autre domaine qui n'est pas chargé)
             // Il faut utiliser directement son id
             var endId = Relationship.EndId;
-            var endSchemaId = Relationship.EndSchemaId;
 
             // Avant la suppression effective
             var @event = new RemoveRelationshipEvent(Relationship.DomainModel.Name,
@@ -134,15 +130,13 @@ namespace Hyperstore.Modeling.Commands
                                                      Relationship.Id,
                                                      Relationship.SchemaInfo.Id,
                                                      _startId,
-                                                     _startSchemaId,
                                                      endId,
-                                                     endSchemaId,
                                                      context.CurrentSession.SessionId,
                                                      Version.Value);
 
             using (CodeMarker.MarkBlock("RemoveRelationshipCommand.Handle"))
             {
-                if (!dm.RemoveRelationship(Relationship.Id, Relationship.SchemaInfo as ISchemaRelationship, _throwExceptionIfNotExists))
+                if (dm.RemoveRelationship(Relationship.Id, _throwExceptionIfNotExists) == null)
                     return null;
             }
             return @event;

@@ -115,20 +115,6 @@ namespace Hyperstore.Modeling
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Disable the L1 cache.
-        /// </summary>
-        /// <returns>
-        ///  A SchemaBuilder.
-        /// </returns>
-        ///-------------------------------------------------------------------------------------------------
-        public SchemaBuilder<T> DisableL1Cache()
-        {
-            _definition.Behavior |= DomainBehavior.DisableL1Cache;
-            return this;
-        }
-
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>
         ///  Replace the current id generator.
         /// </summary>
         /// <param name="factory">

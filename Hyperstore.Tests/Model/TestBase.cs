@@ -55,14 +55,14 @@ namespace Hyperstore.Tests
 
                 var cx = 8;
                 var rid = domain.Store.GetSchemaRelationship<XReferencesX>();
-                graph.CreateRelationship(Id(cx++), rid, ids[1], mid, ids[2], mid);
-                graph.CreateRelationship(Id(cx++), rid, ids[1], mid, ids[3], mid);
-                graph.CreateRelationship(Id(cx++), rid, ids[2], mid, ids[4], mid);
-                graph.CreateRelationship(Id(cx++), rid, ids[2], mid, ids[5], mid);
-                graph.CreateRelationship(Id(cx++), rid, ids[2], mid, ids[3], mid);
-                graph.CreateRelationship(Id(cx++), rid, ids[4], mid, ids[6], mid);
-                graph.CreateRelationship(Id(cx++), rid, ids[6], mid, ids[7], mid);
-                graph.CreateRelationship(Id(cx++), rid, ids[3], mid, ids[7], mid);
+                graph.CreateRelationship(Id(cx++), rid, ids[1], ids[2]);
+                graph.CreateRelationship(Id(cx++), rid, ids[1], ids[3]);
+                graph.CreateRelationship(Id(cx++), rid, ids[2], ids[4]);
+                graph.CreateRelationship(Id(cx++), rid, ids[2], ids[5]);
+                graph.CreateRelationship(Id(cx++), rid, ids[2], ids[3]);
+                graph.CreateRelationship(Id(cx++), rid, ids[4], ids[6]);
+                graph.CreateRelationship(Id(cx++), rid, ids[6], ids[7]);
+                graph.CreateRelationship(Id(cx++), rid, ids[3], ids[7]);
                 session.AcceptChanges();
             }
         }

@@ -40,8 +40,8 @@ namespace Hyperstore.Modeling.Commands
         /// <param name="ownerId">
         ///  The owner identifier.
         /// </param>
-        /// <param name="schemaElement">
-        ///  The container schema.
+        /// <param name="ownerSchemaId">
+        ///  The schema identifier that owns this item.
         /// </param>
         /// <param name="propertySchema">
         ///  The property schema.
@@ -50,17 +50,16 @@ namespace Hyperstore.Modeling.Commands
         ///  (Optional) the version.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public RemovePropertyCommand(IDomainModel domainModel, Identity ownerId, ISchemaElement schemaElement, ISchemaProperty propertySchema, long? version = null)
+        public RemovePropertyCommand(IDomainModel domainModel, Identity ownerId, Identity ownerSchemaId, ISchemaProperty propertySchema, long? version = null)
             : base(domainModel, version)
         {
             Contract.Requires(domainModel, "domainModel");
-            Contract.Requires(schemaElement, "schemaElement");
             Contract.Requires(ownerId, "ownerId");
             Contract.Requires(propertySchema, "propertySchema");
-
+            Contract.Requires(ownerSchemaId, "ownerSchemaId");
             ElementId = ownerId;
-            SchemaElement = schemaElement;
             SchemaProperty = propertySchema;
+            SchemaId = ownerSchemaId;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -75,13 +74,13 @@ namespace Hyperstore.Modeling.Commands
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
-        ///  Gets the schema container.
+        ///  Gets or sets the identifier of the element schema.
         /// </summary>
         /// <value>
-        ///  The schema container.
+        ///  The identifier of the element schema.
         /// </value>
         ///-------------------------------------------------------------------------------------------------
-        public ISchemaElement SchemaElement { get; private set; }
+        public Identity SchemaId { get; private set; }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>
@@ -133,12 +132,12 @@ namespace Hyperstore.Modeling.Commands
 
             using (CodeMarker.MarkBlock("RemovePropertyCommand.Handle"))
             {
-                var pv = DomainModel.GetPropertyValue(ElementId, SchemaElement, SchemaProperty);
+                var pv = DomainModel.GetPropertyValue(ElementId, SchemaProperty);
                 if (pv != null)
                 {
                     OldValue = pv.Value;
                     OldVersion = pv.CurrentVersion;
-                    return new RemovePropertyEvent(DomainModel.Name, DomainModel.ExtensionName, ElementId, SchemaElement.Id, SchemaProperty.Name, OldValue, context.CurrentSession.SessionId, OldVersion);
+                    return new RemovePropertyEvent(DomainModel.Name, DomainModel.ExtensionName, ElementId, SchemaId,  SchemaProperty.Name, OldValue, context.CurrentSession.SessionId, OldVersion);
                 }
             }
             return null;

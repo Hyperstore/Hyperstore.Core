@@ -36,10 +36,6 @@ namespace Hyperstore.Modeling
         /// </summary>
         Standard,
         /// <summary>
-        ///  Disable L1 cache
-        /// </summary>
-        DisableL1Cache = 1,
-        /// <summary>
         ///  Element form this schema are observables (Raises Notification when a property or a collection change)
         /// </summary>
         Observable = 2

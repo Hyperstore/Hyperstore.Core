@@ -256,7 +256,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
 
             var mel = upd.ModelElementFactory.InstanciateModelElement(this, ImplementedType ?? typeof (ModelEntity));
             if (mel is ISerializableModelElement)
-                ((ISerializableModelElement) mel).OnDeserializing(this, ctx.DomainModel, ctx.Id.Key, ctx.StartId, ctx.EndId, ctx.EndSchemaId);
+                ((ISerializableModelElement) mel).OnDeserializing(this, ctx.DomainModel, ctx.Id.Key, ctx.StartId, ctx.EndId);
 
             return mel;
         }

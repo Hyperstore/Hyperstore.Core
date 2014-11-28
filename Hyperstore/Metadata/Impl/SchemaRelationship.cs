@@ -233,16 +233,13 @@ namespace Hyperstore.Modeling.Metadata
         /// <param name="end">
         ///  The end.
         /// </param>
-        /// <param name="endSchemaId">
-        ///  The end schema identifier.
-        /// </param>
         ///-------------------------------------------------------------------------------------------------
-        protected override void OnDeserializing(ISchemaElement schemaElement, IDomainModel domainModel, string key, Identity start, Identity end, Identity endSchemaId)
+        protected override void OnDeserializing(ISchemaElement schemaElement, IDomainModel domainModel, string key, Identity start, Identity end)
         {
             DebugContract.Requires(start);
             DebugContract.Requires(end);
 
-            base.OnDeserializing(schemaElement, domainModel, key, start, end, endSchemaId);
+            base.OnDeserializing(schemaElement, domainModel, key, start, end);
 
             _startId = start;
             _endId = end;
@@ -410,11 +407,6 @@ namespace Hyperstore.Modeling.Metadata
         Identity IModelRelationship.EndId
         {
             get { return EndId; }
-        }
-
-        Identity IModelRelationship.EndSchemaId
-        {
-            get { return End.SchemaInfo.Id; }
         }
     }
 }

@@ -61,10 +61,6 @@ namespace Hyperstore.Modeling
             set
             {
                 _behavior = value;
-                if ((_behavior & DomainBehavior.Observable) == DomainBehavior.Observable)
-                {
-                    _behavior &= ~DomainBehavior.DisableL1Cache;
-                }
             }
         }
 

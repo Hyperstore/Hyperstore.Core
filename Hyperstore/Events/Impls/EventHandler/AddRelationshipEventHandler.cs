@@ -48,13 +48,11 @@ namespace Hyperstore.Modeling.Events
             Contract.Requires(domainModel, "domainModel");
             Contract.Requires(@event, "@event");
 
-            var sm = domainModel.Store.GetSchemaElement(@event.StartSchemaId);
-            var start = domainModel.GetElement(@event.StartId, sm);
+            var start = domainModel.GetElement(@event.StartId);
             if (start == null)
                 throw new InvalidElementException(@event.StartId);
 
-            var em = domainModel.Store.GetSchemaElement(@event.EndSchemaId);
-            var end = domainModel.Store.GetElement(@event.EndId, em);
+            var end = domainModel.Store.GetElement(@event.EndId);
             if (end == null)
                 throw new InvalidElementException(@event.EndId);
 

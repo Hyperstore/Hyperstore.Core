@@ -45,14 +45,8 @@ namespace Hyperstore.Modeling.Adapters
         /// <param name="startId">
         ///  For a relationship, the start node id.
         /// </param>
-        /// <param name="startSchemaId">
-        ///  For a relationship, the start schema id.
-        /// </param>
         /// <param name="endId">
         ///  For a relationship, the end node id.
-        /// </param>
-        /// <param name="endSchemaId">
-        ///  For a relationship, the end schema id.
         /// </param>
         /// <param name="schema">
         ///  Schema of the node.
@@ -61,17 +55,17 @@ namespace Hyperstore.Modeling.Adapters
         ///  Node properties.
         /// </param>
         /// <param name="outgoings">
-        ///  The outgoings relationships of the node
+        ///  The outgoings relationships of the node.
         /// </param>
         /// <param name="incomings">
-        ///  The incomings relationships of the node
+        ///  The incomings relationships of the node.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public GraphPropertiesNode(NodeType nodeType, Identity id, Identity startId, Identity startSchemaId, 
-                                Identity endId, Identity endSchemaId, ISchemaElement schema, Dictionary<ISchemaProperty, PropertyValue> props,
+        public GraphPropertiesNode(NodeType nodeType, Identity id, Identity startId,
+                                Identity endId, ISchemaElement schema, Dictionary<ISchemaProperty, PropertyValue> props,
                                 IEnumerable<EdgeInfo> outgoings, IEnumerable<EdgeInfo> incomings
             )
-            : base( id, schema.Id, nodeType, startId, startSchemaId, endId, endSchemaId, outgoings:outgoings, incomings:incomings)
+            : base( id, schema.Id, nodeType, startId, endId, outgoings:outgoings, incomings:incomings)
         {
             Contract.Requires(id != null, "id");
             Contract.Requires(schema != null, "schema");
@@ -116,14 +110,11 @@ namespace Hyperstore.Modeling.Adapters
         /// <param name="endId">
         ///  The identifier of the end.
         /// </param>
-        /// <param name="endSchemaId">
-        ///  The identifier of the end schema.
-        /// </param>
         /// <returns>
         ///  A GraphNode.
         /// </returns>
         ///-------------------------------------------------------------------------------------------------
-        public override GraphNode AddEdge(Identity id, ISchemaRelationship schemaRelationship, Direction direction, Identity endId, Identity endSchemaId)
+        public override GraphNode AddEdge(Identity id, ISchemaRelationship schemaRelationship, Direction direction, Identity endId)
         {
             throw new NotImplementedException("Uses constructor instead");
         }

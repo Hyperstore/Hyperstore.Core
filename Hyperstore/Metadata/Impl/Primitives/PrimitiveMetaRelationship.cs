@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 #region Imports
 
 using System;
@@ -132,11 +132,11 @@ namespace Hyperstore.Modeling.Metadata.Primitives
 
             var upd = ctx.DomainModel as IUpdatableDomainModel;
             if (upd == null)
-                throw new Hyperstore.Modeling.Commands.ReadOnlyException(string.Format( ExceptionMessages.DomainModelIsReadOnlyCantCreateElementFormat, ctx.Id));
+                throw new Hyperstore.Modeling.Commands.ReadOnlyException(string.Format(ExceptionMessages.DomainModelIsReadOnlyCantCreateElementFormat, ctx.Id));
 
-            var mel = upd.ModelElementFactory.InstanciateModelElement(this, ImplementedType ?? typeof (ModelRelationship));
+            var mel = upd.ModelElementFactory.InstanciateModelElement(this, ImplementedType ?? typeof(ModelRelationship));
             if (mel is ISerializableModelElement)
-                ((ISerializableModelElement) mel).OnDeserializing(this, ctx.DomainModel, ctx.Id.Key, ctx.StartId, ctx.EndId, ctx.EndSchemaId);
+                ((ISerializableModelElement)mel).OnDeserializing(this, ctx.DomainModel, ctx.Id.Key, ctx.StartId, ctx.EndId);
 
             return mel;
         }
@@ -151,7 +151,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
         ///-------------------------------------------------------------------------------------------------
         public ISchemaRelationship SchemaRelationship
         {
-            get { return ((IModelRelationship) this).SchemaRelationship; }
+            get { return ((IModelRelationship)this).SchemaRelationship; }
         }
 
         #region IModelRelationship Members
@@ -173,7 +173,7 @@ namespace Hyperstore.Modeling.Metadata.Primitives
 
         IModelElement IModelRelationship.End
         {
-            get { return ((ISchemaRelationship)this).End;  }
+            get { return ((ISchemaRelationship)this).End; }
         }
 
         Identity IModelRelationship.EndId
@@ -181,10 +181,6 @@ namespace Hyperstore.Modeling.Metadata.Primitives
             get { return ((ISchemaRelationship)this).End.Id; }
         }
 
-        Identity IModelRelationship.EndSchemaId
-        {
-            get { return ((ISchemaRelationship)this).End.SchemaInfo.Id; }
-        }
         #endregion
 
         string ISchemaRelationship.StartPropertyName

@@ -383,7 +383,7 @@ namespace Hyperstore.Tests.Extension
             }
             catch (SessionException)
             {
-                                throw new Exception("Inconclusive");
+                throw new Exception("Inconclusive");
             }
 
             var xDomain = await initial.CreateScopeAsync("Ex1");

@@ -132,7 +132,7 @@ namespace Hyperstore.Modeling.Metadata
             {
                 var c = ctx.Schema as ISchemaElement;
                 Debug.Assert(c != null);
-                element.OnDeserializing(c, ctx.DomainModel, ctx.Id.Key, ctx.StartId, ctx.EndId, ctx.EndSchemaId);
+                element.OnDeserializing(c, ctx.DomainModel, ctx.Id.Key, ctx.StartId, ctx.EndId);
             }
 
             return mel;

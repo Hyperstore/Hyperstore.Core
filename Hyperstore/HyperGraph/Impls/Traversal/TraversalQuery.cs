@@ -93,14 +93,13 @@ namespace Hyperstore.Modeling.Traversal
             ///  An enumerator that allows foreach to be used to process from in this collection.
             /// </returns>
             ///-------------------------------------------------------------------------------------------------
-            public IEnumerable<EdgeInfo> From(NodeInfo node)
+            public IEnumerable<EdgeInfo> From(Identity node)
             {
-                var schemaElement = _hypergraph.DomainModel.Store.GetSchemaElement(node.SchemaId);
                 GraphNode graphNode;
-                if (!_hypergraph.GetGraphNode(node.Id, NodeType.EdgeOrNode, schemaElement, out graphNode))
+                if (!_hypergraph.GetGraphNode(node, NodeType.EdgeOrNode, out graphNode))
                     yield break;
 
-                foreach (var rel in _hypergraph.GetGraphEdges(graphNode, schemaElement, Direction))
+                foreach (var rel in _hypergraph.GetGraphEdges(graphNode, Direction))
                 {
                     if (rel != null)
                         yield return rel;

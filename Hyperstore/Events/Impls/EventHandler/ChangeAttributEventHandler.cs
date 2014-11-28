@@ -44,11 +44,11 @@ namespace Hyperstore.Modeling.Events
             Contract.Requires(domainModel, "domainModel");
             Contract.Requires(@event, "@event");
 
-            var metadata = domainModel.Store.GetSchemaEntity(@event.SchemaId);
-            var mel = domainModel.GetElement(@event.Id, metadata);
+            var mel = domainModel.GetElement(@event.Id);
             if (mel == null)
                 yield break;
 
+            var metadata = domainModel.Store.GetSchemaEntity(@event.SchemaId); 
             var prop = metadata.GetProperty(@event.PropertyName);
             if (prop != null)
             {
