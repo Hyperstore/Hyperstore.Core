@@ -108,7 +108,7 @@ namespace Hyperstore.Modeling.Domain
             DebugContract.Requires(id);
             IModelElement elem;
 
-            var cacheEnabled = (Session.Current == null || (Session.Current.Mode & SessionMode.IgnoreCache) == SessionMode.IgnoreCache);
+            var cacheEnabled = (Session.Current == null || (Session.Current.Mode & SessionMode.IgnoreCache) != SessionMode.IgnoreCache);
 
             if (cacheEnabled)
             {

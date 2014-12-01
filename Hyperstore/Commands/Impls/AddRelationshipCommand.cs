@@ -33,8 +33,6 @@ namespace Hyperstore.Modeling.Commands
     public class AddRelationshipCommand : PrimitiveCommand, ICommandHandler<AddRelationshipCommand>
     {
         private readonly IDomainModel _domainModel;
-        private readonly IModelElement _start;
-        private readonly ISchemaElement _endSchema;
         private IModelRelationship _element;
 
         ///-------------------------------------------------------------------------------------------------
@@ -165,10 +163,10 @@ namespace Hyperstore.Modeling.Commands
             if (dm == null)
                 return null;
 
-            if (_start == null)
-                 new InvalidElementException(_start.Id, "Source element must exists to create a relationship");
+            if (Start == null)
+                new InvalidElementException(Start.Id, "Source element must exists to create a relationship");
 
-            if (String.Compare(_start.Id.DomainModelName, EndId.DomainModelName, StringComparison.OrdinalIgnoreCase) == 0)
+            if (String.Compare(Start.Id.DomainModelName, EndId.DomainModelName, StringComparison.OrdinalIgnoreCase) == 0)
             {
                 if (DomainModel.Store.GetElement(EndId) == null)
                     throw new InvalidElementException(EndId, "Target element must exists to create a relationship.");
@@ -176,10 +174,10 @@ namespace Hyperstore.Modeling.Commands
 
             using (CodeMarker.MarkBlock("AddRelationshipCommand.Handle"))
             {
-                dm.CreateRelationship(Id, SchemaRelationship, _start, EndId, _element);
+                dm.CreateRelationship(Id, SchemaRelationship, Start, EndId, _element);
             }
 
-            return new AddRelationshipEvent(_domainModel.Name, DomainModel.ExtensionName, Id, SchemaRelationship.Id, _start.Id, EndId, context.CurrentSession.SessionId, Version.Value);
+            return new AddRelationshipEvent(_domainModel.Name, DomainModel.ExtensionName, Id, SchemaRelationship.Id, Start.Id, EndId, context.CurrentSession.SessionId, Version.Value);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -192,7 +190,7 @@ namespace Hyperstore.Modeling.Commands
         ///-------------------------------------------------------------------------------------------------
         public override string ToString()
         {
-            return String.Format("Add '{0}--[{2}]->{1}", _start.Id, EndId, Id);
+            return String.Format("Add '{0}--[{2}]->{1}", Start.Id, EndId, Id);
         }
     }
 }
