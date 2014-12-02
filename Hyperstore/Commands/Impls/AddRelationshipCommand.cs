@@ -54,6 +54,26 @@ namespace Hyperstore.Modeling.Commands
             _element = relationship;
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///  Constructor.
+        /// </summary>
+        /// <param name="relationshipSchema">
+        ///  The relationship schema.
+        /// </param>
+        /// <param name="start">
+        ///  The start element.
+        /// </param>
+        /// <param name="end">
+        ///  The end.
+        /// </param>
+        /// <param name="id">
+        ///  (Optional) The identifier.
+        /// </param>
+        /// <param name="version">
+        ///  (Optional) the version.
+        /// </param>
+        ///-------------------------------------------------------------------------------------------------
         public AddRelationshipCommand(ISchemaRelationship relationshipSchema, IModelElement start, IModelElement end,
                               Identity id = null, long? version = null)
             : this(relationshipSchema, start, end.Id, id, version)

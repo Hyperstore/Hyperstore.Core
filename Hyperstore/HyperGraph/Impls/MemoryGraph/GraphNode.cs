@@ -61,14 +61,8 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="start">
         ///  (Optional) the start.
         /// </param>
-        /// <param name="startSchema">
-        ///  (Optional) the start metaclass.
-        /// </param>
         /// <param name="end">
         ///  (Optional) the end.
-        /// </param>
-        /// <param name="endSchema">
-        ///  (Optional) the end metaclass.
         /// </param>
         /// <param name="value">
         ///  (Optional) The value.
@@ -199,8 +193,8 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <summary>
         ///  Adds an edge.
         /// </summary>
-        /// <exception cref="Exception">
-        ///  Thrown when an exception error condition occurs.
+        /// <exception cref="DuplicateElementException">
+        ///  Thrown when a Duplicate Element error condition occurs.
         /// </exception>
         /// <param name="id">
         ///  The identifier.
@@ -213,9 +207,6 @@ namespace Hyperstore.Modeling.HyperGraph
         /// </param>
         /// <param name="endId">
         ///  The identifier of the end.
-        /// </param>
-        /// <param name="endSchemaId">
-        ///  The identifier of the end schema.
         /// </param>
         /// <returns>
         ///  A GraphNode.

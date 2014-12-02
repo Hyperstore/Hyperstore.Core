@@ -501,6 +501,9 @@ namespace Hyperstore.Modeling.Metadata
         /// <param name="id">
         ///  The identifier.
         /// </param>
+        /// <param name="schemaElement">
+        ///  (Optional) the schema element.
+        /// </param>
         /// <returns>
         ///  The element.
         /// </returns>
@@ -526,6 +529,9 @@ namespace Hyperstore.Modeling.Metadata
         /// </summary>
         /// <param name="id">
         ///  The identifier.
+        /// </param>
+        /// <param name="schemaRelationship">
+        ///  (Optional) the schema relationship.
         /// </param>
         /// <returns>
         ///  The relationship.

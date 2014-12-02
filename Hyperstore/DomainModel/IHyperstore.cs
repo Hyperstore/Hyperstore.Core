@@ -318,6 +318,9 @@ namespace Hyperstore.Modeling
         /// <param name="id">
         ///  The id.
         /// </param>
+        /// <param name="schemaElement">
+        ///  (Optional) the schema element.
+        /// </param>
         /// <returns>
         ///  The element.
         /// </returns>
@@ -346,6 +349,9 @@ namespace Hyperstore.Modeling
         /// </summary>
         /// <param name="id">
         ///  The id.
+        /// </param>
+        /// <param name="schemaEntity">
+        ///  (Optional) the schema entity.
         /// </param>
         /// <returns>
         ///  The entity.
@@ -436,6 +442,9 @@ namespace Hyperstore.Modeling
         /// </summary>
         /// <param name="id">
         ///  The identifier.
+        /// </param>
+        /// <param name="schemaRelationship">
+        ///  (Optional) the schema relationship.
         /// </param>
         /// <returns>
         ///  The relationship.

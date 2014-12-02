@@ -50,20 +50,20 @@ namespace Hyperstore.Modeling
         /// <summary>
         ///  Constructor.
         /// </summary>
-        /// <exception cref="Exception">
-        ///  Thrown when an exception error condition occurs.
+        /// <exception cref="TypeMismatchException">
+        ///  Thrown when a Type Mismatch error condition occurs.
         /// </exception>
         /// <param name="domainModel">
         ///  The domain model.
         /// </param>
-        /// <param name="startId">
-        ///  The start identifier.
-        /// </param>
-        /// <param name="startSchema">
-        ///  The start schema.
+        /// <param name="start">
+        ///  The start.
         /// </param>
         /// <param name="endId">
         ///  The end identifier.
+        /// </param>
+        /// <param name="endSchema">
+        ///  The end schema.
         /// </param>
         /// <param name="schemaRelationship">
         ///  (Optional) the schema relationship.

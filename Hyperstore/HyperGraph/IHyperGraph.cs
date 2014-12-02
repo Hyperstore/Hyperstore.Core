@@ -141,6 +141,9 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="id">
         ///  The identifier.
         /// </param>
+        /// <param name="schemaElement">
+        ///  (Optional) The schema container.
+        /// </param>
         /// <returns>
         ///  The element.
         /// </returns>

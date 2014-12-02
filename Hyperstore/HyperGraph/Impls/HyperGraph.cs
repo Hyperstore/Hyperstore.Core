@@ -315,7 +315,7 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="id">
         ///  .
         /// </param>
-        /// <param name="metaclass">
+        /// <param name="schemaElement">
         ///  .
         /// </param>
         /// <returns>
@@ -830,9 +830,6 @@ namespace Hyperstore.Modeling.HyperGraph
         /// </exception>
         /// <param name="ownerId">
         ///  The identifier that owns this item.
-        /// </param>
-        /// <param name="ownerSchema">
-        ///  The schema that owns this item.
         /// </param>
         /// <param name="property">
         ///  The property.

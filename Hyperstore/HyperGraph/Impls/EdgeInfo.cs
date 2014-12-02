@@ -43,9 +43,6 @@ namespace Hyperstore.Modeling.HyperGraph
         /// <param name="endId">
         ///  The end identifier.
         /// </param>
-        /// <param name="endSchemaId">
-        ///  The end schema identifier.
-        /// </param>
         ///-------------------------------------------------------------------------------------------------
         public EdgeInfo(Identity id, Identity schemaId, Identity endId) : base(id, schemaId)
         {
