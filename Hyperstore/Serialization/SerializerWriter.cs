@@ -61,6 +61,12 @@ namespace Hyperstore.Modeling.Serialization
             }
         }
 
+        public void PushDeletedElement(string name, string id)
+        {
+            _current = new XElement(name, new XAttribute("id", id), new XAttribute("deleted", true));
+            _scopes.Peek().Add(_current);
+        }
+
         public void PushElement(string name, string id, string schemaId, string startId = null, string startSchemaId = null, string endId = null, string endSchemaId = null)
         {
             _current = new XElement(name, new XAttribute("id", id), new XAttribute("schema", schemaId));

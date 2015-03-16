@@ -48,9 +48,6 @@ namespace Hyperstore.Modeling.Commands
         /// <param name="id">
         ///  The identifier.
         /// </param>
-        /// <param name="schemaRelationshipId">
-        ///  The schema relationship identifier.
-        /// </param>
         /// <param name="throwExceptionIfNotExists">
         ///  (Optional) if set to <c>true</c> [throw exception if not exists].
         /// </param>
@@ -58,18 +55,21 @@ namespace Hyperstore.Modeling.Commands
         ///  (Optional) the version.
         /// </param>
         ///-------------------------------------------------------------------------------------------------
-        public RemoveRelationshipCommand(IDomainModel domainModel, Identity id, Identity schemaRelationshipId, bool throwExceptionIfNotExists = true, long? version = null)
+        public RemoveRelationshipCommand(IDomainModel domainModel, Identity id, bool throwExceptionIfNotExists = true, long? version = null)
             : base(domainModel, version)
         {
             Contract.Requires(domainModel, "domainModel");
             Contract.Requires(id, "id");
-            Contract.Requires(schemaRelationshipId, "schemaRelationshipId");
 
+            _throwExceptionIfNotExists = throwExceptionIfNotExists;
             Relationship = domainModel.Store.GetRelationship(id);
             if (Relationship == null)
-                throw new InvalidElementException(id);
-            _throwExceptionIfNotExists = throwExceptionIfNotExists;
-            _startId = Relationship.Start.Id;
+            {
+                if (throwExceptionIfNotExists)
+                    throw new InvalidElementException(id);
+            }
+            else
+                _startId = Relationship.Start.Id;
         }
 
 
@@ -117,7 +117,7 @@ namespace Hyperstore.Modeling.Commands
         {
             DebugContract.Requires(context);
             var dm = DomainModel as IUpdatableDomainModel;
-            if (dm == null)
+            if (dm == null || Relationship == null)
                 return null;
 
             // Le noeud terminal n'existe peut-être pas réellement (si il fait partie d'un autre domaine qui n'est pas chargé)

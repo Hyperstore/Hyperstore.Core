@@ -678,7 +678,7 @@ namespace Hyperstore.Modeling.HyperGraph
                 {
                     if (commands == null)
                         commands = new List<IDomainCommand>();
-                    commands.Add(new RemoveRelationshipCommand(this._domainModel, incoming.Id, incoming.SchemaId));
+                    commands.Add(new RemoveRelationshipCommand(this._domainModel, incoming.Id));
                 }
 
                 if (commands != null || visitor.Commands.Any())

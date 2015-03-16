@@ -113,7 +113,7 @@ namespace Hyperstore.Modeling.Commands
         {
             DebugContract.Requires(context);
             var dm = DomainModel as IUpdatableDomainModel;
-            if (dm == null)
+            if (dm == null || Entity == null)
                 return null;
 
             using (CodeMarker.MarkBlock("RemoveEntityCommand.Handle"))

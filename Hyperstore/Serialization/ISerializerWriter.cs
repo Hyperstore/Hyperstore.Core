@@ -27,6 +27,8 @@ namespace Hyperstore.Modeling.Serialization
     interface ISerializerWriter
     {
         void NewScope(string tag);
+        void PushDeletedElement(string name, string id);
+
         void PushElement(string name, string id, string schemaId, string startId = null, string startSchemaId = null, string endId = null, string endSchemaId = null);
         void PushProperty(string tag, string name, object value);
         void ReduceScope();

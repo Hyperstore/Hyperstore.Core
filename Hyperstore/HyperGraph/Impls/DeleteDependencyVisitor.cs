@@ -23,7 +23,7 @@ namespace Hyperstore.Modeling.HyperGraph
             if (path.LastTraversedRelationship != null)
             {
                 relationship = path.DomainModel.GetRelationship( path.LastTraversedRelationship.Id);
-                _relationshipCommands.Push(new RemoveRelationshipCommand(path.DomainModel, relationship.Id, relationship.SchemaInfo.Id));
+                _relationshipCommands.Push(new RemoveRelationshipCommand(path.DomainModel, relationship.Id));
                 if (end == null)
                     return GraphTraversalEvaluatorResult.IncludeAndNextPath;
             }
@@ -43,7 +43,7 @@ namespace Hyperstore.Modeling.HyperGraph
 
             var endSchema = schemaRelationship.End;
             if (endSchema is ISchemaRelationship)
-                _relationshipCommands.Push(new RemoveRelationshipCommand(path.DomainModel, end, endSchema.Id));
+                _relationshipCommands.Push(new RemoveRelationshipCommand(path.DomainModel, end));
             else
                 _entityCommands.Push(new RemoveEntityCommand(path.DomainModel, end));
 

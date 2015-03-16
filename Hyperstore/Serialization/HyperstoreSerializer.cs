@@ -177,6 +177,27 @@ namespace Hyperstore.Modeling.Serialization
             return result;
         }
 
+        public static string SerializeScope(IDomainScope scope)
+        {
+            string result = null;
+            using (var writer = new MemoryStream())
+            {
+                var settings = new SerializationSettings();
+                var ser = new HyperstoreSerializer(scope, settings);
+                ser.Serialize(writer,
+                    scope.GetScopeElements().OfType<IModelEntity>(),
+                    scope.GetScopeElements().OfType<IModelRelationship>(),
+                    new HashSet<Identity>(scope.GetDeletedElements().Where(node => node.NodeType == NodeType.Node).Select(node => node.Id)),
+                    new HashSet<Identity>(scope.GetDeletedElements().Where(node => node.NodeType == NodeType.Edge).Select(node => node.Id))
+                );
+                writer.Position = 0;
+                using (var reader = new StreamReader(writer))
+                {
+                    result = reader.ReadToEnd();
+                }
+            }
+            return result;
+        }
         #endregion
 
         private HyperstoreSerializer(IDomainModel domain, SerializationSettings settings)
@@ -227,14 +248,14 @@ namespace Hyperstore.Modeling.Serialization
             return _schema == null ? mel.SchemaInfo : _schema.GetSchemaElement(mel.SchemaInfo.Id);
         }
 
-        private string GetId(IModelElement element)
+        private string GetId(Identity id)
         {
-            if (String.Compare(element.Id.DomainModelName, _domain.Name, StringComparison.OrdinalIgnoreCase) == 0)
+            if (String.Compare(id.DomainModelName, _domain.Name, StringComparison.OrdinalIgnoreCase) == 0)
             {
-                return element.Id.Key;
+                return id.Key;
             }
 
-            return element.Id.ToString();
+            return id.ToString();
         }
 
         private bool HasOption(SerializationOptions option)
@@ -242,7 +263,7 @@ namespace Hyperstore.Modeling.Serialization
             return (_options & option) == option;
         }
 
-        private void Serialize(Stream stream, IEnumerable<IModelEntity> entities, IEnumerable<IModelRelationship> relationships)
+        private void Serialize(Stream stream, IEnumerable<IModelEntity> entities, IEnumerable<IModelRelationship> relationships, HashSet<Identity> deletedEntities=null, HashSet<Identity> deletedRelationShips=null)
         {
             ISession session = null;
             if (Session.Current != null)
@@ -260,9 +281,8 @@ namespace Hyperstore.Modeling.Serialization
             try
             {
                 _monikers = new Dictionary<Identity, MonikerEntry>();
-                SerializeEntities(entities);
-                SerializeRelationships(relationships);
-                
+                SerializeEntities(entities, deletedEntities);
+                SerializeRelationships(relationships, deletedRelationShips);                
                 _writer.Save(stream, _monikers.Values);
             }
             finally
@@ -277,30 +297,48 @@ namespace Hyperstore.Modeling.Serialization
             }
         }
 
-        private void SerializeRelationships(IEnumerable<IModelRelationship> relationships)
+        private void SerializeRelationships(IEnumerable<IModelRelationship> relationships, HashSet<Identity> deletedElements)
         {
             _writer.NewScope("relationships");
             foreach (var relationship in relationships)
             {
+                if( deletedElements != null && deletedElements.Remove(relationship.Id)) {
+                    _writer.PushDeletedElement("relationship", GetId(relationship.Id));
+                    continue;
+                }
                 _writer.PushElement("relationship",
-                            GetId(relationship), GetSchemaMoniker(relationship),
-                            GetId(relationship.Start), GetSchemaMoniker(relationship.Start),
-                            GetId(relationship.End), GetSchemaMoniker(relationship.End));
+                            GetId(relationship.Id), GetSchemaMoniker(relationship),
+                            GetId(relationship.Start.Id), GetSchemaMoniker(relationship.Start),
+                            GetId(relationship.End.Id), GetSchemaMoniker(relationship.End));
                 SerializeProperties(relationship);
             }
-
+            if (deletedElements != null)
+            {
+                foreach (var id in deletedElements)
+                    _writer.PushDeletedElement("relationship", GetId(id));
+            }
             _writer.ReduceScope();
         }
 
-        private void SerializeEntities(IEnumerable<IModelEntity> entities)
+        private void SerializeEntities(IEnumerable<IModelEntity> entities, HashSet<Identity> deletedElements)
         {
             _writer.NewScope("entities");
             foreach (var entity in entities)
             {
-                _writer.PushElement("entity", GetId(entity), GetSchemaMoniker(entity));
+                if (deletedElements != null && deletedElements.Remove(entity.Id))
+                {
+                    _writer.PushDeletedElement("entity", GetId(entity.Id));
+                    continue;
+                }
+
+                _writer.PushElement("entity", GetId(entity.Id), GetSchemaMoniker(entity));
                 SerializeProperties(entity);
             }
-
+            if (deletedElements!=null)
+            {
+                foreach (var id in deletedElements)
+                    _writer.PushDeletedElement("entity", GetId(id));
+            }
             _writer.ReduceScope();
         }
 

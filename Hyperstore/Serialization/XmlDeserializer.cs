@@ -227,12 +227,20 @@ namespace Hyperstore.Modeling.Serialization
                 string elem = ReadNextElement();
                 while (elem == "relationship")
                 {
-                    var metadata = ReadAttribute("schema");
                     var id = ReadId("id");
+                    var deleted = ReadAttribute("deleted", false);
+                    if (deleted == "true")
+                    {
+                        var cmd = new Hyperstore.Modeling.Commands.RemoveRelationshipCommand(_domain, id, false);
+                        Session.Current.Execute(cmd);
+                        elem = ReadNextElement();
+                        continue;
+                    }
+                    var metadata = ReadAttribute("schema");
                     var schema = GetSchemaFromMoniker(metadata) as ISchemaRelationship;
                     if (schema == null)
-                        throw new MetadataNotFoundException(String.Format("Invalid metadata {0} for relationship {1}", metadata, id));
-
+                        throw new MetadataNotFoundException(String.Format("Invalid metadata {0} for relationship {1}", metadata, id)); 
+                    
                     var startId = ReadId("start");
                     var endId = ReadId("end");
                     IModelRelationship entity=null;
@@ -256,13 +264,20 @@ namespace Hyperstore.Modeling.Serialization
                 string elem = ReadNextElement();
                 while (elem == "entity")
                 {
-                    var metadata = ReadAttribute("schema");
                     var id = ReadId("id");
+                    var deleted = ReadAttribute("deleted", false);
+                    if (deleted == "true")
+                    {
+                        var cmd = new Hyperstore.Modeling.Commands.RemoveEntityCommand(_domain, id, false);
+                        Session.Current.Execute(cmd);
+                        elem = ReadNextElement();
+                        continue;
+                    }
+                    var metadata = ReadAttribute("schema"); 
                     var schema = GetSchemaFromMoniker(metadata) as ISchemaEntity;
                     if (schema == null)
                         throw new MetadataNotFoundException(String.Format("Invalid metadata {0} for entity {1}", metadata, id));
-
-                    IModelEntity entity=null;
+                    IModelEntity entity = null;
                     if( _allowElementOverriding )
                     {
                         entity = _domain.GetEntity(id);

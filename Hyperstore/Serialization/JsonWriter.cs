@@ -67,6 +67,22 @@ namespace Hyperstore.Modeling.Serialization
             Write("]");
         }
 
+        public void PushDeletedElement(string name, string id)
+        {
+            if (_propertiesOpen)
+                Write("]");
+            if (!_firstElement)
+                Write("},");
+            Write("{");
+            WriteKey("id");
+            WriteString(id);
+            WriteKey("deleted", true);
+            _stream.Write("true");
+
+            _propertiesOpen = false;
+            _firstElement = false;
+        }
+
         public void PushElement(string name, string id, string schemaId, string startId = null, string startSchemaId = null, string endId = null, string endSchemaId = null)
         {
             if (_propertiesOpen)

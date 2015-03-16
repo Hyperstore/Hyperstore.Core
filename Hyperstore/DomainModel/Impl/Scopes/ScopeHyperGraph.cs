@@ -193,7 +193,7 @@ namespace Hyperstore.Modeling.Scopes
         public override ISchemaRelationship RemoveRelationship(Identity id, bool throwExceptionIfNotExists)
         {
             var schema = base.RemoveRelationship(id, false);
-            if (schema != null) _deletedElements.AddNode(new GraphNode(id, schema.Id, NodeType.Node));
+            if (schema != null) _deletedElements.AddNode(new GraphNode(id, schema.Id, NodeType.Edge));
             return schema;
         }
 
